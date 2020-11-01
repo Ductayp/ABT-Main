@@ -1,0 +1,16 @@
+{
+  "name": "MY_GAMES_NAME_HERE_THIS_CAN_BE_ANYTHING",
+  "tree": {
+    "$className": "DataModel",
+
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+  
+      "GameFiles": {
+        "$className": "Folder",
+        "$path": "src/ServerScriptService"
+      }
+    }
+
+  }
+}

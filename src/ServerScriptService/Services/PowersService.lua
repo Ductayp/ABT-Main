@@ -2,10 +2,25 @@
 -- PDab
 -- 11/2/2020
 
--- setup Knit
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+-- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersService = Knit.CreateService { Name = "PowersService", Client = {}}
+
+
+-- Setup Remote Properties
+local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
+PowersService.PlayerProperties = {}
+--PowersService.CurrentPower = {}
+--PowersService.Cooldowns = {}
+--PowersService.AbilityToggles = {}
+
+function PowersService:PlayerAdded(player)
+    print(player)
+end
+
 
 function PowersService:KnitInit()
 
@@ -19,13 +34,13 @@ function PowersService:KnitInit()
     standFolder.Parent = workspace
 
     -- Player Added event
-    players.PlayerAdded:Connect(PlayerAdded)
+    Players.PlayerAdded:Connect(PlayerAdded)
         for _, player in ipairs(players:GetPlayers()) do
 	    PowersService:PlayerAdded(player)
     end
 
     -- Player Removing event
-    players.PlayerRemoving:Connect(function(player)
+    Players.PlayerRemoving:Connect(function(player)
 
     end)
 

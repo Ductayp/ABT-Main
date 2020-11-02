@@ -3,7 +3,8 @@
 -- 11/2/2020
 -- starts up Knit and prepares the game to run
 
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 -- Load all services:
 for _,v in ipairs(script.Parent.Services:GetDescendants()) do

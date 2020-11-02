@@ -1,9 +1,11 @@
 -- THIS SERVICE WILL BOOTSTRAP THE ENTIRE GAME
 
+local Knit = require(game:GetService("ReplicatedStorage").Knit)
+
 -- This script bootstraps the whole game
 local players = game:GetService("Players")
 local serverScriptService = game:GetService("ServerScriptService")
-local replicatedStorage = game:GetService("ReplicatedStorage")
+
 
 local dataReplicationService = require(serverScriptService.Services.DataReplicationService)
 local powersService = require(serverScriptService.Services.PowersService)

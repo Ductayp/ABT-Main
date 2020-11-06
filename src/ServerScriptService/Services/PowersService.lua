@@ -28,8 +28,6 @@ end
 --// PlayerSetup - fires when the player joins and after each death
 function PowersService:PlayerSetup(player)
     
-    Knit.Services.DataReplicationService:UpdateAll(player)
-    
     -- Setup the PlayerStand folder - destroys the stand folder alogn with contents, then recreates it
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
     if not playerStandFolder then
@@ -43,7 +41,17 @@ function PowersService:PlayerSetup(player)
     powerStatus[player.UserId] = {}
     powerStatus[player.UserId].abilityToggle = {}
     powerStatus[player.UserId].abilityCooldown = {}
+
+    --spawn(function()
+        --wait(5)
+        Knit.Services.DataReplicationService:UpdateAll(player)
+    --end)
     
+end
+
+--// KnitStart
+function PowersService:KnitStart()
+
 end
 
 --// KnitInit - runs at server startup
@@ -65,7 +73,7 @@ function PowersService:KnitInit()
             self:PlayerSetup(player)
         end)
     end)
-    
+
     -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
     for _, player in ipairs(Players:GetPlayers()) do
         self:PlayerSetup(player)

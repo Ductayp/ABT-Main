@@ -42,11 +42,7 @@ function PowersService:PlayerSetup(player)
     powerStatus[player.UserId].abilityToggle = {}
     powerStatus[player.UserId].abilityCooldown = {}
 
-    --spawn(function()
-        --wait(5)
-        Knit.Services.DataReplicationService:UpdateAll(player)
-    --end)
-    
+    Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
 --// KnitStart

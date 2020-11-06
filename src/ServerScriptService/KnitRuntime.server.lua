@@ -13,5 +13,8 @@ for _,v in ipairs(script.Parent.Services:GetDescendants()) do
     end
 end
 
+-- Expose Moudles to Knit
+Knit.SharedModules = game:GetService("ReplicatedStorage").GameFiles.SharedModules
+
 Knit.Start()
 print("Knit Runtime Started")

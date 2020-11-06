@@ -1,4 +1,5 @@
 local players = game:GetService("Players")
+local ServerScriptService = game:GetService("ServerScriptService")
 local profileService = require(script.ProfileService)
 local profileTemplate = require(script.ProfileTemplate)
 

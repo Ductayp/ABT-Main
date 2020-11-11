@@ -11,7 +11,7 @@ local module = {
 	Character = {
 		XP = 0,
 		Level = 1,
-		CurrentStand = "Standless"
+		CurrentPower = "Standless"
 	},
 	
 	Inventory = {

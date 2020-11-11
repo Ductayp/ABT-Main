@@ -19,7 +19,7 @@ local PlayerDataService = Knit.CreateService { Name = "PlayerDataService", Clien
 -- This is loading the main functionality of profile service
 -- The first argument is the data store name, the second is the default profile template structure
 PlayerDataService.gameProfileStore = profileService.GetProfileStore(
-	"PlayerData_v1", -- store name, change this to "forget" old data
+	"PlayerData_v2", -- store name, change this to "forget" old data
 	profileTemplate
 )
 
@@ -29,7 +29,7 @@ function PlayerDataService:Connect(player)
     local profile = PlayerDataService.gameProfileStore:LoadProfileAsync("Player_" .. player.UserId, "ForceLoad")
 
     -- This is just a debug
-    print("DataStore: Player_" .. player.UserId)
+    print("Attempting to Load DataStore: Player_" .. player.UserId)
 
     -- If there is a newly initialized profile or a loaded profile
     if profile ~= nil then
@@ -42,11 +42,17 @@ function PlayerDataService:Connect(player)
             player:Kick()
         end)
 
-        -- This makes sure the player is in the game (like mayeb a bad network connection and they left)
+        -- This makes sure the player is in the game (like maybe a bad network connection and they left)
         if player:IsDescendantOf(players) == true then
 
             -- This assignes the loaded profile into the user/profile table
             profiles[player] = profile
+            
+            -- now lets fire the DataReplicationService
+            Knit.Services.DataReplicationService:UpdateAll(player)
+
+            -- give a message
+            print("Loaded DataStore: Player_" .. player.UserId)
 
         else
             -- This will release/unlock the profile if there was a netowrk issue
@@ -54,7 +60,7 @@ function PlayerDataService:Connect(player)
         end
 
     else
-        -- We get here if another server is trying to load the profile at exactly the dame time
+        -- We get here if another server is trying to load the profile at exactly the same time
         player:Kick()
     end
 

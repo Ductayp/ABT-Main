@@ -23,6 +23,9 @@ end
 --// SetPower -- sets the players curret power
 function PowersService:SetPower(player,power)
     print("SetPower: ",power," - For player: ",player)
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    playerData.Character.CurrentPower = power
+    Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
 --// PlayerSetup - fires when the player joins and after each death
@@ -35,6 +38,8 @@ function PowersService:PlayerSetup(player)
         playerStandFolder.Name = player.UserId
         playerStandFolder.Parent = workspace:FindFirstChild('PlayerStands')
     end
+
+    -- clear the stand completely
     playerStandFolder:ClearAllChildren()
 
     -- Setup the powerStatus table. clears itself and gets ready for new statuses

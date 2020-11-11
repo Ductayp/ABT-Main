@@ -14,7 +14,7 @@ local DataReplicationService = Knit.CreateService { Name = "DataReplicationServi
 function DataReplicationService:UpdateAll(player)
     print("replicate it!")
     local replicatedFolder = ReplicatedStorage:WaitForChild("ReplicatedPlayerData")
-    local playerFolder replicatedFolder:WaitForChild(player.UserId)
+    local playerFolder = replicatedFolder:WaitForChild(player.UserId)
     
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if playerData then
@@ -31,14 +31,15 @@ function DataReplicationService:UpdateAll(player)
         end
         loop(playerData)
 
-        for i,v in pairs(keyTable) do
-            print(i,v)
-        end
+        --for i,v in pairs(keyTable) do
+            --print(i,v)
+       -- end
 
         for key,value in pairs(keyTable) do
+            print(key,value)
             local thisValueObject = playerFolder:FindFirstChild(key)
             if not thisValueObject then
-                thisValueObject = utils.NewValueObject(key,value,playerFolder)
+                thisValueObject = Knit.Shared.Utils.NewValueObject(key,value,playerFolder)
             else
                 thisValueObject.Value = value
             end

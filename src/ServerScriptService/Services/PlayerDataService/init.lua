@@ -23,13 +23,19 @@ PlayerDataService.gameProfileStore = profileService.GetProfileStore(
 	profileTemplate
 )
 
+--// PlayerConnected - fires once player has connected to data, we can do all osrts of things from here
+function PlayerDataService:PlayerConnected(player)
+    print("ProfileService: Data Loaded for: ",player)
+    Knit.Services.DataReplicationService:UpdateAll(player)
+end
+
 function PlayerDataService:Connect(player)
 
     -- This loads the profile. If the player does not have one yet it uses the profileTemplate
     local profile = PlayerDataService.gameProfileStore:LoadProfileAsync("Player_" .. player.UserId, "ForceLoad")
 
     -- This is just a debug
-    print("Attempting to Load DataStore: Player_" .. player.UserId)
+    print("ProfileService: Attempting to load data for: ",player.UserId)
 
     -- If there is a newly initialized profile or a loaded profile
     if profile ~= nil then
@@ -48,8 +54,8 @@ function PlayerDataService:Connect(player)
             -- This assignes the loaded profile into the user/profile table
             profiles[player] = profile
             
-            -- now lets fire the DataReplicationService
-            Knit.Services.DataReplicationService:UpdateAll(player)
+            -- fire a function once player is connected
+            self:PlayerConnected(player)
 
             -- give a message
             print("Loaded DataStore: Player_" .. player.UserId)

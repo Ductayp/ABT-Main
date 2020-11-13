@@ -17,6 +17,26 @@ local powerStatus = {}
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ActivatePower(player,params)
+    print("PowerService hears you!",player,params)
+    params.CanRun = false -- set this back to false, it must pass all the checks to be true at the end before it will run
+
+    -- sanity check
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if playerData.Character.CurrentPower == params.PowerId then
+        params.CanRun = true
+    else
+        print("PlayerData doesn't match the PowerID sent")
+        return
+    end
+
+    -- cooldown check
+    if not powerStatus[player.UserId].Cooldowns[params.AbilityID] then
+        powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() - 1
+    end
+    if powerStatus[player.UserId].Cooldowns[params.AbilityID] < os.time() then
+        
+    end
+
 
 end
 
@@ -31,7 +51,7 @@ end
 --// PlayerSetup - fires when the player joins and after each death
 function PowersService:PlayerSetup(player)
     
-    -- Setup the PlayerStand folder - destroys the stand folder alogn with contents, then recreates it
+    -- Setup the PlayerStand folder - destroys the stand folder along with contents, then recreates it
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
     if not playerStandFolder then
         playerStandFolder = Instance.new("Folder")
@@ -44,8 +64,8 @@ function PowersService:PlayerSetup(player)
 
     -- Setup the powerStatus table. clears itself and gets ready for new statuses
     powerStatus[player.UserId] = {}
-    powerStatus[player.UserId].abilityToggle = {}
-    powerStatus[player.UserId].abilityCooldown = {}
+    powerStatus[player.UserId].Toggles = {}
+    powerStatus[player.UserId].Cooldowns = {}
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
@@ -75,7 +95,7 @@ function PowersService:KnitInit()
         end)
     end)
 
-    -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
+    -- Player Added event for studio testing, catches when a player has joined before the server fully starts
     for _, player in ipairs(Players:GetPlayers()) do
         self:PlayerSetup(player)
     end

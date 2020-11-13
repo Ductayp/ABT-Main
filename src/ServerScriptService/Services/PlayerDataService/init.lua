@@ -88,6 +88,11 @@ function PlayerDataService:GetPlayerData(player)
 	end
 end
 
+function PlayerDataService.Client:GetPlayerData(player)
+    print("yes",player)
+    --self:GetPlayerData(player)
+end 
+
 function PlayerDataService:KnitStart()
 
 end

@@ -33,7 +33,8 @@ TheWorld.Defs = {
             CoolDown_InputBegan = 5,
             CoolDown_InputEnded = 5,
             AbilityPreReq = nil,
-            Override = false
+            Override = false,
+            Toggles = true
         },
 
         Ability_2 = {
@@ -43,6 +44,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = 5,
             AbilityPreReq = {"Ability_1"},
             Override = true,
+            Toggles = false
         },
 
         Ability_3 = {
@@ -53,6 +55,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = true,
             AbilityPreReq = nil,
             Override = false,
+            Toggles = false
         },
 
         Ability_4 = {
@@ -63,6 +66,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = true,
             AbilityPreReq = nil,
             Override = false,
+            Toggles = false
         },
 
         Ability_5 = {
@@ -73,6 +77,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = true,
             AbilityPreReq = nil,
             Override = false,
+            Toggles = false
         },
 
         Ability_6 = {
@@ -83,6 +88,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = true,
             AbilityPreReq = nil,
             Override = false,
+            Toggles = false
         },
 
         Ability_7 = {
@@ -93,6 +99,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = true,
             AbilityPreReq = nil,
             Override = false,
+            Toggles = false
         },
 
         Ability_8 = {
@@ -103,6 +110,7 @@ TheWorld.Defs = {
             CoolDown_InputEnded = true,
             AbilityPreReq = nil,
             Override = false,
+            Toggles = false
         },
     }
 }
@@ -125,10 +133,10 @@ module.Effects.StandTrails = {
 }
 ]]--
 
---// ABILITY 1 - EQUIP STAND
+--// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
 function TheWorld.Ability_1(player,params)
 
-    -- INIALIZE
+    -- INITIALIZE
     if params.SystemStage == "Intialize" then
     print("The World - Initialize")
 
@@ -139,7 +147,7 @@ function TheWorld.Ability_1(player,params)
 
         -- INPUT ENDED
         if params.KeyState == "InputEnded" then
-            params.CanRun = false
+            -- no action here
         end
         
         return params
@@ -149,16 +157,41 @@ function TheWorld.Ability_1(player,params)
     if params.SystemStage == "Activate" then
         print("The World - Activate")
 
+         -- INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+
+        -- INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            -- no action here
+        end
+
+        return params
     end
 
     -- EXECUTE
     if params.SystemStage == "Execute" then
         print("The World - Execute")
 
+         -- INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+            if params.Toggle then
+                print("equip stand - STAND ON")
+            else
+                print("equip stand - STAND OFF")
+            end
+        end
+
+        -- INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            -- no action here
+        end
+
     end
 end
 
---// ABILITY 2 - BARRAGE
+--// ABILITY 2 - BARRAGE //---------------------------------------------------------------------------------
 function TheWorld.Ability_2(player,params)
 
     -- INIALIZE

@@ -17,14 +17,14 @@ local powerStatus = {}
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ActivatePower(player,params)
-    print("PowerService hears you!",player,params)
-    params.CanRun = false -- set this back to false, it must pass all the checks to be true at the end before it will run
+    
+    local powerModule = require(Knit.Powers[params.PowerID])
+    
 
+    -- RUN CHECKS
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if playerData.Character.CurrentPower == params.PowerId then
-        params.CanRun = true
-    else
+    if not playerData.Character.CurrentPower == params.PowerId then
         print("PlayerData doesn't match the PowerID sent")
         return
     end
@@ -33,10 +33,62 @@ function PowersService.Client:ActivatePower(player,params)
     if not powerStatus[player.UserId].Cooldowns[params.AbilityID] then
         powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() - 1
     end
-    if powerStatus[player.UserId].Cooldowns[params.AbilityID] < os.time() then
-        
+    if os.time() < powerStatus[player.UserId].Cooldowns[params.AbilityID] then
+        return
     end
 
+    -- override check - if an ability override is true, no other ability can fire while it is toggled on
+    for i,v in pairs(powerStatus[player.UserId].Toggles) do
+        print(i,v)
+        --[[
+		if v == true then
+			local overrideValue = powerModule.Defs.Abilities[v.Name].Override
+			if overrideValue and dictionary.KeyState == "InputBegan" then
+				print("override")
+				return
+			end
+        end
+        ]]--
+    end
+    
+    -- pre-requisites check
+    local thisPreReq = powerModule.Defs.Abilities[params.AbilityID].AbilityPreReq
+	if thisPreReq then
+		for i,v in pairs(thisPreReq) do
+			local thisToggle = powerStatus[player.UserId].Toggles[params.AbilityID]
+			if not thisToggle then
+                return
+			end
+		end
+    end
+    
+    -- RUN ABILITY
+    -- set cooldowns
+	if params.KeyState == "InputBegan" then
+		powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputBegan
+	end
+	if params.KeyState == "InputEnded" then
+		powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputEnded
+    end
+
+    -- set toggle
+    if powerModule.Defs.Abilities[params.AbilityID].Toggles then
+        if powerStatus[player.UserId].Toggles[params.AbilityID] then
+            powerStatus[player.UserId].Toggles[params.AbilityID] = false
+        else
+            powerStatus[player.UserId].Toggles[params.AbilityID] = true
+        end
+        params.Toggle = powerStatus[player.UserId].Toggles[params.AbilityID]
+    end
+    
+    -- activate ability
+    params.SystemStage = "Activate"
+    params.CanRun = false
+    powerModule[params.AbilityID](player,params,toggle)
+
+    if params.CanRun then
+        -- fire all clients
+    end
 
 end
 

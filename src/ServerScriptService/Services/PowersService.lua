@@ -10,10 +10,6 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersService = Knit.CreateService { Name = "PowersService", Client = {}}
 
--- modules
-
--- properties
-local powerStatus = {}
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ActivatePower(player,params)
@@ -110,14 +106,26 @@ function PowersService:PlayerSetup(player)
         playerStandFolder.Name = player.UserId
         playerStandFolder.Parent = workspace:FindFirstChild('PlayerStands')
     end
+    
+    playerStandFolder:ClearAllChildren() -- clear the stand completely
 
-    -- clear the stand completely
-    playerStandFolder:ClearAllChildren()
+    -- Setup the PowerStatus folders. clears itself and gets ready for new statuses
+    local playerStatusFolder = ReplicatedStorage.PowerStatus:FindFirstChild (player.userId)
+    if not playerStatusFolder then
+        playerStatusFolder = Instance.new("Folder")
+        playerStatusFolder.Name = player.UserId
+        playerStatusFolder.Parent = ReplicatedStorage.PowerStatus
+    end
 
-    -- Setup the powerStatus table. clears itself and gets ready for new statuses
+    playerStatusFolder:ClearAllChildren()
+
+
+
+    --[[
     powerStatus[player.UserId] = {}
     powerStatus[player.UserId].Toggles = {}
     powerStatus[player.UserId].Cooldowns = {}
+    ]]--
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
@@ -139,6 +147,11 @@ function PowersService:KnitInit()
     standFolder.Name = "PlayerStands"
     standFolder.Parent = workspace
 
+    -- setup the Power Status folder in ReplciatedStorage
+    local statusFolder - Instance.new("Folder")
+    statusFolder.Name = "PowerStatus"
+    statusFolder.Parent = ReplicatedStorage
+
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
         self:PlayerSetup(player)
@@ -154,8 +167,8 @@ function PowersService:KnitInit()
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
-        powerStatus[player.UserId] = nil
         workspace.PlayerStands:FindFirstChild(player.UserId):Destroy()
+        ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId):Destroy()
     end)
 
     -- Buttons setup - this is for testing, delete it later

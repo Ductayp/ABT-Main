@@ -10,13 +10,36 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersService = Knit.CreateService { Name = "PowersService", Client = {}}
 
+-- modules
+local utils = require(Knit.Shared.Utils)
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ActivatePower(player,params)
     
     local powerModule = require(Knit.Powers[params.PowerID])
-    
 
+    -- SETUP POWER STATUS
+    --cooldowns
+    local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
+    if not cooldownFolder then
+        cooldownFolder = utils.EasyInstance("Folder", Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId])
+    end
+
+    local thisCooldown = cooldownFolder:FindFirstChild(params.AbilityID)
+    if not thisCooldown then
+        cooldownFolder = utils.EasyInstance("NumberValue", Name = params.AbilityID, Value = os.time() - 1, Parent = cooldownFolder)
+    end
+
+    -- toggles
+    local toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
+    if not toggleFolder then
+        cooldownFolder = utils.EasyInstance("Folder", Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[player.userId])
+    end
+    local thisToggle = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild(params.AbilityID)
+    if not thisToggle then
+        thisToggle = utils.EasyInstance("BoolValue", Name = params.AbilityID, Value = false, Parent = toggleFolder)
+    end
+    
     -- RUN CHECKS
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -26,65 +49,30 @@ function PowersService.Client:ActivatePower(player,params)
     end
 
     -- cooldown check
-    if not powerStatus[player.UserId].Cooldowns[params.AbilityID] then
-        powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() - 1
-    end
-    if os.time() < powerStatus[player.UserId].Cooldowns[params.AbilityID] then
+    if os.time() < thisCooldown then
         return
     end
 
-    -- override check - if an ability override is true, no other ability can fire while it is toggled on
-    for i,v in pairs(powerStatus[player.UserId].Toggles) do
-        print(i,v)
-        --[[
-		if v == true then
-			local overrideValue = powerModule.Defs.Abilities[v.Name].Override
-			if overrideValue and dictionary.KeyState == "InputBegan" then
-				print("override")
-				return
-			end
-        end
-        ]]--
-    end
-    
-    -- pre-requisites check
-    local thisPreReq = powerModule.Defs.Abilities[params.AbilityID].AbilityPreReq
-	if thisPreReq then
-		for i,v in pairs(thisPreReq) do
-			local thisToggle = powerStatus[player.UserId].Toggles[params.AbilityID]
-			if not thisToggle then
-                return
-			end
-		end
-    end
-    
-    -- RUN ABILITY
-    -- set cooldowns
-	if params.KeyState == "InputBegan" then
-		powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputBegan
-	end
-	if params.KeyState == "InputEnded" then
-		powerStatus[player.UserId].Cooldowns[params.AbilityID] = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputEnded
-    end
-
-    -- set toggle
-    if powerModule.Defs.Abilities[params.AbilityID].Toggles then
-        if powerStatus[player.UserId].Toggles[params.AbilityID] then
-            powerStatus[player.UserId].Toggles[params.AbilityID] = false
-        else
-            powerStatus[player.UserId].Toggles[params.AbilityID] = true
-        end
-        params.Toggle = powerStatus[player.UserId].Toggles[params.AbilityID]
-    end
-    
     -- activate ability
     params.SystemStage = "Activate"
     params.CanRun = false
-    powerModule[params.AbilityID](player,params,toggle)
+    params.CanRun = powerModule[params.AbilityID](player,params,toggle)
 
+    -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun then
-        -- fire all clients
+
+        -- TODO: fire all clients
+
+        -- set cooldowns - be sure params.CanRun is false if you dont want these set
+        if params.KeyState == "InputBegan" then
+            thisCooldown.Value = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputBegan
+        end
+        if params.KeyState == "InputEnded" then
+            thisCooldown.Value = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputEnded
+        end
     end
+
+
 
 end
 
@@ -94,17 +82,30 @@ function PowersService:SetPower(player,power)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     playerData.Character.CurrentPower = power
     Knit.Services.DataReplicationService:UpdateAll(player)
+
+    -- clear stand folder
+    local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
+    if playerStandFolder then
+        playerStandFolder:ClearAllChildren()
+    end
+
+    -- clear power status folder
+    local playerStatusFolder = ReplicatedStorage.PowerStatus:FindFirstChild (player.userId)
+    if playerStatusFolder then
+        playerStatusFolder:ClearAllChildren()
+    end
+
 end
 
 --// PlayerSetup - fires when the player joins and after each death
 function PowersService:PlayerSetup(player)
-    
+
     -- Setup the PlayerStand folder - destroys the stand folder along with contents, then recreates it
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
     if not playerStandFolder then
         playerStandFolder = Instance.new("Folder")
         playerStandFolder.Name = player.UserId
-        playerStandFolder.Parent = workspace:FindFirstChild('PlayerStands')
+        playerStandFolder.Parent = workspace.PlayerStands
     end
     
     playerStandFolder:ClearAllChildren() -- clear the stand completely
@@ -118,14 +119,6 @@ function PowersService:PlayerSetup(player)
     end
 
     playerStatusFolder:ClearAllChildren()
-
-
-
-    --[[
-    powerStatus[player.UserId] = {}
-    powerStatus[player.UserId].Toggles = {}
-    powerStatus[player.UserId].Cooldowns = {}
-    ]]--
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
@@ -148,7 +141,7 @@ function PowersService:KnitInit()
     standFolder.Parent = workspace
 
     -- setup the Power Status folder in ReplciatedStorage
-    local statusFolder - Instance.new("Folder")
+    local statusFolder = Instance.new("Folder")
     statusFolder.Name = "PowerStatus"
     statusFolder.Parent = ReplicatedStorage
 
@@ -160,8 +153,7 @@ function PowersService:KnitInit()
         end)
     end)
 
-    -- Player Added event for studio testing, catches when a player has joined before the server fully starts
-    for _, player in ipairs(Players:GetPlayers()) do
+    for _, player in ipairs(Players:GetPlayers()) do -- Player Added event for studio testing
         self:PlayerSetup(player)
     end
 

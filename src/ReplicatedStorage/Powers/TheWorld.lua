@@ -6,6 +6,11 @@ Handles all thing related to the power and is triggered by BOTH PowersController
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+-- Knit and modules
+local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local utils = require(Knit.Shared.Utils)
 
 local TheWorld = {}
 
@@ -30,87 +35,57 @@ TheWorld.Defs = {
         Ability_1 = {
             Name = "Equip Stand",
             Duration = 0,
-            CoolDown_InputBegan = 5,
-            CoolDown_InputEnded = 5,
-            AbilityPreReq = nil,
-            Override = false,
-            Toggles = true
+            CoolDown = 5,
+            Override = false
         },
 
         Ability_2 = {
             Name = "Barrage",
             Duration = 5,
-            CoolDown_InputBegan = 0,
-            CoolDown_InputEnded = 5,
-            AbilityPreReq = {"Ability_1"},
-            Override = true,
-            Toggles = false
+            CoolDown = 0,
+            Override = true
         },
 
         Ability_3 = {
             Name = "Ability 3",
             Duration = 0,
             Cooldown = 1,
-            CoolDown_InputBegan = false,
-            CoolDown_InputEnded = true,
-            AbilityPreReq = nil,
-            Override = false,
-            Toggles = false
+            Override = false
         },
 
         Ability_4 = {
             Name = "Ability 4",
             Duration = 0,
             Cooldown = 1,
-            CoolDown_InputBegan = false,
-            CoolDown_InputEnded = true,
-            AbilityPreReq = nil,
-            Override = false,
-            Toggles = false
+            Override = false
         },
 
         Ability_5 = {
             Name = "Ability 5",
             Duration = 0,
             Cooldown = 1,
-            CoolDown_InputBegan = false,
-            CoolDown_InputEnded = true,
-            AbilityPreReq = nil,
-            Override = false,
-            Toggles = false
+            Override = false
         },
 
         Ability_6 = {
             Name = "Ability 6",
             Duration = 0,
             Cooldown = 1,
-            CoolDown_InputBegan = false,
-            CoolDown_InputEnded = true,
-            AbilityPreReq = nil,
-            Override = false,
-            Toggles = false
+            Override = false
         },
 
         Ability_7 = {
             Name = "Ability 7",
             Duration = 0,
             Cooldown = 1,
-            CoolDown_InputBegan = false,
-            CoolDown_InputEnded = true,
-            AbilityPreReq = nil,
-            Override = false,
-            Toggles = false
+            Override = false
         },
 
         Ability_8 = {
             Name = "Ability 8",
             Duration = 0,
             Cooldown = 1,
-            CoolDown_InputBegan = false,
-            CoolDown_InputEnded = true,
-            AbilityPreReq = nil,
             Override = false,
-            Toggles = false
         },
     }
 }
@@ -134,7 +109,17 @@ module.Effects.StandTrails = {
 ]]--
 
 --// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
-function TheWorld.Ability_1(player,params)
+function TheWorld.Ability_1(initPlayer,params)
+    -- get stand folder, setup if it doesnt exist
+    local initPlayerStandFolder = workspace.initPlayerStands:FindFirstChild(initPlayer.UserId)
+
+    -- get stand toggle, setup if it doesnt exist
+    local standToggle = ReplicatedStorage.PowerStatus[initPlayer.UserId]:FindFirstChild("StandActive")
+    if not standToggle and RunService:IsServer() then
+        standToggle = utils.EasyInstance("BoolValue",{Name = "StandActive",Value = false,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
+    end
+
+    local thisCooldown = ReplicatedStorage.PowerStatus[initPlayer.UserId].[params.AbilityID]
 
     -- INITIALIZE
     if params.SystemStage == "Intialize" then
@@ -147,10 +132,8 @@ function TheWorld.Ability_1(player,params)
 
         -- INPUT ENDED
         if params.KeyState == "InputEnded" then
-            -- no action here
+            params.CanRun = false
         end
-        
-        return params
     end
 
     -- ACTIVATE
@@ -159,15 +142,20 @@ function TheWorld.Ability_1(player,params)
 
          -- INPUT BEGAN
          if params.KeyState == "InputBegan" then
+            if standToggle == true then
+                standToggle = false
+                thisCooldown = os.time() + 
+            else
+                standToggle = true
+                -- set cooldown
+            end
             params.CanRun = true
         end
 
         -- INPUT ENDED
         if params.KeyState == "InputEnded" then
-            -- no action here
+            params.CanRun = false
         end
-
-        return params
     end
 
     -- EXECUTE
@@ -189,10 +177,12 @@ function TheWorld.Ability_1(player,params)
         end
 
     end
+
+    return params
 end
 
 --// ABILITY 2 - BARRAGE //---------------------------------------------------------------------------------
-function TheWorld.Ability_2(player,params)
+function TheWorld.Ability_2(initPlayer,params)
 
     -- INIALIZE
     if params.SystemStage == "Intialize" then

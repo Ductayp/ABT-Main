@@ -29,7 +29,7 @@ function InputController:KeyboardSetup()
             if isTyping then
                 return
             elseif input.KeyCode == Enum.KeyCode.Q then
-                Knit.Controllers.PowersController:InitializePower({AbilityID = InputController.KeyMap.Q, KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({Key = "Q", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.E then
                 Knit.Controllers.PowersController:InitializePower({AbilityID = InputController.KeyMap.E, KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.R then

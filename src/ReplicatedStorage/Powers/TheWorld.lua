@@ -15,14 +15,14 @@ local utils = require(Knit.Shared.Utils)
 local TheWorld = {}
 
 TheWorld.KeyMap = {
-    Q = "Ability_1",
-    E = "Ability_2",
-    R = "Ability_3",
-    T = "Ability_4",
-    F = "Ability_5",
-    Z = "Ability_6",
-    X = "Ability_7",
-    C = "Ability_8"
+    Q = TheWorld.Ability_1(initPlayer,params),
+    E = TheWorld.Ability_2(initPlayer,params),
+    R = TheWorld.Ability_3(initPlayer,params),
+    T = TheWorld.Ability_4(initPlayer,params),
+    F = TheWorld.Ability_5(initPlayer,params),
+    Z = TheWorld.Ability_6(initPlayer,params),
+    X = TheWorld.Ability_7(initPlayer,params),
+    C = TheWorld.Ability_8(initPlayer,params)
 }
 
 TheWorld.Defs = {

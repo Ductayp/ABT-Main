@@ -36,15 +36,17 @@ TheWorld.Defs = {
 
         EquipStand = {
             Name = "Equip Stand",
+            AbilityId = "EquipStand",
             Duration = 0,
-            CoolDown = 5,
+            Cooldown = 5,
             Override = false
         },
 
         Barrage = {
             Name = "Barrage",
+            AbilityId = "Barrage",
             Duration = 5,
-            CoolDown = 0,
+            Cooldown = 0,
             Override = true
         },
 
@@ -113,17 +115,10 @@ module.Effects.StandTrails = {
 --// MANAGER - this is the single point of entry from PowerService.
 function TheWorld.Manager(initPlayer,params)
 
-    print(utils)
-    print(powerUtils)
-    for i,v in pairs(Knit.Shared) do
-        print(i,v)
+    local params = powerUtils.CheckCooldown(initPlayer,params)
+    if params.CanRun == false then
+        return
     end
-    --powerUtils.Test("poop")
-
-    --local params = powerUtils.CheckCooldown(initPlayer,params)
-    --if params.CanRun == false then
-        --return
-    --end
     
     -- call the function
     if params.Key == "Q" then
@@ -173,6 +168,7 @@ function TheWorld.EquipStand(initPlayer,params)
             else
                 standToggle = true
             end
+            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.EquipStand.Cooldown)
             params.CanRun = true
         end
 

@@ -14,6 +14,17 @@ local utils = require(Knit.Shared.Utils)
 
 local TheWorld = {}
 
+TheWorld.KeyMap = {
+    Q = "Ability_1",
+    E = "Ability_2",
+    R = "Ability_3",
+    T = "Ability_4",
+    F = "Ability_5",
+    Z = "Ability_6",
+    X = "Ability_7",
+    C = "Ability_8"
+}
+
 TheWorld.Defs = {
     PowerName = "The World",
     StandModel = ReplicatedStorage.Effects.StandModels.TheWorld,
@@ -107,6 +118,11 @@ module.Effects.StandTrails = {
 	}
 }
 ]]--
+
+--// MANAGER - this is the single point of entry from PowerService.
+function TheWorld.Manager(initPlayer,params)
+
+end
 
 --// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
 function TheWorld.Ability_1(initPlayer,params)

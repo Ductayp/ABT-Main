@@ -29,12 +29,9 @@ function PowersController:InitializePower(params)
     params.PowerID = ReplicatedStorage.ReplicatedPlayerData[Players.localPlayer.UserId].CurrentPower.Value 
     local powerModule = require(Knit.Powers[params.PowerID])
 
-    params.SystemStage = "Intialize"
-
     -- if we find the powerModule, then run its INITIALIZE stage
-    --local newParams
     if powerModule then
-        local params = powerModule[params.AbilityID](Players.localPlayer,params)
+        local params = powerModule.Manager(Players.localPlayer,params)
     else 
         return
     end

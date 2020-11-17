@@ -16,30 +16,20 @@ local utils = require(Knit.Shared.Utils)
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ActivatePower(player,params)
     
-    local powerModule = require(Knit.Powers[params.PowerID])
-
+    --[[
     -- SETUP POWER STATUS
     --cooldowns
     local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
     if not cooldownFolder then
-        cooldownFolder = utils.EasyInstance("Folder", Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId])
+        cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
 
     local thisCooldown = cooldownFolder:FindFirstChild(params.AbilityID)
     if not thisCooldown then
-        cooldownFolder = utils.EasyInstance("NumberValue", Name = params.AbilityID, Value = os.time() - 1, Parent = cooldownFolder)
+        cooldownFolder = utils.EasyInstance("NumberValue", {Name = params.AbilityID, Value = os.time() - 1, Parent = cooldownFolder})
     end
+    ]]--
 
-    -- toggles
-    local toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
-    if not toggleFolder then
-        cooldownFolder = utils.EasyInstance("Folder", Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[player.userId])
-    end
-    local thisToggle = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild(params.AbilityID)
-    if not thisToggle then
-        thisToggle = utils.EasyInstance("BoolValue", Name = params.AbilityID, Value = false, Parent = toggleFolder)
-    end
-    
     -- RUN CHECKS
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -47,29 +37,24 @@ function PowersService.Client:ActivatePower(player,params)
         print("PlayerData doesn't match the PowerID sent")
         return
     end
+    
 
+    --[[
     -- cooldown check
     if os.time() < thisCooldown then
         return
     end
+    ]]--
 
     -- activate ability
+    local powerModule = require(Knit.Powers[params.PowerID])
     params.SystemStage = "Activate"
     params.CanRun = false
-    params.CanRun = powerModule[params.AbilityID](player,params,toggle)
+    params.CanRun = powerModule.Manager(player,params)
 
     -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun then
-
         -- TODO: fire all clients
-
-        -- set cooldowns - be sure params.CanRun is false if you dont want these set
-        if params.KeyState == "InputBegan" then
-            thisCooldown.Value = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputBegan
-        end
-        if params.KeyState == "InputEnded" then
-            thisCooldown.Value = os.time() + powerModule.Defs.Abilities[params.AbilityID].CoolDown_InputEnded
-        end
     end
 
 

@@ -7,8 +7,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 -- Expose Moudles to Knit
-Knit.Shared = ReplicatedStorage:FindFirstChild("Shared",true))
-Knit.Powers = ReplicatedStorage:FindFirstChild("Powers",true))
+Knit.Shared = ReplicatedStorage.GameFiles.Shared
+Knit.Powers = ReplicatedStorage.GameFiles.Powers
 
 -- Load all services:
 for _,v in ipairs(script.Parent.Services:GetDescendants()) do

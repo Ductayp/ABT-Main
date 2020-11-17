@@ -11,19 +11,10 @@ local RunService = game:GetService("RunService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local powerUtils = require(Knit.Shared.PowerUtils)
 
 local TheWorld = {}
 
-TheWorld.KeyMap = {
-    Q = "Ability_1",
-    E = "Ability_2",
-    R = "Ability_3",
-    T = "Ability_4",
-    F = "Ability_5",
-    Z = "Ability_6",
-    X = "Ability_7",
-    C = "Ability_8"
-}
 
 TheWorld.Defs = {
     PowerName = "The World",
@@ -43,14 +34,14 @@ TheWorld.Defs = {
 
     Abilities = {
 
-        Ability_1 = {
+        EquipStand = {
             Name = "Equip Stand",
             Duration = 0,
             CoolDown = 5,
             Override = false
         },
 
-        Ability_2 = {
+        Barrage = {
             Name = "Barrage",
             Duration = 5,
             CoolDown = 0,
@@ -122,12 +113,33 @@ module.Effects.StandTrails = {
 --// MANAGER - this is the single point of entry from PowerService.
 function TheWorld.Manager(initPlayer,params)
 
+    print(utils)
+    print(powerUtils)
+    for i,v in pairs(Knit.Shared) do
+        print(i,v)
+    end
+    --powerUtils.Test("poop")
+
+    --local params = powerUtils.CheckCooldown(initPlayer,params)
+    --if params.CanRun == false then
+        --return
+    --end
+    
+    -- call the function
+    if params.Key == "Q" then
+        TheWorld.EquipStand(initPlayer,params)
+    elseif params.Kay == "E" then
+        TheWorld.Barrage(initPlayer,params)
+    end
+
+    return params
+
 end
 
 --// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
-function TheWorld.Ability_1(initPlayer,params)
+function TheWorld.EquipStand(initPlayer,params)
     -- get stand folder, setup if it doesnt exist
-    local initPlayerStandFolder = workspace.initPlayerStands:FindFirstChild(initPlayer.UserId)
+    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 
     -- get stand toggle, setup if it doesnt exist
     local standToggle = ReplicatedStorage.PowerStatus[initPlayer.UserId]:FindFirstChild("StandActive")
@@ -135,11 +147,9 @@ function TheWorld.Ability_1(initPlayer,params)
         standToggle = utils.EasyInstance("BoolValue",{Name = "StandActive",Value = false,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
     end
 
-    local thisCooldown = ReplicatedStorage.PowerStatus[initPlayer.UserId].[params.AbilityID]
-
     -- INITIALIZE
     if params.SystemStage == "Intialize" then
-    print("The World - Initialize")
+    print("The World - Equip Stand - Initialize")
 
         -- INPUT BEGAN
         if params.KeyState == "InputBegan" then
@@ -154,16 +164,14 @@ function TheWorld.Ability_1(initPlayer,params)
 
     -- ACTIVATE
     if params.SystemStage == "Activate" then
-        print("The World - Activate")
+        print("The World - Equip Stand - Activate")
 
          -- INPUT BEGAN
          if params.KeyState == "InputBegan" then
             if standToggle == true then
                 standToggle = false
-                thisCooldown = os.time() + 
             else
                 standToggle = true
-                -- set cooldown
             end
             params.CanRun = true
         end
@@ -176,7 +184,7 @@ function TheWorld.Ability_1(initPlayer,params)
 
     -- EXECUTE
     if params.SystemStage == "Execute" then
-        print("The World - Execute")
+        print("The World - Equip Stand - Execute")
 
          -- INPUT BEGAN
          if params.KeyState == "InputBegan" then
@@ -198,7 +206,7 @@ function TheWorld.Ability_1(initPlayer,params)
 end
 
 --// ABILITY 2 - BARRAGE //---------------------------------------------------------------------------------
-function TheWorld.Ability_2(initPlayer,params)
+function TheWorld.Barrage(initPlayer,params)
 
     -- INIALIZE
     if params.SystemStage == "Intialize" then

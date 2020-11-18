@@ -19,6 +19,7 @@ local Players = game:GetService("Players")
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersController = Knit.CreateController { Name = "PowersController" }
+local PowersService = Knit.GetService("PowersService")
 
 -- instance references
 
@@ -38,7 +39,6 @@ function PowersController:InitializePower(params)
 
     -- if INITIALIZE stage return CanRun == true then we fire it off the the server
     if params.CanRun then
-        local PowersService = Knit.GetService("PowersService")
         PowersService:ActivatePower(params)
     else
         return
@@ -46,20 +46,18 @@ function PowersController:InitializePower(params)
 end
 
 --// ExecutePower
-function PowersController:ExecutePower(targetPlayer,params)
-
-    -- testing
-    for i,v in pairs(params) do
-        print("ExecutePower")
-        print(i,v)
-    end
-
-    params.PowerStage = "Execute"
-    local powerModule = require((Knit.Powers[power]))
+function PowersController:ExecutePower(initPlayer,params)
+    params.SystemStage = "Execute"
+    local powerModule = require((Knit.Powers[params.PowerID]))
+    powerModule.Manager(initPlayer,params)
 end
 
 --// KnitStart
 function PowersController:KnitStart()
+
+    PowersService.ExecutePower:Connect(function(initPlayer,params)
+        self:ExecutePower(initPlayer,params)
+    end)
 
 end
 

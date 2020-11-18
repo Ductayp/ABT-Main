@@ -9,55 +9,35 @@ local Players = game:GetService("Players")
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersService = Knit.CreateService { Name = "PowersService", Client = {}}
+local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
 
+-- events
+PowersService.Client.ExecutePower = RemoteEvent.new()
+
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ActivatePower(player,params)
-    
-    --[[
-    -- SETUP POWER STATUS
-    --cooldowns
-    local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
-    if not cooldownFolder then
-        cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
-    end
 
-    local thisCooldown = cooldownFolder:FindFirstChild(params.AbilityID)
-    if not thisCooldown then
-        cooldownFolder = utils.EasyInstance("NumberValue", {Name = params.AbilityID, Value = os.time() - 1, Parent = cooldownFolder})
-    end
-    ]]--
-
-    -- RUN CHECKS
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData.Character.CurrentPower == params.PowerId then
         print("PlayerData doesn't match the PowerID sent")
         return
     end
-    
-
-    --[[
-    -- cooldown check
-    if os.time() < thisCooldown then
-        return
-    end
-    ]]--
 
     -- activate ability
     local powerModule = require(Knit.Powers[params.PowerID])
     params.SystemStage = "Activate"
     params.CanRun = false
-    params.CanRun = powerModule.Manager(player,params)
+    params = powerModule.Manager(player,params)
 
     -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun then
-        -- TODO: fire all clients
+        print("fire it")
+        self.ExecutePower:FireAll(player,params)
     end
-
-
 
 end
 

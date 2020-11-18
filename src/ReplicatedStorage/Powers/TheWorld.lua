@@ -115,9 +115,12 @@ module.Effects.StandTrails = {
 --// MANAGER - this is the single point of entry from PowerService.
 function TheWorld.Manager(initPlayer,params)
 
-    local params = powerUtils.CheckCooldown(initPlayer,params)
-    if params.CanRun == false then
-        return
+    -- check cooldowns but on on SystemStage "Execute"
+    if params.SystemStage == "Initialize" or "Activate" then
+        local params = powerUtils.CheckCooldown(initPlayer,params)
+        if params.CanRun == false then
+            return params
+        end
     end
     
     -- call the function
@@ -128,7 +131,6 @@ function TheWorld.Manager(initPlayer,params)
     end
 
     return params
-
 end
 
 --// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
@@ -139,7 +141,7 @@ function TheWorld.EquipStand(initPlayer,params)
     -- get stand toggle, setup if it doesnt exist
     local standToggle = ReplicatedStorage.PowerStatus[initPlayer.UserId]:FindFirstChild("StandActive")
     if not standToggle and RunService:IsServer() then
-        standToggle = utils.EasyInstance("BoolValue",{Name = "StandActive",Value = false,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
+        standToggle = utils.EasyInstance("BoolValue",{Name = "StandActive",Value = value,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
     end
 
     -- INITIALIZE
@@ -163,12 +165,12 @@ function TheWorld.EquipStand(initPlayer,params)
 
          -- INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            if standToggle == true then
-                standToggle = false
+            if standToggle.Value == true then
+                standToggle.Value = false
             else
-                standToggle = true
+                standToggle.Value = true
             end
-            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.EquipStand.Cooldown)
+            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.EquipStand.Cooldown)
             params.CanRun = true
         end
 
@@ -184,7 +186,7 @@ function TheWorld.EquipStand(initPlayer,params)
 
          -- INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            if params.Toggle then
+            if standToggle.Value == true then
                 print("equip stand - STAND ON")
             else
                 print("equip stand - STAND OFF")

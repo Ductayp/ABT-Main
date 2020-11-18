@@ -12,23 +12,40 @@ local RunService = game:GetService("RunService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
+local ManageStand = require(Knit.Effects.ManageStand)
 
 local TheWorld = {}
 
 
 TheWorld.Defs = {
     PowerName = "The World",
-    StandModel = ReplicatedStorage.Effects.StandModels.TheWorld,
 
-    Animations = {
-        Idle = {
-            Name = "Idle",
-            Address = "http://www.roblox.com/asset/?id=5723101276"
+    StandDefs = {
+        StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
+        Animations = {
+            Idle = {
+                Name = "Idle",
+                Address = "http://www.roblox.com/asset/?id=5723101276"
+            },
+            Barrage = {
+                Name = "Barrage",
+                Address = "http://www.roblox.com/asset/?id=5736797194"
+            }
         },
-
-        Barrage = {
-            Name = "Barrage",
-            Address = "http://www.roblox.com/asset/?id=5736797194"
+        Trails = {
+            Default = {
+                MaxLength = 2,
+                Lifetime = .5,
+                Transparency = NumberSequence.new(.95)
+            },
+            Active = {
+                MaxLength = 30,
+                Lifetime = 4,
+                Transparency = NumberSequence.new(.8)
+            }
+        },
+        Particles = {
+            EquipStand = ReplicatedStorage.EffectParts.GoldBurst
         }
     },
 
@@ -36,7 +53,6 @@ TheWorld.Defs = {
 
         EquipStand = {
             Name = "Equip Stand",
-            AbilityId = "EquipStand",
             Duration = 0,
             Cooldown = 5,
             Override = false
@@ -44,7 +60,6 @@ TheWorld.Defs = {
 
         Barrage = {
             Name = "Barrage",
-            AbilityId = "Barrage",
             Duration = 5,
             Cooldown = 0,
             Override = true
@@ -94,24 +109,6 @@ TheWorld.Defs = {
     }
 }
 
---[[
---// EFFECTS
-module.Effects = {}
-
-module.Effects.StandTrails = {
-	Default = {
-		MaxLength = 2,
-		Lifetime = .5,
-		Transparency = NumberSequence.new(.95)
-	},
-	Active = {
-		MaxLength = 30,
-		Lifetime = 4,
-		Transparency = NumberSequence.new(.8)
-	}
-}
-]]--
-
 --// MANAGER - this is the single point of entry from PowerService.
 function TheWorld.Manager(initPlayer,params)
 
@@ -135,6 +132,7 @@ end
 
 --// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
 function TheWorld.EquipStand(initPlayer,params)
+    
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 
@@ -188,8 +186,10 @@ function TheWorld.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
+                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandDefs)
             else
                 print("equip stand - STAND OFF")
+                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandDefs)
             end
         end
 

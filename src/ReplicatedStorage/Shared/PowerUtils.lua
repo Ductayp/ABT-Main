@@ -29,7 +29,7 @@ function PowerUtils.CheckCooldown(player,params)
         thisCooldown = utils.EasyInstance("NumberValue", {Name = params.Key, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
-    if os.time() > thisCooldown.Value then
+	if os.time() > thisCooldown.Value then
         params.CanRun = true
     end
 
@@ -49,13 +49,19 @@ function PowerUtils.SetCooldown(player,params,value)
         cooldownFolder = utils.EasyInstance("NumberValue", {Name = params.Key, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
-    thisCooldown.Value = value
+    thisCooldown.Value = os.time() + value
 end
+
+function PowerUtils.SetGUICooldown(player,targetName,targetValue)
+
+
+
+end 
 
 --// WeldParticles - creates a part at any position and parents a premade ParticleEmitter, destroys is after duration
 function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	local partDefs = {
-		Parent = workspace,
+		Parent = workspace.LocalPowersEffects,
 		Position = position,
 		Anchored = false,
 		CanCollide = false,

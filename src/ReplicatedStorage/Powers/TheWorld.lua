@@ -13,6 +13,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Effects.ManageStand)
+local Barrage = require(Knit.Effects.Barrage)
 
 local TheWorld = {}
 
@@ -97,7 +98,7 @@ function TheWorld.Manager(initPlayer,params)
     -- call the function
     if params.Key == "Q" then
         TheWorld.EquipStand(initPlayer,params)
-    elseif params.Kay == "E" then
+    elseif params.Key == "E" then
         TheWorld.Barrage(initPlayer,params)
     end
 
@@ -200,23 +201,6 @@ function TheWorld.Barrage(initPlayer,params)
 
     end
 
---[[
-    if dictionary.KeyState == "InputBegan" and abilityToggle.Value == false then
-		dictionary.BarrageOn = true
-		abilityToggle.Value = true
-		replicatedStorage.GameEvents.PowerAnimation:FireAllClients(player,dictionary)
-		wait(powerDefs.Ability_2.Duration)
-		dictionary.KeyState = "InputEnded"
-		module.Ability_2(player,dictionary)
-		
-	elseif dictionary.KeyState == "InputEnded" and abilityToggle.Value == true then
-		dictionary.BarrageOn = false
-		abilityToggle.Value = false
-		powerUtils.SetCooldown(player,dictionary) -- set cooldown in here (redundnat with PowersService) so you cant spam barrage
-		replicatedStorage.GameEvents.PowerAnimation:FireAllClients(player,dictionary)
-	end
-]]
-
     -- BARRAGE/ACTIVATE
     if params.SystemStage == "Activate" then
 
@@ -224,8 +208,8 @@ function TheWorld.Barrage(initPlayer,params)
         if params.KeyState == "InputBegan" then
 
             -- only operate if toggle is off
-            if barrageToggle == false then
-                barrageToggle = true
+            if barrageToggle.Value == false then
+                barrageToggle.Value = true
                 params.CanRun = true
 
                 -- spawn a function to kill the barrage if the duration expires
@@ -242,8 +226,8 @@ function TheWorld.Barrage(initPlayer,params)
         if params.KeyState == "InputEnded" then
 
             -- only operate if toggle is on
-            if barrageToggle == true then
-                barrageToggle = false
+            if barrageToggle.Value == true then
+                barrageToggle.Value = false
                 params.CanRun = true
                 powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.Barrage.Cooldown)
             end
@@ -253,15 +237,20 @@ function TheWorld.Barrage(initPlayer,params)
 
     -- BARRAGE/EXECUTE
     if params.SystemStage == "Execute" then
-        
         -- BARRAGE/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
-  
+            if barrageToggle.Value == true then
+                print("barrage is ON")
+                Barrage.RunEffect(initPlayer,params)
+            end
         end
 
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
-
+            if barrageToggle.Value == false then
+                print("barrage is OFF")
+                Barrage.EndEffect(initPlayer,params)
+            end 
         end
     end
 end

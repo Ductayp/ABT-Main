@@ -1,28 +1,38 @@
 -- Barrage Effect Script
 
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local debris = game:GetService("Debris")
-local utils = require(replicatedStorage.SRC.Modules.Utilities)
-local powerUtils = require(replicatedStorage.SRC.Modules.PowersShared.PowerUtils)
-local effectParticles = replicatedStorage.Effects.Powers.EffectParticles
-local powerDefs = replicatedStorage.SRC.Definitions.PowerDefs
+-- roblox services
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Debris = game:GetService("Debris")
 
+-- knite and modules
+local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local utils = require(Knit.Shared.Utils)
+local powerUtils = require(Knit.Shared.PowerUtils)
+--local effectParticles = ReplicatedStorage.Effects.Powers.EffectParticles
+
+-- local variables
 local spawnRate = .05
 local debrisTime = .15
-
 
 local module = {}
 
 --// Shoot Arm 
 function module.shootArm(thisEffect,thisArm)
+
+	-- clone a single arm and parent it, add it to the Debris
 	local newArm = thisEffect[thisArm]:Clone()
-	local player = game:GetService("Players").LocalPlayer
+	newArm.Parent = thisEffect
+	Debris:AddItem(newArm,debrisTime)
+
+	-- destroy the TempWelds
 	for i,v in pairs(newArm:GetChildren()) do
 		if v.Name == "TempWeld" then
 			v:Destroy()
 		end
 	end
-	newArm.Parent = thisEffect
+
+
+	-- set transparencies
 	for i,v in pairs(newArm:GetChildren()) do
 		if v.Name == "Root" then
 			v.Transparency = 1
@@ -32,14 +42,17 @@ function module.shootArm(thisEffect,thisArm)
 			v.Anchored = false
 		end
 	end
+
+	-- enable trails
 	newArm.Root.Trail.Enabled  = true
-	debris:AddItem(newArm,debrisTime)
 	
+	-- set up random position and set the goals
 	local posX = math.random(-1,1)
 	local posY = 0.5 * math.random(-3,3)
 	newArm.Root.CFrame = newArm.Root.CFrame:ToWorldSpace(CFrame.new(posX,posY,1))
 	local armGoal = newArm.Root.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
 
+	-- add in the body movers and let it go!
 	newArm.Root.BodyPosition.Position = armGoal.Position
 	newArm.Root.BodyPosition.D = 300
 	newArm.Root.BodyPosition.P = 20000
@@ -47,23 +60,32 @@ function module.shootArm(thisEffect,thisArm)
 end
 
 --// Run Effect
-function module.RunEffect(targetPlayer,dictionary)
-	local thisEffect = replicatedStorage.Effects.Powers.Barrage[dictionary.PowerID]:Clone()
-	local thisPowerDef = require(powerDefs[dictionary.PowerID])
-	local playerRoot = targetPlayer.Character.HumanoidRootPart
-	local targetStand = workspace.LocalEffects.PlayerStands[targetPlayer.UserId]:FindFirstChildWhichIsA("Model")
+function module.RunEffect(initPlayer,params)
 	
-	-- clone the effect parts in
-	local targetFolder = workspace.LocalEffects:FindFirstChild(targetPlayer.UserId)
-	if not targetFolder then
-		targetFolder = utils.EasyInstance("Folder",{Parent = workspace.LocalEffects,Name = targetPlayer.UserId})
+	-- setup the stand, if its not there then dont run return
+	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		return
 	end
+
+	-- create a folder inside the stand to hold the effect
+	local barrageFolder = targetStand:FindFirstChild("BarrageEffect")
+	if not barrageFolder then
+		barrageFolder = utils.EasyInstance("Folder",{Parent = targetStand,Name = "BarrageFolder"})
+	end
+
+	for i,v in pairs(params) do
+		print(i,v)
+	end
+
+	-- clone the effect parts in
+	local thisEffect = ReplicatedStorage.EffectParts.Barrage[params.PowerID]:Clone()
 	thisEffect.Name = "Barrage"
-	thisEffect.Parent = targetFolder
-	thisEffect.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-4))
-	utils.EasyWeld(thisEffect,targetPlayer.Character.HumanoidRootPart,thisEffect)
+	thisEffect.Parent = barrageFolder
+	thisEffect.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-4))
+	utils.EasyWeld(thisEffect,initPlayer.Character.HumanoidRootPart,thisEffect)
 	
-	-- setup the base parts trasnparencies
+	-- setup the base parts transparencies and manage some trails
 	thisEffect.Transparency = 1
 	for i,v in pairs(thisEffect:GetDescendants()) do
 		if v:IsA("BasePart") then
@@ -75,19 +97,19 @@ function module.RunEffect(targetPlayer,dictionary)
 		end
 	end
 	
-	powerUtils.TrailSettings(targetPlayer,thisPowerDef.Effects.StandTrails.Active)
-	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,playerRoot,effectParticles.GoldBurst,.4)
-	powerUtils.PlayAnimation(targetStand,"Barrage")
+	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Active)
+	--powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,playerRoot,effectParticles.GoldBurst,.4)
+	--powerUtils.PlayAnimation(targetStand,"Barrage")
 	targetStand.WeldConstraint.Enabled = false
-	targetStand.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4)) -- move
+	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4)) -- move
 	targetStand.WeldConstraint.Enabled = true
 	wait(.1)
-	powerUtils.TrailSettings(targetPlayer,thisPowerDef.Effects.StandTrails.Default)
+	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Default)
 	
 	-- setup coroutine and run it while the toggle is on
 	local newThread = coroutine.create(function()
 		while wait(spawnRate) do
-			local abilityToggle = replicatedStorage.PowerStatus.AbilityToggle[targetPlayer.UserId][dictionary.AbilityID].Value
+			local abilityToggle = ReplicatedStorage.PowerStatus.AbilityToggle[initPlayer.UserId][params.AbilityID].Value
 			if abilityToggle then
 				module.shootArm(thisEffect,"LeftArm")
 				module.shootArm(thisEffect,"RightArm")
@@ -102,20 +124,20 @@ function module.RunEffect(targetPlayer,dictionary)
 end
 
 --// End Effect
-function module.EndEffect(targetPlayer,dictionary)
-	local thisPowerDef = require(powerDefs[dictionary.PowerID])
-	local targetStand = workspace.LocalEffects.PlayerStands[targetPlayer.UserId]:FindFirstChildWhichIsA("Model")
-	local playerRoot = targetPlayer.Character.HumanoidRootPart
-	
-	powerUtils.TrailSettings(targetPlayer,thisPowerDef.Effects.StandTrails.Active)
-	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,playerRoot,effectParticles.GoldBurst,.4)
-	powerUtils.StopAnimation(targetStand,"Barrage")
-	local barrageEffect = targetStand:FindFirstChild("BarrageEffect")
+function module.EndEffect(initPlayer,params)
+
+	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+
+	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Active)
+	--powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,playerRoot,effectParticles.GoldBurst,.4)
+	--powerUtils.StopAnimation(targetStand,"Barrage")
+	--local barrageEffect = targetStand:FindFirstChild("BarrageEffect")
 	targetStand.WeldConstraint.Enabled = false
-	targetStand.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
+	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
 	targetStand.WeldConstraint.Enabled = true
 	wait(.1)
-	powerUtils.TrailSettings(targetPlayer,thisPowerDef.Effects.StandTrails.Default)
+	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Default)
+	
 end
 
 

@@ -89,12 +89,13 @@ function TheWorld.Manager(initPlayer,params)
 
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
-        local params = powerUtils.CheckCooldown(initPlayer,params) -- returns params
-        if params.CanRun == false then
+        local cooldown = powerUtils.GetCooldown(initPlayer,params)
+        if os.time() < cooldown.Value  then
+            params.CanRun = false
             return params
         end
     end
-    
+
     -- call the function
     if params.Key == "Q" then
         TheWorld.EquipStand(initPlayer,params)
@@ -112,10 +113,7 @@ function TheWorld.EquipStand(initPlayer,params)
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 
     -- get stand toggle, setup if it doesnt exist
-    local standToggle = ReplicatedStorage.PowerStatus[initPlayer.UserId]:FindFirstChild("StandActive")
-    if not standToggle and RunService:IsServer() then
-        standToggle = utils.EasyInstance("BoolValue",{Name = "StandActive",Value = value,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
-    end
+    local standToggle = powerUtils.GetToggle(initPlayer,params.Key)
 
     -- INITIALIZE
     if params.SystemStage == "Intialize" then
@@ -181,9 +179,14 @@ end
 function TheWorld.Barrage(initPlayer,params)
 
     -- get barrage toggle, setup if it doesnt exist
-    local barrageToggle = ReplicatedStorage.PowerStatus[initPlayer.UserId]:FindFirstChild("BarrageActive")
-    if not barrageToggle and RunService:IsServer() then
-        barrageToggle = utils.EasyInstance("BoolValue",{Name = "BarrageActive",Value = value,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
+    local barrageToggle = powerUtils.GetToggle(initPlayer,params.Key)
+
+    -- requires Stand to be active via "Q" toggle
+    local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
+    if RunService:IsServer() and standToggle.Value == false then
+        print("Stand not active, cannot run this ability")
+        params.CanRun = false
+        return
     end
 
     -- BARRAGE/INIALIZE

@@ -132,6 +132,83 @@ function ManageStand.RemoveStand(initPlayer,params)
 	end
 end
 
+-- ToggleTrails = turn all trails off then turns on the ones we want
+function ManageStand.ToggleTrails(initPlayer,params,trailName)
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	if targetStand then
+
+		-- disable all trails
+		for i,v in pairs(targetStand.Trails:GetDescendants()) do
+			if v:IsA("Trail") then
+				v.Enabled = false
+			end
+		end
+
+		-- enable the ones we want
+		local trailFolder = targetStand.Trails:FindFirstChild(trailName)
+		if trailFolder then
+			for i,v in pairs(trailFolder:GetDescendants()) do
+				v.Enabled = true
+			end
+		end
+	end
+end
+
+-- SetTrails - just turns on the trails we want
+function ManageStand.SetTrails(initPlayer,params,trailName)
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	if targetStand then
+		-- enable the ones we want
+		local trailFolder = targetStand.Trails:FindFirstChild(trailName)
+		if trailFolder then
+			for i,v in pairs(trailFolder:GetDescendants()) do
+				v.Enabled = true
+			end
+		end
+	end
+end
+
+-- PlayAnimation
+function ManageStand.PlayAnimation(initPlayer,params,animationName)
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	-- run the animation
+	local animationController = targetStand:FindFirstChild("AnimationController")
+	if animationController then
+		local thisAnimation = animationController:FindFirstChild(animationName)
+		if thisAnimation then
+			local newTrack = animationController:LoadAnimation(thisAnimation)
+			newTrack:Play()
+		end
+	end
+
+end
+
+-- StopAnimation
+function ManageStand.StopAnimation(initPlayer,params,animationName)
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	local animationController = targetStand:FindFirstChild("AnimationController")
+	if animationController then
+		local tracks = animationController:GetPlayingAnimationTracks()
+		for i,v in pairs (tracks) do
+			if v.Name == animationName then
+				v:Stop()
+			end
+		end
+	end
+end
+
 
 
 return ManageStand

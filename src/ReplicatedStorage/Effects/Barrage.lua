@@ -8,7 +8,7 @@ local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
---local effectParticles = ReplicatedStorage.Effects.Powers.EffectParticles
+local ManageStand = require(Knit.Effects.ManageStand)
 
 -- local variables
 local spawnRate = .05
@@ -61,7 +61,7 @@ end
 
 --// Run Effect
 function module.RunEffect(initPlayer,params)
-	
+
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
@@ -69,13 +69,9 @@ function module.RunEffect(initPlayer,params)
 	end
 
 	-- create a folder inside the stand to hold the effect
-	local barrageFolder = targetStand:FindFirstChild("BarrageEffect")
+	local barrageFolder = targetStand:FindFirstChild("BarrageFolder")
 	if not barrageFolder then
 		barrageFolder = utils.EasyInstance("Folder",{Parent = targetStand,Name = "BarrageFolder"})
-	end
-
-	for i,v in pairs(params) do
-		print(i,v)
 	end
 
 	-- clone the effect parts in
@@ -97,24 +93,28 @@ function module.RunEffect(initPlayer,params)
 		end
 	end
 	
-	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Active)
-	--powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,playerRoot,effectParticles.GoldBurst,.4)
-	--powerUtils.PlayAnimation(targetStand,"Barrage")
+	ManageStand.ToggleTrails(initPlayer,params,"Active")
+	wait(.1)
+	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.EquipStand,.5) -- weld burst particles
+	ManageStand.PlayAnimation(initPlayer,params,"Barrage")
 	targetStand.WeldConstraint.Enabled = false
 	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4)) -- move
 	targetStand.WeldConstraint.Enabled = true
-	wait(.1)
-	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Default)
+	spawn(function()
+		wait(.1)
+		ManageStand.ToggleTrails(initPlayer,params,"Idle")
+	end)
+	
 	
 	-- setup coroutine and run it while the toggle is on
+	local thisToggle = powerUtils.GetToggle(initPlayer,params.Key) -- we need the toggle to know when to shut off the spawner
+	print("beep",thisToggle.Name)
 	local newThread = coroutine.create(function()
 		while wait(spawnRate) do
-			local abilityToggle = ReplicatedStorage.PowerStatus.AbilityToggle[initPlayer.UserId][params.AbilityID].Value
-			if abilityToggle then
+			if thisToggle.Value then
 				module.shootArm(thisEffect,"LeftArm")
 				module.shootArm(thisEffect,"RightArm")
 			else
-				thisEffect:Destroy()
 				coroutine.yield()
 			end
 		end
@@ -125,18 +125,25 @@ end
 
 --// End Effect
 function module.EndEffect(initPlayer,params)
-
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+	local barrageFolder = targetStand:FindFirstChild("BarrageFolder")
+	if barrageFolder then
+		barrageFolder:Destroy()
+	end
 
-	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Active)
-	--powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,playerRoot,effectParticles.GoldBurst,.4)
-	--powerUtils.StopAnimation(targetStand,"Barrage")
-	--local barrageEffect = targetStand:FindFirstChild("BarrageEffect")
+	ManageStand.ToggleTrails(initPlayer,params,"Active")
+	wait(.1)
+	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.EquipStand,.5) -- weld burst particles
+	ManageStand.StopAnimation(initPlayer,params,"Barrage")
 	targetStand.WeldConstraint.Enabled = false
 	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
 	targetStand.WeldConstraint.Enabled = true
-	wait(.1)
-	--powerUtils.TrailSettings(initPlayer,thisPowerDef.Effects.StandTrails.Default)
+
+	spawn(function()
+		wait(.1)
+		ManageStand.ToggleTrails(initPlayer,params,"Idle")
+	end)
+	
 	
 end
 

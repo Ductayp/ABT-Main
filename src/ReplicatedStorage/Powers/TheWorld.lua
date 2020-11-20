@@ -20,40 +20,14 @@ local TheWorld = {}
 TheWorld.Defs = {
     PowerName = "The World",
 
-    StandDefs = {
-        StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
-        Animations = {
-            Idle = {
-                Name = "Idle",
-                Address = "http://www.roblox.com/asset/?id=5723101276"
-            },
-            Barrage = {
-                Name = "Barrage",
-                Address = "http://www.roblox.com/asset/?id=5736797194"
-            }
-        },
-        Trails = {
-            Default = {
-                MaxLength = 2,
-                Lifetime = .5,
-                Transparency = NumberSequence.new(.95)
-            },
-            Active = {
-                MaxLength = 30,
-                Lifetime = 4,
-                Transparency = NumberSequence.new(.8)
-            }
-        },
-        Particles = {
-            EquipStand = ReplicatedStorage.EffectParts.GoldBurst
-        }
-    },
+
+    StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
+
 
     Abilities = {
 
         EquipStand = {
             Name = "Equip Stand",
-            Duration = 0,
             Cooldown = 5,
             Override = false
         },
@@ -61,7 +35,7 @@ TheWorld.Defs = {
         Barrage = {
             Name = "Barrage",
             Duration = 5,
-            Cooldown = 0,
+            Cooldown = 5,
             Override = true
         },
 
@@ -112,9 +86,9 @@ TheWorld.Defs = {
 --// MANAGER - this is the single point of entry from PowerService.
 function TheWorld.Manager(initPlayer,params)
 
-    -- check cooldowns but on on SystemStage "Execute"
-    if params.SystemStage == "Initialize" or "Activate" then
-        local params = powerUtils.CheckCooldown(initPlayer,params)
+    -- check cooldowns but only on SystemStage "Activate"
+    if params.SystemStage == "Activate" then
+        local params = powerUtils.CheckCooldown(initPlayer,params) -- returns params
         if params.CanRun == false then
             return params
         end
@@ -186,10 +160,10 @@ function TheWorld.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
-                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandDefs)
+                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
             else
                 print("equip stand - STAND OFF")
-                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandDefs)
+                ManageStand.RemoveStand(initPlayer)
             end
         end
 
@@ -197,28 +171,98 @@ function TheWorld.EquipStand(initPlayer,params)
         if params.KeyState == "InputEnded" then
             -- no action here
         end
-
     end
 
     return params
 end
 
---// ABILITY 2 - BARRAGE //---------------------------------------------------------------------------------
+--// BARRAGE //---------------------------------------------------------------------------------
 function TheWorld.Barrage(initPlayer,params)
 
-    -- INIALIZE
+    -- get barrage toggle, setup if it doesnt exist
+    local barrageToggle = ReplicatedStorage.PowerStatus[initPlayer.UserId]:FindFirstChild("BarrageActive")
+    if not barrageToggle and RunService:IsServer() then
+        barrageToggle = utils.EasyInstance("BoolValue",{Name = "BarrageActive",Value = value,Parent = ReplicatedStorage.PowerStatus[initPlayer.UserId]})
+    end
+
+    -- BARRAGE/INIALIZE
     if params.SystemStage == "Intialize" then
 
+        -- BARRAGE/INIALIZE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+
+        -- BARRAGE/INIALIZE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = true
+        end
+
     end
 
-    -- ACTIVATE
+--[[
+    if dictionary.KeyState == "InputBegan" and abilityToggle.Value == false then
+		dictionary.BarrageOn = true
+		abilityToggle.Value = true
+		replicatedStorage.GameEvents.PowerAnimation:FireAllClients(player,dictionary)
+		wait(powerDefs.Ability_2.Duration)
+		dictionary.KeyState = "InputEnded"
+		module.Ability_2(player,dictionary)
+		
+	elseif dictionary.KeyState == "InputEnded" and abilityToggle.Value == true then
+		dictionary.BarrageOn = false
+		abilityToggle.Value = false
+		powerUtils.SetCooldown(player,dictionary) -- set cooldown in here (redundnat with PowersService) so you cant spam barrage
+		replicatedStorage.GameEvents.PowerAnimation:FireAllClients(player,dictionary)
+	end
+]]
+
+    -- BARRAGE/ACTIVATE
     if params.SystemStage == "Activate" then
 
+        -- BARRAGE/ACTIVATE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+
+            -- only operate if toggle is off
+            if barrageToggle == false then
+                barrageToggle = true
+                params.CanRun = true
+
+                -- spawn a function to kill the barrage if the duration expires
+                spawn(function()
+                    wait(TheWorld.Defs.Abilities.Barrage.Duration)
+                    params.KeyState = "InputEnded"
+                    Knit.Services.PowersService:ActivatePower(initPlayer,params)
+                end)
+            end
+  
+        end
+
+        -- BARRAGE/ACTIVATE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+
+            -- only operate if toggle is on
+            if barrageToggle == true then
+                barrageToggle = false
+                params.CanRun = true
+                powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.Barrage.Cooldown)
+            end
+
+        end
     end
 
-    -- EXECUTE
+    -- BARRAGE/EXECUTE
     if params.SystemStage == "Execute" then
+        
+        -- BARRAGE/EXECUTE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+  
+        end
 
+        -- BARRAGE/EXECUTE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+
+        end
     end
 end
 

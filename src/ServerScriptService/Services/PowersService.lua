@@ -17,9 +17,34 @@ local utils = require(Knit.Shared.Utils)
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
 
---// Client:ActivatePower -- fired by client to activate apower
-function PowersService.Client:ActivatePower(player,params)
+--// ActivatePower -- the server side version of this
+function PowersService:ActivatePower(player,params)
+    
+    -- sanity check
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData.Character.CurrentPower == params.PowerId then
+        print("PlayerData doesn't match the PowerID sent")
+        return
+    end
 
+    -- activate ability
+    local powerModule = require(Knit.Powers[params.PowerID])
+    params.SystemStage = "Activate"
+    params.CanRun = false
+    params = powerModule.Manager(player,params)
+
+    -- if it returns CanRun, then fire all clients and set cooldowns
+    if params.CanRun then
+        self.Client.ExecutePower:FireAll(player,params)
+    end
+
+end
+
+--// Client:ActivatePower -- fired by client to activate apower
+function PowersService.Client:ClientActivatePower(player,params)
+    self.Server:ActivatePower(player,params)
+
+    --[[
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData.Character.CurrentPower == params.PowerId then
@@ -37,6 +62,7 @@ function PowersService.Client:ActivatePower(player,params)
     if params.CanRun then
         self.ExecutePower:FireAll(player,params)
     end
+]]--
 
 end
 

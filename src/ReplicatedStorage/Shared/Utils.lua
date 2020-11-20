@@ -7,10 +7,10 @@ local debris = game:GetService("Debris")
 local module = {}
 
 --// EASY CLONE
-function module.EasyClone(Object, Dictionary)
-	local newClone = Object:Clone();
+function module.EasyClone(object, dictionary)
+	local newClone = object:Clone();
 	
-	for Name, Value in pairs(Dictionary) do
+	for Name, Value in pairs(dictionary) do
 		newClone[Name] = Value;
 	end
 	

@@ -8,6 +8,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
+local Debris = game:GetService("Debris")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -74,27 +75,12 @@ function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	end)
 	
 	if duration then
-		debris:AddItem(part, duration * 2)
+		Debris:AddItem(part, duration * 2)
 	end
 	
 	return part
 end
 
-function PowerUtils.TweenCharacterParts(model,tweenInfoArray,parametersDictionary)
-
-	local tweenInfo = TweenInfo.new(tweenInfoArray)
-	
-	for i,v in pairs(model:GetDescendants()) do
-		if v:IsA("BasePart") then
-			if v.Name == "HumanoidRootPart" then
-				--print("nope")
-			else
-				local thisTween = TweenService:Create(v,tweenInfo,parametersDictionary)
-				thisTween:Play()
-			end
-		end
-	end
-end
 
 
 return PowerUtils

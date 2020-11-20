@@ -39,7 +39,7 @@ function PowersController:InitializePower(params)
 
     -- if INITIALIZE stage return CanRun == true then we fire it off the the server
     if params.CanRun then
-        PowersService:ActivatePower(params)
+        PowersService:ClientActivatePower(params)
     else
         return
     end

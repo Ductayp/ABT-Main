@@ -159,9 +159,11 @@ function TheWorld.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
+                powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
             else
                 print("equip stand - STAND OFF")
+                powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.RemoveStand(initPlayer)
             end
         end
@@ -252,6 +254,7 @@ function TheWorld.Barrage(initPlayer,params)
         if params.KeyState == "InputEnded" then
             if barrageToggle.Value == false then
                 print("barrage is OFF")
+                powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
             end 
         end

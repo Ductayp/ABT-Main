@@ -16,6 +16,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
+PowersService.Client.RenderExistingStands = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
@@ -43,27 +44,6 @@ end
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ClientActivatePower(player,params)
     self.Server:ActivatePower(player,params)
-
-    --[[
-    -- sanity check
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if not playerData.Character.CurrentPower == params.PowerId then
-        print("PlayerData doesn't match the PowerID sent")
-        return
-    end
-
-    -- activate ability
-    local powerModule = require(Knit.Powers[params.PowerID])
-    params.SystemStage = "Activate"
-    params.CanRun = false
-    params = powerModule.Manager(player,params)
-
-    -- if it returns CanRun, then fire all clients and set cooldowns
-    if params.CanRun then
-        self.ExecutePower:FireAll(player,params)
-    end
-]]--
-
 end
 
 --// SetPower -- sets the players curret power
@@ -84,7 +64,36 @@ function PowersService:SetPower(player,power)
     if playerStatusFolder then
         playerStatusFolder:ClearAllChildren()
     end
+end
 
+-- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game
+function PowersService:RenderExistingStands(player)
+
+    spawn(function()
+		for _,targetPlayer in pairs(Players:GetPlayers()) do
+			if player ~= targetPlayer then
+
+				print("player loading in: ",player)
+				print("player to check for render:",targetPlayer)
+  
+                local targetPlayerData = Knit.Services.PlayerDataService:GetPlayerData(targetPlayer)
+                local params = {}
+                params.PowerID = targetPlayerData.Character.CurrentPower
+                params.KeyState = "InputBegan"
+                params.Key = "Q" -- "Q" is always EqupiStand toggle
+
+				local abilityToggleFolder = ReplicatedStorage.PowerStatus[targetPlayer.UserId].Toggles
+				local standToggle = abilityToggleFolder:FindFirstChild("Q")
+
+				if standToggle then
+                    if standToggle.Value == true then
+                        print("server-side fire")
+						self.Client.RenderExistingStands:Fire(player,targetPlayer,params)
+					end
+                end
+			end
+		end
+    end)
 end
 
 --// PlayerSetup - fires when the player joins and after each death
@@ -137,14 +146,17 @@ function PowersService:KnitInit()
 
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
-        self:PlayerSetup(player)
+        --self:PlayerSetup(player)
+        
         player.CharacterAdded:Connect(function()
             self:PlayerSetup(player)
+            self:RenderExistingStands(player)
         end)
     end)
 
     for _, player in ipairs(Players:GetPlayers()) do -- Player Added event for studio testing
         self:PlayerSetup(player)
+        self:RenderExistingStands(player)
     end
 
     -- Player Removing event
@@ -153,24 +165,26 @@ function PowersService:KnitInit()
         ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId):Destroy()
     end)
 
+    
     -- Buttons setup - this is for testing, delete it later
     for i,v in pairs (workspace.StandButtons:GetChildren()) do
-        v.Touched:Connect(function(hit)
-            local db = false
-            if db == false then db = true
-                local humanoid = hit.Parent:FindFirstChild("Humanoid")
-                if humanoid then
-                    local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
-                    if player then
-                        self:SetPower(player,v.Name)
+        if v:IsA("BasePart") then
+            v.Touched:Connect(function(hit)
+                local db = false
+                if db == false then db = true
+                    local humanoid = hit.Parent:FindFirstChild("Humanoid")
+                    if humanoid then
+                        local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
+                        if player then
+                            self:SetPower(player,v.Name)
+                        end
                     end
+                    wait(0.5)
+                    db = false
                 end
-                wait(0.5)
-                db = false
-            end
-        end)
+            end)
+        end
     end
-
 end
 
 return PowersService

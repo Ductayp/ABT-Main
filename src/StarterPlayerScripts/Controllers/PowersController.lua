@@ -28,14 +28,17 @@ function PowersController:InitializePower(params)
 
     params.SystemStage = "Intialize"
     params.PowerID = ReplicatedStorage.ReplicatedPlayerData[Players.localPlayer.UserId].CurrentPower.Value 
-    local powerModule = require(Knit.Powers[params.PowerID])
 
     -- if we find the powerModule, then run its INITIALIZE stage
-    if powerModule then
-        local params = powerModule.Manager(Players.localPlayer,params)
-    else 
+    local powerModule
+    local findModule = Knit.Powers[params.PowerID]
+    if findModule then
+        powerModule = require(Knit.Powers[params.PowerID])
+    else
+        print("power doesnt exist")
         return
     end
+    local params = powerModule.Manager(Players.localPlayer,params)
 
     -- if INITIALIZE stage return CanRun == true then we fire it off the the server
     if params.CanRun then
@@ -47,16 +50,29 @@ end
 
 --// ExecutePower
 function PowersController:ExecutePower(initPlayer,params)
+
     params.SystemStage = "Execute"
     local powerModule = require((Knit.Powers[params.PowerID]))
     powerModule.Manager(initPlayer,params)
 end
+
+--// RenderExistingStands
+function PowersController:RenderExistingStands(targetPlayer,params)
+
+    self:ExecutePower(targetPlayer,params)
+
+end 
 
 --// KnitStart
 function PowersController:KnitStart()
 
     PowersService.ExecutePower:Connect(function(initPlayer,params)
         self:ExecutePower(initPlayer,params)
+    end)
+
+    PowersService.RenderExistingStands:Connect(function(targetPlayer,params)
+        print("client-side received")
+        self:RenderExistingStands(targetPlayer,params)
     end)
 
 end

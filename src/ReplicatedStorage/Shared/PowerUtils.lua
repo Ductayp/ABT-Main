@@ -15,6 +15,7 @@ local localPlayer = game.Players.LocalPlayer
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local RayastHitbox = require(Knit.Shared.RaycastHitboxV3)
 
 local PowerUtils = {}
 
@@ -150,6 +151,32 @@ function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	end
 	
 	return part
+end
+
+--// NewHitBox
+function PowerUtils.NewHitBox(params)
+
+	if RunService:IsServer() then
+		local hitboxFolder = workspace:FindFirstChild("Hitboxes")
+		if not hitboxFolder then
+			hitboxFolder = utils.EasyInstance("Folder",{Name = "Hitboxes",Parent = workspace})
+		end
+	else
+		
+	end
+
+	-- basic part setup
+	local newHitPart = Instance.new("Part")
+    newHitPart.Size = params.Size -- must be Vector3
+    newHitPart.Transparency = 1
+	newHitPart.CanCollide = false
+	newHitPart.Parent = hitboxFolder
+	if params.Name ~= nil then
+		newHitPart.Name = params.Name
+	end
+
+	return newHitbox
+
 end
 
 

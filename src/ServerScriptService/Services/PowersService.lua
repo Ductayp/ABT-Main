@@ -66,6 +66,13 @@ function PowersService:SetPower(player,power)
     end
 end
 
+-- RegisterHit
+function PowersService:RegisterHit(hitParams)
+    for i,v in pairs(hitParams) do
+        print(i,v)
+    end
+end
+
 -- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game
 function PowersService:RenderExistingStands(player)
 
@@ -102,22 +109,23 @@ function PowersService:PlayerSetup(player)
     -- Setup the PlayerStand folder - destroys the stand folder along with contents, then recreates it
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
     if not playerStandFolder then
-        playerStandFolder = Instance.new("Folder")
-        playerStandFolder.Name = player.UserId
-        playerStandFolder.Parent = workspace.PlayerStands
+        playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     end
-    
     playerStandFolder:ClearAllChildren() -- clear the stand completely
 
     -- Setup the PowerStatus folders. clears itself and gets ready for new statuses
     local playerStatusFolder = ReplicatedStorage.PowerStatus:FindFirstChild (player.userId)
     if not playerStatusFolder then
-        playerStatusFolder = Instance.new("Folder")
-        playerStatusFolder.Name = player.UserId
-        playerStatusFolder.Parent = ReplicatedStorage.PowerStatus
+        playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
     end
-
     playerStatusFolder:ClearAllChildren()
+
+    -- Setup player Hitbox folder.
+    local playerHitboxFolder = workspace.PlayerHitboxes:FindFirstChild(player.UserId)
+    if not playerHitboxFolder then
+        playerHitboxFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerHitboxes})
+    end
+    playerHitboxFolder:ClearAllChildren()
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
@@ -138,6 +146,10 @@ function PowersService:KnitInit()
     local standFolder = Instance.new("Folder")
     standFolder.Name = "PlayerStands"
     standFolder.Parent = workspace
+
+    local hitboxFolder = Instance.new("Folder")
+    hitboxFolder.Name = "PlayerHitboxes"
+    hitboxFolder.Parent = workspace
 
     -- setup the Power Status folder in ReplciatedStorage
     local statusFolder = Instance.new("Folder")

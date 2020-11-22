@@ -7,6 +7,7 @@ Handles all thing related to the power and is triggered by BOTH PowersController
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -14,6 +15,7 @@ local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Effects.ManageStand)
 local Barrage = require(Knit.Effects.Barrage)
+local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
 
 local TheWorld = {}
 
@@ -35,9 +37,12 @@ TheWorld.Defs = {
 
         Barrage = {
             Name = "Barrage",
-            Duration = 5,
-            Cooldown = 5,
-            Override = true
+            AbilityId = "Barrage",
+            Duration = 20,
+            Cooldown = 1,
+            Override = true,
+            Damage = 5,
+            loopTime = .25
         },
 
         Ability_3 = {
@@ -106,7 +111,7 @@ function TheWorld.Manager(initPlayer,params)
     return params
 end
 
---// ABILITY 1 - EQUIP STAND //---------------------------------------------------------------------------------
+--// EQUIP STAND //---------------------------------------------------------------------------------
 function TheWorld.EquipStand(initPlayer,params)
     
     -- get stand folder, setup if it doesnt exist
@@ -115,26 +120,26 @@ function TheWorld.EquipStand(initPlayer,params)
     -- get stand toggle, setup if it doesnt exist
     local standToggle = powerUtils.GetToggle(initPlayer,params.Key)
 
-    -- INITIALIZE
+    -- EQUIP STAND/INITIALIZE
     if params.SystemStage == "Intialize" then
     print("The World - Equip Stand - Initialize")
 
-        -- INPUT BEGAN
+        -- EQUIP STAND/INITIALIZE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
             params.CanRun = true
         end
 
-        -- INPUT ENDED
+        -- EQUIP STAND/INITIALIZE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             params.CanRun = false
         end
     end
 
-    -- ACTIVATE
+    -- EQUIP STAND/ACTIVATE
     if params.SystemStage == "Activate" then
         print("The World - Equip Stand - Activate")
 
-         -- INPUT BEGAN
+         -- EQUIP STAND/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 standToggle.Value = false
@@ -145,17 +150,17 @@ function TheWorld.EquipStand(initPlayer,params)
             params.CanRun = true
         end
 
-        -- INPUT ENDED
+        -- EQUIP STAND/ACTIVATE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             params.CanRun = false
         end
     end
 
-    -- EXECUTE
+    -- EQUIP STAND/EXECUTE
     if params.SystemStage == "Execute" then
         print("The World - Equip Stand - Execute")
 
-         -- INPUT BEGAN
+         -- EQUIP STAND/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
@@ -168,13 +173,11 @@ function TheWorld.EquipStand(initPlayer,params)
             end
         end
 
-        -- INPUT ENDED
+        -- EQUIP STAND/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             -- no action here
         end
     end
-
-    return params
 end
 
 --// BARRAGE //---------------------------------------------------------------------------------
@@ -203,7 +206,6 @@ function TheWorld.Barrage(initPlayer,params)
         if params.KeyState == "InputEnded" then
             params.CanRun = true
         end
-
     end
 
     -- BARRAGE/ACTIVATE
@@ -216,6 +218,34 @@ function TheWorld.Barrage(initPlayer,params)
             if barrageToggle.Value == false then
                 barrageToggle.Value = true
                 params.CanRun = true
+      
+                -- spawn a hitbox in
+                local hitbox = utils.EasyInstance("Part",{Name = "Barrage",Parent = workspace.PlayerHitboxes[initPlayer.UserId],CanCollide = false,Transparency = .5, Size = Vector3.new(4,2,2)})
+                hitbox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
+                local hitboxWeld = utils.EasyWeld(hitbox,initPlayer.Character.HumanoidRootPart,hitbox)
+                
+                local isCoolingDown = false
+                hitbox.Touched:Connect(function(hit)
+                    if hit.Parent:FindFirstChild("Humanoid") and not isCoolingDown then
+
+                        isCoolingDown = true
+                        local character = hit.Parent
+
+                        local hitParams = {
+                            damage = TheWorld.Defs.Abilities.Barrage.Damage,
+                            hitReceiver = character, -- is the character, can be a player or an NPC
+                            hitDealer = initPlayer,
+                            powerId = params.powerId,
+                            abilityId = TheWorld.Defs.Abilities.Barrage.AbilityId
+                        }
+                        Knit.Services.PowersService:RegisterHit(hitParams)
+                        --character.Humanoid:TakeDamage(TheWorld.Defs.Abilities.Barrage.Damage)
+                        wait(TheWorld.Defs.Abilities.Barrage.loopTime)
+                        isCoolingDown = false
+                    end
+                end)
+
+                
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()
@@ -224,7 +254,6 @@ function TheWorld.Barrage(initPlayer,params)
                     Knit.Services.PowersService:ActivatePower(initPlayer,params)
                 end)
             end
-  
         end
 
         -- BARRAGE/ACTIVATE/INPUT ENDED
@@ -234,7 +263,15 @@ function TheWorld.Barrage(initPlayer,params)
             if barrageToggle.Value == true then
                 barrageToggle.Value = false
                 params.CanRun = true
+
+                -- set the cooldown
                 powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.Barrage.Cooldown)
+
+                -- destroy hitbox
+                local destroyHitbox = workspace.PlayerHitboxes[initPlayer.UserId]:FindFirstChild("Barrage")
+                if destroyHitbox then
+                    destroyHitbox:Destroy()
+                end
             end
 
         end
@@ -245,7 +282,6 @@ function TheWorld.Barrage(initPlayer,params)
         -- BARRAGE/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
             if barrageToggle.Value == true then
-                print("barrage is ON")
                 Barrage.RunEffect(initPlayer,params)
             end
         end
@@ -253,7 +289,6 @@ function TheWorld.Barrage(initPlayer,params)
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             if barrageToggle.Value == false then
-                print("barrage is OFF")
                 powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
             end 

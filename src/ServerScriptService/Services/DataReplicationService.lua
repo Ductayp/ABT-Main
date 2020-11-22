@@ -31,7 +31,6 @@ function DataReplicationService:UpdateAll(player)
         loop(playerData)
 
         for key,value in pairs(keyTable) do
-            print(key,value)
             local thisValueObject = playerFolder:FindFirstChild(key)
             if not thisValueObject then
                 thisValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,playerFolder)

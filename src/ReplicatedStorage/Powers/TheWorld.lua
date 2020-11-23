@@ -7,7 +7,6 @@ Handles all thing related to the power and is triggered by BOTH PowersController
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -219,6 +218,7 @@ function TheWorld.Barrage(initPlayer,params)
                 barrageToggle.Value = true
                 params.CanRun = true
       
+                --[[
                 -- spawn a hitbox in
                 local hitbox = utils.EasyInstance("Part",{Name = "Barrage",Parent = workspace.PlayerHitboxes[initPlayer.UserId],CanCollide = false,Transparency = .5, Size = Vector3.new(4,2,2)})
                 hitbox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
@@ -239,13 +239,23 @@ function TheWorld.Barrage(initPlayer,params)
                             abilityId = TheWorld.Defs.Abilities.Barrage.AbilityId
                         }
                         Knit.Services.PowersService:RegisterHit(hitParams)
-                        --character.Humanoid:TakeDamage(TheWorld.Defs.Abilities.Barrage.Damage)
                         wait(TheWorld.Defs.Abilities.Barrage.loopTime)
                         isCoolingDown = false
                     end
                 end)
+                ]]--
 
-                
+                -- spawn a hitbox
+                local newCFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
+                local hitboxParams = {
+                    Size = Vector3.new(4,2,2),
+		            Name = "Barrage",
+		            CFrame = newCFrame,
+                    WeldTo = initPlayer.Character.HumanoidRootPart,
+                    Damage = TheWorld.Defs.Abilities.Barrage.Damage,
+                    Tick = TheWorld.Defs.Abilities.Barrage.loopTime
+                }
+                local newHitBox = powerUtils.WeldedHitbox(initPlayer,hitboxParams)
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()
@@ -268,7 +278,7 @@ function TheWorld.Barrage(initPlayer,params)
                 powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.Barrage.Cooldown)
 
                 -- destroy hitbox
-                local destroyHitbox = workspace.PlayerHitboxes[initPlayer.UserId]:FindFirstChild("Barrage")
+                local destroyHitbox = workspace.ServerHitboxes[initPlayer.UserId]:FindFirstChild("Barrage")
                 if destroyHitbox then
                     destroyHitbox:Destroy()
                 end

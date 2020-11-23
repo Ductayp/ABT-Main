@@ -127,7 +127,7 @@ end
 --// WeldParticles - creates a part at any position and parents a premade ParticleEmitter, destroys is after duration
 function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	local partDefs = {
-		Parent = workspace.LocalPowersEffects,
+		Parent = workspace.RenderedEffects,
 		Position = position,
 		Anchored = false,
 		CanCollide = false,
@@ -153,27 +153,70 @@ function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	return part
 end
 
---// NewHitBox
-function PowerUtils.NewHitBox(params)
+--// WeldedHitBox - will run until the part is destroyed
+function PowerUtils.WeldedHitbox(initPlayer,params)
 
+	--[[
+		--// required params
+		params.Size = Vecotr3
+		params.Name = something to find it again by
+		params.CFrame = the CFrame
+		params.WeldTo = the part to weld it to
+		params.Damage = how much per tick
+		params.Tick = time per tick
+	]]
+
+	-- get the right folder if server or client
+	local hitboxFolder
 	if RunService:IsServer() then
-		local hitboxFolder = workspace:FindFirstChild("Hitboxes")
-		if not hitboxFolder then
-			hitboxFolder = utils.EasyInstance("Folder",{Name = "Hitboxes",Parent = workspace})
-		end
+		local hitboxFolder = workspace.ServerHitboxes:FindFirstChild(initPlayer.UserId)
 	else
-		
+		local hitboxFolder = workspace.ClientHitboxes:FindFirstChild(initPlayer.UserId)
 	end
 
 	-- basic part setup
-	local newHitPart = Instance.new("Part")
-    newHitPart.Size = params.Size -- must be Vector3
-    newHitPart.Transparency = 1
-	newHitPart.CanCollide = false
-	newHitPart.Parent = hitboxFolder
-	if params.Name ~= nil then
-		newHitPart.Name = params.Name
-	end
+	local newHitBox = Instance.new("Part")
+    newHitBox.Size = params.Size -- must be Vector3
+    newHitBox.Transparency = .5
+	newHitBox.CanCollide = false
+	newHitBox.Parent = hitboxFolder
+	newHitBox.Name = params.Name
+	newHitBox.CFrame = params.CFrame
+
+	-- weld it
+	local hitboxWeld = utils.EasyWeld(newHitBox,params.WeldTo,ewHitBox)
+
+	-- run it
+	repeat 
+		local connection = newHitBox.Touched:Connect(function() end)
+   		local results = newHitBox:GetTouchingParts()
+		connection:Disconnect()
+
+		local charactersHit
+		for i,v in pairs (results) do
+			if v.Parent:FindFirstChild("Humanoid") then
+				table.insert(charactersHit,hit.Parent)
+			end
+		end
+
+		if characterHit ~= nil then
+			for i,v in pairs (charactersHit) do
+
+				local hitParams = {
+					damage = params.Damage,
+					hitReceiver = v, -- is the character, can be a player or an NPC
+					hitDealer = initPlayer,
+				}
+
+				Knit.Services.PowersService:RegisterHit(initPlayer,v,hitParams)
+			end
+		end	
+
+		-- clear hit tabel and wait
+		charactersHit = nil
+		wait(params.Tick)
+		
+	until newHitbox == nil
 
 	return newHitbox
 

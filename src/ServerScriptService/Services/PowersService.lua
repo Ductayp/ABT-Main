@@ -66,11 +66,11 @@ function PowersService:SetPower(player,power)
     end
 end
 
--- RegisterHit
+--// RegisterHit
 function PowersService:RegisterHit(hitParams)
-    for i,v in pairs(hitParams) do
-        print(i,v)
-    end
+
+    hitParams.hitReceiver.Humanoid:TakeDamage(hitParams.damage)
+
 end
 
 -- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game
@@ -120,12 +120,19 @@ function PowersService:PlayerSetup(player)
     end
     playerStatusFolder:ClearAllChildren()
 
-    -- Setup player Hitbox folder.
-    local playerHitboxFolder = workspace.PlayerHitboxes:FindFirstChild(player.UserId)
-    if not playerHitboxFolder then
-        playerHitboxFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerHitboxes})
+    -- Setup player Server Hitbox folder.
+    local playerHitboxServerFolder = workspace.ServerHitboxes:FindFirstChild(player.UserId)
+    if not playerHitboxServerFolder then
+        playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
     end
-    playerHitboxFolder:ClearAllChildren()
+    playerHitboxServerFolder:ClearAllChildren()
+
+    -- Setup player Client Hitbox folder.
+    local playerHitboxClientFolder = workspace.ClientHitboxes:FindFirstChild(player.UserId)
+    if not playerHitboxClientFolder then
+        playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
+    end
+    playerHitboxClientFolder:ClearAllChildren()
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
@@ -138,23 +145,12 @@ end
 --// KnitInit - runs at server startup
 function PowersService:KnitInit()
 
-    -- setup some folder in Workspace
-    local effectFolder = Instance.new("Folder")
-    effectFolder.Name = "LocalPowersEffects"
-    effectFolder.Parent = workspace
-
-    local standFolder = Instance.new("Folder")
-    standFolder.Name = "PlayerStands"
-    standFolder.Parent = workspace
-
-    local hitboxFolder = Instance.new("Folder")
-    hitboxFolder.Name = "PlayerHitboxes"
-    hitboxFolder.Parent = workspace
-
-    -- setup the Power Status folder in ReplciatedStorage
-    local statusFolder = Instance.new("Folder")
-    statusFolder.Name = "PowerStatus"
-    statusFolder.Parent = ReplicatedStorage
+    -- make some folders
+    local effectFolder = utils.EasyInstance("Folder",{Name = "RenderedEffects",Parent = workspace})
+    local standsFolder = utils.EasyInstance("Folder",{Name = "PlayerStands",Parent = workspace})
+    local serverHitboxes = utils.EasyInstance("Folder",{Name = "ServerHitboxes",Parent = workspace})
+    local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
+    local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
@@ -174,6 +170,8 @@ function PowersService:KnitInit()
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
         workspace.PlayerStands:FindFirstChild(player.UserId):Destroy()
+        workspace.ServerHitboxes:FindFirstChild(player.UserId):Destroy()
+        workspace.ClientHitboxes:FindFirstChild(player.UserId):Destroy()
         ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId):Destroy()
     end)
 

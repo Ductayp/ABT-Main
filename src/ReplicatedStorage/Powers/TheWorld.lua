@@ -246,14 +246,16 @@ function TheWorld.Barrage(initPlayer,params)
                 ]]--
 
                 -- spawn a hitbox
-                local newCFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
+                --local newCFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
                 local hitboxParams = {
-                    Size = Vector3.new(4,2,2),
-		            Name = "Barrage",
-		            CFrame = newCFrame,
+                    Size = Vector3.new(4,5,4),
+                    PowerId = "TheWorld",
+		            AbilityId = "Barrage",
+		            CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5)),
                     WeldTo = initPlayer.Character.HumanoidRootPart,
-                    Damage = TheWorld.Defs.Abilities.Barrage.Damage,
-                    Tick = TheWorld.Defs.Abilities.Barrage.loopTime
+                    Tick = TheWorld.Defs.Abilities.Barrage.loopTime,
+                    Debug = false,
+                    Exclude = {initPlayer.Character}
                 }
                 local newHitBox = powerUtils.WeldedHitbox(initPlayer,hitboxParams)
 

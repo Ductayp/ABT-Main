@@ -67,9 +67,13 @@ function PowersService:SetPower(player,power)
 end
 
 --// RegisterHit
-function PowersService:RegisterHit(hitParams)
+function PowersService:RegisterHit(initPlayer,characterHit,params)
 
-    hitParams.hitReceiver.Humanoid:TakeDamage(hitParams.damage)
+    -- get the damage
+    local powerModule = require(Knit.Powers[params.PowerId])
+    local damage = powerModule.Defs.Abilities[params.AbilityId].Damage
+
+    characterHit.Humanoid:TakeDamage(damage)
 
 end
 

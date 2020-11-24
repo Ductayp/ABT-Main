@@ -158,20 +158,23 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 
 	--[[
 		--// required params
-		params.Size = Vecotr3
+		params.Size = Vector3
 		params.Name = something to find it again by
 		params.CFrame = the CFrame
 		params.WeldTo = the part to weld it to
 		params.Damage = how much per tick
 		params.Tick = time per tick
+		
+		--// optional params
+		params.Exclude = an array of characters to exclude. DOES NOT ACCEPT players. Instead do player.Character.
 	]]
 
 	-- get the right folder if server or client
 	local hitboxFolder
 	if RunService:IsServer() then
-		local hitboxFolder = workspace.ServerHitboxes:FindFirstChild(initPlayer.UserId)
+		hitboxFolder = workspace.ServerHitboxes:FindFirstChild(initPlayer.UserId)
 	else
-		local hitboxFolder = workspace.ClientHitboxes:FindFirstChild(initPlayer.UserId)
+		hitboxFolder = workspace.ClientHitboxes:FindFirstChild(initPlayer.UserId)
 	end
 
 	-- basic part setup
@@ -180,45 +183,65 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
     newHitBox.Transparency = .5
 	newHitBox.CanCollide = false
 	newHitBox.Parent = hitboxFolder
-	newHitBox.Name = params.Name
+	newHitBox.Name = params.AbilityId
 	newHitBox.CFrame = params.CFrame
 
+	if params.Debug then
+		newHitBox.Transparency = .7
+		newHitBox.Color = Color3.new(170, 0, 0)
+	else
+		newHitBox.Transparency = 1
+	end
+
+
 	-- weld it
-	local hitboxWeld = utils.EasyWeld(newHitBox,params.WeldTo,ewHitBox)
+	local hitboxWeld = utils.EasyWeld(newHitBox,params.WeldTo,newHitBox)
 
 	-- run it
-	repeat 
-		local connection = newHitBox.Touched:Connect(function() end)
-   		local results = newHitBox:GetTouchingParts()
-		connection:Disconnect()
+	spawn(function()
+		repeat 
+			print("tick")
+			local connection = newHitBox.Touched:Connect(function() end)
+			local results = newHitBox:GetTouchingParts()
+			connection:Disconnect()
 
-		local charactersHit
-		for i,v in pairs (results) do
-			if v.Parent:FindFirstChild("Humanoid") then
-				table.insert(charactersHit,hit.Parent)
+			local charactersHit = {}
+			for _,part in pairs (results) do
+				if part.Parent:FindFirstChild("Humanoid") then
+						charactersHit[part.Parent] = true -- insert into table with no duplicates
+				end
 			end
-		end
 
-		if characterHit ~= nil then
-			for i,v in pairs (charactersHit) do
-
-				local hitParams = {
-					damage = params.Damage,
-					hitReceiver = v, -- is the character, can be a player or an NPC
-					hitDealer = initPlayer,
-				}
-
-				Knit.Services.PowersService:RegisterHit(initPlayer,v,hitParams)
+			-- remove excluded targets
+			if params.Exclude then
+				for _,excludeCharacter in pairs (params.Exclude) do
+					if charactersHit[excludeCharacter] then
+						charactersHit[excludeCharacter] = nil
+					end
+				end
 			end
-		end	
 
-		-- clear hit tabel and wait
-		charactersHit = nil
-		wait(params.Tick)
-		
-	until newHitbox == nil
+			if charactersHit ~= nil then
+				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the Key above
+					Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params)
+				end
+			end	
 
-	return newHitbox
+			-- check if hitbox still exists
+			local canRun = false
+			local checkHitbox = hitboxFolder:FindFirstChild(params.AbilityId) -- this checks of the hitbox part still exists
+			if checkHitbox then
+				canRun = true
+			end
+
+			-- clear hit tabel and wait
+			charactersHit = nil
+			wait(params.Tick)
+			
+		until canRun == false
+	end)
+
+	return newHitBox
 
 end
 

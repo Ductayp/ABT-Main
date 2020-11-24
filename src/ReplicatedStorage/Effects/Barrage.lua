@@ -49,7 +49,7 @@ function module.shootArm(thisEffect,thisArm)
 	-- set up random position and set the goals
 	local posX = math.random(-1,1)
 	local posY = 0.5 * math.random(-3,3)
-	newArm.Root.CFrame = newArm.Root.CFrame:ToWorldSpace(CFrame.new(posX,posY,1))
+	newArm.Root.CFrame = newArm.Root.CFrame * CFrame.new(posX,posY,1)
 	local armGoal = newArm.Root.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
 
 	-- add in the body movers and let it go!
@@ -78,7 +78,7 @@ function module.RunEffect(initPlayer,params)
 	local thisEffect = ReplicatedStorage.EffectParts.Barrage[params.PowerID]:Clone()
 	thisEffect.Name = "Barrage"
 	thisEffect.Parent = barrageFolder
-	thisEffect.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-4))
+	thisEffect.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-2))
 	utils.EasyWeld(thisEffect,initPlayer.Character.HumanoidRootPart,thisEffect)
 	
 	-- setup the base parts transparencies and manage some trails
@@ -98,7 +98,7 @@ function module.RunEffect(initPlayer,params)
 	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.EquipStand,.5) -- weld burst particles
 	ManageStand.PlayAnimation(initPlayer,params,"Barrage")
 	targetStand.WeldConstraint.Enabled = false
-	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4)) -- move
+	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-2)) -- move
 	targetStand.WeldConstraint.Enabled = true
 	spawn(function()
 		wait(.1)

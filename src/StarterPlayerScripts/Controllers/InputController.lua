@@ -17,21 +17,21 @@ function InputController:KeyboardSetup()
             if isTyping then
                 return
             elseif input.KeyCode == Enum.KeyCode.Q then
-                Knit.Controllers.PowersController:InitializePower({Key = "Q", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "Q", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.E then
-                Knit.Controllers.PowersController:InitializePower({Key = "E", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "E", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.R then
-                Knit.Controllers.PowersController:InitializePower({Key = "R", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "R", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.T then
-                Knit.Controllers.PowersController:InitializePower({Key = "T", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "T", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.F then
-                Knit.Controllers.PowersController:InitializePower({Key = "F", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "F", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.Z then
-                Knit.Controllers.PowersController:InitializePower({Key = "Z", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "Z", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.X then
-                Knit.Controllers.PowersController:InitializePower({Key = "X", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "X", KeyState = "InputBegan"})
             elseif input.KeyCode == Enum.KeyCode.C then
-                Knit.Controllers.PowersController:InitializePower({Key = "C", KeyState = "InputBegan"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "C", KeyState = "InputBegan"})
             end
         end)
     
@@ -39,21 +39,21 @@ function InputController:KeyboardSetup()
             if isTyping then
                 return
             elseif input.KeyCode == Enum.KeyCode.Q then
-                Knit.Controllers.PowersController:InitializePower({Key = "Q", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "Q", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.E then
-                Knit.Controllers.PowersController:InitializePower({Key = "E", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "E", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.R then
-                Knit.Controllers.PowersController:InitializePower({Key = "R", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "R", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.T then
-                Knit.Controllers.PowersController:InitializePower({Key = "T", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "T", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.F then
-                Knit.Controllers.PowersController:InitializePower({Key = "F", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "F", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.Z then
-                Knit.Controllers.PowersController:InitializePower({Key = "Z", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "Z", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.X then
-                Knit.Controllers.PowersController:InitializePower({Key = "X", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "X", KeyState = "InputEnded"})
             elseif input.KeyCode == Enum.KeyCode.C then
-                Knit.Controllers.PowersController:InitializePower({Key = "Q", KeyState = "InputEnded"})
+                Knit.Controllers.PowersController:InitializePower({InputId = "Q", KeyState = "InputEnded"})
             end
         end)
 end

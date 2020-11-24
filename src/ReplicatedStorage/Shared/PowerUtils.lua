@@ -27,9 +27,9 @@ function PowerUtils.GetCooldown(player,params)
         cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
 
-    local thisCooldown = cooldownFolder:FindFirstChild(params.Key)
+    local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
     if not thisCooldown then
-        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.Key, Value = os.time() - 1, Parent = cooldownFolder})
+        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
     return thisCooldown
@@ -43,9 +43,9 @@ function PowerUtils.SetCooldown(player,params,value)
         cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
 
-    local thisCooldown = cooldownFolder:FindFirstChild(params.Key)
+    local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
     if not thisCooldown then
-        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.Key, Value = os.time() - 1, Parent = cooldownFolder})
+        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
     thisCooldown.Value = os.time() + value
@@ -106,7 +106,7 @@ function PowerUtils.RequireToggle(player,params,toggleName)
 	if RunService:IsServer() then
 		local toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
 		if toggleFolder then
-			thisToggle = toggleFolder:FindFirstChild(params.Key)
+			thisToggle = toggleFolder:FindFirstChild(params.InputId)
 			if thisToggle then
 				boolean = thisToggle.Value
 			end
@@ -222,7 +222,7 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 			end
 
 			if charactersHit ~= nil then
-				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the Key above
+				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
 					Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params)
 				end
 			end	

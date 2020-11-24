@@ -41,7 +41,8 @@ TheWorld.Defs = {
             Cooldown = 1,
             Override = true,
             Damage = 5,
-            loopTime = .25
+            loopTime = .25,
+            SoundEffect = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage
         },
 
         Ability_3 = {
@@ -101,9 +102,9 @@ function TheWorld.Manager(initPlayer,params)
     end
 
     -- call the function
-    if params.Key == "Q" then
+    if params.InputId == "Q" then
         TheWorld.EquipStand(initPlayer,params)
-    elseif params.Key == "E" then
+    elseif params.InputId == "E" then
         TheWorld.Barrage(initPlayer,params)
     end
 
@@ -116,8 +117,10 @@ function TheWorld.EquipStand(initPlayer,params)
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 
+    local thisStand = playerStandFolder:FindFirstChild("TheWorld")
+
     -- get stand toggle, setup if it doesnt exist
-    local standToggle = powerUtils.GetToggle(initPlayer,params.Key)
+    local standToggle = powerUtils.GetToggle(initPlayer,params.InputId)
 
     -- EQUIP STAND/INITIALIZE
     if params.SystemStage == "Intialize" then
@@ -163,11 +166,11 @@ function TheWorld.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
-                powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.EquipStand.Cooldown)
+                powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
             else
                 print("equip stand - STAND OFF")
-                powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.EquipStand.Cooldown)
+                powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.RemoveStand(initPlayer)
             end
         end
@@ -179,11 +182,11 @@ function TheWorld.EquipStand(initPlayer,params)
     end
 end
 
---// BARRAGE //---------------------------------------------------------------------------------
+--// // MARK: BARRAGE //---------------------------------------------------------------------------------
 function TheWorld.Barrage(initPlayer,params)
 
     -- get barrage toggle, setup if it doesnt exist
-    local barrageToggle = powerUtils.GetToggle(initPlayer,params.Key)
+    local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
 
     -- requires Stand to be active via "Q" toggle
     local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
@@ -218,35 +221,7 @@ function TheWorld.Barrage(initPlayer,params)
                 barrageToggle.Value = true
                 params.CanRun = true
       
-                --[[
-                -- spawn a hitbox in
-                local hitbox = utils.EasyInstance("Part",{Name = "Barrage",Parent = workspace.PlayerHitboxes[initPlayer.UserId],CanCollide = false,Transparency = .5, Size = Vector3.new(4,2,2)})
-                hitbox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
-                local hitboxWeld = utils.EasyWeld(hitbox,initPlayer.Character.HumanoidRootPart,hitbox)
-                
-                local isCoolingDown = false
-                hitbox.Touched:Connect(function(hit)
-                    if hit.Parent:FindFirstChild("Humanoid") and not isCoolingDown then
-
-                        isCoolingDown = true
-                        local character = hit.Parent
-
-                        local hitParams = {
-                            damage = TheWorld.Defs.Abilities.Barrage.Damage,
-                            hitReceiver = character, -- is the character, can be a player or an NPC
-                            hitDealer = initPlayer,
-                            powerId = params.powerId,
-                            abilityId = TheWorld.Defs.Abilities.Barrage.AbilityId
-                        }
-                        Knit.Services.PowersService:RegisterHit(hitParams)
-                        wait(TheWorld.Defs.Abilities.Barrage.loopTime)
-                        isCoolingDown = false
-                    end
-                end)
-                ]]--
-
                 -- spawn a hitbox
-                --local newCFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6.75))
                 local hitboxParams = {
                     Size = Vector3.new(4,5,4),
                     PowerId = "TheWorld",
@@ -291,17 +266,19 @@ function TheWorld.Barrage(initPlayer,params)
 
     -- BARRAGE/EXECUTE
     if params.SystemStage == "Execute" then
+
         -- BARRAGE/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
             if barrageToggle.Value == true then
                 Barrage.RunEffect(initPlayer,params)
+                powerUtils.WeldSpeakerSound(thisStand,TheWorld.Defs.Abilities.Barrage.SoundEffect,params)
             end
         end
 
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             if barrageToggle.Value == false then
-                powerUtils.SetGUICooldown(params.Key,TheWorld.Defs.Abilities.Barrage.Cooldown)
+                powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
             end 
         end

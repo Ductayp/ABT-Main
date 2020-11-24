@@ -107,7 +107,7 @@ function module.RunEffect(initPlayer,params)
 	
 	
 	-- setup coroutine and run it while the toggle is on
-	local thisToggle = powerUtils.GetToggle(initPlayer,params.Key) -- we need the toggle to know when to shut off the spawner
+	local thisToggle = powerUtils.GetToggle(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
 	local newThread = coroutine.create(function()
 		while wait(spawnRate) do
 			if thisToggle.Value then

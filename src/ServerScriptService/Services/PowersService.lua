@@ -53,17 +53,8 @@ function PowersService:SetPower(player,power)
     playerData.Character.CurrentPower = power
     Knit.Services.DataReplicationService:UpdateAll(player)
 
-    -- clear stand folder
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
-    if playerStandFolder then
-        playerStandFolder:ClearAllChildren()
-    end
-
-    -- clear power status folder
-    local playerStatusFolder = ReplicatedStorage.PowerStatus:FindFirstChild (player.userId)
-    if playerStatusFolder then
-        playerStatusFolder:ClearAllChildren()
-    end
+    -- run the player setup so we can start fresh
+    self:PlayerSetup(player)
 end
 
 --// RegisterHit
@@ -160,15 +151,29 @@ function PowersService:KnitInit()
     Players.PlayerAdded:Connect(function(player)
         --self:PlayerSetup(player)
         
-        player.CharacterAdded:Connect(function()
+        player.CharacterAdded:Connect(function(character)
             self:PlayerSetup(player)
             self:RenderExistingStands(player)
+
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                self:PlayerSetup(player)
+            end)
         end)
     end)
 
-    for _, player in ipairs(Players:GetPlayers()) do -- Player Added event for studio testing
+    -- Player Added event for studio testing
+    for _, player in ipairs(Players:GetPlayers()) do
         self:PlayerSetup(player)
         self:RenderExistingStands(player)
+
+        player.CharacterAdded:Connect(function(character)
+            self:PlayerSetup(player)
+            self:RenderExistingStands(player)
+
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                self:PlayerSetup(player)
+            end)
+        end)
     end
 
     -- Player Removing event

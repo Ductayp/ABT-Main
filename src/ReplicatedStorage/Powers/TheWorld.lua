@@ -12,8 +12,8 @@ local RunService = game:GetService("RunService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
-local ManageStand = require(Knit.Effects.ManageStand)
-local Barrage = require(Knit.Effects.Barrage)
+local ManageStand = require(Knit.Abilities.ManageStand)
+local Barrage = require(Knit.Abilities.Barrage)
 local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
 
 local TheWorld = {}
@@ -21,34 +21,38 @@ local TheWorld = {}
 
 TheWorld.Defs = {
     PowerName = "The World",
-
-
     StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
 
+    Immunities = {
+        TimeStop = true
+    },
 
     Abilities = {
 
         EquipStand = {
             Name = "Equip Stand",
             Cooldown = 5,
-            Override = false
+            Override = false,
+            EquipSound = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon,
+            RemoveSound = ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon
         },
 
         Barrage = {
             Name = "Barrage",
             AbilityId = "Barrage",
-            Duration = 20,
-            Cooldown = 1,
+            Duration = 5,
+            Cooldown = 5,
             Override = true,
             Damage = 5,
             loopTime = .25,
             SoundEffect = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage
         },
 
-        Ability_3 = {
-            Name = "Ability 3",
-            Duration = 0,
-            Cooldown = 1,
+        TimeStop = {
+            Name = "Time Stop",
+            Duration = 5,
+            Cooldown = 5,
+            Range = 20,
             Override = false
         },
 
@@ -106,6 +110,8 @@ function TheWorld.Manager(initPlayer,params)
         TheWorld.EquipStand(initPlayer,params)
     elseif params.InputId == "E" then
         TheWorld.Barrage(initPlayer,params)
+    elseif params.InputId == "F" then
+        TheWorld.TimeStop(initPlayer,params)
     end
 
     return params
@@ -117,7 +123,7 @@ function TheWorld.EquipStand(initPlayer,params)
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 
-    local thisStand = playerStandFolder:FindFirstChild("TheWorld")
+    
 
     -- get stand toggle, setup if it doesnt exist
     local standToggle = powerUtils.GetToggle(initPlayer,params.InputId)
@@ -168,10 +174,12 @@ function TheWorld.EquipStand(initPlayer,params)
                 print("equip stand - STAND ON")
                 powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
+                powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.EquipStand.EquipSound)
             else
                 print("equip stand - STAND OFF")
                 powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.RemoveStand(initPlayer)
+                powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.EquipStand.RemoveSound)
             end
         end
 
@@ -182,11 +190,15 @@ function TheWorld.EquipStand(initPlayer,params)
     end
 end
 
---// // MARK: BARRAGE //---------------------------------------------------------------------------------
+--// BARRAGE //---------------------------------------------------------------------------------
 function TheWorld.Barrage(initPlayer,params)
 
     -- get barrage toggle, setup if it doesnt exist
     local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
+
+    -- get stand folder and stand
+    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+    local thisStand = playerStandFolder:FindFirstChild("TheWorld")
 
     -- requires Stand to be active via "Q" toggle
     local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
@@ -260,7 +272,6 @@ function TheWorld.Barrage(initPlayer,params)
                     destroyHitbox:Destroy()
                 end
             end
-
         end
     end
 
@@ -271,7 +282,11 @@ function TheWorld.Barrage(initPlayer,params)
         if params.KeyState == "InputBegan" then
             if barrageToggle.Value == true then
                 Barrage.RunEffect(initPlayer,params)
-                powerUtils.WeldSpeakerSound(thisStand,TheWorld.Defs.Abilities.Barrage.SoundEffect,params)
+
+                local soundParams = {}
+                soundParams.SoundProperties = {}
+                soundParams.SoundProperties.Looped = true
+                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,TheWorld.Defs.Abilities.Barrage.SoundEffect,soundParams)
             end
         end
 
@@ -280,8 +295,119 @@ function TheWorld.Barrage(initPlayer,params)
             if barrageToggle.Value == false then
                 powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
+                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,TheWorld.Defs.Abilities.Barrage.SoundEffect.Name,.5)
             end 
         end
+    end
+end
+
+--// TIME STOP //---------------------------------------------------------------------------------
+function TheWorld.TimeStop(initPlayer,params)
+
+    -- get stand folder and stand
+    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+    local thisStand = playerStandFolder:FindFirstChild("TheWorld")
+
+    -- get barrage toggle, setup if it doesnt exist
+    local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
+    if RunService:IsServer() and barrageToggle.Value == true then
+        print("cannot run while doing barrage")
+        params.CanRun = false
+        return
+    end
+
+    -- requires Stand to be active via "Q" toggle
+    local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
+    if RunService:IsServer() and standToggle.Value == false then
+        print("Stand not active, cannot run this ability")
+        params.CanRun = false
+        return
+    end
+
+    -- TIME STOP/INIALIZE
+    if params.SystemStage == "Intialize" then
+
+        -- TIME STOP/INIALIZE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+
+        -- TIME STOP/INIALIZE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- TIME STOP/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+        -- TIME STOP/ACTIVATE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                print(player:DistanceFromCharacter(initPlayer.Character.Head.Position))
+                print("player: ",player)
+                print("initPlayer: ",initPlayer)
+                if player ~= initPlayer then
+                    if player:DistanceFromCharacter(initPlayer.Character.Head.Position) < TheWorld.Defs.Abilities.TimeStop.Range then
+                        print("player frozen: ",player)
+                        spawn(function()
+
+                            -- store walkspeed then stop the player
+                            local storedWalkSpeed = player.Character.Humanoid.WalkSpeed
+                            player.Character.Humanoid.WalkSpeed = 0
+
+                            --[[
+                            -- Get playing animations
+                            local AnimationTracks = player.Character.Humanoid:GetPlayingAnimationTracks()
+                            
+                            -- Stop all playing animations
+                            for i, track in pairs (AnimationTracks) do
+                                track:Stop()
+                            end
+                            ]]--
+
+                            -- block input
+                            local inputBlockedBool = ReplicatedStorage.PowerStatus[initPlayer.userid]:FindFirstChild("InputBlocked")
+                            if not inputBlockedBool then
+                                inputBlockedBool = utils.EasyInstance("BoolValue",{Name = "InputBlocked", Parent = ReplicatedStorage.PowerStatus[initPlayer.userid]})
+                            end
+                            inputBlockedBool.Value = true
+
+                            spawn(function()
+
+                                wait(TheWorld.Defs.Abilities.TimeStop.Duration)
+
+                                -- restore walkspeed
+                                player.Character.Humanoid.WalkSpeed = storedWalkSpeed
+
+                                -- un-block input
+                                inputBlockedBool.Value = false
+                            end)
+                        end)
+                    end
+                end
+            end
+        end
+
+        -- TIME STOP/ACTIVATE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+          
+        end
+    end
+
+    -- TIME STOP/EXECUTE
+    if params.SystemStage == "Execute" then
+
+        -- TIME STOP/EXECUTE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+
+        end
+
+        -- TIME STOP/EXECUTE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+
+        end
+
     end
 end
 

@@ -179,12 +179,15 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 
 	-- basic part setup
 	local newHitBox = Instance.new("Part")
-    newHitBox.Size = params.Size -- must be Vector3
+	newHitBox.Size = params.Size -- must be Vector3
+	newHitBox.Massless = true
     newHitBox.Transparency = .5
 	newHitBox.CanCollide = false
 	newHitBox.Parent = hitboxFolder
 	newHitBox.Name = params.AbilityId
 	newHitBox.CFrame = params.CFrame
+
+	print(newHitBox.Massless)
 
 	if params.Debug then
 		newHitBox.Transparency = .7
@@ -246,5 +249,81 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 end
 
 
+
+--// WeldSpeakerSound - weld a speaker into the target and plays sounds according to params
+function PowerUtils.WeldSpeakerSound(target,sound,params)
+
+    -- find a speaker part, if not exists create it, name it the same as sound
+    local thisSpeaker = target:FindFirstChild("SoundSpeaker")
+	if not thisSpeaker then
+		thisSpeaker = Instance.new("Part")
+		thisSpeaker.Name = sound.Name
+		thisSpeaker.CFrame = target.CFrame
+		thisSpeaker.Size = Vector3.new(1,1,1)
+		thisSpeaker.Anchored = false
+		thisSpeaker.Massless = true
+		thisSpeaker.CanCollide = false
+		thisSpeaker.Transparency = 1
+		thisSpeaker.Parent = target
+        utils.EasyWeld(thisSpeaker,target,thisSpeaker)
+    end
+
+    -- get sound in speaker, make a new one if not exists
+    local thisSound = thisSpeaker:FindFirstChild(sound.Name)
+    if not thisSound then
+        thisSound = sound:Clone()
+        thisSound.Parent = thisSpeaker
+    end
+
+	if params then
+		-- set properties for sound
+		if params.SoundProperties ~= nil then
+			for propertyName,propertyValue in pairs(params.SoundProperties) do 
+				thisSound[propertyName] = propertyValue
+			end
+		end
+
+		-- set Debris
+		if params.Debris ~= nil then
+			Debris:AddItem(thisSpeaker, params.Debris)
+		end
+	end
+
+	-- play it
+	thisSound:Play()
+
+	-- if the sound isnt looping, destroy this speaker when its done
+	spawn(function()
+		thisSound.Ended:Wait()
+		thisSpeaker:Destroy()
+	end)
+	
+
+end
+
+--// StopSpeakerSound - stops a sound by name by destroying its speaker, can also optionally fade
+function PowerUtils.StopSpeakerSound(target,name,fadeTime)
+	local thisSpeaker = target:FindFirstChild(name)
+	
+	if thisSpeaker then
+		for _,sound in pairs(thisSpeaker:GetChildren()) do 
+			if sound:IsA ("Sound") then
+				if fadeTime then
+					local tween = TweenService:Create(sound,TweenInfo.new(fadeTime),{Volume = 0})
+					tween:Play()
+					tween.Completed:Connect(function(State)
+						if State == Enum.PlaybackState.Completed then
+							sound:Destroy()
+							tween:Destroy()
+							thisSpeaker:Destroy()
+						end
+					end)
+				else
+					thisSpeaker:Destroy()
+				end
+			end
+		end
+	end 
+end
 
 return PowerUtils

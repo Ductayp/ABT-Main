@@ -31,7 +31,7 @@ function PowersController:InitializePower(params)
 
     -- if we find the powerModule, then run its INITIALIZE stage
     local powerModule
-    local findModule = Knit.Powers[params.PowerID]
+    local findModule = Knit.Powers:FindFirstChild(params.PowerID)
     if findModule then
         powerModule = require(Knit.Powers[params.PowerID])
     else

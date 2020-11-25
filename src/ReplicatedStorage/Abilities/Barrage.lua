@@ -8,7 +8,7 @@ local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
-local ManageStand = require(Knit.Effects.ManageStand)
+local ManageStand = require(Knit.Abilities.ManageStand)
 
 -- local variables
 local spawnRate = .05

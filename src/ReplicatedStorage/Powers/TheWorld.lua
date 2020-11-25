@@ -12,17 +12,23 @@ local RunService = game:GetService("RunService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
+local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
+
+-- Ability modules
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Barrage = require(Knit.Abilities.Barrage)
-local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
+local TimeStop = require(Knit.Abilities.TimeStop)
 
 local TheWorld = {}
 
 
 TheWorld.Defs = {
+
+    -- just somegeneral defs here
     PowerName = "The World",
     StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
 
+    -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {
         TimeStop = true
     },
@@ -343,55 +349,20 @@ function TheWorld.TimeStop(initPlayer,params)
 
         -- TIME STOP/ACTIVATE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
-            for _, player in pairs(game.Players:GetPlayers()) do
-                print(player:DistanceFromCharacter(initPlayer.Character.Head.Position))
-                print("player: ",player)
-                print("initPlayer: ",initPlayer)
-                if player ~= initPlayer then
-                    if player:DistanceFromCharacter(initPlayer.Character.Head.Position) < TheWorld.Defs.Abilities.TimeStop.Range then
-                        print("player frozen: ",player)
-                        spawn(function()
 
-                            -- store walkspeed then stop the player
-                            local storedWalkSpeed = player.Character.Humanoid.WalkSpeed
-                            player.Character.Humanoid.WalkSpeed = 0
+            local timeStopParams = {}
+            timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
+            timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
 
-                            --[[
-                            -- Get playing animations
-                            local AnimationTracks = player.Character.Humanoid:GetPlayingAnimationTracks()
-                            
-                            -- Stop all playing animations
-                            for i, track in pairs (AnimationTracks) do
-                                track:Stop()
-                            end
-                            ]]--
+            TimeStop.Server_RunTimeStop(initPlayer,timeStopParams)
 
-                            -- block input
-                            local inputBlockedBool = ReplicatedStorage.PowerStatus[initPlayer.userid]:FindFirstChild("InputBlocked")
-                            if not inputBlockedBool then
-                                inputBlockedBool = utils.EasyInstance("BoolValue",{Name = "InputBlocked", Parent = ReplicatedStorage.PowerStatus[initPlayer.userid]})
-                            end
-                            inputBlockedBool.Value = true
+            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.TimeStop.Cooldown)
 
-                            spawn(function()
-
-                                wait(TheWorld.Defs.Abilities.TimeStop.Duration)
-
-                                -- restore walkspeed
-                                player.Character.Humanoid.WalkSpeed = storedWalkSpeed
-
-                                -- un-block input
-                                inputBlockedBool.Value = false
-                            end)
-                        end)
-                    end
-                end
-            end
         end
 
         -- TIME STOP/ACTIVATE/INPUT ENDED
         if params.KeyState == "InputEnded" then
-          
+            params.CanRun = false
         end
     end
 

@@ -122,6 +122,49 @@ function PowerUtils.RequireToggle(player,params,toggleName)
 
 end 
 
+-- SetInputBlock - can optionally name it and optionally send it to Debris with a time
+function PowerUtils.SetInputBlock(player,params)
+
+	-- get folder
+	local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
+	if not inputBlockFolder then
+		inputBlockedBool = utils.EasyInstance("Folder",{Name = "InputBlocks", Parent = ReplicatedStorage.PowerStatus[player.UserId]})
+	end
+
+	-- setup block value
+	local inputBlockedBool = Instance.new("BoolValue")
+	inputBlockedBool.Value = true
+	inputBlockedBool.Parent = inputBlockFolder
+	if params.Name then
+		inputBlockedBool.Name = params.Name
+	end
+
+	if params.Duration then
+		Debris:AddItem(inputBlockedBool, params.Duartion)
+	end
+
+	return inputBlockedBool
+end
+
+-- CheckInputBlock - checks the folder for any blocks and will return a bool value of TRUE if any blocks exist
+function PowerUtils.CheckInputBlock(player)
+
+	local isBlocked = false
+	local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
+	if inputBlockFolder then
+		local inputBlocks = inputBlockFolder:GetChildren()
+		if inputBlocks ~= nil then
+			for i,v in pairs(inputBlocks) do
+				if v.value == true then
+					isBlocked = true
+				end
+			end
+		end
+	end
+
+	return isBlocked
+end
+
 
 
 --// WeldParticles - creates a part at any position and parents a premade ParticleEmitter, destroys is after duration

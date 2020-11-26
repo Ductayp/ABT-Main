@@ -99,13 +99,10 @@ print("Client - TimeStopModule RUN")
                         local originalColorCorrection = Lighting:FindFirstChild("ColorCorrection")
                         local newColorCorrection = originalColorCorrection:Clone()  
                         newColorCorrection.Parent = Lighting
-                        --newColorCorrection.Contrast = -3
-                        --newColorCorrection.Saturation = 1
-                        --newColorCorrection.TintColor = Vector3.new(248, 28, 255)
 
-                        local tween1 = TweenService:Create(newColorCorrection,TweenInfo.new(1),{TintColor = Color3.new(248, 28, 255)})
+                        --local tween1 = TweenService:Create(newColorCorrection,TweenInfo.new(1),{TintColor = Color3.new(248/255, 28/255, 255/255)})
                         local tween2 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = -3})
-                        tween1:Play()
+                        --tween1:Play()
                         tween2:Play()
 
                         originalColorCorrection.Enabled = false

@@ -47,7 +47,7 @@ TheWorld.Defs = {
             Name = "Barrage",
             AbilityId = "Barrage",
             Duration = 5,
-            Cooldown = 5,
+            Cooldown = 10,
             Override = true,
             Damage = 5,
             loopTime = .25,
@@ -57,7 +57,7 @@ TheWorld.Defs = {
         TimeStop = {
             Name = "Time Stop",
             Duration = 5,
-            Cooldown = 5,
+            Cooldown = 10,
             Range = 20,
             Override = false
         },
@@ -378,7 +378,7 @@ function TheWorld.TimeStop(initPlayer,params)
             local timeStopParams = {}
             timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
             timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
-
+            powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.TimeStop.Cooldown)
             TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
         end
 

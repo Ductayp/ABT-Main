@@ -291,7 +291,7 @@ function TheWorld.Barrage(initPlayer,params)
 
                 local soundParams = {}
                 soundParams.SoundProperties = {}
-                soundParams.SoundProperties.Looped = true
+                soundParams.SoundProperties.Looped = false
                 powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,TheWorld.Defs.Abilities.Barrage.SoundEffect,soundParams)
             end
         end
@@ -354,9 +354,11 @@ function TheWorld.TimeStop(initPlayer,params)
             timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
             timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
 
-            TimeStop.Server_RunTimeStop(initPlayer,timeStopParams)
+            params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
 
             powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.TimeStop.Cooldown)
+
+            params.CanRun = true
 
         end
 
@@ -371,7 +373,13 @@ function TheWorld.TimeStop(initPlayer,params)
 
         -- TIME STOP/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
+            print("CLIENT - Time Stop - Execute = InputBegan")
 
+            local timeStopParams = {}
+            timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
+            timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
+
+            TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
         end
 
         -- TIME STOP/EXECUTE/INPUT ENDED

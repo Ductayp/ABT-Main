@@ -351,6 +351,7 @@ function PowerUtils.StopSpeakerSound(target,name,fadeTime)
 	if thisSpeaker then
 		for _,sound in pairs(thisSpeaker:GetChildren()) do 
 			if sound:IsA ("Sound") then
+				sound.Looped = false
 				if fadeTime then
 					local tween = TweenService:Create(sound,TweenInfo.new(fadeTime),{Volume = 0})
 					tween:Play()

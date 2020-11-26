@@ -100,41 +100,38 @@ end
 
 --// PlayerSetup - fires when the player joins and after each death
 function PowersService:PlayerSetup(player)
-
-    -- Setup the PlayerStand folder - destroys the stand folder along with contents, then recreates it
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(player.UserId)
-    if not playerStandFolder then
-        playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
-    end
-    playerStandFolder:ClearAllChildren() -- clear the stand completely
-
-    -- Setup the PowerStatus folders. clears itself and gets ready for new statuses
-    local playerStatusFolder = ReplicatedStorage.PowerStatus:FindFirstChild (player.userId)
-    if not playerStatusFolder then
-        playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
-    end
-    playerStatusFolder:ClearAllChildren()
-
-    -- Setup player Server Hitbox folder.
-    local playerHitboxServerFolder = workspace.ServerHitboxes:FindFirstChild(player.UserId)
-    if not playerHitboxServerFolder then
-        playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
-    end
-    playerHitboxServerFolder:ClearAllChildren()
-
-    -- Setup player Client Hitbox folder.
-    local playerHitboxClientFolder = workspace.ClientHitboxes:FindFirstChild(player.UserId)
-    if not playerHitboxClientFolder then
-        playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
-    end
-    playerHitboxClientFolder:ClearAllChildren()
+    
+    -- cleanup before setup
+    self:PlayerCleanup(player)
+    
+    -- setup player folders
+    playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
+    playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
+    playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
+    playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
+function PowersService:PlayerCleanup(player)
+    print("do cleanup")
+    local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
+
+    for _,location in pairs(cleanupLocations) do
+        for _,object in pairs(location:GetChildren()) do
+            print("object.Name: ",object.Name)
+            print("player.UserId: ",player.UserId)
+            if object.Name == tostring(player.UserId) then
+                print("matched")
+                object:Destroy()
+            end
+        end
+    end
+end
+
 --// KnitStart
 function PowersService:KnitStart()
-
+    
 end
 
 --// KnitInit - runs at server startup
@@ -163,8 +160,9 @@ function PowersService:KnitInit()
 
     -- Player Added event for studio testing
     for _, player in ipairs(Players:GetPlayers()) do
-        self:PlayerSetup(player)
-        self:RenderExistingStands(player)
+        --self:PlayerCleanup(player)
+        --self:PlayerSetup(player)
+        --self:RenderExistingStands(player)
 
         player.CharacterAdded:Connect(function(character)
             self:PlayerSetup(player)
@@ -178,19 +176,18 @@ function PowersService:KnitInit()
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
-        workspace.PlayerStands:FindFirstChild(player.UserId):Destroy()
-        workspace.ServerHitboxes:FindFirstChild(player.UserId):Destroy()
-        workspace.ClientHitboxes:FindFirstChild(player.UserId):Destroy()
-        ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId):Destroy()
+        PowersService:PlayerCleanup(player)
     end)
 
     
     -- Buttons setup - this is for testing, delete it later
     for i,v in pairs (workspace.StandButtons:GetChildren()) do
         if v:IsA("BasePart") then
+            local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
             v.Touched:Connect(function(hit)
-                local db = false
-                if db == false then db = true
+
+                if dbValue.Value == false then
+                    dbValue.Value = true
                     local humanoid = hit.Parent:FindFirstChild("Humanoid")
                     if humanoid then
                         local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
@@ -198,8 +195,8 @@ function PowersService:KnitInit()
                             self:SetPower(player,v.Name)
                         end
                     end
-                    wait(0.5)
-                    db = false
+                    wait(5)
+                    dbValue.Value = false
                 end
             end)
         end

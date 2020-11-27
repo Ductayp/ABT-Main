@@ -27,7 +27,7 @@ local PowersService = Knit.GetService("PowersService")
 function PowersController:InitializePower(params)
 
     params.SystemStage = "Intialize"
-    params.PowerID = ReplicatedStorage.ReplicatedPlayerData[Players.localPlayer.UserId].CurrentPower.Value 
+    params.PowerID = PowersService:GetCurrentPower(Players.LocalPlayer)
 
     -- if we find the powerModule, then run its INITIALIZE stage
     local powerModule

@@ -58,8 +58,9 @@ TheWorld.Defs = {
             Name = "Time Stop",
             Duration = 5,
             Cooldown = 10,
-            Range = 20,
-            Override = false
+            Range = 150,
+            Override = false,
+            SoundEffect = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop
         },
 
         Ability_4 = {
@@ -178,14 +179,14 @@ function TheWorld.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
-                powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
-                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
                 powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.EquipStand.EquipSound)
+                powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
+                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
             else
                 print("equip stand - STAND OFF")
-                powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
-                ManageStand.RemoveStand(initPlayer)
                 powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.EquipStand.RemoveSound)
+                powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
+                ManageStand.RemoveStand(initPlayer)            
             end
         end
 
@@ -299,7 +300,7 @@ function TheWorld.Barrage(initPlayer,params)
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             if barrageToggle.Value == false then
-                powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.Barrage.Cooldown)
+                powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
                 powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,TheWorld.Defs.Abilities.Barrage.SoundEffect.Name,.5)
             end 
@@ -353,11 +354,16 @@ function TheWorld.TimeStop(initPlayer,params)
             local timeStopParams = {}
             timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
             timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
+            timeStopParams.Delay = 2
 
-            params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
+            --params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
 
-            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.TimeStop.Cooldown)
-
+            --spawn(function()
+                --wait(2) -- this is here for The Worlds audio to fire the ability at the right time
+                params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
+                powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.TimeStop.Cooldown)
+            --end)
+            
             params.CanRun = true
 
         end
@@ -375,11 +381,19 @@ function TheWorld.TimeStop(initPlayer,params)
         if params.KeyState == "InputBegan" then
             print("CLIENT - Time Stop - Execute = InputBegan")
 
+            ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
+            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.TimeStop.SoundEffect)
+
+            -- wait here for the timestop audio
+            wait(2)
+
+            powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.TimeStop.Cooldown)
+
             local timeStopParams = {}
             timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
             timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
-            powerUtils.SetGUICooldown(params.InputId,TheWorld.Defs.Abilities.TimeStop.Cooldown)
             TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
+            --ManageStand.StopAnimation(initPlayer,params,"TimeStop")
         end
 
         -- TIME STOP/EXECUTE/INPUT ENDED

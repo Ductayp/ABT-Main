@@ -43,7 +43,17 @@ end
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ClientActivatePower(player,params)
+
     self.Server:ActivatePower(player,params)
+end
+
+--// Client:GetCuurentPower
+function PowersService.Client:GetCurrentPower(player)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currentPower = playerData.Character.CurrentPower
+
+    return currentPower
 end
 
 --// SetPower -- sets the players curret power
@@ -105,24 +115,20 @@ function PowersService:PlayerSetup(player)
     self:PlayerCleanup(player)
     
     -- setup player folders
-    playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
-    playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
-    playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
-    playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
+    local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
+    local playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
+    local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
+    local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
 
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
 function PowersService:PlayerCleanup(player)
-    print("do cleanup")
     local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
 
     for _,location in pairs(cleanupLocations) do
         for _,object in pairs(location:GetChildren()) do
-            print("object.Name: ",object.Name)
-            print("player.UserId: ",player.UserId)
             if object.Name == tostring(player.UserId) then
-                print("matched")
                 object:Destroy()
             end
         end

@@ -74,6 +74,8 @@ function ManageStand.EquipStand(initPlayer,standModel)
 		if idleAnimation then
 			local newTrack = animationController:LoadAnimation(idleAnimation)
 			newTrack:Play()
+		else
+			print("cant find animation")
 		end
 	end
 
@@ -177,8 +179,13 @@ end
 -- PlayAnimation
 function ManageStand.PlayAnimation(initPlayer,params,animationName)
 
+	print("ManageStand.PlayAnimation: ",initPlayer,params,animationName)
+
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	print("target stand ",targetStand)
+	print("target stand parent ",targetStand.Parent)
 
 	-- run the animation
 	local animationController = targetStand:FindFirstChild("AnimationController")

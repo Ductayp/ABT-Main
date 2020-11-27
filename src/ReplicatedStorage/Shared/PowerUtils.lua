@@ -10,6 +10,7 @@ local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
 local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 local localPlayer = game.Players.LocalPlayer
 
 -- Knit and modules
@@ -51,22 +52,24 @@ function PowerUtils.SetCooldown(player,params,value)
     thisCooldown.Value = os.time() + value
 end
 
-function PowerUtils.SetGUICooldown(key,value)
+function PowerUtils.SetGUICooldown(initPlayer,key,value)
 
-	spawn(function()
+	if initPlayer == Players.LocalPlayer then
+		spawn(function()
 
-		local mainGui = localPlayer.PlayerGui:WaitForChild("MainGui")
-		local coolDownFrame = mainGui:FindFirstChild("CoolDown",true)
-		local newButton = coolDownFrame:FindFirstChild(key):Clone()
-		newButton.Name = "Cooldown"
-		newButton.Parent = coolDownFrame
-		newButton.Text = value
-		utils.EasyDebris(newButton,value)
-		for count = 1, value do
-			wait(1)
-			newButton.Text = value - count
-		end
-	end)
+			local mainGui = localPlayer.PlayerGui:WaitForChild("MainGui")
+			local coolDownFrame = mainGui:FindFirstChild("CoolDown",true)
+			local newButton = coolDownFrame:FindFirstChild(key):Clone()
+			newButton.Name = "Cooldown"
+			newButton.Parent = coolDownFrame
+			newButton.Text = value
+			utils.EasyDebris(newButton,value)
+			for count = 1, value do
+				wait(1)
+				newButton.Text = value - count
+			end
+		end)
+	end
 end 
 
 --// GetToggle 

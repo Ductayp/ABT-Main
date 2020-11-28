@@ -43,7 +43,7 @@ end
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ClientActivatePower(player,params)
-
+    print("boop")
     self.Server:ActivatePower(player,params)
 end
 

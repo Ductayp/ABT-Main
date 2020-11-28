@@ -25,9 +25,6 @@ function TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
 
     for _, targetPlayer in pairs(game.Players:GetPlayers()) do
 
-        print(targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position))
-        print("targetPlayer: ",targetPlayer)
-        print("initPlayer: ",initPlayer)
 
         if targetPlayer ~= initPlayer then
             if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) < timeStopParams.Range then

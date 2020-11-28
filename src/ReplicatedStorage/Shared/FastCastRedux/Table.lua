@@ -1,151 +1,108 @@
---!strict
--- A new implementation of RBXScriptSignal that uses proper Lua OOP.
--- This was explicitly made to transport other OOP objects.
--- I would be using BindableEvents, but they don't like cyclic tables (part of OOP objects with __index)
+--!nocheck
+-- shut up jesser
 
--- Inject types
-local TypeDefs = require(script.Parent.TypeDefinitions)
-type CanPierceFunction = TypeDefs.CanPierceFunction
-type GenericTable = TypeDefs.GenericTable
-type Caster = TypeDefs.Caster
-type FastCastBehavior = TypeDefs.FastCastBehavior
-type CastTrajectory = TypeDefs.CastTrajectory
-type CastStateInfo = TypeDefs.CastStateInfo
-type CastRayInfo = TypeDefs.CastRayInfo
-type ActiveCast = TypeDefs.ActiveCast
+--[[
+	To use: local table = require(this)
+	(Yes, override table.)
 
-local TestService = game:GetService("TestService")
-local table = require(script.Parent.Table)
+	Written by EtiTheSpirit. Adds custom functions to the `table` value provided by roblox (in normal cases, this would simply modify `table`, but Roblox has disabled that so we need to use a proxy)
+	
+	CHANGES:
+		3 December 2019 @ 11:07 PM CST:
+			+ Added table.join
+			
+			
+		21 November 2019 @ 6:50 PM CST:
+			+ Added new method bodies to skip/take using Luau's new methods. Drastic speed increases achieved. CREDITS: Halalaluyafail3 (See https://devforum.roblox.com/t/sandboxed-table-system-add-custom-methods-to-table/391177/12?u=etithespirit)
+			+ Added table.retrieve as proposed by ^ under the name "table.range" as this name relays what it does a bit better, I think.
+			+ Added table.skipAndTake as an alias method.
 
-local SignalStatic = {}
-SignalStatic.__index = SignalStatic
-SignalStatic.__type = "Signal" -- For compatibility with TypeMarshaller
-local ConnectionStatic = {}
-ConnectionStatic.__index = ConnectionStatic
-ConnectionStatic.__type = "SignalConnection" -- For compatibility with TypeMarshaller
+--]]
 
-export type Signal = {
-	Name: string,
-	Connections: {[number]: Connection},
-	YieldingThreads: {[number]: BindableEvent}
-}
+local RNG = Random.new()
+local RobloxTable = table
+local Table = {}
 
-export type Connection = {
-	Signal: Signal?,
-	Delegate: any,
-	Index: number	
-}
-
--- Format params: methodName, ctorName
-local ERR_NOT_INSTANCE = "Cannot statically invoke method '%s' - It is an instance method. Call it on an instance of this class created via %s"
-
-function SignalStatic.new(signalName: string): Signal
-	local signalObj: Signal = {
-		Name = signalName,
-		Connections = {},
-		YieldingThreads = {}
-	}
-	return setmetatable(signalObj, SignalStatic)
+-- Returns true if the table contains the specified value.
+Table.contains = function (tbl, value)
+	return Table.indexOf(tbl, value) ~= nil -- This is kind of cheatsy but it promises the best performance.
 end
 
-local function NewConnection(sig: Signal, func: any): Connection 
-	local connectionObj: Connection = {
-		Signal = sig,
-		Delegate = func,
-		Index = -1
-	}
-	return setmetatable(connectionObj, ConnectionStatic)
+-- A combo of table.find and table.keyOf -- This first attempts to find the ordinal index of your value, then attempts to find the lookup key if it can't find an ordinal index.
+Table.indexOf = function (tbl, value)
+	local fromFind = table.find(tbl, value)
+	if fromFind then return fromFind end
+	
+	return Table.keyOf(tbl, value)
 end
 
-local function ThreadAndReportError(delegate: any, args: GenericTable, handlerName: string)
-	local thread = coroutine.create(function ()
-		delegate(unpack(args))
-	end)
-	local success, msg = coroutine.resume(thread)
-	if not success then 
-		-- For the love of god roblox PLEASE add the ability to customize message type in output statements.
-		-- This "testservice" garbage at the start of my message is annoying as all hell.
-		TestService:Error(string.format("Exception thrown in your %s event handler: %s", handlerName, msg))
-		TestService:Checkpoint(debug.traceback(thread))
-	end
-end
-
-function SignalStatic:Connect(func)
-	assert(getmetatable(self) == SignalStatic, ERR_NOT_INSTANCE:format("Connect", "Signal.new()"))
-	local connection = NewConnection(self, func)
-	connection.Index = #self.Connections + 1
-	table.insert(self.Connections, connection.Index, connection)
-	return connection
-end
-
-function SignalStatic:Fire(...)
-	assert(getmetatable(self) == SignalStatic, ERR_NOT_INSTANCE:format("Fire", "Signal.new()"))
-	local args = table.pack(...)
-	local allCons = self.Connections
-	local yieldingThreads = self.YieldingThreads
-	for index = 1, #allCons do
-		local connection = allCons[index]
-		if connection.Delegate ~= nil then
-			-- Catch case for disposed signals.
-			ThreadAndReportError(connection.Delegate, args, connection.Signal.Name)
+-- Returns the key of the specified value, or nil if it could not be found. Unlike IndexOf, this searches every key in the table, not just ordinal indices (arrays)
+-- This is inherently slower due to how lookups work, so if your table is structured like an array, use table.find
+Table.keyOf = function (tbl, value)
+	for index, obj in pairs(tbl) do
+		if obj == value then
+			return index
 		end
 	end
-	for index = 1, #yieldingThreads do
-		local thread = yieldingThreads[index]
-		if thread ~= nil then
-			coroutine.resume(thread, ...)
+	return nil
+end
+
+-- Only works on ordinal. yada yada.
+Table.insertAndGetIndexOf = function (tbl, value)
+	tbl[#tbl + 1] = value
+	return #tbl
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). Skips *n* objects in the table, and returns a new table that contains indices (n + 1) to (end of table)
+Table.skip = function (tbl, n)
+	return table.move(tbl, n+1, #tbl, 1, table.create(#tbl-n))
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). Takes *n* objects from a table and returns a new table only containing those objects.
+Table.take = function (tbl, n)
+	return table.move(tbl, 1, n, 1, table.create(n))
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). Takes the range of entries in this table in the range [start, finish] and returns that range as a table.
+Table.range = function (tbl, start, finish)
+	return table.move(tbl, start, finish, 1, table.create(finish - start + 1))
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). An alias that calls table.skip(skip), and then takes [take] entries from the resulting table.
+Table.skipAndTake = function (tbl, skip, take)
+	return table.move(tbl, skip + 1, skip + take, 1, table.create(take))
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). Selects a random object out of tbl
+Table.random = function (tbl)
+	return tbl[RNG:NextInteger(1, #tbl)]
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). Merges tbl0 and tbl1 together.
+Table.join = function (tbl0, tbl1)
+	local nt = table.create(#tbl0 + #tbl1)
+	local t2 = table.move(tbl0, 1, #tbl0, 1, nt)
+	return table.move(tbl1, 1, #tbl1, #tbl0 + 1, nt)
+end
+
+-- ONLY SUPPORTS ORDINAL TABLES (ARRAYS). Removes the specified object from this array.
+Table.removeObject = function (tbl, obj)
+	local index = Table.indexOf(tbl, obj)
+	if index then
+		table.remove(tbl, index)
+	end
+end
+
+return setmetatable({}, {
+	__index = function(tbl, index)
+		if Table[index] ~= nil then
+			return Table[index]
+		else
+			return RobloxTable[index]
 		end
-	end
-end
+	end;
 
-function SignalStatic:FireSync(...)
-	assert(getmetatable(self) == SignalStatic, ERR_NOT_INSTANCE:format("FireSync", "Signal.new()"))
-	local args = table.pack(...)
-	local allCons = self.Connections
-	local yieldingThreads = self.YieldingThreads
-	for index = 1, #allCons do
-		local connection = allCons[index]
-		if connection.Delegate ~= nil then
-			-- Catch case for disposed signals.
-			connection.Delegate(unpack(args))
-		end
-	end
-	for index = 1, #yieldingThreads do
-		local thread = yieldingThreads[index]
-		if thread ~= nil then
-			coroutine.resume(thread, ...)
-		end
-	end
-end
-
-function SignalStatic:Wait()
-	assert(getmetatable(self) == SignalStatic, ERR_NOT_INSTANCE:format("Wait", "Signal.new()"))
-	local args = {}
-	local thread = coroutine.running()
-	table.insert(self.YieldingThreads, thread)
-	args = { coroutine.yield() }
-	table.removeObject(self.YieldingThreads, thread)
-	return unpack(args)
-end
-
-function SignalStatic:Dispose()
-	assert(getmetatable(self) == SignalStatic, ERR_NOT_INSTANCE:format("Dispose", "Signal.new()"))
-	local allCons = self.Connections
-	for index = 1, #allCons do
-		allCons[index]:Disconnect()
-	end
-	self.Connections = {}
-	setmetatable(self, nil)
-end
-
-function ConnectionStatic:Disconnect()
-	assert(getmetatable(self) == ConnectionStatic, ERR_NOT_INSTANCE:format("Disconnect", "private function NewConnection()"))
-	table.remove(self.Signal.Connections, self.Index)
-	self.SignalStatic = nil
-	self.Delegate = nil
-	self.YieldingThreads = {}
-	self.Index = -1
-	setmetatable(self, nil)
-end
-
-return SignalStatic
+	__newindex = function(tbl, index, value)
+		error("Add new table entries by editing the Module itself.")
+	end;
+})

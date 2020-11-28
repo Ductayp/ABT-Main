@@ -12,19 +12,20 @@ local RunService = game:GetService("RunService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
-local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
+
 
 -- Ability modules
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Barrage = require(Knit.Abilities.Barrage)
 local TimeStop = require(Knit.Abilities.TimeStop)
+local KnifeThrow = require(Knit.Abilities.KnifeThrow)
 
 local TheWorld = {}
 
 
 TheWorld.Defs = {
 
-    -- just somegeneral defs here
+    -- just some general defs here
     PowerName = "The World",
     StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
 
@@ -119,6 +120,8 @@ function TheWorld.Manager(initPlayer,params)
         TheWorld.Barrage(initPlayer,params)
     elseif params.InputId == "F" then
         TheWorld.TimeStop(initPlayer,params)
+    elseif params.InputId == "T" then
+        TheWorld.KnifeThrow(initPlayer,params)
     end
 
     return params
@@ -401,6 +404,58 @@ function TheWorld.TimeStop(initPlayer,params)
 
         end
 
+    end
+end
+
+--// KNIFE THROW //---------------------------------------------------------------------------------
+function TheWorld.KnifeThrow(initPlayer,params)
+    print("throw")
+    
+    -- get stand folder, setup if it doesnt exist
+    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+
+    -- KNIFE THROW/INITIALIZE
+    if params.SystemStage == "Intialize" then
+
+        -- KNIFE THROW/INITIALIZE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+
+        -- KNIFE THROW/INITIALIZE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- KNIFE THROW/ACTIVATE
+    if params.SystemStage == "Activate" then
+        print("The World - Equip Stand - Activate")
+
+         -- KNIFE THROW/ACTIVATE/INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+            --KnifeThrow.ThrowKnife(initPlayer,params)
+        end
+
+        -- KNIFE THROW/ACTIVATE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- KNIFE THROW/EXECUTE
+    if params.SystemStage == "Execute" then
+        print("The World - Equip Stand - Execute")
+
+         -- KNIFE THROW/EXECUTE/INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+
+        end
+
+        -- KNIFE THROW/EXECUTE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            -- no action here
+        end
     end
 end
 

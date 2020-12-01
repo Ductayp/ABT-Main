@@ -43,7 +43,6 @@ end
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ClientActivatePower(player,params)
-    print("boop")
     self.Server:ActivatePower(player,params)
 end
 
@@ -73,8 +72,19 @@ function PowersService:RegisterHit(initPlayer,characterHit,params)
     -- get the damage
     local powerModule = require(Knit.Powers[params.PowerId])
     local damage = powerModule.Defs.Abilities[params.AbilityId].Damage
-
     characterHit.Humanoid:TakeDamage(damage)
+
+    if characterHit.Name == Dummy then
+        for i,v in pairs(characterHit:GetDescendants()) do
+            if v:IsA("BasePart") then
+                spawn(function()
+                    v.Color = Color3.new(255/255, 0/255, 0/255)
+                    wait(.5)
+                    v.Color = Color3.new(163/255, 162/255, 165/255)
+                end)
+            end
+        end
+    end
 
 end
 
@@ -92,14 +102,17 @@ function PowersService:RenderExistingStands(player)
                 local params = {}
                 params.PowerID = targetPlayerData.Character.CurrentPower
                 params.KeyState = "InputBegan"
-                params.Key = "Q" -- "Q" is always EqupiStand toggle
+                params.InputId = "Q" -- "Q" is always EqupiStand toggle
+                params.CanRun = true
 
-				local abilityToggleFolder = ReplicatedStorage.PowerStatus[targetPlayer.UserId].Toggles
+                local abilityToggleFolder = ReplicatedStorage.PowerStatus[targetPlayer.UserId]:FindFirstChild("Toggles")
+                if not abilityToggleFolder then
+                    return
+                end
 				local standToggle = abilityToggleFolder:FindFirstChild("Q")
 
 				if standToggle then
                     if standToggle.Value == true then
-                        print("server-side fire")
 						self.Client.RenderExistingStands:Fire(player,targetPlayer,params)
 					end
                 end

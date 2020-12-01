@@ -50,17 +50,15 @@ end
 
 --// ExecutePower
 function PowersController:ExecutePower(initPlayer,params)
-
+    
     params.SystemStage = "Execute"
     local powerModule = require((Knit.Powers[params.PowerID]))
     powerModule.Manager(initPlayer,params)
 end
 
 --// RenderExistingStands
-function PowersController:RenderExistingStands(targetPlayer,params)
-
+function PowersController:RenderExistingAbility(targetPlayer,params)
     self:ExecutePower(targetPlayer,params)
-
 end 
 
 --// KnitStart
@@ -71,8 +69,8 @@ function PowersController:KnitStart()
     end)
 
     PowersService.RenderExistingStands:Connect(function(targetPlayer,params)
-        print("client-side received")
-        self:RenderExistingStands(targetPlayer,params)
+        local standFolder = workspace:waitForChild("PlayerStands") -- this wait is here just to be sure the workspace folder has fullyloaded for the new player
+        self:RenderExistingAbility(targetPlayer,params)
     end)
 
 end

@@ -64,11 +64,13 @@ TheWorld.Defs = {
             SoundEffect = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop
         },
 
-        Ability_4 = {
+       KnifeThrow = {
             Name = "Ability 4",
-            Duration = 0,
             Cooldown = 1,
-            Override = false
+            Override = false,
+            Range = 75,
+            Speed = 5,
+            Damage = 20
         },
 
         Ability_5 = {
@@ -409,8 +411,9 @@ end
 
 --// KNIFE THROW //---------------------------------------------------------------------------------
 function TheWorld.KnifeThrow(initPlayer,params)
-    print("throw")
     
+    params.KnifeThrow = TheWorld.Defs.Abilities.KnifeThrow
+  
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 
@@ -430,11 +433,11 @@ function TheWorld.KnifeThrow(initPlayer,params)
 
     -- KNIFE THROW/ACTIVATE
     if params.SystemStage == "Activate" then
-        print("The World - Equip Stand - Activate")
 
          -- KNIFE THROW/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            --KnifeThrow.ThrowKnife(initPlayer,params)
+            KnifeThrow.Server_ThrowKnife(initPlayer,params)
+            params.CanRun = true
         end
 
         -- KNIFE THROW/ACTIVATE/INPUT ENDED
@@ -445,11 +448,10 @@ function TheWorld.KnifeThrow(initPlayer,params)
 
     -- KNIFE THROW/EXECUTE
     if params.SystemStage == "Execute" then
-        print("The World - Equip Stand - Execute")
 
          -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-
+            KnifeThrow.Client_KnifeThrow(initPlayer,params)
         end
 
         -- KNIFE THROW/EXECUTE/INPUT ENDED

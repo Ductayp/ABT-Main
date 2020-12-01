@@ -83,23 +83,44 @@ function KnifeThrow.Client_KnifeThrow(initPlayer,params)
     targetStand.WeldConstraint.Enabled = true
 
     -- create the cosmetic part mover
-    local clientPart = ReplicatedStorage.EffectParts.Projectiles.KnifeThrow.KnifeThrow_Client:Clone()
-    clientPart.Parent = workspace.RenderedEffects
-    clientPart.CFrame = params.OriginCFrame
+    local mainPart = ReplicatedStorage.EffectParts.Projectiles.KnifeThrow.KnifeThrow_Client_2:Clone()
+    mainPart.Parent = workspace.RenderedEffects
+    mainPart.CFrame = params.OriginCFrame
+
+    -- get the CFrame offset of the spirals
+    local offset_1 = mainPart.Spiral_1.CFrame:ToObjectSpace(mainPart.CFrame)
+    local offset_2 = mainPart.Spiral_2.CFrame:ToObjectSpace(mainPart.CFrame)
+    local offset_3 = mainPart.Spiral_3.CFrame:ToObjectSpace(mainPart.CFrame)
+
+
+    -- remove the temporary welds
+    for i,v in pairs(mainPart:GetChildren()) do
+        if v.Name == "TempWeld" then
+            v:Destroy()
+        end
+    end
 
     -- add it to Debris
-    Debris:AddItem(clientPart,params.ArrivalTime)
+    --Debris:AddItem(mainPart,params.ArrivalTime)
 
     -- Tween it
     local tweenInfo = TweenInfo.new(
         params.ArrivalTime - os.time()
         )
-    local tween = TweenService:Create(clientPart,tweenInfo,{CFrame = params.DestinatonCFrame})
-    tween:Play()
+    local tweenMainPart = TweenService:Create(mainPart,tweenInfo,{CFrame = params.DestinatonCFrame})
+    local tweenSpiral_1 = TweenService:Create(mainPart.Spiral_1,tweenInfo,{CFrame = params.DestinatonCFrame})
+    local tweenSpiral_2 = TweenService:Create(mainPart.Spiral_2,tweenInfo,{CFrame = params.DestinatonCFrame})
+    local tweenSpiral_3 = TweenService:Create(mainPart.Spiral_3,tweenInfo,{CFrame = params.DestinatonCFrame})
 
-    tween.Completed:Connect(function(playbackState)
+
+    tweenMainPart:Play()
+    tweenSpiral_1:Play()
+    tweenSpiral_2:Play()
+    tweenSpiral_3:Play()
+
+    tweenMainPart.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed then
-            clientPart:Destroy()
+            mainPart:Destroy()
         end
     end)
 

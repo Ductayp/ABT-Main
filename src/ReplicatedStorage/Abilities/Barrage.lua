@@ -75,7 +75,7 @@ function module.RunEffect(initPlayer,params)
 	end
 
 	-- clone the effect parts in
-	local thisEffect = ReplicatedStorage.EffectParts.Barrage[params.PowerID]:Clone()
+	local thisEffect = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID]:Clone()
 	thisEffect.Name = "Barrage"
 	thisEffect.Parent = barrageFolder
 	thisEffect.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-2))
@@ -142,8 +142,6 @@ function module.EndEffect(initPlayer,params)
 		wait(.1)
 		ManageStand.ToggleTrails(initPlayer,params,"Idle")
 	end)
-	
-	
 end
 
 

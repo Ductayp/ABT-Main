@@ -10,6 +10,10 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
+-- Stand Anchor Offsets
+local anchor_IdleRight = CFrame.new(2,1,2.5)
+local anchor_Front = CFrame.new(0,0,-2)
+
 local ManageStand = {}
 
 --// equips a stand for the target player
@@ -179,24 +183,17 @@ end
 -- PlayAnimation
 function ManageStand.PlayAnimation(initPlayer,params,animationName)
 
-	print("ManageStand.PlayAnimation: ",initPlayer,params,animationName)
-
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-
-	print("target stand ",targetStand)
-	print("target stand parent ",targetStand.Parent)
-
 	-- run the animation
 	local animationController = targetStand:FindFirstChild("AnimationController")
 	if animationController then
-		local thisAnimation = animationController:FindFirstChild(animationName)
+		local thisAnimation = ReplicatedStorage.Animations:FindFirstChild(animationName)
 		if thisAnimation then
 			local newTrack = animationController:LoadAnimation(thisAnimation)
 			newTrack:Play()
 		end
 	end
-
 end
 
 -- StopAnimation

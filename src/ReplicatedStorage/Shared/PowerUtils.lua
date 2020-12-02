@@ -242,7 +242,6 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 		newHitBox.Transparency = 1
 	end
 
-
 	-- weld it
 	local hitboxWeld = utils.EasyWeld(newHitBox,params.WeldTo,newHitBox)
 
@@ -289,11 +288,8 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 			
 		until canRun == false
 	end)
-
 	return newHitBox
-
 end
-
 
 
 --// WeldSpeakerSound - weld a speaker into the target and plays sounds according to params

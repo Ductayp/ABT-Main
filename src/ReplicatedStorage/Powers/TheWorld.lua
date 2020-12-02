@@ -19,6 +19,7 @@ local ManageStand = require(Knit.Abilities.ManageStand)
 local Barrage = require(Knit.Abilities.Barrage)
 local TimeStop = require(Knit.Abilities.TimeStop)
 local KnifeThrow = require(Knit.Abilities.KnifeThrow)
+local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 
 local TheWorld = {}
 
@@ -65,17 +66,18 @@ TheWorld.Defs = {
         },
 
        KnifeThrow = {
-            Name = "Ability 4",
-            Cooldown = 1,
+            Name = "Knife Throw",
+            Cooldown = 5,
             Override = false,
             Range = 75,
-            Speed = 5,
-            Damage = 20
+            Speed = 40,
+            Damage = 20,
+            SoundEffect = ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow
         },
 
-        Ability_5 = {
-            Name = "Ability 5",
-            Duration = 0,
+        HeavyPunch = {
+            Name = "Heavy Punch",
+            Damage = 30,
             Cooldown = 1,
             Override = false
         },
@@ -124,12 +126,17 @@ function TheWorld.Manager(initPlayer,params)
         TheWorld.TimeStop(initPlayer,params)
     elseif params.InputId == "T" then
         TheWorld.KnifeThrow(initPlayer,params)
+    elseif params.InputId == "R" then
+        TheWorld.HeavyPunch(initPlayer,params)
     end
 
     return params
 end
 
---// EQUIP STAND //---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+--// EQUIP STAND //-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
 function TheWorld.EquipStand(initPlayer,params)
     
     -- get stand folder, setup if it doesnt exist
@@ -202,7 +209,10 @@ function TheWorld.EquipStand(initPlayer,params)
     end
 end
 
---// BARRAGE //---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+--// BARRAGE //----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
 function TheWorld.Barrage(initPlayer,params)
 
     -- get barrage toggle, setup if it doesnt exist
@@ -254,7 +264,8 @@ function TheWorld.Barrage(initPlayer,params)
                     WeldTo = initPlayer.Character.HumanoidRootPart,
                     Tick = TheWorld.Defs.Abilities.Barrage.loopTime,
                     Debug = false,
-                    Exclude = {initPlayer.Character}
+                    Exclude = {initPlayer.Character},
+                    Damage = TheWorld.Defs.Abilities.Barrage.Damage
                 }
                 local newHitBox = powerUtils.WeldedHitbox(initPlayer,hitboxParams)
 
@@ -313,7 +324,10 @@ function TheWorld.Barrage(initPlayer,params)
     end
 end
 
+--------------------------------------------------------------------------------------------------
 --// TIME STOP //---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
 function TheWorld.TimeStop(initPlayer,params)
 
     -- get stand folder and stand
@@ -409,7 +423,10 @@ function TheWorld.TimeStop(initPlayer,params)
     end
 end
 
---// KNIFE THROW //---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+--// KNIFE THROW //-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
 function TheWorld.KnifeThrow(initPlayer,params)
     
     params.KnifeThrow = TheWorld.Defs.Abilities.KnifeThrow
@@ -436,6 +453,7 @@ function TheWorld.KnifeThrow(initPlayer,params)
 
          -- KNIFE THROW/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
+            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.KnifeThrow.Cooldown)
             KnifeThrow.Server_ThrowKnife(initPlayer,params)
             params.CanRun = true
         end
@@ -451,10 +469,67 @@ function TheWorld.KnifeThrow(initPlayer,params)
 
          -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
+            powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.KnifeThrow.Cooldown)
+            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.KnifeThrow.SoundEffect)
             KnifeThrow.Client_KnifeThrow(initPlayer,params)
         end
 
         -- KNIFE THROW/EXECUTE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            -- no action here
+        end
+    end
+end
+
+--------------------------------------------------------------------------------------------------
+--// HEAVY  PUNCH //------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
+function TheWorld.HeavyPunch(initPlayer,params)
+    
+    params.HeavyPunch = TheWorld.Defs.Abilities.HeavyPunch
+  
+    -- get stand folder, setup if it doesnt exist
+    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+
+    -- HEAVY PUNCH/INITIALIZE
+    if params.SystemStage == "Intialize" then
+
+        -- HEAVY PUNCH/INITIALIZE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+
+        -- HEAVY PUNCH/INITIALIZE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- HEAVY PUNCH/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+         -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+            HeavyPunch.Server_DoPunch(initPlayer,params)
+            params.CanRun = true
+        end
+
+        -- HEAVY PUNCH/ACTIVATE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- HEAVY PUNCH/EXECUTE
+    if params.SystemStage == "Execute" then
+
+         -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+            HeavyPunch.Client_DoPunch(initPlayer,params)
+        end
+
+        -- HEAVY PUNCH/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             -- no action here
         end

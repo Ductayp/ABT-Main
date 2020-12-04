@@ -508,9 +508,10 @@ function TheWorld.HeavyPunch(initPlayer,params)
 
          -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            local heavyPunchParams = {TheWorld.Defs.Abilities.HeavyPunch}
+            local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
             
             HeavyPunch.Activate(initPlayer,heavyPunchParams)
+
             params.CanRun = true
         end
 
@@ -526,7 +527,7 @@ function TheWorld.HeavyPunch(initPlayer,params)
          -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
-            local heavyPunchParams = {TheWorld.Defs.Abilities.HeavyPunch}
+            local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
             --heavyPunchParams.Color = Color3.new(255/255, 253/255, 156/255) -- yellow for TheWorld 255, 176, 0
 
             HeavyPunch.Execute(initPlayer,heavyPunchParams)

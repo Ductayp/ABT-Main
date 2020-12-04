@@ -199,6 +199,111 @@ function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	return part
 end
 
+--// SimpleHitBox -- just creates a simple hitbox - HIS HITBOX CAN ONLY HIT A HUMANOID ONCE PER INSTANCE
+-- boxParams define the box itself such as size
+-- hitParams define what will be be sent to PowerService:RegisterHit() when something is hit
+function PowerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
+
+	local hitBox = Instance.new("Part")
+
+	-- set some defaults but we can override them with boxParams
+	hitBox.Color = Color3.new(255/255, 102/255, 204/255)
+	hitBox.Massless = true
+	hitBox.CanCollide = false
+	hitBox.Anchored = true
+	hitBox.Parent = workspace.ServerHitboxes[initPlayer.UserId] -- parented to the initPlayer folder, this is so we can find the owner if we ever need to
+
+	-- set anything from boxParams, this override defaults, OBVIOUSLY lol
+	for key,value in pairs(boxParams) do
+		hitBox[key] = value
+	end
+
+	-- a list of characters already hit, these get added in the Touched
+	local hitList = {} 
+
+	-- get all touching parts and hit them, this allows us to hit anything that was inside the hitbox when it spawned
+	local connection = hitBox.Touched:Connect(function() end)
+	local results = hitBox:GetTouchingParts()
+	connection:Disconnect()
+
+	for _,hit in pairs (results) do
+		if hit.Parent:FindFirstChild("Humanoid") then
+
+			-- check if this character was already hit
+			local characterHit = hit.Parent
+			local canHit = true
+			for alreadyHit,_ in pairs(hitList) do
+				if alreadyHit == characterHit then
+					canHit = false
+					break
+				end
+			end
+
+			-- now add the character to the table, this produce no duplicates
+			hitList[characterHit] = true
+
+			-- check if this is the initPlayer, set canHit to false if it is
+			for _, player in pairs(Players:GetPlayers()) do
+				if player.Character == characterHit then
+					canHit = false
+				end
+			end
+
+			-- do the hit if canHit is true
+			if canHit == true then
+				Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,hitParams)
+				--local newHitValue = utils.EasyInstance("ObjectValue",{Name = "CharacterHit",Parent = hitBox,Value = characterHit})
+				local newValueObject = Instance.new("ObjectValue") -- will store a character
+				newValueObject.Name = "CharacterHit"
+				newValueObject.Parent = hitBox
+				newValueObject.Value = characterHit
+			end
+
+		end
+	end
+
+	
+	-- the Touched event for new hits
+	hitBox.Touched:Connect(function(hit)
+
+		local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
+		if humanoid then
+
+			-- check if this character was already hit
+			local characterHit = hit.Parent
+			local canHit = true
+			for alreadyHit,_ in pairs(hitList) do
+				if alreadyHit == characterHit then
+					canHit = false
+					break
+				end
+			end
+
+			-- now add the character to the table, this produce no duplicates
+			hitList[characterHit] = true
+
+			-- check if this is the initPlayer, set canHit to false if it is
+			for _, player in pairs(Players:GetPlayers()) do
+				if player.Character == characterHit then
+					canHit = false
+				end
+			end
+
+			-- do the hit if canHit is true
+			if canHit == true then
+				Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,hitParams)
+				--local newHitValue = utils.EasyInstance("ObjectValue",{Name = "CharacterHit",Parent = hitBox,Value = characterHit})
+				local newValueObject = Instance.new("ObjectValue") -- will store a character
+				newValueObject.Name = "CharacterHit"
+				newValueObject.Parent = hitBox
+				newValueObject.Value = characterHit
+			end
+		end
+	end)
+
+	return hitBox
+end
+
 --// WeldedHitBox - will run until the part is destroyed
 function PowerUtils.WeldedHitbox(initPlayer,params)
 

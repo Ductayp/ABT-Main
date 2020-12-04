@@ -37,6 +37,7 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
 
             local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
             if humanoid then
+                print(humanoid.Parent)
                 if humanoid.Parent.Name ~= initPlayer.Name then
                     charactersHit[hit.Parent] = true
                 end

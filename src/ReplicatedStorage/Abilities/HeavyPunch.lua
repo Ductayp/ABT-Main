@@ -21,37 +21,30 @@ function HeavyPunch.Activate(initPlayer,params)
     -- spawn function for hitbox with a delay
     spawn(function()
         wait(.5)
-        local hitBox = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.Hitbox:Clone()
-        hitBox.Parent = workspace.RenderedEffects
-        hitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-10)) -- positions somewhere good near the stand
-        Debris:AddItem(hitBox,.5)
 
-        local excludeCharacter = {} -- a dictionary of character to exclude, can be added to
-        hitBox.Touched:Connect(function(hit) 
-    
-            local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
-            if humanoid then
-                local hitPlayer = utils.GetPlayerFromCharacter(hit.Parent)
-                if hitPlayer ~= initPlayer then
+        -- make a new hitbox, it stays in place
+        local boxParams = {}
+        boxParams.Size = Vector3.new(4,3,12)
+        boxParams.Transparency = .5
+        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
+        local hitParams = {}
+        hitParams.Damage = params.Damage
 
-                    local isExcluded = false
-                    for character,boolean in pairs (excludeCharacter) do
-                        if character == hit.Parent then
-                            print(hit.Parent)
-                            isExcluded = true
-                            break
-                        end
-                    end
-    
-                    if isExcluded == false then
-                        print("second time",isExcluded)
-                        excludeCharacter[hit.Parent] = true
-                        Knit.Services.PowersService:RegisterHit(initPlayer,hit.Parent,params)
-                    end
-                    
-                end
-            end 
+        local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
+
+        --Debris:AddItem(newHitbox,.5)
+        --wait()
+        newHitbox.ChildAdded:Connect(function(child)
+            print("boop")
+            if child.Name == "CharacterHit" then
+                print("we hit it!: ",child.Value)
+            end
         end)
+
+        print( newHitbox.ChildAdded:Connect(function(child)
+            print("we hit it!: TEST ",child.Value)
+        end) ) -- should print Connection
+        
     end)
 end
 
@@ -88,30 +81,30 @@ function HeavyPunch.Execute(initPlayer,params)
 
     
     fastBall.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-5))
-    ring_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
-    ring_2.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-12))
-    ring_3.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-17))
-    shock_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-6))
+    ring_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
+    ring_2.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
+    ring_3.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-11))
+    shock_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-5))
 
 
     if params.Color then
         --fastBall.Fireball.Color = params.Color
     end
 
-    fastBallDestination = fastBall.CFrame:ToWorldSpace(CFrame.new( 0, 0, -20))
+    fastBallDestination = fastBall.CFrame:ToWorldSpace(CFrame.new( 0, 0, -10))
 
-    local fastBall_Move = TweenService:Create(fastBall,TweenInfo.new(.4),{CFrame = fastBallDestination})
-    local fastBall_FadeOut = TweenService:Create(fastBall.Fireball,TweenInfo.new(.4, Enum.EasingStyle.Quart),{Transparency = 1})
+    local fastBall_Move = TweenService:Create(fastBall,TweenInfo.new(.6),{CFrame = fastBallDestination})
+    local fastBall_FadeOut = TweenService:Create(fastBall.Fireball,TweenInfo.new(.6, Enum.EasingStyle.Quart),{Transparency = 1})
 
     local ring_1_FadeIn = TweenService:Create(ring_1.ShockRing,TweenInfo.new(.1),{Transparency = .6})
     local ring_2_FadeIn = TweenService:Create(ring_2.ShockRing,TweenInfo.new(.1),{Transparency = .7})
     local ring_3_FadeIn = TweenService:Create(ring_3.ShockRing,TweenInfo.new(.1),{Transparency = .8})
     local ring_1_FadeOut = TweenService:Create(ring_1.ShockRing,TweenInfo.new(2),{Transparency = 1})
-    local ring_2_FadeOut = TweenService:Create(ring_2.ShockRing,TweenInfo.new(2),{Transparency = 1})
-    local ring_3_FadeOut = TweenService:Create(ring_3.ShockRing,TweenInfo.new(2),{Transparency = 1})
-    local ring_1_Move = TweenService:Create(ring_1,TweenInfo.new(2),{CFrame = ring_1.CFrame:ToWorldSpace(CFrame.new( 0, 0, -3))})
-    local ring_2_Move = TweenService:Create(ring_2,TweenInfo.new(2),{CFrame = ring_2.CFrame:ToWorldSpace(CFrame.new( 0, 0, -3))})
-    local ring_3_Move = TweenService:Create(ring_3,TweenInfo.new(2),{CFrame = ring_3.CFrame:ToWorldSpace(CFrame.new( 0, 0, -3))})
+    local ring_2_FadeOut = TweenService:Create(ring_2.ShockRing,TweenInfo.new(1.5),{Transparency = 1})
+    local ring_3_FadeOut = TweenService:Create(ring_3.ShockRing,TweenInfo.new(1),{Transparency = 1})
+    local ring_1_Move = TweenService:Create(ring_1,TweenInfo.new(2),{CFrame = ring_1.CFrame:ToWorldSpace(CFrame.new( 0, 0, -1.5))})
+    local ring_2_Move = TweenService:Create(ring_2,TweenInfo.new(2),{CFrame = ring_2.CFrame:ToWorldSpace(CFrame.new( 0, 0, -1.5))})
+    local ring_3_Move = TweenService:Create(ring_3,TweenInfo.new(2),{CFrame = ring_3.CFrame:ToWorldSpace(CFrame.new( 0, 0, -1.5))})
 
     local shock_1_FadeOut = TweenService:Create(shock_1.Shock,TweenInfo.new(2),{Transparency = 1})
     local shock_1_Size = TweenService:Create(shock_1.Shock,TweenInfo.new(2),{Size = (shock_1.Shock.Size + Vector3.new(3,3,3))})
@@ -122,9 +115,7 @@ function HeavyPunch.Execute(initPlayer,params)
   
             --fades
             ring_1_FadeOut:Play()
-            wait(.2)
             ring_2_FadeOut:Play()
-            wait(.2)
             ring_3_FadeOut:Play()
 
             -- debris

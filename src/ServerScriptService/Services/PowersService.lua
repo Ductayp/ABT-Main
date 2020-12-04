@@ -69,6 +69,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer,characterHit,params)
 
+    print("hit received:")
     for i,v in pairs(params) do
         print(i,v)
     end

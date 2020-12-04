@@ -52,8 +52,7 @@ TheWorld.Defs = {
             Cooldown = 10,
             Override = true,
             Damage = 5,
-            loopTime = .25,
-            SoundEffect = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage
+            loopTime = .25
         },
 
         TimeStop = {
@@ -61,8 +60,7 @@ TheWorld.Defs = {
             Duration = 5,
             Cooldown = 10,
             Range = 150,
-            Override = false,
-            SoundEffect = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop
+            Override = false
         },
 
        KnifeThrow = {
@@ -71,8 +69,7 @@ TheWorld.Defs = {
             Override = false,
             Range = 75,
             Speed = 40,
-            Damage = 20,
-            SoundEffect = ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow
+            Damage = 20
         },
 
         HeavyPunch = {
@@ -309,7 +306,7 @@ function TheWorld.Barrage(initPlayer,params)
                 local soundParams = {}
                 soundParams.SoundProperties = {}
                 soundParams.SoundProperties.Looped = false
-                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,TheWorld.Defs.Abilities.Barrage.SoundEffect,soundParams)
+                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage,soundParams)
             end
         end
 
@@ -318,7 +315,7 @@ function TheWorld.Barrage(initPlayer,params)
             if barrageToggle.Value == false then
                 powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
-                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,TheWorld.Defs.Abilities.Barrage.SoundEffect.Name,.5)
+                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage.Name,.5)
             end 
         end
     end
@@ -401,7 +398,7 @@ function TheWorld.TimeStop(initPlayer,params)
             print("CLIENT - Time Stop - Execute = InputBegan")
 
             ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.TimeStop.SoundEffect)
+            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop)
 
             -- wait here for the timestop audio
             wait(2)
@@ -470,7 +467,7 @@ function TheWorld.KnifeThrow(initPlayer,params)
          -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.KnifeThrow.Cooldown)
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheWorld.Defs.Abilities.KnifeThrow.SoundEffect)
+            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
             KnifeThrow.Client_KnifeThrow(initPlayer,params)
         end
 
@@ -511,7 +508,9 @@ function TheWorld.HeavyPunch(initPlayer,params)
 
          -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            HeavyPunch.Server_DoPunch(initPlayer,params)
+            local heavyPunchParams = {TheWorld.Defs.Abilities.HeavyPunch}
+            
+            HeavyPunch.Activate(initPlayer,heavyPunchParams)
             params.CanRun = true
         end
 
@@ -526,7 +525,11 @@ function TheWorld.HeavyPunch(initPlayer,params)
 
          -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            HeavyPunch.Client_DoPunch(initPlayer,params)
+
+            local heavyPunchParams = {TheWorld.Defs.Abilities.HeavyPunch}
+            --heavyPunchParams.Color = Color3.new(255/255, 253/255, 156/255) -- yellow for TheWorld 255, 176, 0
+
+            HeavyPunch.Execute(initPlayer,heavyPunchParams)
         end
 
         -- HEAVY PUNCH/EXECUTE/INPUT ENDED

@@ -93,19 +93,10 @@ function module.RunEffect(initPlayer,params)
 		end
 	end
 	
-	ManageStand.ToggleTrails(initPlayer,params,"Active")
-	wait(.1)
-	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.EquipStand,.5) -- weld burst particles
+	-- move stand and play Barrage animation
 	ManageStand.PlayAnimation(initPlayer,params,"Barrage")
-	targetStand.WeldConstraint.Enabled = false
-	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-2)) -- move
-	targetStand.WeldConstraint.Enabled = true
-	spawn(function()
-		wait(.1)
-		ManageStand.ToggleTrails(initPlayer,params,"Idle")
-	end)
-	
-	
+	ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+
 	-- setup coroutine and run it while the toggle is on
 	local thisToggle = powerUtils.GetToggle(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
 	local newThread = coroutine.create(function()
@@ -130,18 +121,9 @@ function module.EndEffect(initPlayer,params)
 		barrageFolder:Destroy()
 	end
 
-	ManageStand.ToggleTrails(initPlayer,params,"Active")
-	wait(.1)
-	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.EquipStand,.5) -- weld burst particles
-	ManageStand.StopAnimation(initPlayer,params,"Barrage")
-	targetStand.WeldConstraint.Enabled = false
-	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
-	targetStand.WeldConstraint.Enabled = true
-
-	spawn(function()
-		wait(.1)
-		ManageStand.ToggleTrails(initPlayer,params,"Idle")
-	end)
+	-- stop animation and move stand to Idle
+	ManageStand.StopAnimation(initPlayer,{AnimationName = "Barrage"})
+	ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
 end
 
 

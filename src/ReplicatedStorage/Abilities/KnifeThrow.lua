@@ -20,7 +20,7 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
 
     local hitPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Server:Clone()
     hitPart.Parent = workspace.RenderedEffects
-    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3)) -- positions somewhere good near the stand
+    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-3)) -- positions somewhere good near the stand
     
     -- set network owner
     hitPart:SetNetworkOwner(nil)
@@ -92,9 +92,10 @@ function KnifeThrow.Client_KnifeThrow(initPlayer,params)
 
     -- run animation
     ManageStand.PlayAnimation(initPlayer,params,"KnifeThrow")
+    ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
     
     -- clone in all parts
-    local mainPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Client_3:Clone()
+    local mainPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Client:Clone()
     mainPart.Parent = workspace.RenderedEffects
     mainPart.CFrame = params.OriginCFrame
     mainPart.Name = "MainPart" -- name it so its easy to find later 
@@ -103,26 +104,12 @@ function KnifeThrow.Client_KnifeThrow(initPlayer,params)
     local shock_2 = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.Shock2:Clone()
     shock_1.Parent = workspace.RenderedEffects
     shock_2.Parent = workspace.RenderedEffects
-    shock_1.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,0,-2.5))
-    shock_2.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,0,-2.5))
-
-    local spiral_1 = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.Spiral:Clone()
-    local spiral_2 = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.Spiral:Clone()
-    local spiral_3 = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.Spiral:Clone()
-    spiral_1.Parent = workspace.RenderedEffects
-    spiral_2.Parent = workspace.RenderedEffects
-    spiral_3.Parent = workspace.RenderedEffects
-    spiral_1.CFrame = mainPart.Spindle_1.CFrame
-    spiral_2.CFrame = mainPart.Spindle_2.CFrame
-    spiral_3.CFrame = mainPart.Spindle_3.CFrame
+    shock_1.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
+    shock_2.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
 
     -- spawn the stand move and shockwave aniamtions
     spawn(function()
-        -- move the stand
-        targetStand.WeldConstraint.Enabled = false
-        targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-2)) -- move
-        targetStand.WeldConstraint.Enabled = true
-
+        
         -- create shock tween effects
         local tweenInfo1 = TweenInfo.new(.7)
         local shockSize_1 = TweenService:Create(shock_1.Shock,tweenInfo1,{Size = (shock_1.Size + Vector3.new(5,5,5))})
@@ -144,16 +131,8 @@ function KnifeThrow.Client_KnifeThrow(initPlayer,params)
 
         -- move the stand back
         wait(.5)
-        targetStand.WeldConstraint.Enabled = false
-        targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
-        targetStand.WeldConstraint.Enabled = true
+        ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
     end)
-    
-
-    -- create spiral effect destinations for tweens
-    local spiral_1_Destination = spiral_1.CFrame:ToWorldSpace(CFrame.new( 0, 0, -params.KnifeThrow.Range))
-    local spiral_2_Destination = spiral_2.CFrame:ToWorldSpace(CFrame.new( 0, 0, -params.KnifeThrow.Range))
-    local spiral_3_Destination = spiral_3.CFrame:ToWorldSpace(CFrame.new( 0, 0, -params.KnifeThrow.Range))
 
     -- Tween the thrown parts
     local newSpeed = params.ArrivalTime - os.time()
@@ -162,27 +141,15 @@ function KnifeThrow.Client_KnifeThrow(initPlayer,params)
     end
     local tweenInfo2 = TweenInfo.new(newSpeed)
     local tweenMainPart = TweenService:Create(mainPart,tweenInfo2,{CFrame = params.DestinatonCFrame})
-    local tweenSpiral_1 = TweenService:Create(spiral_1,tweenInfo2,{CFrame = spiral_1_Destination})
-    local tweenSpiral_2 = TweenService:Create(spiral_2,tweenInfo2,{CFrame = spiral_2_Destination})
-    local tweenSpiral_3 = TweenService:Create(spiral_3,tweenInfo2,{CFrame = spiral_3_Destination})
 
     -- CFrame the parts A SECOND TIME right before we launch them
     mainPart.CFrame = params.OriginCFrame
     tweenMainPart:Play()
 
-    spiral_1.CFrame = mainPart.Spindle_1.CFrame
-    tweenSpiral_1:Play()
-
-    spiral_2.CFrame = mainPart.Spindle_2.CFrame
-    tweenSpiral_2:Play()
-
-    spiral_3.CFrame = mainPart.Spindle_3.CFrame
-    tweenSpiral_3:Play()
-    
     -- destroy when tween is done
     tweenMainPart.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed then
-            local parts = {mainPart,spiral_1,spiral_2,spiral_3}
+            local parts = {mainPart}
             local endingCFrame = mainPart.CFrame
             KnifeThrow.DestroyCosmetics(parts,endingCFrame)
         end
@@ -194,7 +161,7 @@ function KnifeThrow.Client_KnifeThrow(initPlayer,params)
         if humanoid then
             if humanoid.Parent.Name ~= initPlayer.Name then
                 --wait(.5)
-                local parts = {mainPart,spiral_1,spiral_2,spiral_3}
+                local parts = {mainPart}
                 local endingCFrame = hit.CFrame
                 KnifeThrow.DestroyCosmetics(parts,endingCFrame)
             end

@@ -6,6 +6,14 @@ local debris = game:GetService("Debris")
 
 local module = {}
 
+function module.GetPlayerFromCharacter(character)
+	for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+		if player.Character == character then
+			return player
+		end
+	end
+end
+
 --// EASY CLONE
 function module.EasyClone(object, dictionary)
 	local newClone = object:Clone();

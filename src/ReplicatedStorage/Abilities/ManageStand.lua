@@ -10,9 +10,10 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
--- Stand Anchor Offsets
-local anchor_IdleRight = CFrame.new(2,1,2.5)
-local anchor_Front = CFrame.new(0,0,-2)
+-- Default Stand Anchor Offsets
+local anchors = {}
+anchors.Idle = CFrame.new(2,1,2.5)
+anchors.Front = CFrame.new(0,0,-2)
 
 local ManageStand = {}
 
@@ -41,8 +42,8 @@ function ManageStand.EquipStand(initPlayer,standModel)
 	utils.EasyWeld(newStand.HumanoidRootPart,initPlayerRoot,newStand)
 	
 	-- pop some particles
-	powerUtils.WeldParticles(newStand.HumanoidRootPart.CFrame.Position,initPlayerRoot,newStand.Particles.EquipStand,1) -- weld burst particles
-	powerUtils.WeldParticles(newStand.Head.CFrame.Position,initPlayerRoot,newStand.Particles.EquipStand,1)
+	powerUtils.WeldParticles(newStand.HumanoidRootPart.CFrame.Position,initPlayerRoot,newStand.Particles.MoveStand,1) -- weld burst particles
+	powerUtils.WeldParticles(newStand.Head.CFrame.Position,initPlayerRoot,newStand.Particles.MoveStand,1)
 	wait(.5)
 
 	-- Tween transparency
@@ -98,7 +99,7 @@ function ManageStand.RemoveStand(initPlayer,params)
 	-- if theres a stand, get rid of it
 	if targetStand then
 		targetStand.Trails:Destroy()
-		powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayerRoot,targetStand.Particles.EquipStand,1) -- weld burst particles
+		powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayerRoot,targetStand.Particles.MoveStand,1) -- weld burst particles
 
 		local noTweenFolder = targetStand:FindFirstChild("NoTween")
 		if noTweenFolder then
@@ -197,7 +198,8 @@ function ManageStand.PlayAnimation(initPlayer,params,animationName)
 end
 
 -- StopAnimation
-function ManageStand.StopAnimation(initPlayer,params,animationName)
+-- required params: params.AnimationName
+function ManageStand.StopAnimation(initPlayer,params)
 
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
@@ -206,11 +208,39 @@ function ManageStand.StopAnimation(initPlayer,params,animationName)
 	if animationController then
 		local tracks = animationController:GetPlayingAnimationTracks()
 		for i,v in pairs (tracks) do
-			if v.Name == animationName then
+			if v.Name == params.AnimationName then
 				v:Stop()
 			end
 		end
 	end
+end
+
+-- Move Stand
+-- required params: params.AnchorName
+function ManageStand.MoveStand(initPlayer,params)
+
+	-- some definitions
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
+	local standWeld = targetStand:FindFirstChild("WeldConstraint")
+
+	-- active effects
+	ManageStand.ToggleTrails(initPlayer,params,"Active")
+	wait(.1)
+	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.MoveStand,.5) -- weld burst particles
+
+	-- move it
+	standWeld.Enabled = false
+	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(anchors[params.AnchorName]) -- move
+	standWeld.Enabled = true
+
+	-- idle effects
+	spawn(function()
+		wait(.1)
+		ManageStand.ToggleTrails(initPlayer,params,"Idle")
+	end)
+
 end
 
 

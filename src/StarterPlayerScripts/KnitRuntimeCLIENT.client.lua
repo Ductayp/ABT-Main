@@ -11,6 +11,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 Knit.Shared = ReplicatedStorage.GameFiles.Shared
 Knit.Powers = ReplicatedStorage.GameFiles.Powers
 Knit.Abilities = ReplicatedStorage.GameFiles.Abilities
+Knit.Effects = ReplicatedStorage.GameFiles.Effects
 
 -- Load all controllers:
 for _,v in ipairs(script.Parent.Controllers:GetDescendants()) do

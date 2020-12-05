@@ -13,6 +13,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Abilities.ManageStand)
+local DamageEffect = require(Knit.Effects.Damage)
 
 local HeavyPunch = {}
 
@@ -25,25 +26,19 @@ function HeavyPunch.Activate(initPlayer,params)
         -- make a new hitbox, it stays in place
         local boxParams = {}
         boxParams.Size = Vector3.new(4,3,12)
-        boxParams.Transparency = .5
+        --boxParams.Transparency = .5
         boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
+
         local hitParams = {}
         hitParams.Damage = params.Damage
 
         local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
-
-        --Debris:AddItem(newHitbox,.5)
-        --wait()
-        newHitbox.ChildAdded:Connect(function(child)
-            print("boop")
-            if child.Name == "CharacterHit" then
-                print("we hit it!: ",child.Value)
+        Debris:AddItem(newHitbox,.5)
+        newHitbox.ChildAdded:Connect(function(hit)
+            if hit.Name == "CharacterHit" then
+                DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,hitParams)
             end
         end)
-
-        print( newHitbox.ChildAdded:Connect(function(child)
-            print("we hit it!: TEST ",child.Value)
-        end) ) -- should print Connection
         
     end)
 end

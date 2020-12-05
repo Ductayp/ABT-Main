@@ -212,6 +212,8 @@ end
 
 function TheWorld.Barrage(initPlayer,params)
 
+    local barrageParams = TheWorld.Defs.Abilities.Barrage
+
     -- get barrage toggle, setup if it doesnt exist
     local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
 
@@ -252,19 +254,7 @@ function TheWorld.Barrage(initPlayer,params)
                 barrageToggle.Value = true
                 params.CanRun = true
       
-                -- spawn a hitbox
-                local hitboxParams = {
-                    Size = Vector3.new(4,5,4),
-                    PowerId = "TheWorld",
-		            AbilityId = "Barrage",
-		            CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5)),
-                    WeldTo = initPlayer.Character.HumanoidRootPart,
-                    Tick = TheWorld.Defs.Abilities.Barrage.loopTime,
-                    Debug = false,
-                    Exclude = {initPlayer.Character},
-                    Damage = TheWorld.Defs.Abilities.Barrage.Damage
-                }
-                local newHitBox = powerUtils.WeldedHitbox(initPlayer,hitboxParams)
+                Barrage.Server_CreateHitbox(initPlayer, barrageParams)
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()
@@ -287,10 +277,7 @@ function TheWorld.Barrage(initPlayer,params)
                 powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.Barrage.Cooldown)
 
                 -- destroy hitbox
-                local destroyHitbox = workspace.ServerHitboxes[initPlayer.UserId]:FindFirstChild("Barrage")
-                if destroyHitbox then
-                    destroyHitbox:Destroy()
-                end
+                Barrage.Server_DestroyHitbox(initPlayer, barrageParams)
             end
         end
     end

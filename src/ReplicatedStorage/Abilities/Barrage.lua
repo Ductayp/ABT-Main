@@ -9,12 +9,105 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Abilities.ManageStand)
+local DamageEffect = require(Knit.Effects.Damage)
 
 -- local variables
-local spawnRate = .05
-local debrisTime = .15
+local armSpawnRate = .05
+local armDebrisTime = .15
+local damageLoopTime = 0.25
 
 local module = {}
+
+--// Server Create Hitbox
+function module.Server_CreateHitbox(initPlayer,params)
+
+	-- basic part setup
+	local newHitBox = Instance.new("Part")
+	newHitBox.Size = Vector3.new(4,5,4)
+	newHitBox.Massless = true
+    newHitBox.Transparency = .5
+	newHitBox.CanCollide = false
+	newHitBox.Parent = workspace.ServerHitboxes[initPlayer.UserId]
+	newHitBox.Name = "Barrage"
+	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
+	
+	local excludeCharacter = {initPlayer.Character}
+
+	-- setup DamageEffect params
+	local damageParams = {}
+	damageParams.Damage = params.Damage
+
+	-- weld it
+	local hitboxWeld = utils.EasyWeld(newHitBox,initPlayer.Character.HumanoidRootPart,newHitBox)
+
+	-- run it
+	spawn(function()
+		repeat 
+			print("tick")
+			local connection = newHitBox.Touched:Connect(function() end)
+			local results = newHitBox:GetTouchingParts()
+			connection:Disconnect()
+
+			local charactersHit = {}
+			for _,part in pairs (results) do
+				if part.Parent:FindFirstChild("Humanoid") then
+						charactersHit[part.Parent] = true -- insert into table with no duplicates
+				end
+			end
+
+			-- remove excluded targets
+			if params.Exclude then
+				for _,excludeCharacter in pairs (params.Exclude) do
+					if charactersHit[excludeCharacter] then
+						charactersHit[excludeCharacter] = nil
+					end
+				end
+			end
+
+			if charactersHit ~= nil then
+				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
+					DamageEffect.Server_ApplyDamage(initPlayer.Character,characterHit,damageParams)
+				end
+			end	
+
+			-- check if hitbox still exists
+			local canRun = false
+			local checkHitbox = hitboxFolder:FindFirstChild(newHitBox.Name) -- this checks of the hitbox part still exists
+			if checkHitbox then
+				canRun = true
+			end
+
+			-- clear hit tabel and wait
+			charactersHit = nil
+			wait(damageLoopTime)
+			
+		until canRun == false
+	end)
+
+	--[[
+	-- spawn a hitbox
+	local hitboxParams = {
+		Size = Vector3.new(4,5,4),
+		--PowerId = "TheWorld",
+		Name = "Barrage",
+		CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5)),
+		WeldTo = initPlayer.Character.HumanoidRootPart,
+		Tick = damageLoopTime,
+		Debug = false,
+		Exclude = {initPlayer.Character},
+		Damage = params.Damage
+	}
+
+	local newHitBox = powerUtils.LoopedHitbox(initPlayer,hitboxParams)
+	]]--
+
+end
+
+--// Server Destroy Hitbox
+function module.Server_DestroyHitbox(initPlayer, params)
+
+	local destroyHitbox = workspace.ServerHitboxes[initPlayer.UserId]:ClearAllChildren()
+end
 
 --// Shoot Arm 
 function module.shootArm(thisEffect,thisArm)
@@ -22,7 +115,7 @@ function module.shootArm(thisEffect,thisArm)
 	-- clone a single arm and parent it, add it to the Debris
 	local newArm = thisEffect[thisArm]:Clone()
 	newArm.Parent = thisEffect
-	Debris:AddItem(newArm,debrisTime)
+	Debris:AddItem(newArm,armDebrisTime)
 
 	-- destroy the TempWelds
 	for i,v in pairs(newArm:GetChildren()) do
@@ -100,7 +193,7 @@ function module.RunEffect(initPlayer,params)
 	-- setup coroutine and run it while the toggle is on
 	local thisToggle = powerUtils.GetToggle(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
 	local newThread = coroutine.create(function()
-		while wait(spawnRate) do
+		while wait(armSpawnRate) do
 			if thisToggle.Value then
 				module.shootArm(thisEffect,"LeftArm")
 				module.shootArm(thisEffect,"RightArm")

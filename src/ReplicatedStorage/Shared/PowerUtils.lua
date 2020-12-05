@@ -17,6 +17,7 @@ local localPlayer = game.Players.LocalPlayer
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local RayastHitbox = require(Knit.Shared.RaycastHitboxV3)
+local Damage = require(Knit.Effects.Damage)
 
 local PowerUtils = {}
 
@@ -201,13 +202,13 @@ end
 
 --// SimpleHitBox -- just creates a simple hitbox - HIS HITBOX CAN ONLY HIT A HUMANOID ONCE PER INSTANCE
 -- boxParams define the box itself such as size
--- hitParams define what will be be sent to PowerService:RegisterHit() when something is hit
-function PowerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
+function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 
 	local hitBox = Instance.new("Part")
 
 	-- set some defaults but we can override them with boxParams
 	hitBox.Color = Color3.new(255/255, 102/255, 204/255)
+	hitBox.Transparency = 1
 	hitBox.Massless = true
 	hitBox.CanCollide = false
 	hitBox.Anchored = true
@@ -251,14 +252,15 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
 
 			-- do the hit if canHit is true
 			if canHit == true then
-				Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,hitParams)
-				--local newHitValue = utils.EasyInstance("ObjectValue",{Name = "CharacterHit",Parent = hitBox,Value = characterHit})
-				local newValueObject = Instance.new("ObjectValue") -- will store a character
-				newValueObject.Name = "CharacterHit"
-				newValueObject.Parent = hitBox
-				newValueObject.Value = characterHit
+				spawn(function()
+					--wait()
+					local newValueObject = Instance.new("ObjectValue") -- will store a character
+					newValueObject.Name = "CharacterHit"
+					newValueObject.Value = characterHit
+					newValueObject.Parent = hitBox
+					
+				end)
 			end
-
 		end
 	end
 
@@ -291,12 +293,12 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
 
 			-- do the hit if canHit is true
 			if canHit == true then
-				Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,hitParams)
-				--local newHitValue = utils.EasyInstance("ObjectValue",{Name = "CharacterHit",Parent = hitBox,Value = characterHit})
-				local newValueObject = Instance.new("ObjectValue") -- will store a character
-				newValueObject.Name = "CharacterHit"
-				newValueObject.Parent = hitBox
-				newValueObject.Value = characterHit
+				spawn(function()
+					local newValueObject = Instance.new("ObjectValue") -- will store a character
+					newValueObject.Name = "CharacterHit"
+					newValueObject.Parent = hitBox
+					newValueObject.Value = characterHit
+				end)
 			end
 		end
 	end)
@@ -305,7 +307,7 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
 end
 
 --// WeldedHitBox - will run until the part is destroyed
-function PowerUtils.WeldedHitbox(initPlayer,params)
+function PowerUtils.LoopedHitbox(initPlayer,params)
 
 	--[[
 		--// required params
@@ -335,7 +337,7 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
     newHitBox.Transparency = .5
 	newHitBox.CanCollide = false
 	newHitBox.Parent = hitboxFolder
-	newHitBox.Name = params.AbilityId
+	newHitBox.Name = params.Name
 	newHitBox.CFrame = params.CFrame
 
 	print(newHitBox.Massless)
@@ -376,13 +378,13 @@ function PowerUtils.WeldedHitbox(initPlayer,params)
 
 			if charactersHit ~= nil then
 				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
-					Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params)
+					Server_ApplyDamage(initPlayer.Character,characterHit,params)
 				end
 			end	
 
 			-- check if hitbox still exists
 			local canRun = false
-			local checkHitbox = hitboxFolder:FindFirstChild(params.AbilityId) -- this checks of the hitbox part still exists
+			local checkHitbox = hitboxFolder:FindFirstChild(params.Name) -- this checks of the hitbox part still exists
 			if checkHitbox then
 				canRun = true
 			end

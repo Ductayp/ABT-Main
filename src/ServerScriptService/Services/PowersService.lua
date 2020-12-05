@@ -20,7 +20,7 @@ PowersService.Client.RenderExistingStands = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
-    
+    print("activate")
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData.Character.CurrentPower == params.PowerId then

@@ -16,11 +16,12 @@ local utils = require(Knit.Shared.Utils)
 
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
+PowersService.Client.RenderEffect = RemoteEvent.new()
 PowersService.Client.RenderExistingStands = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
-    print("activate")
+
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData.Character.CurrentPower == params.PowerId then
@@ -66,22 +67,19 @@ function PowersService:SetPower(player,power)
     self:PlayerSetup(player)
 end
 
---// RegisterHit
+--// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
 function PowersService:RegisterHit(initPlayer,characterHit,params)
 
-    print("hit received:")
-    for i,v in pairs(params) do
-        print(i,v)
-    end
-
-    -- get the damage
-    --local powerModule = require(Knit.Powers[params.PowerId])
-    --local damage = powerModule.Defs.Abilities[params.AbilityId].Damage
     if params.Damage then
         characterHit.Humanoid:TakeDamage(params.Damage)
     end
     
 
+end
+
+--// RednderEffects -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
+function PowersService:RenderEffects(effect,params)
+    self.Client.RenderEffect:FireAll(effect,params)
 end
 
 -- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game

@@ -18,21 +18,19 @@ local damageLoopTime = 0.25
 
 local module = {}
 
---// Server Create Hitbox
+--// Server Create Hitbox -- we have a unique hitbox for Barrage
 function module.Server_CreateHitbox(initPlayer,params)
 
 	-- basic part setup
 	local newHitBox = Instance.new("Part")
-	newHitBox.Size = Vector3.new(4,5,4)
+	newHitBox.Size = Vector3.new(4,5,5.5)
 	newHitBox.Massless = true
-    newHitBox.Transparency = .5
+    newHitBox.Transparency = 1
 	newHitBox.CanCollide = false
 	newHitBox.Parent = workspace.ServerHitboxes[initPlayer.UserId]
 	newHitBox.Name = "Barrage"
-	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
+	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4))
 	
-	local excludeCharacter = {initPlayer.Character}
-
 	-- setup DamageEffect params
 	local damageParams = {}
 	damageParams.Damage = params.Damage
@@ -43,7 +41,6 @@ function module.Server_CreateHitbox(initPlayer,params)
 	-- run it
 	spawn(function()
 		repeat 
-			print("tick")
 			local connection = newHitBox.Touched:Connect(function() end)
 			local results = newHitBox:GetTouchingParts()
 			connection:Disconnect()
@@ -51,15 +48,8 @@ function module.Server_CreateHitbox(initPlayer,params)
 			local charactersHit = {}
 			for _,part in pairs (results) do
 				if part.Parent:FindFirstChild("Humanoid") then
+					if part.Parent ~= initPlayer.Character then -- dont hit the initPlayer
 						charactersHit[part.Parent] = true -- insert into table with no duplicates
-				end
-			end
-
-			-- remove excluded targets
-			if params.Exclude then
-				for _,excludeCharacter in pairs (params.Exclude) do
-					if charactersHit[excludeCharacter] then
-						charactersHit[excludeCharacter] = nil
 					end
 				end
 			end
@@ -72,7 +62,7 @@ function module.Server_CreateHitbox(initPlayer,params)
 
 			-- check if hitbox still exists
 			local canRun = false
-			local checkHitbox = hitboxFolder:FindFirstChild(newHitBox.Name) -- this checks of the hitbox part still exists
+			local checkHitbox = workspace.ServerHitboxes[initPlayer.UserId]:FindFirstChild(newHitBox.Name) -- this checks of the hitbox part still exists
 			if checkHitbox then
 				canRun = true
 			end
@@ -83,23 +73,6 @@ function module.Server_CreateHitbox(initPlayer,params)
 			
 		until canRun == false
 	end)
-
-	--[[
-	-- spawn a hitbox
-	local hitboxParams = {
-		Size = Vector3.new(4,5,4),
-		--PowerId = "TheWorld",
-		Name = "Barrage",
-		CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3.5)),
-		WeldTo = initPlayer.Character.HumanoidRootPart,
-		Tick = damageLoopTime,
-		Debug = false,
-		Exclude = {initPlayer.Character},
-		Damage = params.Damage
-	}
-
-	local newHitBox = powerUtils.LoopedHitbox(initPlayer,hitboxParams)
-	]]--
 
 end
 

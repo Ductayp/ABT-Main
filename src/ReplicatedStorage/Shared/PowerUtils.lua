@@ -17,7 +17,7 @@ local localPlayer = game.Players.LocalPlayer
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local RayastHitbox = require(Knit.Shared.RaycastHitboxV3)
-local Damage = require(Knit.Effects.Damage)
+--local DamageEffect = require(Knit.Effects.Damage)
 
 local PowerUtils = {}
 

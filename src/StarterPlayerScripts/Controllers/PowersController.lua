@@ -56,6 +56,12 @@ function PowersController:ExecutePower(initPlayer,params)
     powerModule.Manager(initPlayer,params)
 end
 
+--// RenderEffect -- render general effects
+function PowersController:RenderEffect(effect,params)
+    local effectModule = require(Knit.Effects[effect])
+    effectModule.Client_RenderEffect(params)
+end
+
 --// RenderExistingStands
 function PowersController:RenderExistingAbility(targetPlayer,params)
     self:ExecutePower(targetPlayer,params)
@@ -66,6 +72,10 @@ function PowersController:KnitStart()
 
     PowersService.ExecutePower:Connect(function(initPlayer,params)
         self:ExecutePower(initPlayer,params)
+    end)
+
+    PowersService.RenderEffect:Connect(function(effect,params)
+        self:RenderEffect(effect,params)
     end)
 
     PowersService.RenderExistingStands:Connect(function(targetPlayer,params)

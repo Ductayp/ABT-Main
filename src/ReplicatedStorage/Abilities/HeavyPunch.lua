@@ -19,6 +19,10 @@ local HeavyPunch = {}
 
 function HeavyPunch.Activate(initPlayer,params)
     
+    -- save the original walkspeed and slow the player down
+    local originalWalkSpeed = initPlayer.Character.Humanoid.WalkSpeed
+    initPlayer.Character.Humanoid.WalkSpeed = 2
+
     -- spawn function for hitbox with a delay
     spawn(function()
         wait(.5)
@@ -26,19 +30,24 @@ function HeavyPunch.Activate(initPlayer,params)
         -- make a new hitbox, it stays in place
         local boxParams = {}
         boxParams.Size = Vector3.new(4,3,12)
-        --boxParams.Transparency = .5
+        boxParams.Transparency = .8
         boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
-
+        
         local hitParams = {}
         hitParams.Damage = params.Damage
 
         local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
-        Debris:AddItem(newHitbox,.5)
+        Debris:AddItem(newHitbox, .5)
+
         newHitbox.ChildAdded:Connect(function(hit)
             if hit.Name == "CharacterHit" then
                 DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,hitParams)
             end
         end)
+
+        -- pause the restore the players WalkSpeed
+        wait(1)
+        initPlayer.Character.Humanoid.WalkSpeed = originalWalkSpeed
         
     end)
 end
@@ -83,7 +92,7 @@ function HeavyPunch.Execute(initPlayer,params)
 
 
     if params.Color then
-        --fastBall.Fireball.Color = params.Color
+        fastBall.Fireball.Color = params.Color
     end
 
     fastBallDestination = fastBall.CFrame:ToWorldSpace(CFrame.new( 0, 0, -10))

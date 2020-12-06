@@ -396,7 +396,6 @@ function TheWorld.TimeStop(initPlayer,params)
             timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
             timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
             TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
-            --ManageStand.StopAnimation(initPlayer,params,"TimeStop")
         end
 
         -- TIME STOP/EXECUTE/INPUT ENDED
@@ -498,6 +497,7 @@ function TheWorld.HeavyPunch(initPlayer,params)
             local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
             
             HeavyPunch.Activate(initPlayer,heavyPunchParams)
+            powerUtils.SetCooldown(initPlayer,params,TheWorld.Defs.Abilities.HeavyPunch.Cooldown)
 
             params.CanRun = true
         end
@@ -516,7 +516,7 @@ function TheWorld.HeavyPunch(initPlayer,params)
 
             local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
             --heavyPunchParams.Color = Color3.new(255/255, 253/255, 156/255) -- yellow for TheWorld 255, 176, 0
-
+            powerUtils.SetGUICooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.HeavyPunch.Cooldown)
             HeavyPunch.Execute(initPlayer,heavyPunchParams)
         end
 

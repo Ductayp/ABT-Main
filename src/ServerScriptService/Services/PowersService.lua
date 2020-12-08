@@ -33,7 +33,7 @@ function PowersService:ActivatePower(player,params)
     local powerModule = require(Knit.Powers[params.PowerID])
     params.SystemStage = "Activate"
     params.CanRun = false
-    params = powerModule.Manager(player,params)
+    params = powerModule.Manager(player,params) -- pass the params in and in parmas.CanRun comes back true then we can move on
 
     -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun then
@@ -59,22 +59,39 @@ end
 --// SetPower -- sets the players curret power
 function PowersService:SetPower(player,power)
     print("SetPower: ",power," - For player: ",player)
+
+    -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.Character.CurrentPower)
+    if currentPowerModule then
+        local removePowerModule = require(currentPowerModule)
+        local removePowerParams = {} --right now this is nil, but we can add things later if we need to
+        if removePowerModule.RemovePower then
+            removePowerModule.RemovePower(player,removePowerParams)
+        end
+    end
+    
+    
+
     playerData.Character.CurrentPower = power
     Knit.Services.DataReplicationService:UpdateAll(player)
 
+    -- run the new powers setup function
+    local setupPowerModule = require(Knit.Powers[power])
+    local setupPowerParams = {} --right now this is nil, but we can add things later if we need to
+    if setupPowerModule.SetupPower then
+        setupPowerModule.SetupPower(player,setupPowerParams)
+    end
+
     -- run the player setup so we can start fresh
-    self:PlayerSetup(player)
+    self:PlayerRefresh(player)
 end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
 function PowersService:RegisterHit(initPlayer,characterHit,params)
-
     if params.Damage then
         characterHit.Humanoid:TakeDamage(params.Damage)
     end
-    
-
 end
 
 --// RednderEffects -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
@@ -115,8 +132,8 @@ function PowersService:RenderExistingStands(player)
     end)
 end
 
---// PlayerSetup - fires when the player joins and after each death
-function PowersService:PlayerSetup(player)
+--// PlayerRefresh - fires when the player joins and after each death
+function PowersService:PlayerRefresh(player)
     
     -- cleanup before setup
     self:PlayerCleanup(player)
@@ -130,6 +147,7 @@ function PowersService:PlayerSetup(player)
     Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
+--// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh
 function PowersService:PlayerCleanup(player)
     local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
 
@@ -140,6 +158,27 @@ function PowersService:PlayerCleanup(player)
             end
         end
     end
+end
+
+--// PlayerJoined - run once when the player joins the game
+function PowersService:PlayerJoined(player)
+
+    -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
+    self:PlayerRefresh(player)
+
+    -- make sure the players data is loaded
+    local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
+    local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
+
+    -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
+    repeat wait(1) until playerDataBoolean.Value == true
+
+    -- get the players current power
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currentPower = playerData.Character.CurrentPower
+
+    -- set the power, this is done when the player joins so they get any modifiers in the power setup
+    self:SetPower(player,currentPower)
 end
 
 --// KnitStart
@@ -159,14 +198,14 @@ function PowersService:KnitInit()
 
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
-        --self:PlayerSetup(player)
+        --self:PlayerRefresh(player)
         
         player.CharacterAdded:Connect(function(character)
-            self:PlayerSetup(player)
+            self:PlayerJoined(player)
             self:RenderExistingStands(player)
 
             character:WaitForChild("Humanoid").Died:Connect(function()
-                self:PlayerSetup(player)
+                self:PlayerJoined(player)
             end)
         end)
     end)
@@ -174,15 +213,15 @@ function PowersService:KnitInit()
     -- Player Added event for studio testing
     for _, player in ipairs(Players:GetPlayers()) do
         --self:PlayerCleanup(player)
-        --self:PlayerSetup(player)
+        --self:PlayerRefresh(player)
         --self:RenderExistingStands(player)
 
         player.CharacterAdded:Connect(function(character)
-            self:PlayerSetup(player)
+            self:PlayerJoined(player)
             self:RenderExistingStands(player)
 
             character:WaitForChild("Humanoid").Died:Connect(function()
-                self:PlayerSetup(player)
+                self:PlayerJoined(player)
             end)
         end)
     end

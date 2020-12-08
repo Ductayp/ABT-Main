@@ -25,8 +25,23 @@ PlayerDataService.gameProfileStore = profileService.GetProfileStore(
 
 --// PlayerConnected - fires once player has connected to data, we can do all osrts of things from here
 function PlayerDataService:PlayerConnected(player)
+
+    -- just a print so we can see it
     print("ProfileService: Data Loaded for: ",player)
+
+    -- update the DataReplicationService
     Knit.Services.DataReplicationService:UpdateAll(player)
+
+    -- change players bool value to true, this is so any script in the game can know the players data is loaded
+    local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")
+    if mainStatusFolder then
+        local playerBool = mainStatusFolder:FindFirstChild(player.UserId)
+        if playerBool then
+            playerBool.Value = true
+        end
+    end
+
+
 end
 
 function PlayerDataService:Connect(player)
@@ -56,9 +71,6 @@ function PlayerDataService:Connect(player)
             
             -- fire a function once player is connected
             self:PlayerConnected(player)
-
-            -- give a message
-            print("Loaded DataStore: Player_" .. player.UserId)
 
         else
             -- This will release/unlock the profile if there was a netowrk issue
@@ -93,6 +105,39 @@ function PlayerDataService.Client:GetPlayerData(player)
     --self:GetPlayerData(player)
 end 
 
+function PlayerDataService:PlayerAdded(player)
+
+    -- create players data status folders and player boolean
+    local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")
+    if not mainStatusFolder then
+        mainStatusFolder = Instance.new("Folder")
+        mainStatusFolder.Name = "PlayerDataLoaded"
+        mainStatusFolder.Parent = ReplicatedStorage
+    end
+
+    local newPlayerBool = Instance.new("BoolValue")
+    newPlayerBool.Name = player.UserId
+    newPlayerBool.Value = false
+    newPlayerBool.Parent = mainStatusFolder
+
+
+    self:Connect(player)
+end
+
+function PlayerDataService:PlayerRemoved(player)
+
+    -- destroy player data boolean
+    local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")
+    if mainStatusFolder then
+        local playerBool = mainStatusFolder:FindFirstChild(player.UserId)
+        if playerBool then
+            playerBool:Destroy()
+        end
+    end
+
+    self:Disconnect(player)
+end
+
 function PlayerDataService:KnitStart()
 
 end
@@ -101,17 +146,17 @@ end
 function PlayerDataService:KnitInit()
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
-        self:Connect(player)
+        self:PlayerAdded(player)
     end)
 
     -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
     for _, player in ipairs(Players:GetPlayers()) do
-        self:Connect(player)
+        self:PlayerAdded(player)
     end
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
-        self:Disconnect(player)
+        self:PlayerRemoved(player)
     end)
 end
 

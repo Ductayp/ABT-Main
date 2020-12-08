@@ -4,6 +4,7 @@
 -- starts up Knit and prepares the game to run
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 -- Expose Moudles to Knit
@@ -11,6 +12,7 @@ Knit.Shared = ReplicatedStorage.GameFiles.Shared
 Knit.Powers = ReplicatedStorage.GameFiles.Powers
 Knit.Abilities = ReplicatedStorage.GameFiles.Abilities
 Knit.Effects = ReplicatedStorage.GameFiles.Effects
+Knit.ModifierService = ServerScriptService.GameFiles.Services.ModifierService
 
 -- Load all services:
 for _,v in ipairs(script.Parent.Services:GetDescendants()) do

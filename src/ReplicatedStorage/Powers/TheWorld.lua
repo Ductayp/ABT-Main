@@ -102,7 +102,25 @@ TheWorld.Defs = {
     }
 }
 
---// MANAGER - this is the single point of entry from PowerService.
+--// SETUP - run this once when the stand is equipped
+function TheWorld.SetupPower(initPlayer,params)
+    print("Setup Power - The World for: ",initPlayer)
+    Knit.Services.ModifierService:AddModifier(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
+    print("go")
+    for i,v in pairs(Knit.ModifierService:GetChildren()) do 
+        print(i,v)
+    end
+    local totalWalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
+    print(totalWalkSpeed)
+end
+
+--// REMOVE - run this once when the stand is un-equipped
+function TheWorld.RemovePower(initPlayer,params)
+    print("Removing Power - The World for: ",initPlayer)
+    Knit.Services.ModifierService:RemoveModifier(initPlayer, "WalkSpeed", "TheWorld_Setup")
+end
+
+--// MANAGER - this is the single point of entry from PowersService and PowersController.
 function TheWorld.Manager(initPlayer,params)
 
     -- check cooldowns but only on SystemStage "Activate"

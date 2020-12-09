@@ -48,7 +48,7 @@ function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
         local effectParams = {}
         effectParams.Damage = params.Damage
         effectParams.HitCharacter = hitCharacter
-        Knit.Services.PowersService:RenderEffects("Damage",effectParams)
+        Knit.Services.PowersService:RenderEffect_AllPlayers("Damage",effectParams)
     end
 
 end

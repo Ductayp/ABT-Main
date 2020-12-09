@@ -94,9 +94,14 @@ function PowersService:RegisterHit(initPlayer,characterHit,params)
     end
 end
 
---// RednderEffects -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
-function PowersService:RenderEffects(effect,params)
+--// RenderEffectAllPlayers -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
+function PowersService:RenderEffect_AllPlayers(effect,params)
     self.Client.RenderEffect:FireAll(effect,params)
+end
+
+--// RenderEffectSinglePlayers -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
+function PowersService:RenderEffect_SinglePlayer(player,effect,params)
+    self.Client.RenderEffect:Fire(player,effect,params)
 end
 
 -- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game

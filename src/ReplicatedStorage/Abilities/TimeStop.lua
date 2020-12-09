@@ -200,6 +200,16 @@ function TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
         local sphereTween4 = TweenService:Create(sphere1,tweenInfo,{Size = Vector3.new(1,1,1)})
         local sphereTween5 = TweenService:Create(sphere2,tweenInfo,{Size = Vector3.new(1,1,1)})
         local sphereTween6 = TweenService:Create(sphere3,tweenInfo,{Size = Vector3.new(1,1,1)})
+
+        sphereTween6.Completed:Connect(function(playbackState)
+            if playbackState == Enum.PlaybackState.Completed then
+                sphere1:Destroy()
+                sphere2:Destroy()
+                sphere3:Destroy()
+            end
+        end)
+
+
         sphereTween4:Play()
         wait(.005)
         sphereTween5:Play()

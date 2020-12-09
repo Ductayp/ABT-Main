@@ -21,7 +21,7 @@ function HeavyPunch.Activate(initPlayer,params)
     
     -- save the original walkspeed and slow the player down
     --local originalWalkSpeed = initPlayer.Character.Humanoid.WalkSpeed
-    initPlayer.Character.Humanoid.WalkSpeed = .5
+    initPlayer.Character.Humanoid.WalkSpeed = 0
 
     -- spawn function for hitbox with a delay
     spawn(function()
@@ -47,9 +47,8 @@ function HeavyPunch.Activate(initPlayer,params)
 
         -- pause the restore the players WalkSpeed
         wait(1)
-        local originalWalkSpeed = Knit.Services.ModifierService:GetModifiedValue(initPlayer, "WalkSpeed", nil)
-        initPlayer.Character.Humanoid.WalkSpeed = originalWalkSpeed
-        pritn(originalWalkSpeed)
+        local totalWalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
+        initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
         
     end)
 end

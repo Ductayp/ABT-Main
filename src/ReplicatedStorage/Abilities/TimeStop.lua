@@ -116,8 +116,11 @@ function TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
     end
     ]]--
 
-    -- Effects in here will play for EVERYONE on the hit player list. imnc;uding the initPlayer
+    -- Effects in here will play for EVERYONE on the hit player list, including the initPlayer
     if params.StoppedPlayers then
+        for i,v in pairs(params.StoppedPlayers) do
+            print(i,v)
+        end
         for _,stoppedPlayer in pairs(params.StoppedPlayers) do -- iterate through list of StoppedPlayers
             for _, player in pairs(Players:GetPlayers()) do -- interate through list of players in game
                 if player == stoppedPlayer or player == Players.LocalPlayer then -- see if the player.UserId matched a SuserId in the StoppedPlayers table

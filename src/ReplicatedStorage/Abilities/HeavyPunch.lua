@@ -42,10 +42,9 @@ function HeavyPunch.Activate(initPlayer,params)
         newHitbox.ChildAdded:Connect(function(hit)
             print("boop")
             if hit.Name == "CharacterHit" then
-                print(hit)
-                print(hit.Value)
-                local characterHit = hit.Value
-                DamageEffect.Server_ApplyDamage(initPlayer.Character,characterHit,hitParams)
+                if hit.Value ~= initPlayer.Character then
+                    DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,hitParams)
+                end
             end
         end)
 

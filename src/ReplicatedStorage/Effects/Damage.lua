@@ -20,7 +20,7 @@ local Damage = {}
 
 function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
 
-    print("hitCharacter_1: ",hitCharacter.Parent)
+    print("hitCharacter_1: ",hitCharacter)
 
     -- check if the initCharacter is owned by a player
     local initPlayer
@@ -43,7 +43,7 @@ function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
-        print("hitCharacter_2: ",hitCharacter.Parent)
+        print("hitCharacter_2: ",hitCharacter)
 
         -- do the damage
         hitCharacter.Humanoid:TakeDamage(actualDamage)

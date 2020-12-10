@@ -46,8 +46,10 @@ function BulletKick.Activate(initPlayer,params)
 
         newHitbox.ChildAdded:Connect(function(hit)
             if hit.Name == "CharacterHit" then
-                DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,damageParams)
-                KnockBack.Server_ApplyEffect(initPlayer,hit.Value,knockbackParams)
+                if hit.Value ~= initPlayer.Character then
+                    DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,damageParams)
+                    KnockBack.Server_ApplyEffect(initPlayer,hit.Value,knockbackParams)
+                end
             end
         end)
 

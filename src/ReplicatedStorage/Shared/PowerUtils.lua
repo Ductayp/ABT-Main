@@ -229,7 +229,7 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 
 	for _,hit in pairs (results) do
 		if hit.Parent:FindFirstChild("Humanoid") then
-
+			print(hit.Parent)
 			-- check if this character was already hit
 			local characterHit = hit.Parent
 			local canHit = true
@@ -240,18 +240,12 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 				end
 			end
 
-			-- now add the character to the table, this produce no duplicates
-			hitList[characterHit] = true
 
-			-- check if this is the initPlayer, set canHit to false if it is
-			for _, player in pairs(Players:GetPlayers()) do
-				if player.Character == characterHit then
-					canHit = false
-				end
-			end
+			hitList[characterHit] = true
 
 			-- do the hit if canHit is true
 			if canHit == true then
+				print("yeet",characterHit)
 				spawn(function()
 					local newValueObject = Instance.new("ObjectValue") -- will store a character
 					newValueObject.Name = "CharacterHit"
@@ -280,13 +274,6 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 
 			-- now add the character to the table, this produce no duplicates
 			hitList[characterHit] = true
-
-			-- check if this is the initPlayer, set canHit to false if it is
-			for _, player in pairs(Players:GetPlayers()) do
-				if player.Character == characterHit then
-					canHit = false
-				end
-			end
 
 			-- do the hit if canHit is true
 			if canHit == true then

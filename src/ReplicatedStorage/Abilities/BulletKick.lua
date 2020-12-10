@@ -1,4 +1,4 @@
--- Heavy Punch Ability
+-- Bullet Kick Ability
 -- PDab
 -- 12-1-2020
 
@@ -14,42 +14,44 @@ local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local DamageEffect = require(Knit.Effects.Damage)
+local KnockBack = require(Knit.Effects.KnockBack)
 
-local HeavyPunch = {}
+local BulletKick = {}
 
-function HeavyPunch.Activate(initPlayer,params)
+function BulletKick.Activate(initPlayer,params)
     
-    -- save the original walkspeed and slow the player down
-    --local originalWalkSpeed = initPlayer.Character.Humanoid.WalkSpeed
+    -- drop the walkspeed
     initPlayer.Character.Humanoid.WalkSpeed = 0
 
     -- spawn function for hitbox with a delay
     spawn(function()
-        wait(.5)
+        wait(.3)
 
         -- make a new hitbox, it stays in place
         local boxParams = {}
-        boxParams.Size = Vector3.new(4,3,12)
-        boxParams.Transparency = 1
-        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
+        boxParams.Size = Vector3.new(4,3,6)
+        boxParams.Transparency = .8
+        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
         
-        local hitParams = {}
-        hitParams.Damage = params.Damage
+        local damageParams = {}
+        damageParams.Damage = params.Damage
 
-        local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
+        local knockbackParams = {}
+        knockbackParams.LookVector = boxParams.CFrame.LookVector  --Vector3.new(0,2,50)
+        knockbackParams.Force = 100
+        knockbackParams.Duration = .2
+ 
+        local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams)
         Debris:AddItem(newHitbox, .5)
 
         newHitbox.ChildAdded:Connect(function(hit)
-            print("boop")
             if hit.Name == "CharacterHit" then
-                print(hit)
-                print(hit.Value)
-                local characterHit = hit.Value
-                DamageEffect.Server_ApplyDamage(initPlayer.Character,characterHit,hitParams)
+                DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,damageParams)
+                KnockBack.Server_ApplyEffect(initPlayer,hit.Value,knockbackParams)
             end
         end)
 
-        -- pause the restore the players WalkSpeed
+        -- pause then restore the players WalkSpeed
         wait(1)
         local totalWalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
         initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
@@ -57,7 +59,7 @@ function HeavyPunch.Activate(initPlayer,params)
     end)
 end
 
-function HeavyPunch.Execute(initPlayer,params)
+function BulletKick.Execute(initPlayer,params)
 
     -- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
@@ -66,20 +68,20 @@ function HeavyPunch.Execute(initPlayer,params)
     end
 
     --move the stand and do animations
-    ManageStand.PlayAnimation(initPlayer,params,"HeavyPunch")
-    wait(.2)
     ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+    ManageStand.PlayAnimation(initPlayer,params,"BulletKick")
     spawn(function()
-        wait(1.5)
+        wait(1)
         ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
     end)
 
+    --[[
     -- animate things
-    local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
-    local ring_1 = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.Ring:Clone()
-    local ring_2 = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.Ring:Clone()
-    local ring_3 = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.Ring:Clone()
-    local shock_1 = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.Shock:Clone()
+    local fastBall = ReplicatedStorage.EffectParts.Abilities.BulletKick.FastBall:Clone()
+    local ring_1 = ReplicatedStorage.EffectParts.Abilities.BulletKick.Ring:Clone()
+    local ring_2 = ReplicatedStorage.EffectParts.Abilities.BulletKick.Ring:Clone()
+    local ring_3 = ReplicatedStorage.EffectParts.Abilities.BulletKick.Ring:Clone()
+    local shock_1 = ReplicatedStorage.EffectParts.Abilities.BulletKick.Shock:Clone()
 
 
     fastBall.Parent = workspace.RenderedEffects
@@ -156,11 +158,11 @@ function HeavyPunch.Execute(initPlayer,params)
     
     
 
-
+]]--
 
 
 end
 
-return HeavyPunch
+return BulletKick
 
 

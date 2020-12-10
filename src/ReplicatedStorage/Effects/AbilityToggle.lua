@@ -34,6 +34,7 @@ function AbilityToggle.SetToggle(player,toggleName,toggleValue)
         thisToggle.Name = toggleName
         thisToggle.Parent = toggleFolder
     end
+
     thisToggle.Value = toggleValue
 
 end
@@ -89,7 +90,7 @@ function AbilityToggle.RequireFalse(player,toggleNamesArray)
             end
         end
     else
-        returnValue = true -- this happens if there is no toggles folder yet
+        returnValue = false -- this happens if there is no toggles folder yet
     end
 
     return returnValue
@@ -112,7 +113,7 @@ function AbilityToggle.RequireTrue(player,toggleNamesArray)
             end
         end
     else
-        returnValue = true -- this happens if there is no toggles folder yet
+        returnValue = false -- this happens if there is no toggles folder yet
     end
 
     return returnValue

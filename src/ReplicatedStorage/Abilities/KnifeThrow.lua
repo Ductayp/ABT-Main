@@ -13,6 +13,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Abilities.ManageStand)
+local Damage = require(Knit.Effects.Damage)
 
 local KnifeThrow = {}
 
@@ -37,7 +38,6 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
 
             local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
             if humanoid then
-                print(humanoid.Parent)
                 if humanoid.Parent.Name ~= initPlayer.Name then
                     charactersHit[hit.Parent] = true
                 end
@@ -51,7 +51,7 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
                     canHit = false
                     if charactersHit ~= nil then
                         for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
-                            Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,hitParams)
+                            Damage.Server_ApplyDamage(initPlayer.Character,characterHit,hitParams)
                         end
                     end	
                 end)

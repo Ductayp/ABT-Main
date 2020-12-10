@@ -253,18 +253,15 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 			-- do the hit if canHit is true
 			if canHit == true then
 				spawn(function()
-					--wait()
 					local newValueObject = Instance.new("ObjectValue") -- will store a character
 					newValueObject.Name = "CharacterHit"
 					newValueObject.Value = characterHit
 					newValueObject.Parent = hitBox
-					
 				end)
 			end
 		end
 	end
 
-	
 	-- the Touched event for new hits
 	hitBox.Touched:Connect(function(hit)
 

@@ -20,6 +20,8 @@ local Damage = {}
 
 function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
 
+    print("hitCharacter_1: ",hitCharacter.Parent)
+
     -- check if the initCharacter is owned by a player
     local initPlayer
     for _, player in pairs(Players:GetPlayers()) do
@@ -41,6 +43,8 @@ function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
+        print("hitCharacter_2: ",hitCharacter.Parent)
+
         -- do the damage
         hitCharacter.Humanoid:TakeDamage(actualDamage)
 
@@ -54,12 +58,8 @@ function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
 end
 
 function Damage.Client_RenderEffect(params)
-    print("got it!")
-    for i,v in pairs(params) do
-        print(i,v)
-    end
 
-    local billboardGui = ReplicatedStorage.EffectParts.Effects.DamageNumber:Clone()
+    local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()
     billboardGui.Parent = params.HitCharacter
     billboardGui.TextLabel.Text = params.Damage
 

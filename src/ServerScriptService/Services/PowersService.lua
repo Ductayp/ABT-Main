@@ -174,9 +174,10 @@ function PowersService:PlayerJoined(player)
     -- make sure the players data is loaded
     local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
+    repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
 
-    -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
-    repeat wait(1) until playerDataBoolean.Value == true
+    -- render existing stands
+    self:RenderExistingStands(player)
 
     -- get the players current power
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -207,7 +208,7 @@ function PowersService:KnitInit()
         
         player.CharacterAdded:Connect(function(character)
             self:PlayerJoined(player)
-            self:RenderExistingStands(player)
+            
 
             character:WaitForChild("Humanoid").Died:Connect(function()
                 self:PlayerJoined(player)
@@ -223,7 +224,7 @@ function PowersService:KnitInit()
 
         player.CharacterAdded:Connect(function(character)
             self:PlayerJoined(player)
-            self:RenderExistingStands(player)
+            
 
             character:WaitForChild("Humanoid").Died:Connect(function()
                 self:PlayerJoined(player)

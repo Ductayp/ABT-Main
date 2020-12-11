@@ -32,7 +32,8 @@ function ColorShift.Client_RenderEffect(params)
 
     spawn(function()
         local originalColorCorrection = Lighting:FindFirstChild("ColorCorrection")
-        local newColorCorrection = originalColorCorrection:Clone()  
+        local newColorCorrection = originalColorCorrection:Clone()
+        newColorCorrection.Name = "newColorCorrection"
         newColorCorrection.Parent = Lighting
 
 

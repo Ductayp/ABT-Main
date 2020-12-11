@@ -16,10 +16,10 @@ local armSpawnRate = .05
 local armDebrisTime = .15
 local damageLoopTime = 0.25
 
-local module = {}
+local Barrage = {}
 
 --// Server Create Hitbox -- we have a unique hitbox for Barrage
-function module.Server_CreateHitbox(initPlayer,params)
+function Barrage.Activate(initPlayer,params)
 
 	-- basic part setup
 	local newHitBox = Instance.new("Part")
@@ -56,7 +56,7 @@ function module.Server_CreateHitbox(initPlayer,params)
 
 			if charactersHit ~= nil then
 				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
-					DamageEffect.Server_ApplyDamage(initPlayer.Character,characterHit,damageParams)
+					DamageEffect.Server_ApplyEffect(characterHit,damageParams)
 				end
 			end	
 
@@ -77,13 +77,12 @@ function module.Server_CreateHitbox(initPlayer,params)
 end
 
 --// Server Destroy Hitbox
-function module.Server_DestroyHitbox(initPlayer, params)
-
+function Barrage.DestroyHitbox(initPlayer, params)
 	local destroyHitbox = workspace.ServerHitboxes[initPlayer.UserId]:ClearAllChildren()
 end
 
 --// Shoot Arm 
-function module.shootArm(thisEffect,thisArm)
+function Barrage.shootArm(thisEffect,thisArm)
 
 	-- clone a single arm and parent it, add it to the Debris
 	local newArm = thisEffect[thisArm]:Clone()
@@ -126,7 +125,7 @@ function module.shootArm(thisEffect,thisArm)
 end
 
 --// Run Effect
-function module.RunEffect(initPlayer,params)
+function Barrage.RunEffect(initPlayer,params)
 
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
@@ -168,8 +167,8 @@ function module.RunEffect(initPlayer,params)
 	local newThread = coroutine.create(function()
 		while wait(armSpawnRate) do
 			if thisToggle.Value then
-				module.shootArm(thisEffect,"LeftArm")
-				module.shootArm(thisEffect,"RightArm")
+				Barrage.shootArm(thisEffect,"LeftArm")
+				Barrage.shootArm(thisEffect,"RightArm")
 			else
 				coroutine.yield()
 			end
@@ -180,7 +179,7 @@ function module.RunEffect(initPlayer,params)
 end
 
 --// End Effect
-function module.EndEffect(initPlayer,params)
+function Barrage.EndEffect(initPlayer,params)
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
 	local barrageFolder = targetStand:FindFirstChild("BarrageFolder")
 	if barrageFolder then
@@ -193,4 +192,4 @@ function module.EndEffect(initPlayer,params)
 end
 
 
-return module
+return Barrage

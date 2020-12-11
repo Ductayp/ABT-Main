@@ -34,16 +34,17 @@ function HeavyPunch.Activate(initPlayer,params)
         boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
         
         local hitParams = {}
-        hitParams.Damage = params.Damage
+        hitParams.Damage = params.HeavyPunch.Damage
 
         local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams,hitParams)
         Debris:AddItem(newHitbox, .5)
 
         newHitbox.ChildAdded:Connect(function(hit)
-            print("boop")
             if hit.Name == "CharacterHit" then
                 if hit.Value ~= initPlayer.Character then
-                    DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,hitParams)
+                    for effect,params in pairs(params.HeavyPunch.Effects) do
+                        require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
+                    end
                 end
             end
         end)

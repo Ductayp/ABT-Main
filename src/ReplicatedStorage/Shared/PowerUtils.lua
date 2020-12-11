@@ -229,7 +229,6 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 
 	for _,hit in pairs (results) do
 		if hit.Parent:FindFirstChild("Humanoid") then
-			print(hit.Parent)
 			-- check if this character was already hit
 			local characterHit = hit.Parent
 			local canHit = true

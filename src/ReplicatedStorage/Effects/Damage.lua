@@ -18,35 +18,13 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local Damage = {}
 
-function Damage.Server_ApplyDamage(initCharacter,hitCharacter,params)
-
-    print("hitCharacter_1: ",hitCharacter)
-
-    -- check if the initCharacter is owned by a player
-    local initPlayer
-    for _, player in pairs(Players:GetPlayers()) do
-		if player.Character == initCharacter then
-			initPlayer = player
-		end
-    end
-
-    -- default actualDamage for NPCs and other sources BESIDES players
-    local actualDamage = params.Damage
-    
-    -- if it is a player, lets get any modifiers they might have (right now this is a placeholder until we make ModifierService)
-    if initPlayer ~= nil then
-        -- get modifiers here,maybe from Modifier service
-        local modifier = 0 -- temporary value here, late on we will have an actual check
-        actualDamage = params.Damage + modifier
-    end
+function Damage.Server_ApplyEffect(hitCharacter,params)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
-        print("hitCharacter_2: ",hitCharacter)
-
         -- do the damage
-        hitCharacter.Humanoid:TakeDamage(actualDamage)
+        hitCharacter.Humanoid:TakeDamage(params.Damage)
 
         -- send the visual effects to all clients
         local effectParams = {}

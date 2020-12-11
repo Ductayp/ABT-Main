@@ -17,7 +17,12 @@ local Damage = require(Knit.Effects.Damage)
 
 local KnifeThrow = {}
 
-function KnifeThrow.Server_ThrowKnife(initPlayer,params)
+function KnifeThrow.Server_Activate(initPlayer,params)
+    
+    print("BEEP 1")
+    for i,v in pairs(params.KnifeThrow.Effects) do
+        print(i,v)
+    end
 
     local hitPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Server:Clone()
     hitPart.Parent = workspace.RenderedEffects
@@ -25,10 +30,6 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
     
     -- set network owner
     hitPart:SetNetworkOwner(nil)
-
-    -- setup hitBox and Touched event
-    local hitParams = {}
-    hitParams.Damage = params.KnifeThrow.Damage
 
     local charactersHit = {} -- a list of player hit
     local canHit = true -- a boolean the toggles if the hitbox can add player to the charactersHit table
@@ -46,12 +47,15 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
             if reportOnce == true then
                 reportOnce = false
                 spawn(function()
+
                     wait(.5)
                     hitPart:Destroy()
                     canHit = false
                     if charactersHit ~= nil then
                         for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
-                            Damage.Server_ApplyDamage(initPlayer.Character,characterHit,hitParams)
+                            for effect,params in pairs(params.KnifeThrow.Effects) do
+                                require(Knit.Effects[effect]).Server_ApplyEffect(characterHit,params)
+                            end
                         end
                     end	
                 end)
@@ -83,7 +87,7 @@ function KnifeThrow.Server_ThrowKnife(initPlayer,params)
     end)
 end
 
-function KnifeThrow.Client_KnifeThrow(initPlayer,params)
+function KnifeThrow.Client_Execute(initPlayer,params)
 
     -- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")

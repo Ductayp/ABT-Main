@@ -14,141 +14,81 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
+-- Effect modules
+local PinCharacter = require(Knit.Effects.PinCharacter)
+local ColorShift = require(Knit.Effects.ColorShift)
+local BlockInput = require(Knit.Effects.BlockInput)
+
 local TimeStop = {}
 
---// Server Functions ----------------------------------
+--// ACTIVATE ----------------------------------
+function TimeStop.Activate(initPlayer,params)
 
-function TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
+    -- run delay, this makes room for the animation
+    if params.TimeStop.Delay ~= nil then
+        wait(params.TimeStop.Delay)
+    end
 
-    -- setup a table for all players affected by Time Stop
-    params.StoppedPlayers = {}
-
+    -- hit players
+    -- put all player within range inside a table, including the initPlayer
+    local affectedPlayers = {}
     for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+        if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) < params.TimeStop.Range then
+            affectedPlayers[targetPlayer] = true
+        end
+    end
 
+    -- play effects for all player within range, this happens before immunities
+    for player,_ in pairs(affectedPlayers) do
 
-        if targetPlayer ~= initPlayer then
-            if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) < timeStopParams.Range then
+        --local effect = ColorShift
+        require(Knit.Effects["ColorShift"]).Server_ApplyEffect(player.Character,params.TimeStop.Effects.ColorShift)
 
-                print("distance is: ",targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position))
-                print("range is: ",timeStopParams.Range)
+    end
 
-                -- get the targetPlayers current power and check if they have immunity to TimeStop
-                local canTimeStop = false
-                local playerData = Knit.Services.PlayerDataService:GetPlayerData(targetPlayer)
+    -- remove any player that is immune to timestop
+    for player,_ in pairs(affectedPlayers) do
 
-                local powerModule
-                local findModule = Knit.Powers:FindFirstChild(playerData.Character.CurrentPower)
-                if findModule then
-                    powerModule = require(Knit.Powers[playerData.Character.CurrentPower])
-                else
-                    print("power doesnt exist")
-                    return
-                end
+        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+        local powerModule -- declare it here so the rest can use it
+        local findModule = Knit.Powers:FindFirstChild(playerData.Character.CurrentPower)
+        if findModule then
+            powerModule = require(Knit.Powers[playerData.Character.CurrentPower])
+        end
 
-                if powerModule.Defs.Immunities then
-                    if not powerModule.Defs.Immunities.TimeStop then
-                        canTimeStop = true
-                    end
-                else
-                    canTimeStop = true
-                end
-                
-                print(canTimeStop)
-                -- if they are not immune, run the rest
-                if canTimeStop == true then
-
-                    -- insert into table in params to list the targetPlayer who have been stopped
-                    table.insert(params.StoppedPlayers,targetPlayer)
-                    
-                    spawn(function()
-                        
-                        if timeStopParams.Delay ~= nil then
-                            wait(timeStopParams.Delay)
-                        end
-
-                        -- anchor the targetPlayer
-                        for _,part in pairs(targetPlayer.Character:GetChildren()) do
-                            if part:IsA("BasePart") then
-                                part.Anchored = true
-                            end
-                        end
-                        
-                        -- block input
-                        local inputBlockedBool = powerUtils.SetInputBlock(targetPlayer,{Name = "TimeStop"})
-
-                        
-                        -- wait and then restore the targetPlayer
-
-                            wait(timeStopParams.Duration)
-
-                            -- un-anchor the targetPlayer
-                            for _,part in pairs(targetPlayer.Character:GetChildren()) do
-                                if part:IsA("BasePart") then
-                                    part.Anchored = false
-                                end
-                            end
-
-                            -- un-block input
-                            inputBlockedBool:Destroy()
-                    end)
-                end
+        if powerModule.Defs.Immunities then
+            if powerModule.Defs.Immunities.TimeStop then
+                affectedPlayers[player] = nil -- commnet this out to run it immune players (for testing only)
             end
         end
     end
-    table.insert(params.StoppedPlayers,initPlayer) -- add the initPlayer so they see the effects
-    return params
+    
+    -- run effects on players still in the affectedPlayers table
+    for player,_ in pairs(affectedPlayers) do
+
+        for effect,params in pairs(params.TimeStop.Effects) do
+
+            if effect ~= "ColorShift" then -- we already did colorshift for everyone in range
+                require(Knit.Effects[effect]).Server_ApplyEffect(player.Character,params)
+            end
+        end
+
+    --[[ OLD WAY
+        local pinParams = params.Effects.PinCharacter
+        PinCharacter.Server_ApplyEffect(player.Character,pinParams)
+
+        local colorShiftParams = params.Effects.ColorShift
+        ColorShift.Server_ApplyEffect(player.Character,colorShiftParams)
+
+        local blockInputParams = params.Effects.BlockInput
+        BlockInput.Server_ApplyEffect(player.Character,blockInputParams)
+    ]]--
+        
+    end
 end
 
-function TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
-
-    --[[
-    -- Effects in here will play for everyone affected EXCEPT the initPlayer
-    if params.StoppedPlayers then
-        for _,userId in pairs(params.StoppedPlayers) do -- iterate through list of StoppedPlayers
-            for _, player in pairs(Players:GetPlayers()) do -- interate through list of players in game
-                if player.UserId == userId then -- see if the player.UserId matched a SuserId in the StoppedPlayers table
-                    if player == Players.LocalPlayer then -- if we get a match, only run this effect if the script is being run by the matchign player
-                        -- nothing here right now            
-                    end
-                end
-            end
-        end
-    end
-    ]]--
-
-    -- Effects in here will play for EVERYONE on the hit player list, including the initPlayer
-    if params.StoppedPlayers then
-        for i,v in pairs(params.StoppedPlayers) do
-            print(i,v)
-        end
-        for _,stoppedPlayer in pairs(params.StoppedPlayers) do -- iterate through list of StoppedPlayers
-            for _, player in pairs(Players:GetPlayers()) do -- interate through list of players in game
-                if player == stoppedPlayer or player == Players.LocalPlayer then -- see if the player.UserId matched a SuserId in the StoppedPlayers table
-                    --print
-                    -- change the ColorCorrection
-                    local originalColorCorrection = Lighting:FindFirstChild("ColorCorrection")
-                    local newColorCorrection = originalColorCorrection:Clone()  
-                    newColorCorrection.Parent = Lighting
-
-
-                    local colorTween1 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = -3})
-                    colorTween1:Play()
-
-                    originalColorCorrection.Enabled = false
-
-                    spawn(function()
-                        wait(timeStopParams.Duration)
-                        local colorTween2 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = originalColorCorrection.Contrast})
-                        colorTween2:Play()
-                        wait(3)
-                        originalColorCorrection.Enabled = true
-                        newColorCorrection:Destroy()
-                    end)
-                    
-                end
-            end
-        end
-    end
+--// EXECUTE ----------------------------------
+function TimeStop.Execute(initPlayer,params)
 
     -- animate spehres
     local sphereParams = {}
@@ -170,12 +110,12 @@ function TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
     sphere2.Color = Color3.new(2, 243, 255)
     sphere3.Color = Color3.new(255, 255, 2)
     
-    Debris:AddItem(sphere1,timeStopParams.Duration)
-    Debris:AddItem(sphere2,timeStopParams.Duration)
-    Debris:AddItem(sphere3,timeStopParams.Duration)
+    Debris:AddItem(sphere1,params.Duration)
+    Debris:AddItem(sphere2,params.Duration)
+    Debris:AddItem(sphere3,params.Duration)
 
     spawn(function()
-        local size = timeStopParams.Range * 2
+        local size = params.Range * 2
 
         local tweenInfo = TweenInfo.new(
             1, -- Time

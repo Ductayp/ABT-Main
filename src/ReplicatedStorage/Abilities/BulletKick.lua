@@ -30,25 +30,24 @@ function BulletKick.Activate(initPlayer,params)
         -- make a new hitbox, it stays in place
         local boxParams = {}
         boxParams.Size = Vector3.new(4,3,6)
-        boxParams.Transparency = .8
+        boxParams.Transparency = 1
         boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
         
-        local damageParams = {}
-        damageParams.Damage = params.Damage
+        -- set the look vector for the KnockBack effect
+        params.BulletKick.Effects.KnockBack.LookVector = boxParams.CFrame.LookVector 
 
-        local knockbackParams = {}
-        knockbackParams.LookVector = boxParams.CFrame.LookVector  --Vector3.new(0,2,50)
-        knockbackParams.Force = 100
-        knockbackParams.Duration = .2
- 
+        -- make a new hitbox
         local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams)
         Debris:AddItem(newHitbox, .5)
 
         newHitbox.ChildAdded:Connect(function(hit)
             if hit.Name == "CharacterHit" then
                 if hit.Value ~= initPlayer.Character then
-                    DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,damageParams)
-                    KnockBack.Server_ApplyEffect(initPlayer,hit.Value,knockbackParams)
+                    for effect,params in pairs(params.BulletKick.Effects) do
+                        require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
+                    end
+                    --DamageEffect.Server_ApplyDamage(initPlayer.Character,hit.Value,damageParams)
+                    --KnockBack.Server_ApplyEffect(initPlayer,hit.Value,knockbackParams)
                 end
             end
         end)

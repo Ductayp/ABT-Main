@@ -18,7 +18,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local KnockBack = {}
 
-function KnockBack.Server_ApplyEffect(initCharacter,hitCharacter,params)
+function KnockBack.Server_ApplyEffect(hitCharacter,params)
 
     print("lets go!!!")
 
@@ -56,9 +56,6 @@ function KnockBack.Client_RenderEffect(params)
         wait(2)
         newParticle.Rate = 0
     end)
-
-    print("KnockBack.Client_RenderEffect: we should put some trails or particles in here :P")
-
 end
 
 

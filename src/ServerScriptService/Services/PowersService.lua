@@ -99,7 +99,7 @@ function PowersService:RenderEffect_AllPlayers(effect,params)
     self.Client.RenderEffect:FireAll(effect,params)
 end
 
---// RenderEffectSinglePlayers -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
+--// RenderEffectSinglePlayer -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
 function PowersService:RenderEffect_SinglePlayer(player,effect,params)
     self.Client.RenderEffect:Fire(player,effect,params)
 end

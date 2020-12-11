@@ -48,8 +48,6 @@ TheWorld.Defs = {
         EquipStand = {
             Name = "Equip Stand",
             Cooldown = 5
-            --EquipSound = ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon,
-            --RemoveSound = ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon
         },
 
         Barrage = {
@@ -63,9 +61,11 @@ TheWorld.Defs = {
 
         TimeStop = {
             Name = "Time Stop",
-            Duration = 5,
+            --Delay = 2,
+            Duration = 8,
             Cooldown = 20,
             Range = 150,
+            Effects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
         },
 
        KnifeThrow = {
@@ -73,19 +73,20 @@ TheWorld.Defs = {
             Cooldown = 8,
             Range = 75,
             Speed = 40,
-            Damage = 20
+            Effects = {Damage = {Damage = 20}}
         },
 
         HeavyPunch = {
             Name = "Heavy Punch",
             Damage = 30,
             Cooldown = 10,
+            Effects = {Damage = {Damage = 30}, ColorShift = {Duration = 1}, PinCharacter = {Duration = 1}, BlockInput = {Name = "HeavyPunch", Duration = 1}}
         },
 
         BulletKick = {
             Name = "Bullet Kick",
             Cooldown = 1,
-            Damage = 10
+            Effects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
         },
 
         Ability_7 = {
@@ -270,7 +271,7 @@ function TheWorld.Barrage(initPlayer,params)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
                 params.CanRun = true
       
-                Barrage.Server_CreateHitbox(initPlayer, TheWorld.Defs.Abilities.Barrage)
+                Barrage.Activate(initPlayer, TheWorld.Defs.Abilities.Barrage)
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()
@@ -295,7 +296,7 @@ function TheWorld.Barrage(initPlayer,params)
                 params.CanRun = true
 
                 -- destroy hitbox
-                Barrage.Server_DestroyHitbox(initPlayer, TheWorld.Defs.Abilities.Barrage)
+                Barrage.DestroyHitbox(initPlayer, TheWorld.Defs.Abilities.Barrage)
             end
         end
     end
@@ -380,12 +381,12 @@ function TheWorld.TimeStop(initPlayer,params)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,false)
             end)
 
-            -- run server check
-            local timeStopParams = {}
-            timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
-            timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
-            timeStopParams.Delay = 2
-            params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
+            spawn(function()
+                wait(2) -- this waits for the animations and audio before firing
+                params.TimeStop = TheWorld.Defs.Abilities.TimeStop
+                TimeStop.Activate(initPlayer,params)
+            end)
+            
             
             params.CanRun = true
 
@@ -410,10 +411,8 @@ function TheWorld.TimeStop(initPlayer,params)
             -- wait here for the timestop audio
             wait(2)
 
-            local timeStopParams = {}
-            timeStopParams.Duration = TheWorld.Defs.Abilities.TimeStop.Duration
-            timeStopParams.Range = TheWorld.Defs.Abilities.TimeStop.Range
-            TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
+            local timeStopParams = TheWorld.Defs.Abilities.TimeStop
+            TimeStop.Execute(initPlayer,timeStopParams)
         end
 
         -- TIME STOP/EXECUTE/INPUT ENDED
@@ -480,7 +479,7 @@ function TheWorld.KnifeThrow(initPlayer,params)
             end)
 
             params.KnifeThrow = TheWorld.Defs.Abilities.KnifeThrow
-            KnifeThrow.Server_ThrowKnife(initPlayer,params)
+            KnifeThrow.Server_Activate(initPlayer,params)
             params.CanRun = true
         end
 
@@ -496,7 +495,7 @@ function TheWorld.KnifeThrow(initPlayer,params)
          -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
-            KnifeThrow.Client_KnifeThrow(initPlayer,params)
+            KnifeThrow.Client_Execute(initPlayer,params)
         end
 
         -- KNIFE THROW/EXECUTE/INPUT ENDED
@@ -550,8 +549,7 @@ function TheWorld.HeavyPunch(initPlayer,params)
 
          -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
-            
+           
             -- set cooldown
             Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.HeavyPunch.Cooldown)
 
@@ -563,7 +561,8 @@ function TheWorld.HeavyPunch(initPlayer,params)
             end)
 
             -- activate ability
-            HeavyPunch.Activate(initPlayer,heavyPunchParams)
+            params.HeavyPunch = TheWorld.Defs.Abilities.HeavyPunch
+            HeavyPunch.Activate(initPlayer,params)
             
             
 
@@ -649,8 +648,9 @@ function TheWorld.BulletKick(initPlayer,params)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,false)
             end)
 
-            bulletKickParams = TheWorld.Defs.Abilities.BulletKick
-            BulletKick.Activate(initPlayer,bulletKickParams)
+            --bulletKickParams = TheWorld.Defs.Abilities.BulletKick
+            params.BulletKick = TheWorld.Defs.Abilities.BulletKick
+            BulletKick.Activate(initPlayer,params)
             params.CanRun = true
         end
 

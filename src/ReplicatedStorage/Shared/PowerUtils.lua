@@ -21,6 +21,7 @@ local RayastHitbox = require(Knit.Shared.RaycastHitboxV3)
 
 local PowerUtils = {}
 
+
 --// CheckCooldown - receives the power params and returns params.CanRun as true or false
 function PowerUtils.GetCooldown(player,params)
 
@@ -73,6 +74,8 @@ function PowerUtils.SetGUICooldown(initPlayer,key,value)
 	end
 end 
 
+
+
 --// GetToggle 
 function PowerUtils.GetToggle(player,toggleName)
 
@@ -102,6 +105,8 @@ function PowerUtils.GetToggle(player,toggleName)
 
 end
 
+
+
 -- RequireToggle
 function PowerUtils.RequireToggle(player,params,toggleName)
 
@@ -125,6 +130,8 @@ function PowerUtils.RequireToggle(player,params,toggleName)
 	return boolean
 
 end 
+
+
 
 -- SetInputBlock - can optionally name it and optionally send it to Debris with a time
 function PowerUtils.SetInputBlock(player,params)
@@ -168,7 +175,6 @@ function PowerUtils.CheckInputBlock(player)
 
 	return isBlocked
 end
-
 
 
 --// WeldParticles - creates a part at any position and parents a premade ParticleEmitter, destroys is after duration
@@ -220,69 +226,53 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 	end
 
 	-- a list of characters already hit, these get added in the Touched
-	local hitList = {} 
+	local hitList = {} -- this is characters that were already touching the box when it sapwned
 
 	-- get all touching parts and hit them, this allows us to hit anything that was inside the hitbox when it spawned
 	local connection = hitBox.Touched:Connect(function() end)
 	local results = hitBox:GetTouchingParts()
 	connection:Disconnect()
 
+	-- add hit character to hitList without any duplicates
 	for _,hit in pairs (results) do
 		if hit.Parent:FindFirstChild("Humanoid") then
-			-- check if this character was already hit
-			local characterHit = hit.Parent
-			local canHit = true
-			for alreadyHit,_ in pairs(hitList) do
-				if alreadyHit == characterHit then
-					canHit = false
-					break
-				end
-			end
-
-
-			hitList[characterHit] = true
-
-			-- do the hit if canHit is true
-			if canHit == true then
-				print("yeet",characterHit)
-				spawn(function()
-					local newValueObject = Instance.new("ObjectValue") -- will store a character
-					newValueObject.Name = "CharacterHit"
-					newValueObject.Value = characterHit
-					newValueObject.Parent = hitBox
-				end)
-			end
+			hitList[hit.Parent] = true
 		end
 	end
 
+	-- add value objects for hitList
+	spawn(function()
+		wait() -- essential! any script creating this hitbox needs to get its :ChildAdded event started before we add the children here
+		for characterHit,_ in pairs (hitList) do 
+			local newValueObject = Instance.new("ObjectValue") -- will store a character
+			newValueObject.Name = "CharacterHit"
+			newValueObject.Value = characterHit
+			newValueObject.Parent = hitBox
+			print("hit this character with already touching hits: ", newValueObject.Value, newValueObject.Parent)
+		end
+	end)
+	
 	-- the Touched event for new hits
 	hitBox.Touched:Connect(function(hit)
 
 		local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
 		if humanoid then
 
-			-- check if this character was already hit
-			local characterHit = hit.Parent
 			local canHit = true
 			for alreadyHit,_ in pairs(hitList) do
-				if alreadyHit == characterHit then
+				if hit.Parent == alreadyHit then
 					canHit = false
-					break
 				end
 			end
 
-			-- now add the character to the table, this produce no duplicates
-			hitList[characterHit] = true
-
-			-- do the hit if canHit is true
 			if canHit == true then
-				spawn(function()
-					local newValueObject = Instance.new("ObjectValue") -- will store a character
-					newValueObject.Name = "CharacterHit"
-					newValueObject.Parent = hitBox
-					newValueObject.Value = characterHit
-				end)
+				local newValueObject = Instance.new("ObjectValue") -- will store a character
+				newValueObject.Name = "CharacterHit"
+				newValueObject.Value = hit.Parent
+				newValueObject.Parent = hitBox
+				
 			end
+
 		end
 	end)
 

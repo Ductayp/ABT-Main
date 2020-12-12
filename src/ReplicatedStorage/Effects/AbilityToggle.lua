@@ -61,16 +61,19 @@ end
 function AbilityToggle.GetToggleObject(player,toggleName)
 
     toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
-    if toggleFolder then
-        local thisToggle = toggleFolder:FindFirstChild(toggleName)
-        if not thisToggle then
-            thisToggle = Instance.new("BoolValue")
-            thisToggle.Name = toggleName
-            thisToggle.Value = false
-            thisToggle.Parent = toggleFolder
-        end
-        return thisToggle
+    if not toggleFolder then
+        toggleFolder = utils.EasyInstance("Folder", {Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
+
+    local thisToggle = toggleFolder:FindFirstChild(toggleName)
+    if not thisToggle then
+        thisToggle = Instance.new("BoolValue")
+        thisToggle.Name = toggleName
+        thisToggle.Value = false
+        thisToggle.Parent = toggleFolder
+    end
+    return thisToggle
+
 end
 
 --// RequireFalse

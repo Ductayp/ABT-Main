@@ -19,11 +19,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 local PinCharacter = {}
 
 function PinCharacter.Server_ApplyEffect(hitCharacter,params)
-    print("pin character")
-    for i,v in pairs(params) do
-        print(i,v)
-    end
-    
+
     spawn(function()
 
         -- anchor the hitCharacter

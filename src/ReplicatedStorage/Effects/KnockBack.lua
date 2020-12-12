@@ -28,10 +28,6 @@ function KnockBack.Server_ApplyEffect(hitCharacter,params)
         local velocityZ = params.LookVector.Z * params.Force
         local velocityY = 5
 
-        print(velocityX)
-        print(velocityZ)
-        print(velocityY)
-
         -- add the body mover
         local newBodyVelocity = Instance.new("BodyVelocity")
         newBodyVelocity.MaxForce = Vector3.new(500000,500000,500000)
@@ -49,9 +45,6 @@ end
 
 function KnockBack.Client_RenderEffect(params)
 
-    print("lets go!!!")
-
-    
     -- trails
     local trail_1 = ReplicatedStorage.EffectParts.Effects.KnockBack.KnockBackTrail:Clone()
     --local trail_2 = ReplicatedStorage.EffectParts.Effects.KnockBack.KnockBackTrail:Clone()

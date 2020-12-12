@@ -30,7 +30,8 @@ function BulletKick.Activate(initPlayer,params)
         -- make a new hitbox, it stays in place
         local boxParams = {}
         boxParams.Size = Vector3.new(4,3,6)
-        boxParams.Transparency = 1
+        boxParams.Transparency = .5
+
         boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
         
         -- set the look vector for the KnockBack effect

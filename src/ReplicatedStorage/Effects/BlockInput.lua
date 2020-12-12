@@ -20,11 +20,6 @@ local BlockInput = {}
 
 function BlockInput.Server_ApplyEffect(hitCharacter,params)
 
-    print("block input")
-    for i,v in pairs(params) do
-        print(i,v)
-    end
-
     local player = utils.GetPlayerFromCharacter(hitCharacter)
     if player then
         -- get folder

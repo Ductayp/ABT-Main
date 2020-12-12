@@ -157,7 +157,7 @@ end
 function TheWorld.EquipStand(initPlayer,params)
 
     -- get stand toggle, setup if it doesnt exist
-    local standToggle = powerUtils.GetToggle(initPlayer,params.InputId)
+    --local standToggle = powerUtils.GetToggle(initPlayer,params.InputId)
 
     -- EQUIP STAND/INITIALIZE
     if params.SystemStage == "Intialize" then
@@ -555,7 +555,7 @@ function TheWorld.HeavyPunch(initPlayer,params)
             -- set toggles
             spawn(function()
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(3)
+                wait(2)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,false)
             end)
 

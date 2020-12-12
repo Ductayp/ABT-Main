@@ -67,23 +67,10 @@ function TimeStop.Activate(initPlayer,params)
     for player,_ in pairs(affectedPlayers) do
 
         for effect,params in pairs(params.TimeStop.Effects) do
-
             if effect ~= "ColorShift" then -- we already did colorshift for everyone in range
                 require(Knit.Effects[effect]).Server_ApplyEffect(player.Character,params)
             end
         end
-
-    --[[ OLD WAY
-        local pinParams = params.Effects.PinCharacter
-        PinCharacter.Server_ApplyEffect(player.Character,pinParams)
-
-        local colorShiftParams = params.Effects.ColorShift
-        ColorShift.Server_ApplyEffect(player.Character,colorShiftParams)
-
-        local blockInputParams = params.Effects.BlockInput
-        BlockInput.Server_ApplyEffect(player.Character,blockInputParams)
-    ]]--
-        
     end
 end
 

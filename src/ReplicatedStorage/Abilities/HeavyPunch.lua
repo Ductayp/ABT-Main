@@ -43,6 +43,14 @@ function HeavyPunch.Activate(initPlayer,params)
             if hit.Name == "CharacterHit" then
                 if hit.Value ~= initPlayer.Character then
                     for effect,params in pairs(params.HeavyPunch.Effects) do
+                        --if effect == "SphereCage" then
+                            --spawn(function()
+                                --for i = 1, 3 do
+                                    --require(Knit.Effects["SphereCage"]).Server_ApplyEffect(hit.Value,params)
+                                    --wait(0.1)
+                                --end
+                            --end)
+                        --end
                         require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
                     end
                 end

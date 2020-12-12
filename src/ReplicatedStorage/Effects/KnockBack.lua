@@ -20,14 +20,17 @@ local KnockBack = {}
 
 function KnockBack.Server_ApplyEffect(hitCharacter,params)
 
-    print("lets go!!!")
-
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
+        -- body mover settings
         local velocityX = params.LookVector.X * params.Force
         local velocityZ = params.LookVector.Z * params.Force
         local velocityY = 5
+
+        print(velocityX)
+        print(velocityZ)
+        print(velocityY)
 
         -- add the body mover
         local newBodyVelocity = Instance.new("BodyVelocity")
@@ -36,18 +39,33 @@ function KnockBack.Server_ApplyEffect(hitCharacter,params)
         newBodyVelocity.Velocity =  Vector3.new(velocityX,velocityY,velocityZ)
         newBodyVelocity.Parent = hitCharacter.HumanoidRootPart
         Debris:AddItem(newBodyVelocity,params.Duration)
-
+        
         -- send the visual effects to all clients
-        local effectParams = {}
-        effectParams.HitCharacter = hitCharacter
-        effectParams.Duration = params.Duration
-        Knit.Services.PowersService:RenderEffect_AllPlayers("KnockBack",effectParams)
+        params.HitCharacter = hitCharacter
+        Knit.Services.PowersService:RenderEffect_AllPlayers("KnockBack",params)
     end
 
 end
 
 function KnockBack.Client_RenderEffect(params)
 
+    print("lets go!!!")
+
+    
+    -- trails
+    local trail_1 = ReplicatedStorage.EffectParts.Effects.KnockBack.KnockBackTrail:Clone()
+    --local trail_2 = ReplicatedStorage.EffectParts.Effects.KnockBack.KnockBackTrail:Clone()
+    trail_1.Parent = params.HitCharacter.UpperTorso
+    --trail_2.Parent = params.HitCharacter.Head
+    trail_1.CFrame = params.HitCharacter.UpperTorso.CFrame
+    --trail_2.CFrame = params.HitCharacter.Head.CFrame
+    utils.EasyWeld(trail_1,params.HitCharacter.UpperTorso,trail_1)
+    --utils.EasyWeld(trail_2,params.HitCharacter.Head,trail_2)
+
+    Debris:AddItem(trail_1,1)
+    --Debris:AddItem(trail_2,1)
+
+    -- particles
     local newParticle = ReplicatedStorage.EffectParts.Effects.KnockBack.ParticleEmitter:Clone()
     newParticle.Parent = params.HitCharacter.UpperTorso
     Debris:AddItem(newParticle,5)
@@ -56,6 +74,8 @@ function KnockBack.Client_RenderEffect(params)
         wait(2)
         newParticle.Rate = 0
     end)
+    
+
 end
 
 

@@ -78,9 +78,8 @@ TheWorld.Defs = {
 
         HeavyPunch = {
             Name = "Heavy Punch",
-            Damage = 30,
             Cooldown = 10,
-            Effects = {Damage = {Damage = 30}, ColorShift = {Duration = 1}, PinCharacter = {Duration = 1}, BlockInput = {Name = "HeavyPunch", Duration = 1}}
+            Effects = {Damage = {Damage = 30}, ColorShift = {Duration = 1.5}, PinCharacter = {Duration = 1.5}, BlockInput = {Name = "HeavyPunch", Duration = 1.5}, SphereFields = {Size = 7, Duration = 1.5,RandomColor = true, Repeat = 3}}
         },
 
         BulletKick = {
@@ -581,6 +580,11 @@ function TheWorld.HeavyPunch(initPlayer,params)
          -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
+            spawn(function()
+                wait(.3)
+                powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.HeavyPunch)
+            end)
+           
             local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
             HeavyPunch.Execute(initPlayer,heavyPunchParams)
         end
@@ -598,7 +602,6 @@ end
 
 function TheWorld.BulletKick(initPlayer,params)
 
-    print("Bullet Kick")
     -- server actions
     if RunService:IsServer() then
         -- requires Stand to be active via "Q" toggle

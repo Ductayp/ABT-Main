@@ -132,7 +132,7 @@ function PowerUtils.SetInputBlock(player,params)
 	-- get folder
 	local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
 	if not inputBlockFolder then
-		inputBlockedBool = utils.EasyInstance("Folder",{Name = "InputBlocks", Parent = ReplicatedStorage.PowerStatus[player.UserId]})
+		inputBlockFolder = utils.EasyInstance("Folder",{Name = "InputBlocks", Parent = ReplicatedStorage.PowerStatus[player.UserId]})
 	end
 
 	-- setup block value

@@ -14,6 +14,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 local anchors = {}
 anchors.Idle = CFrame.new(2,1,2.5)
 anchors.Front = CFrame.new(0,0,-2)
+anchors.StandJump = CFrame.new(0,1.2,2)
 
 local ManageStand = {}
 

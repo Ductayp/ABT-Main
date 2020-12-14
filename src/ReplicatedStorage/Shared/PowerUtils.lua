@@ -161,17 +161,21 @@ end
 function PowerUtils.CheckInputBlock(player)
 
 	local isBlocked = false
-	local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
-	if inputBlockFolder then
-		local inputBlocks = inputBlockFolder:GetChildren()
-		if inputBlocks ~= nil then
-			for i,v in pairs(inputBlocks) do
-				if v.value == true then
-					isBlocked = true
+	local playerFolder = ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId)
+	if playerFolder then
+		local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
+		if inputBlockFolder then
+			local inputBlocks = inputBlockFolder:GetChildren()
+			if inputBlocks ~= nil then
+				for i,v in pairs(inputBlocks) do
+					if v.value == true then
+						isBlocked = true
+					end
 				end
 			end
 		end
 	end
+	
 
 	return isBlocked
 end

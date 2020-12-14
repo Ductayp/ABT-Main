@@ -36,7 +36,7 @@ function PowersService:ActivatePower(player,params)
     params = powerModule.Manager(player,params) -- pass the params in and in parmas.CanRun comes back true then we can move on
 
     -- if it returns CanRun, then fire all clients and set cooldowns
-    if params.CanRun then
+    if params.CanRun == true then
         self.Client.ExecutePower:FireAll(player,params)
     end
 

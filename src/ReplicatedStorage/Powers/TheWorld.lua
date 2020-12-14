@@ -21,6 +21,7 @@ local TimeStop = require(Knit.Abilities.TimeStop)
 local KnifeThrow = require(Knit.Abilities.KnifeThrow)
 local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 local BulletKick = require(Knit.Abilities.BulletKick)
+local StandJump = require(Knit.Abilities.StandJump)
 
 -- Effect modules
 local AbilityToggle = require(Knit.Effects.AbilityToggle)
@@ -88,10 +89,12 @@ TheWorld.Defs = {
             Effects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
         },
 
-        Ability_7 = {
-            Name = "Ability 7",
-            Duration = 0,
-            Cooldown = 1,
+        StandJump = {
+            Name = "Stand Jump",
+            Duration = .3,
+            Cooldown = 5,
+            Velocity_XZ = 2700,
+            Velocity_Y = 500
         },
 
         Ability_8 = {
@@ -722,7 +725,25 @@ function TheWorld.StandJump(initPlayer,params)
 
          -- STAND JUMP/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            params.CanRun = true
+
+            --bulletKickParams = TheWorld.Defs.Abilities.BulletKick
+            params.StandJump = TheWorld.Defs.Abilities.StandJump
+            StandJump.Activate(initPlayer,params)
+
+            -- if CanRun is true
+            if params.CanRun == true then
+
+                -- set cooldowns
+                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.StandJump.Cooldown)
+
+                -- set toggles
+                spawn(function()
+                    AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+                    wait(1)
+                    AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+                end)
+
+            end
         end
 
         -- STAND JUMP/ACTIVATE/INPUT ENDED
@@ -735,8 +756,8 @@ function TheWorld.StandJump(initPlayer,params)
     if params.SystemStage == "Execute" then
 
          -- STAND JUMP/EXECUTE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-
+        if params.KeyState == "InputBegan" then
+            StandJump.Execute(initPlayer,params)
         end
 
         -- STAND JUMP/EXECUTE/INPUT ENDED

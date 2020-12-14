@@ -21,42 +21,55 @@ local BulletKick = {}
 function BulletKick.Activate(initPlayer,params)
     
     -- drop the walkspeed
-    --initPlayer.Character.Humanoid.WalkSpeed = 0
+    spawn(function()
+        initPlayer.Character.Humanoid.WalkSpeed = 5
+        wait(2)
+        initPlayer.Character.Humanoid.WalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
+    end)
+    
 
     -- spawn function for hitbox with a delay
     spawn(function()
-        wait(.3)
+
+        wait(.3) -- small delay here for animations
 
         -- make a new hitbox, it stays in place
         local boxParams = {}
-        boxParams.Size = Vector3.new(4,3,6)
-        boxParams.Transparency = .5
+        boxParams.Size = Vector3.new(4,3,6.5)
+        boxParams.Transparency = 1
+    
+        for count = 1, 3 do
 
-        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
+            boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4.5))
         
-        -- set the look vector for the KnockBack effect
-        params.BulletKick.Effects.KnockBack.LookVector = boxParams.CFrame.LookVector 
+            -- set the look vector for the KnockBack effect
+            params.BulletKick.Effects.KnockBack.LookVector = boxParams.CFrame.LookVector 
+    
+            -- make a new hitbox
+            local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams)
+            Debris:AddItem(newHitbox, .5)
+    
+            newHitbox.ChildAdded:Connect(function(hit)
+                if hit.Name == "CharacterHit" then
+                    if hit.Value ~= initPlayer.Character then
 
-        -- make a new hitbox
-        local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams)
-        Debris:AddItem(newHitbox, .5)
+                        print(hit,hit.Value)
 
-        newHitbox.ChildAdded:Connect(function(hit)
-            if hit.Name == "CharacterHit" then
-                if hit.Value ~= initPlayer.Character then
-                    print(hit,hit.Value)
-                    for effect,params in pairs(params.BulletKick.Effects) do
-                        require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
+                        if count == 3 then
+                            for effect,params in pairs(params.BulletKick.Effects) do
+                                require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
+                            end
+                        else
+                            require(Knit.Effects["Damage"]).Server_ApplyEffect(hit.Value,params.BulletKick.Effects.Damage)
+                        end
+                        
                     end
                 end
-            end
-        end)
+            end)
 
-        -- pause then restore the players WalkSpeed
-        --wait(1)
-        --local totalWalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
-        --initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
-        
+            wait(.3) -- the pause between hitboxes so it matches with animations
+        end
+
     end)
 end
 
@@ -69,9 +82,9 @@ function BulletKick.Execute(initPlayer,params)
     end
 
     --move the stand and do animations
-    ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
-    ManageStand.PlayAnimation(initPlayer,params,"BulletKick")
     spawn(function()
+        ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+        ManageStand.PlayAnimation(initPlayer,params,"BulletKick")
         wait(1.5)
         ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
     end)
@@ -80,9 +93,6 @@ function BulletKick.Execute(initPlayer,params)
     local pop_2 = ReplicatedStorage.EffectParts.Abilities.BulletKick.BulletKickPop:Clone()
     local pop_3 = ReplicatedStorage.EffectParts.Abilities.BulletKick.BulletKickPop:Clone()
 
-    
-    
-    
     local tweenInfo_Fast = TweenInfo.new(.4)
     local tweenInfo_Slow = TweenInfo.new(.7)
 

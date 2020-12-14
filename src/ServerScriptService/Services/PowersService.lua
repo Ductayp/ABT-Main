@@ -250,7 +250,12 @@ function PowersService:KnitInit()
                     if humanoid then
                         local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
                         if player then
-                            self:SetPower(player,v.Name)
+
+                            if player:IsInGroup(3486129) then                    
+                                print "Player is in the Group: Planet Milo" 
+                                self:SetPower(player,v.Name)    
+                             end
+                            
                         end
                     end
                     wait(5)

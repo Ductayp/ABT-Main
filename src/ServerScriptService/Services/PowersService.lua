@@ -57,8 +57,7 @@ function PowersService.Client:GetCurrentPower(player)
 end
 
 --// SetPower -- sets the players curret power
-function PowersService:SetPower(player,power)
-    print("SetPower: ",power," - For player: ",player)
+function PowersService:SetCurrentPower(player,power,rarity)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -70,10 +69,10 @@ function PowersService:SetPower(player,power)
             removePowerModule.RemovePower(player,removePowerParams)
         end
     end
-    
-    
+
 
     playerData.Character.CurrentPower = power
+    playerData.Character.CurrentPowerRarity = rarity
     Knit.Services.DataReplicationService:UpdateAll(player)
 
     -- run the new powers setup function
@@ -85,6 +84,24 @@ function PowersService:SetPower(player,power)
 
     -- run the player setup so we can start fresh
     self:PlayerRefresh(player)
+end
+
+--// GivePower - this is fired only when a player uses an arrow or is given a power for the first time
+function PowersService:GivePower(player,power)
+
+    -- pick a random rarity
+    local rand = math.random(1,10)
+    local rarity
+    if rand <= 7 then
+        rarity = "Common"
+    elseif rand <= 9 then
+        rarity = "Rare"
+    else
+        rarity = "Legendary"
+    end
+
+    self:SetCurrentPower(player,power,rarity)
+
 end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
@@ -182,9 +199,10 @@ function PowersService:PlayerJoined(player)
     -- get the players current power
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     local currentPower = playerData.Character.CurrentPower
+    local currentPowerRarity = playerData.Character.CurrentPowerRarity
 
     -- set the power, this is done when the player joins so they get any modifiers in the power setup
-    self:SetPower(player,currentPower)
+    self:SetCurrentPower(player, currentPower, currentPowerRarity)
 end
 
 --// KnitStart
@@ -253,7 +271,7 @@ function PowersService:KnitInit()
 
                             if player:IsInGroup(3486129) then                    
                                 print "Player is in the Group: Planet Milo" 
-                                self:SetPower(player,v.Name)    
+                                self:GivePower(player,v.Name)    
                              end
                             
                         end

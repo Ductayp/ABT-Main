@@ -23,20 +23,18 @@ local WalkSpeed = {}
 
 --// AddModifier - fires after AddModifier from ModifierService
 function WalkSpeed.AddModifier(player,thisModifier,params)
-    print("WalkSpeed Module - AddModifier")
 
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
     for _,valueObject in pairs(thisModifier.Parent:GetChildren()) do
         newWalkSpeed = newWalkSpeed + valueObject.Value
     end
-    print("New WalkSpeed of: ",newWalkSpeed," is set for player: ",player)
+
     player.Character.Humanoid.WalkSpeed = newWalkSpeed
 
 end
 
 --// RemoveModifier - fires after RemoveModifier from ModifierService
 function WalkSpeed.RemoveModifier(player, thisModifier, params)
-    print("WalkSpeed Module - RemoveModifier")
 
     local classFolder = thisModifier.Parent
     thisModifier:Destroy()
@@ -45,7 +43,7 @@ function WalkSpeed.RemoveModifier(player, thisModifier, params)
     for _,valueObject in pairs(classFolder:GetChildren()) do
         newWalkSpeed = newWalkSpeed + valueObject.Value
     end
-    print("New WalkSpeed of: ",newWalkSpeed," is set for player: ",player)
+
     player.Character.Humanoid.WalkSpeed = newWalkSpeed
 end
 

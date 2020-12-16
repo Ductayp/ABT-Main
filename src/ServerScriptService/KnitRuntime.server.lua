@@ -12,6 +12,7 @@ Knit.Shared = ReplicatedStorage.GameFiles.Shared
 Knit.Powers = ReplicatedStorage.GameFiles.Powers
 Knit.Abilities = ReplicatedStorage.GameFiles.Abilities
 Knit.Effects = ReplicatedStorage.GameFiles.Effects
+Knit.ItemSpawnTables = ServerScriptService.GameFiles.ItemSpawnTables
 Knit.ModifierService = ServerScriptService.GameFiles.Services.ModifierService
 
 -- Load all services:

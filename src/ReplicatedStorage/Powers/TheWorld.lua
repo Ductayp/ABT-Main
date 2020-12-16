@@ -107,13 +107,11 @@ TheWorld.Defs = {
 
 --// SETUP - run this once when the stand is equipped
 function TheWorld.SetupPower(initPlayer,params)
-    print("Setup Power - The World for: ",initPlayer)
     Knit.Services.ModifierService:AddModifier(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function TheWorld.RemovePower(initPlayer,params)
-    print("Removing Power - The World for: ",initPlayer)
     Knit.Services.ModifierService:RemoveModifier(initPlayer, "WalkSpeed", "TheWorld_Setup")
 end
 

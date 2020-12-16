@@ -14,7 +14,7 @@ local module = {
 		CurrentPower = "Standless"
 	},
 	
-	Inventory = {
+	ItemInvetory = {
 		
 	},
 	

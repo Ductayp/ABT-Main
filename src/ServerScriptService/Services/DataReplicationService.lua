@@ -39,6 +39,20 @@ function DataReplicationService:UpdateAll(player)
             end
         end
     end
+
+    --[[
+    -- our TableToModule tests here
+    local folder = ReplicatedStorage.DataReplicationTest:FindFirstChild("ReplicatedPlayerData")
+    if folder then
+        print("test")
+       folder:ClearAllChildren()
+    end
+    
+    local tableToObject = require(Knit.Shared.TableToObject)
+    tableToObject.CreateObject(playerData, "ReplicatedPlayerData")
+
+    ]]--
+    
 end
 
 function DataReplicationService:PlayerAdded(player)

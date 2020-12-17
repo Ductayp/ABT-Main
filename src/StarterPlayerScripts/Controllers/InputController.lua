@@ -6,7 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
+
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))

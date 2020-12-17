@@ -280,6 +280,16 @@ function TheWorld.Barrage(initPlayer,params)
                     Knit.Services.PowersService:ActivatePower(initPlayer,params)
                 end)
             end
+            
+            --[[
+            -- this is for mobile toggles
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+                params.CanRun = true
+                params.KeyState = "InputEnded"
+                Knit.Services.PowersService:ActivatePower(initPlayer,params)
+            end
+            ]]--
         end
 
         -- BARRAGE/ACTIVATE/INPUT ENDED

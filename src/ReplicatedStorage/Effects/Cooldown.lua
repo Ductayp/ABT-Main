@@ -77,8 +77,7 @@ function Cooldown.Client_RenderEffect(params)
             local waitTime = (params.cooldownTime - os.time()) / params.cooldownValue
 
 			local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
-            local coolDownFrame = mainGui:FindFirstChild("CoolDown",true)
-            print(coolDownFrame)
+            local coolDownFrame = mainGui:FindFirstChild("PowerButtons",true)
             
             -- destroy the old counter
             local oldCounter =  coolDownFrame:FindFirstChild(params.cooldownName .. "_counter")

@@ -20,10 +20,12 @@ function DataReplicationController:ConnectValue(descendant)
         local guiInstances = MainGui:GetDescendants(true)
 		for i,v in pairs(guiInstances) do
             if v.Name == key then
-                v.Text = descendant.Value -- we do this first so we dont have to wait for the ObjectValues to change
-				descendant.Changed:Connect(function()
-                    v.Text = descendant.Value
-                end)
+                if v:IsA("TextLabel") then 
+                    v.Text = descendant.Value -- we do this first so we dont have to wait for the ObjectValues to change
+                    descendant.Changed:Connect(function()
+                        v.Text = descendant.Value
+                    end)
+                end
             end
         end
     end

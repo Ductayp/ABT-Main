@@ -86,9 +86,10 @@ function Cooldown.Client_RenderEffect(params)
             end
 
             -- make a new counter
-			local newButton = coolDownFrame:FindFirstChild(params.cooldownName):Clone()
+            local existingButton = coolDownFrame:FindFirstChild(params.cooldownName,true)
+			local newButton = existingButton:Clone()
 			newButton.Name = params.cooldownName .. "_counter"
-			newButton.Parent = coolDownFrame
+			newButton.Parent = existingButton.Parent
 			newButton.Text = params.cooldownValue
 
 			for count = 1, params.cooldownValue + 1 do

@@ -73,7 +73,7 @@ function PowersService:SetCurrentPower(player,power,rarity)
 
     playerData.Character.CurrentPower = power
     playerData.Character.CurrentPowerRarity = rarity
-    Knit.Services.DataReplicationService:UpdateAll(player)
+    --Knit.Services.DataReplicationService:UpdateAll(player)
 
     -- run the new powers setup function
     local setupPowerModule = require(Knit.Powers[power])
@@ -166,7 +166,7 @@ function PowersService:PlayerRefresh(player)
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
     local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
 
-    Knit.Services.DataReplicationService:UpdateAll(player)
+    --Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
 --// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh

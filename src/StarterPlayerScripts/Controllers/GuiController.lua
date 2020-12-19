@@ -83,9 +83,7 @@ function GuiController:WindowGuiSetup()
 
     local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
     local closeButton = mainGui.Windows.Main_Window:FindFirstChild("Close", true)
-
-    print("closebutton", closeButton)
-
+    
     closeButton.Activated:Connect(function()
         print("Boop")
         mainGui.Windows.Main_Window.Enabled = false

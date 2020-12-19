@@ -30,7 +30,7 @@ function PlayerDataService:PlayerConnected(player)
     print("ProfileService: Data Loaded for: ",player)
 
     -- update the DataReplicationService
-    Knit.Services.DataReplicationService:UpdateAll(player)
+    ---Knit.Services.DataReplicationService:UpdateAll(player)
 
     -- change players bool value to true, this is so any script in the game can know the players data is loaded
     local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")

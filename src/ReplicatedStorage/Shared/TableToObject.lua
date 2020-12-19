@@ -1,5 +1,5 @@
 local module = {}
-module.storage = game.ReplicatedStorage.DataReplicationTest -- change this to the right folder
+module.storage = game.ReplicatedStorage.DataReplication_2 -- change this to the right folder
 
 module.Returned = nil -- not working, "deprecated; Don't use it."
 
@@ -78,6 +78,8 @@ NewObject = function(table1, fold)
 end
 
 module.CreateObject = function(table1, tableName)
+	print("yeet")
+	print(table1,tableName)
 	if type(table1) == "table" and tableName and not module.storage:FindFirstChild(tableName) then
 		local fold = Instance.new("Folder")
 		fold.Name = tostring(tableName)

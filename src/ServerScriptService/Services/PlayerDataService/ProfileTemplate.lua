@@ -14,21 +14,15 @@ local module = {
 		CurrentPower = "Standless"
 	},
 	
-	ItemInvetory = {
-		
-	},
+	ItemInvetory = {},
+
+	ArrowINventory = {},
 	
-	StandInventory = {
-		
-	},
+	StandInventory = {},
 	
-	Modifiers = {
-		
-	},
+	Modifiers = {},
 	
-	ClientSettings = {
-		
-	}
+	ClientSettings = {}
 }
 
 return module

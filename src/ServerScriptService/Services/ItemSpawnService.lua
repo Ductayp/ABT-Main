@@ -57,7 +57,7 @@ function ItemSpawnService:DoSpawns()
                     
                 end
 
-                -- now pick an open spawner fromt hat table and assign it tot he variable: pickedSpawner
+                -- now pick an open spawner from that table and assign it tot he variable: pickedSpawner
                 local randomPick = math.random(1,#openSpawners)
                 local pickedSpawner = openSpawners[randomPick]
 

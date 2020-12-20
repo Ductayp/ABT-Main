@@ -120,12 +120,13 @@ function ItemSpawnService:SpawnItem(spawner,itemKey, groupFolder)
             if player then
 
                 local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-                if not playerData.ItemInvetory[itemKey] then
-                    playerData.ItemInvetory[itemKey] = 0
+                if not playerData.ItemInventory[itemKey] then
+                    playerData.ItemInventory[itemKey] = 0
                 end
-                playerData.ItemInvetory[itemKey] += 1
+                
+                playerData.ItemInventory[itemKey] += 1
 
-                Knit.Services.DataReplicationService:UpdateAll(player)
+                --Knit.Services.DataReplicationService:UpdateAll(player)
 
                 spawner.ItemPointer.Value = nil
 

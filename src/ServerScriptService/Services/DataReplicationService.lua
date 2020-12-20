@@ -10,7 +10,7 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local DataReplicationService = Knit.CreateService { Name = "DataReplicationService", Client = {}}
 
-
+--[[
 --// UpdateAll -- updates all the values from datastores
 function DataReplicationService:UpdateAll(player)
     print("update all")
@@ -42,18 +42,56 @@ function DataReplicationService:UpdateAll(player)
             end
         end
     end
+end
+]]--
 
+--// UpdateCategory - updates a sigle cateory by overwriting value sor careting objects as needed
+function DataReplicationService:UpdateCategory(player, categoryName)
+
+    -- gate player data, return if the category doesnt exist
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData[categoryName] then
+        print("No playerdata with that category nae to replicate")
+        return
+    end
+
+    -- get the players folder, create it if it doesnr exist
+    local playerFolder = ReplicatedStorage.ReplicatedPlayerData:FindFirstChild(player.UserId)
+    if not playerFolder then
+        playerFolder = Instance.new("Folder")
+        playerFolder.Name = player.UserId
+        playerFolder.Parent = ReplicatedStorage.ReplicatedPlayerData
+    end
+
+    -- get the data category folder or make it if it doesnt exist
+    local categoryFolder = playerFolder:FindFirstChild(categoryName)
+    if not categoryFolder then
+        categoryFolder = Instance.new("Folder")
+        categoryFolder.Name = categoryName
+        categoryFolder.Parent = playerFolder
+    end
+
+    -- build the valueobjects
+    for key,value in pairs(playerData[categoryName]) do
+        local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+    end
 end
 
---// BuildDataTable - called once when the playuer joins, builds their entire data table
-function DataReplicationService:BuildDataTable(player)
+--// BuildDataObjects - called once when the playuer joins, builds their entire data table
+function DataReplicationService:BuildDataObjects(player)
 
     -- make sure the players data is loaded
     local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
     
-    -- makea folder for the players data
+    -- build the categories
+    self:UpdateCategory(player, "General")
+    self:UpdateCategory(player, "Character")
+    self:UpdateCategory(player, "ItemInventory")
+
+    --[[
+    -- make a folder for the players data
     local playerFolder = Instance.new("Folder")
     playerFolder.Name = player.UserId
     playerFolder.Parent = ReplicatedStorage.ReplicatedPlayerData
@@ -70,24 +108,26 @@ function DataReplicationService:BuildDataTable(player)
         end
     end
 
-    -- build simple categroies
+    -- build basic categories, these are tables in the data that dont have anythign more complex than flat key/values
     local basicCategories = {"General","Character","ItemInventory"}
     for _,category in pairs(basicCategories) do
         for key,value in pairs(playerData[category]) do
-            NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,playerFolder[category])
+            local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,playerFolder[category])
         end
     end
+
+    ]]--
 end
 
+--// PlayerAdded
 function DataReplicationService:PlayerAdded(player)
-
     -- spawn any setup stuff so we dont yield
     spawn(function()
-        self:BuildDataTable(player)
+        self:BuildDataObjects(player)
     end)
-    
 end
 
+--// KnitStart
 function DataReplicationService:KnitStart()
 
 end

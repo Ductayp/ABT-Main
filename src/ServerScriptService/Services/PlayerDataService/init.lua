@@ -19,7 +19,7 @@ local PlayerDataService = Knit.CreateService { Name = "PlayerDataService", Clien
 -- This is loading the main functionality of profile service
 -- The first argument is the data store name, the second is the default profile template structure
 PlayerDataService.gameProfileStore = profileService.GetProfileStore(
-	"PlayerData_v3", -- store name, change this to "forget" old data
+	"PlayerData_v4", -- store name, change this to "forget" old data
 	profileTemplate
 )
 
@@ -40,8 +40,6 @@ function PlayerDataService:PlayerConnected(player)
             playerBool.Value = true
         end
     end
-
-
 end
 
 function PlayerDataService:Connect(player)

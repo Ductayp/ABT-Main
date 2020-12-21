@@ -70,10 +70,9 @@ function PowersService:SetCurrentPower(player,power,rarity)
         end
     end
 
-
     playerData.Character.CurrentPower = power
     playerData.Character.CurrentPowerRarity = rarity
-    --Knit.Services.DataReplicationService:UpdateAll(player)
+    Knit.Services.DataReplicationService:UpdateCategory(player, "Character")
 
     -- run the new powers setup function
     local setupPowerModule = require(Knit.Powers[power])

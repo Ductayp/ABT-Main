@@ -10,41 +10,6 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local DataReplicationService = Knit.CreateService { Name = "DataReplicationService", Client = {}}
 
---[[
---// UpdateAll -- updates all the values from datastores
-function DataReplicationService:UpdateAll(player)
-    print("update all")
-    local replicatedFolder = ReplicatedStorage:WaitForChild("ReplicatedPlayerData")
-    local playerFolder = replicatedFolder:WaitForChild(player.UserId)
-    
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if playerData then
-
-        -- loop through the playe data and get only keys and values, insert in new dictionary
-        local keyTable = {}
-        local function loop(playerData)
-            for key, value in pairs(playerData) do
-                if type(value) == 'table'  then
-                    loop(value)
-                else
-                    keyTable[key] = value
-                end
-            end
-        end
-        loop(playerData)
-
-        for key,value in pairs(keyTable) do
-            local thisValueObject = playerFolder:FindFirstChild(key)
-            if not thisValueObject then
-                thisValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,playerFolder)
-            else
-                thisValueObject.Value = value
-            end
-        end
-    end
-end
-]]--
-
 --// UpdateCategory - updates a sigle cateory by overwriting value sor careting objects as needed
 function DataReplicationService:UpdateCategory(player, categoryName)
 
@@ -55,7 +20,7 @@ function DataReplicationService:UpdateCategory(player, categoryName)
         return
     end
 
-    -- get the players folder, create it if it doesnr exist
+    -- get the players folder, create it if it doesnt exist
     local playerFolder = ReplicatedStorage.ReplicatedPlayerData:FindFirstChild(player.UserId)
     if not playerFolder then
         playerFolder = Instance.new("Folder")
@@ -71,16 +36,50 @@ function DataReplicationService:UpdateCategory(player, categoryName)
         categoryFolder.Parent = playerFolder
     end
 
-    -- build the valueobjects
-    for key,value in pairs(playerData[categoryName]) do
-        local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+    -- General Update
+    if categoryName == "General" then
+        for key,value in pairs(playerData[categoryName]) do
+            local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+        end
+    end
+    
+    -- Character Update
+    if categoryName == "Character" then
+        for key,value in pairs(playerData[categoryName]) do
+            local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+        end
+    end
+
+    -- ItemInventory Update
+    if categoryName == "ItemInventory" then
+        for key,value in pairs(playerData[categoryName]) do
+            local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+        end
+    end
+
+    -- ArrowInventory Update
+    if categoryName == "ArrowInventory" then
+        for i,arrowTable in pairs(playerData[categoryName]) do
+
+            --make a folder to hold the data for this arrow
+            local newFolder = Instance.new("Folder")
+            newFolder.Name = i
+            newFolder.Parent = categoryFolder
+
+            -- create values in the folder
+            for key,value in pairs(arrowTable) do
+                local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,newFolder)
+            end
+        end
     end
 end
 
---// BuildDataObjects - called once when the playuer joins, builds their entire data table
-function DataReplicationService:BuildDataObjects(player)
+--// PlayerAdded
+function DataReplicationService:PlayerAdded(player)
+    -- spawn any setup stuff so we dont yield
+    spawn(function()
 
-    -- make sure the players data is loaded
+        -- make sure the players data is loaded
     local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
@@ -89,41 +88,8 @@ function DataReplicationService:BuildDataObjects(player)
     self:UpdateCategory(player, "General")
     self:UpdateCategory(player, "Character")
     self:UpdateCategory(player, "ItemInventory")
+    self:UpdateCategory(player, "ArrowInventory")
 
-    --[[
-    -- make a folder for the players data
-    local playerFolder = Instance.new("Folder")
-    playerFolder.Name = player.UserId
-    playerFolder.Parent = ReplicatedStorage.ReplicatedPlayerData
-
-    -- build the table
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-   
-    -- create category folders
-    for key, value in pairs(playerData) do
-        if type(value) == 'table'  then
-            newFolder = Instance.new("Folder")
-            newFolder.Name = key
-            newFolder.Parent = playerFolder
-        end
-    end
-
-    -- build basic categories, these are tables in the data that dont have anythign more complex than flat key/values
-    local basicCategories = {"General","Character","ItemInventory"}
-    for _,category in pairs(basicCategories) do
-        for key,value in pairs(playerData[category]) do
-            local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,playerFolder[category])
-        end
-    end
-
-    ]]--
-end
-
---// PlayerAdded
-function DataReplicationService:PlayerAdded(player)
-    -- spawn any setup stuff so we dont yield
-    spawn(function()
-        self:BuildDataObjects(player)
     end)
 end
 
@@ -154,7 +120,6 @@ function DataReplicationService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         ReplicatedStorage.ReplicatedPlayerData:FindFirstChild(player.UserId):Destroy()
     end)
-
 end
 
 return DataReplicationService

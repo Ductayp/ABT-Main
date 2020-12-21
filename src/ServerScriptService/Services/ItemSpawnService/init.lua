@@ -67,18 +67,18 @@ function ItemSpawnService:DoSpawns()
 
                     -- get the total weights
                     local totalWeight = 0
-                    for key,value in pairs(spawnTable.Items) do
-                        totalWeight = totalWeight + value
+                    for key,tableObject in pairs(spawnTable.Items) do
+                        totalWeight = totalWeight + tableObject.Weight
                     end
 
                     -- pick an item based on weights
                     local Chance = math.random(1,totalWeight)
                     local Counter = 0
                     local pickedItem
-                    for key,value in pairs(spawnTable.Items) do
-                        Counter = Counter + value
+                    for key,itemDefs in pairs(spawnTable.Items) do
+                        Counter = Counter + itemDefs.Weight
                         if Chance <= Counter then
-                            pickedItem = key
+                            pickedItem = itemDefs -- sets the picked item as the table of values of that object
                             break
                         end
                     end
@@ -92,12 +92,10 @@ function ItemSpawnService:DoSpawns()
     end
 end
 
-function ItemSpawnService:SpawnItem(spawner,itemKey, groupFolder)
-
-    print("spawning")
+function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
 
     -- spawn item
-    local item = ReplicatedStorage.SpawnItems[itemKey]:Clone()
+    local item = itemDefs.Model:Clone()
     item.Parent = groupFolder.SpawnedItems
     item.CFrame = spawner.CFrame
 
@@ -108,37 +106,22 @@ function ItemSpawnService:SpawnItem(spawner,itemKey, groupFolder)
         item.Anchored = false
     end
 
-
     -- set pointer
     spawner.ItemPointer.Value = item
 
     -- create a new TouchInterest
     local connection = item.Touched:Connect(function(hit)
-
         if hit.Parent:FindFirstChild("Humanoid") then
             local player = utils.GetPlayerFromCharacter(hit.Parent)
             if player then
 
-                local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-                if not playerData.ItemInventory[itemKey] then
-                    playerData.ItemInventory[itemKey] = 0
-                end
-                
-                playerData.ItemInventory[itemKey] += 1
-
-                --Knit.Services.DataReplicationService:UpdateAll(player)
-
+                Knit.Services.InventoryService:GiveItemToPlayer(player, itemDefs.Params)
                 spawner.ItemPointer.Value = nil
-
                 item:Destroy()
             end
         end
-
     end)
-
-
 end
-
 
 --// KnitStart
 function ItemSpawnService:KnitStart()

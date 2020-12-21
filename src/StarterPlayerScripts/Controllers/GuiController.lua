@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local PlayerGui = Players.LocalPlayer.PlayerGui
 
 
 -- setup Knit
@@ -16,12 +17,21 @@ local GuiController = Knit.CreateController { Name = "GuiController" }
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
+-- Gui Defs
+local mainGui = PlayerGui.MainGui
+local ItemButton_Window = mainGui:FindFirstChild("ItemButton_Window", true)
+local StorageButton_Window = mainGui:FindFirstChild("StorageButton_Window", true)
+local ArrowButton_Window = mainGui:FindFirstChild("ArrowButton_Window", true)
+local ShopButton_Window = mainGui:FindFirstChild("ShopButton_Window", true)
+local CodeButton_Window = mainGui:FindFirstChild("CodeButton_Window", true)
+local SettingButton_Window = mainGui:FindFirstChild("SettingButton_Window", true)
+
 --// ActivateWindow
 function GuiController:ActivateWindow(windowName,panelName)
 
-    local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
+    --local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
     local window = mainGui.Windows:FindFirstChild(windowName, true)
-    print("window",window)
+
     local panelFrame = window:FindFirstChild("Panels", true)
     local panel = panelFrame:FindFirstChild(panelName, true)
 
@@ -41,7 +51,7 @@ end
 --// PowerButtonSetup
 function GuiController:PowerButtonSetup()
 
-    local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
+    --local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
     local powerButtonFrame = mainGui:FindFirstChild("PowerButtons",true)
 
     for _,button in pairs(powerButtonFrame:GetDescendants()) do
@@ -57,7 +67,7 @@ end
 function GuiController:LeftGuiSetup()
 
     -- define some buttons
-    local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
+    --local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
     local mainMenuButton = mainGui:FindFirstChild("MainMenu_Button", true)
     local arrowButton = mainGui:FindFirstChild("Arrow_Button", true)
     local storageButton = mainGui:FindFirstChild("Storage_Button", true)

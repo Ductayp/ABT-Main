@@ -40,7 +40,7 @@ end
 
 --// KnitStart
 function GuiService:KnitStart()
-
+    print("GuiService working")
 end
 
 --// KnitInit

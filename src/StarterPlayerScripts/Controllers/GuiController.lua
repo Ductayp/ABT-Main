@@ -13,6 +13,7 @@ local PlayerGui = Players.LocalPlayer.PlayerGui
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiController = Knit.CreateController { Name = "GuiController" }
 local GuiService = Knit.GetService("GuiService")
+local InventoryService = Knit.GetService("InventoryService")
 
 -- Knit modules
 local utils = require(Knit.Shared.Utils)
@@ -45,13 +46,13 @@ defs.Windows.MainWindow = {
     }
 }
 
--- Left Gui Defs
 defs.LeftGui = {
+    Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true),
     Buttons = {
         MainMenu_Button = mainGui.LeftGui:FindFirstChild("MainMenu_Button", true),
         Arrow_Button = mainGui.LeftGui:FindFirstChild("Arrow_Button", true),
         Storage_Button = mainGui.LeftGui:FindFirstChild("Storage_Button", true),
-    }
+    },
 }
 
 defs.ArrowPanel = {
@@ -105,8 +106,8 @@ function GuiController:ActivatePanel(windowDef,panelDef)
 end
 
 
---// PowerButtonSetup
-function GuiController:PowerButtonSetup()
+--// Setup_PowerButton
+function GuiController:Setup_PowerButton()
 
     --local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
     local powerButtonFrame = mainGui:FindFirstChild("PowerButtons",true)
@@ -120,8 +121,8 @@ function GuiController:PowerButtonSetup()
     end
 end
 
---// LeftGuiSetup()
-function GuiController:LeftGuiSetup()
+--// Setup_LeftGui()
+function GuiController:Setup_LeftGui()
 
     -- connect the clickies
     defs.LeftGui.Buttons.MainMenu_Button.Activated:Connect(function()
@@ -137,8 +138,11 @@ function GuiController:LeftGuiSetup()
     end)
 end
 
---// WindowGuiSetup
-function GuiController:MainWindowSetup()
+--// Setup_MainWindow
+function GuiController:Setup_MainWindow()
+
+    -- just be sure main window is off
+    defs.Windows.MainWindow.Window.Visible = false
 
     -- connect buttons
     defs.Windows.MainWindow.Buttons.Close_Button.Activated:Connect(function()
@@ -171,34 +175,45 @@ function GuiController:MainWindowSetup()
 
 end
 
-function GuiController:Update_ArrowPanel()
+function GuiController:Update_Cash(value)
+    defs.LeftGui.Cash_Value.Text = value
+end
 
-    local playerDataFolder = ReplicatedStorage.ReplicatedPlayerData[Players.LocalPlayer.UserId]
-    local arrowInventory = playerDataFolder.ArrowInventory
+--// Update_ArrowPanel
+function GuiController:Update_ArrowPanel(data)
 
-    for _,arrowFolder in pairs(arrowInventory:GetChildren()) do
+    print("GuiController:Update_ArrowPanel - RECEIVED EVENT")
+
+    -- destroy all arrows int he scrolling frame
+    for _,object in pairs(defs.ArrowPanel.Scrolling_Frame:GetChildren()) do
+        if object.Name == "arrowItem" then
+            object:Destroy()
+        end
+    end
+
+    -- build all the arrows and put them in the scrollign frame
+    for i,arrow in pairs(data) do
 
         -- make a new list item
         local newListItem = defs.ArrowPanel.Item_Template:Clone()
         newListItem.Parent = defs.ArrowPanel.Scrolling_Frame
         newListItem.Visible = true
-        newListItem.Name = "arrow"
+        newListItem.Name = "arrowItem"
 
         -- change text
         local textLabel = newListItem:FindFirstChild("Arrow_Name", true)
-        textLabel.Text = arrowFolder.ArrowName.Value
+        textLabel.Text = arrow.ArrowName
 
         -- set some values based on rarity
         local icon = newListItem:FindFirstChild("Arrow_Icon", true)
-        local rarity = arrowFolder.Rarity.Value
         local targetPanel
-        if rarity == "Common" then
+        if arrow.Rarity == "Common" then
             targetPanel = defs.ArrowPanel.UseArrowPanels.UniversalArrow_Common
-        elseif rarity == "Rare" then
+        elseif arrow.Rarity == "Rare" then
             icon.ImageColor3 = Color3.new(10/255, 202/255, 0/255)
             textLabel.TextColor3 = Color3.new(10/255, 202/255, 0/255)
             targetPanel = defs.ArrowPanel.UseArrowPanels.UniversalArrow_Rare
-        elseif rarity == "Legendary" then
+        elseif arrow.Rarity == "Legendary" then
             icon.ImageColor3 = Color3.new(255/255, 149/255, 43/255)
             textLabel.TextColor3 = Color3.new(255/255, 149/255, 43/255)
             targetPanel = defs.ArrowPanel.UseArrowPanels.UniversalArrow_Legendary
@@ -216,60 +231,66 @@ function GuiController:Update_ArrowPanel()
 
             targetPanel.Visible = true
         end)
-
-        -- set the canvas size to the absolute listLayot size
-        defs.ArrowPanel.Scrolling_Frame.CanvasSize = UDim2.new(0, 0, 0, defs.ArrowPanel.Scrolling_Frame.UIListLayout.AbsoluteContentSize.Y)
-
     end
+
+    -- finally, update the ScrollingFrame CanvasSize to match the UiListLayout
+    defs.ArrowPanel.Scrolling_Frame.CanvasSize = UDim2.new(0, 0, 0, defs.ArrowPanel.Scrolling_Frame.UIListLayout.AbsoluteContentSize.Y)
 end
 
+
+--// Setup_ArrowPanel
 function GuiController:Setup_ArrowPanel()
-
-    -- upadte the arrows when we start
-    self:Update_ArrowPanel()
-
-    -- update the arrows whenever an arrow is added or removed form the data folder
-    local playerDataFolder = ReplicatedStorage.ReplicatedPlayerData[Players.LocalPlayer.UserId]
-    local arrowFolder = playerDataFolder.ArrowInventory
-
-    arrowFolder.ChildAdded:Connect(function(child)
-        local debounce = false
-        if debounce == false then
-            debaounce = true
-            self:Update_ArrowPanel()
-            spawn(function()
-                wait(2)
-                debounce = false
-            end)
-        end
-    end)
-
-    arrowFolder.ChildRemoved:Connect(function(child)
-        spawn(function()
-            wait(.5)
-            self:Update_ArrowPanel()
-        end)
-    end)
+    defs.ArrowPanel.Item_Template.Visible = false
 
     -- connect Use Arrow buttons
     defs.ArrowPanel.UseArrowButtons.UniversalArrow_Common.Activated:Connect(function()
-        GuiService:UseArrow("UniversalArrow","Common")
+        params = {}
+        params.Type = "UniversalArrow"
+        params.Rarity = "Common"
+        InventoryService:UseArrow(params)
     end)
     defs.ArrowPanel.UseArrowButtons.UniversalArrow_Rare.Activated:Connect(function()
-        GuiService:UseArrow("UniversalArrow","Rare")
+        params = {}
+        params.Type = "UniversalArrow"
+        params.Rarity = "Rare"
+        InventoryService:UseArrow(params)
     end)
     defs.ArrowPanel.UseArrowButtons.UniversalArrow_Legendary.Activated:Connect(function()
-        GuiService:UseArrow("UniversalArrow","Legendary")
+        params = {}
+        params.Type = "UniversalArrow"
+        params.Rarity = "Legendary"
+        InventoryService:UseArrow(params)
     end)
+end
 
+--/ Request_GuiUpdate
+function GuiController:Request_GuiUpdate(requestName)
+    GuiService:Request_GuiUpdate(requestName)
 end
 
 
 function GuiController:KnitStart()
-    self:PowerButtonSetup()
-    self:LeftGuiSetup()
-    self:MainWindowSetup()
+
+    -- do some setups
+    self:Setup_PowerButton()
+    self:Setup_LeftGui()
+    self:Setup_MainWindow()
     self:Setup_ArrowPanel()
+
+    -- request Gui Updates
+    self:Request_GuiUpdate("ArrowPanel")
+    self:Request_GuiUpdate("Cash")
+
+
+    -- connect events
+    GuiService.Event_Update_ArrowPanel:Connect(function(data)
+        self:Update_ArrowPanel(data)
+    end)
+
+    GuiService.Event_Update_Cash:Connect(function(value)
+        self:Update_Cash(value)
+    end)
+
 end
 
 function GuiController:KnitInit()

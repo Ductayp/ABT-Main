@@ -15,25 +15,37 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 
-function GuiService.Client:UseArrow(player,arrowType,arrowRarity)
+-- events
+GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
+GuiService.Client.Event_Update_Cash = RemoteEvent.new()
 
-    -- check if the player has this arrow
+--// Update_Gui
+function GuiService:Update_Gui(player, requestName)
+
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local hasArrow = false
-    for index,arrowTable in pairs(playerData.ArrowInventory) do
-        print(arrowTable.Type,arrowType)
-        if arrowTable.Type == arrowType then
-            if arrowTable.Rarity == arrowRarity then
-                table.remove(playerData.ArrowInventory, index) -- remove the arrow
-                Knit.Services.DataReplicationService:UpdateCategory(player, "ArrowInventory")
-                hasArrow = true
-            end
-        end
-    end
 
-    if hasArrow == true then
-
+    if requestName == "ArrowPanel" then
+        self.Client.Event_Update_ArrowPanel:Fire(player,playerData.ArrowInventory)
     end
+    if requestName == "Cash" then
+        self.Client.Event_Update_Cash:Fire(player,playerData.ItemInventory.Cash)
+    end
+end
+
+--// Client.Request_GuiUpdate
+function GuiService.Client:Request_GuiUpdate(player, requestName)
+    self.Server:Update_Gui(player, requestName) 
+end
+
+--// PlayerAdded
+function GuiService:PlayerAdded(player)
+
+    --[[
+    -- make sure the players data is loaded
+    local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
+    local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
+    repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true
+    ]]--
 
 end
 
@@ -45,6 +57,21 @@ end
 
 --// KnitInit
 function GuiService:KnitInit()
+
+    -- Player Added event
+    Players.PlayerAdded:Connect(function(player)
+        self:PlayerAdded(player)
+    end)
+
+    -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
+    for _, player in ipairs(Players:GetPlayers()) do
+        self:PlayerAdded(player)
+    end
+
+    -- Player Removing event
+    Players.PlayerRemoving:Connect(function(player)
+        --self:PlayerRemoved(player)
+    end)
 
 end
 

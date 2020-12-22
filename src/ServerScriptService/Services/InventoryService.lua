@@ -40,8 +40,13 @@ function InventoryService:GiveItemToPlayer(player, params)
             playerData.ItemInventory[params.DataKey] = 0
         end
         playerData.ItemInventory[params.DataKey] += value
-        Knit.Services.DataReplicationService:UpdateCategory(player, params.DataCategory)
+        --Knit.Services.DataReplicationService:UpdateCategory(player, params.DataCategory)
 
+    end
+
+    -- Cash - fire Gui Updates
+    if params.DataKey == "Cash" then
+        Knit.Services.GuiService:Update_Cash(player)
     end
 
     -- Arrows
@@ -53,7 +58,7 @@ function InventoryService:GiveItemToPlayer(player, params)
         thisArrow.ArrowName = params.ArrowName
 
         table.insert(playerData.ArrowInventory, thisArrow)
-        Knit.Services.DataReplicationService:UpdateCategory(player, params.DataCategory)
+        Knit.Services.GuiService:Update_ArrowPanel(player) -- update the gui
 
     end
 end
@@ -72,6 +77,27 @@ function InventoryService:RemoveItemFromPlayer(player, params)
     end
 
 
+end
+
+function InventoryService.Client:UseArrow(player, params)
+
+    -- check if the player has this arrow
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local hasArrow = false
+    for index,dataArrow in pairs(playerData.ArrowInventory) do
+        if dataArrow.Type == params.Type then
+            if dataArrow.Rarity == params.Rarity then
+                hasArrow = true
+            end
+        end
+    end
+
+    -- remove the arrow and do all the STUFF
+    if hasArrow == true then
+        table.remove(playerData.ArrowInventory, index) -- remove the arrow
+        Knit.Services.GuiService:Update_ArrowPanel(player) -- update the gui
+        print("NOW YOU GET A STANDO!")
+    end
 end
 
 

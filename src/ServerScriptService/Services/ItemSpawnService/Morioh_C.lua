@@ -19,6 +19,7 @@ Morioh_C.Items = {
             DataKey = "UniversalArrow",
             DataCategory = "ArrowInventory",
             Rarity = "Rare",
+            ArrowName = "Universal Arrow"
         }
     },
 
@@ -29,6 +30,7 @@ Morioh_C.Items = {
             DataKey = "UniversalArrow",
             DataCategory = "ArrowInventory",
             Rarity = "Common",
+            ArrowName = "Universal Arrow"
         }
     },
 
@@ -42,6 +44,7 @@ Morioh_C.Items = {
             Maxvalue = 10
         }
     }
+
 }
 
 return Morioh_C

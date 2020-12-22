@@ -53,23 +53,52 @@ function DataReplicationService:UpdateCategory(player, categoryName)
     -- ItemInventory Update
     if categoryName == "ItemInventory" then
         for key,value in pairs(playerData[categoryName]) do
-            local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+
+            -- check for existign value object
+            local existingObject
+            for _,valueObject in pairs(categoryFolder:GetChildren()) do
+                if valueObject.Name == key then
+                    existingObject = valueObject
+                    break
+                end
+            end
+
+            -- if the object exists, update it and if not then make it
+            if existingObject ~= nil then
+                existingObject.Value = value
+            else
+                local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,categoryFolder)
+            end
         end
     end
 
     -- ArrowInventory Update
     if categoryName == "ArrowInventory" then
-        for i,arrowTable in pairs(playerData[categoryName]) do
+        for arrowNumber,arrowTable in pairs(playerData[categoryName]) do
 
-            --make a folder to hold the data for this arrow
-            local newFolder = Instance.new("Folder")
-            newFolder.Name = i
-            newFolder.Parent = categoryFolder
-
-            -- create values in the folder
-            for key,value in pairs(arrowTable) do
-                local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,newFolder)
+            -- check for existign arrow object
+            local folderExists = false
+            for _,arrowFolder in pairs(categoryFolder:GetChildren()) do
+                if arrowFolder.Name == tostring(arrowNumber) then
+                    folderExists = true
+                    break
+                end
             end
+
+            -- if the object exists do nothing but add new arrows
+            if folderExists == true then
+                --print("arrow already exists in the folder")
+            else
+                --make a folder to hold the data for this arrow
+                local newFolder = Instance.new("Folder")
+                newFolder.Name = arrowNumber
+                newFolder.Parent = categoryFolder
+
+                -- create values in the folder
+                for key,value in pairs(arrowTable) do
+                    local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,newFolder)
+                end
+            end 
         end
     end
 end

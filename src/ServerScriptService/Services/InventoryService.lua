@@ -50,12 +50,18 @@ function InventoryService:GiveItemToPlayer(player, params)
         local thisArrow = {}
         thisArrow.Type = params.DataKey
         thisArrow.Rarity = params.Rarity
+        thisArrow.ArrowName = params.ArrowName
 
         table.insert(playerData.ArrowInventory, thisArrow)
+        Knit.Services.DataReplicationService:UpdateCategory(player, params.DataCategory)
 
     end
-    
+end
 
+function InventoryService:RemoveItemFromPlayer(player, params)
+
+    -- get the players data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
 end
 

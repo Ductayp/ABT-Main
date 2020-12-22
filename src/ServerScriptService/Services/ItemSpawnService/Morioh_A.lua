@@ -19,6 +19,7 @@ Morioh_A.Items = {
             DataKey = "UniversalArrow",
             DataCategory = "ArrowInventory",
             Rarity = "Rare",
+            ArrowName = "Universal Arrow"
         }
     },
 
@@ -29,6 +30,7 @@ Morioh_A.Items = {
             DataKey = "UniversalArrow",
             DataCategory = "ArrowInventory",
             Rarity = "Common",
+            ArrowName = "Universal Arrow"
         }
     },
 

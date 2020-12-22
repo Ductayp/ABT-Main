@@ -15,17 +15,17 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 
-function GuiService:UseArrow(player,arrowType,arrowRarity)
-
-    print("beep")
+function GuiService.Client:UseArrow(player,arrowType,arrowRarity)
 
     -- check if the player has this arrow
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     local hasArrow = false
     for index,arrowTable in pairs(playerData.ArrowInventory) do
+        print(arrowTable.Type,arrowType)
         if arrowTable.Type == arrowType then
             if arrowTable.Rarity == arrowRarity then
                 table.remove(playerData.ArrowInventory, index) -- remove the arrow
+                Knit.Services.DataReplicationService:UpdateCategory(player, "ArrowInventory")
                 hasArrow = true
             end
         end
@@ -40,7 +40,7 @@ end
 
 --// KnitStart
 function GuiService:KnitStart()
-    print("GuiService working")
+    
 end
 
 --// KnitInit

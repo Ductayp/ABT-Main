@@ -63,6 +63,15 @@ function InventoryService:RemoveItemFromPlayer(player, params)
     -- get the players data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
+    if params.DataCategory == "ItemInvetory" then
+
+    end
+
+    if params.DataCategory == "ArrowInventory" then
+
+    end
+
+
 end
 
 

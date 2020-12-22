@@ -74,8 +74,12 @@ function DataReplicationService:UpdateCategory(player, categoryName)
 
     -- ArrowInventory Update
     if categoryName == "ArrowInventory" then
-        for arrowNumber,arrowTable in pairs(playerData[categoryName]) do
 
+        -- clear the folder
+        categoryFolder:ClearAllChildren()
+
+        for arrowNumber,arrowTable in pairs(playerData[categoryName]) do
+--[[
             -- check for existign arrow object
             local folderExists = false
             for _,arrowFolder in pairs(categoryFolder:GetChildren()) do
@@ -93,12 +97,22 @@ function DataReplicationService:UpdateCategory(player, categoryName)
                 local newFolder = Instance.new("Folder")
                 newFolder.Name = arrowNumber
                 newFolder.Parent = categoryFolder
+]]--
 
+                --make a folder to hold the data for this arrow
+                local newFolder = Instance.new("Folder")
+                newFolder.Name = arrowNumber
+                
                 -- create values in the folder
                 for key,value in pairs(arrowTable) do
                     local NewValueObject = require(Knit.Shared.Utils).NewValueObject(key,value,newFolder)
                 end
-            end 
+
+                -- parent it once everything is added
+                newFolder.Parent = categoryFolder
+
+
+            --end 
         end
     end
 end

@@ -174,16 +174,15 @@ end
 function GuiController:Update_ArrowPanel()
 
     local playerDataFolder = ReplicatedStorage.ReplicatedPlayerData[Players.LocalPlayer.UserId]
-    local arrowFolder = playerDataFolder.ArrowInventory
+    local arrowInventory = playerDataFolder.ArrowInventory
 
-    local itemY_Offset = 0
-    for _,arrowFolder in pairs(arrowFolder:GetChildren()) do
+    for _,arrowFolder in pairs(arrowInventory:GetChildren()) do
 
         -- make a new list item
         local newListItem = defs.ArrowPanel.Item_Template:Clone()
         newListItem.Parent = defs.ArrowPanel.Scrolling_Frame
         newListItem.Visible = true
-        newListItem.Name = arrowFolder.Name
+        newListItem.Name = "arrow"
 
         -- change text
         local textLabel = newListItem:FindFirstChild("Arrow_Name", true)
@@ -232,22 +231,35 @@ function GuiController:Setup_ArrowPanel()
     -- update the arrows whenever an arrow is added or removed form the data folder
     local playerDataFolder = ReplicatedStorage.ReplicatedPlayerData[Players.LocalPlayer.UserId]
     local arrowFolder = playerDataFolder.ArrowInventory
+
     arrowFolder.ChildAdded:Connect(function(child)
-        self:Update_ArrowPanel()
+        local debounce = false
+        if debounce == false then
+            debaounce = true
+            self:Update_ArrowPanel()
+            spawn(function()
+                wait(2)
+                debounce = false
+            end)
+        end
     end)
+
     arrowFolder.ChildRemoved:Connect(function(child)
-        self:Update_ArrowPanel()
+        spawn(function()
+            wait(.5)
+            self:Update_ArrowPanel()
+        end)
     end)
 
     -- connect Use Arrow buttons
     defs.ArrowPanel.UseArrowButtons.UniversalArrow_Common.Activated:Connect(function()
-        GuiService:UseArrow(Players.LocalPlayer,"UniversalArrow","Common")
+        GuiService:UseArrow("UniversalArrow","Common")
     end)
     defs.ArrowPanel.UseArrowButtons.UniversalArrow_Rare.Activated:Connect(function()
-        GuiService:UseArrow(Players.LocalPlayer,"UniversalArrow","Rare")
+        GuiService:UseArrow("UniversalArrow","Rare")
     end)
     defs.ArrowPanel.UseArrowButtons.UniversalArrow_Legendary.Activated:Connect(function()
-        GuiService:UseArrow(Players.LocalPlayer,"UniversalArrow","Legendary")
+        GuiService:UseArrow("UniversalArrow","Legendary")
     end)
 
 end

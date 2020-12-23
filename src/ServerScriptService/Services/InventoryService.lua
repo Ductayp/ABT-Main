@@ -19,6 +19,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 
+--// GiveItemToPlayer
 function InventoryService:GiveItemToPlayer(player, params)
 
     -- get the players data
@@ -40,13 +41,12 @@ function InventoryService:GiveItemToPlayer(player, params)
             playerData.ItemInventory[params.DataKey] = 0
         end
         playerData.ItemInventory[params.DataKey] += value
-        --Knit.Services.DataReplicationService:UpdateCategory(player, params.DataCategory)
 
     end
 
     -- Cash - fire Gui Updates
     if params.DataKey == "Cash" then
-        Knit.Services.GuiService:Update_Cash(player)
+        Knit.Services.GuiService:Update_Gui(player, "Cash")
     end
 
     -- Arrows
@@ -58,11 +58,12 @@ function InventoryService:GiveItemToPlayer(player, params)
         thisArrow.ArrowName = params.ArrowName
 
         table.insert(playerData.ArrowInventory, thisArrow)
-        Knit.Services.GuiService:Update_ArrowPanel(player) -- update the gui
-
+        Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
+        
     end
 end
 
+--// RemoveItemFromPlayer
 function InventoryService:RemoveItemFromPlayer(player, params)
 
     -- get the players data
@@ -79,25 +80,73 @@ function InventoryService:RemoveItemFromPlayer(player, params)
 
 end
 
+--// UseArrow
 function InventoryService.Client:UseArrow(player, params)
 
-    -- check if the player has this arrow
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local hasArrow = false
+
+    -- check in player is standless
+    if playerData.Character.CurrentPower == "Standless" then
+        -- yes we can get a new stand!
+    else
+        print("you must be standless to use an arrow!")
+        return
+    end
+
+
+    -- check if the player has this arrow
     for index,dataArrow in pairs(playerData.ArrowInventory) do
         if dataArrow.Type == params.Type then
             if dataArrow.Rarity == params.Rarity then
-                hasArrow = true
+                --hasArrow = true
+                print("NOW YOU GET A STANDO!")
+
+                -- remove arrow and update GUI to remove arrow
+                table.remove(playerData.ArrowInventory, index) -- remove the arrow
+                Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
+
+                -- get the arrow defs
+                local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
+                local thisArrowDef = arrowDefs[params.Type]
+                
+                -- add stands to weighted table
+                local pickTable = {}
+                for name,weight in pairs(thisArrowDef) do
+                    for count = 1,weight do
+                        table.insert(pickTable,name)
+                    end
+                end
+
+                local randomPick = math.random(1,#pickTable)
+                local pickedStand = pickTable[randomPick]
+
+                print(pickedStand)
+
+                --self:GiveStand(player, params)
+
+                return
+
             end
         end
     end
 
+    --[[
     -- remove the arrow and do all the STUFF
     if hasArrow == true then
-        table.remove(playerData.ArrowInventory, index) -- remove the arrow
+        
         Knit.Services.GuiService:Update_ArrowPanel(player) -- update the gui
         print("NOW YOU GET A STANDO!")
+        local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
+        local thisArrowDef = arroweDefs[params.Type]
+        self:GiveStand(player, params)
     end
+    ]]--
+
+end
+
+--// GiveStand
+function InventoryService:GiveStand(player, params)
+
 end
 
 

@@ -71,6 +71,10 @@ defs.ArrowPanel = {
     }
 }
 
+defs.Bottom_Gui = {
+    Current_Power = mainGui.BottomGui:FindFirstChild("Current_Power", true)
+}
+
 
 --// ActivateWindow
 function GuiController:ActivateWindow(windowDef,panelDef)
@@ -175,8 +179,14 @@ function GuiController:Setup_MainWindow()
 
 end
 
+--// UpdateCash
 function GuiController:Update_Cash(value)
     defs.LeftGui.Cash_Value.Text = value
+end
+
+--// UpdateCharacter
+function GuiController:Update_Character(data)
+    defs.Bottom_Gui.Current_Power.Text = data.CurrentPower
 end
 
 --// Update_ArrowPanel
@@ -280,6 +290,7 @@ function GuiController:KnitStart()
     -- request Gui Updates
     self:Request_GuiUpdate("ArrowPanel")
     self:Request_GuiUpdate("Cash")
+    self:Request_GuiUpdate("Character")
 
 
     -- connect events
@@ -290,6 +301,12 @@ function GuiController:KnitStart()
     GuiService.Event_Update_Cash:Connect(function(value)
         self:Update_Cash(value)
     end)
+
+    GuiService.Event_Update_Character:Connect(function(data)
+        self:Update_Character(data)
+    end)
+
+    
 
 end
 

@@ -24,7 +24,7 @@ function BulletKick.Activate(initPlayer,params)
     spawn(function()
         initPlayer.Character.Humanoid.WalkSpeed = 5
         wait(2)
-        initPlayer.Character.Humanoid.WalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
+        initPlayer.Character.Humanoid.WalkSpeed = require(Knit..WalkSpeed).GetModifiedValue(initPlayer)
     end)
     
 

@@ -21,7 +21,7 @@ local DEFAULT_WALKSPEED = 16
 
 local WalkSpeed = {}
 
---// AddModifier - fires after AddModifier from ModifierService
+--// AddModifier - fires after AddModifier from 
 function WalkSpeed.AddModifier(player,thisModifier,params)
 
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
@@ -33,7 +33,7 @@ function WalkSpeed.AddModifier(player,thisModifier,params)
 
 end
 
---// RemoveModifier - fires after RemoveModifier from ModifierService
+--// RemoveModifier - fires after RemoveModifier from 
 function WalkSpeed.RemoveModifier(player, thisModifier, params)
 
     local classFolder = thisModifier.Parent
@@ -51,7 +51,7 @@ end
 function WalkSpeed.GetModifiedValue(player, params)
 
     local totalWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
-    for _,valueObject in pairs(ReplicatedStorage.ModifierService[player.UserId].WalkSpeed:GetChildren()) do
+    for _,valueObject in pairs(ReplicatedStorage.[player.UserId].WalkSpeed:GetChildren()) do
         totalWalkSpeed = totalWalkSpeed + valueObject.Value
     end
 

@@ -52,7 +52,7 @@ function HeavyPunch.Activate(initPlayer,params)
 
         -- pause the restore the players WalkSpeed
         wait(1)
-        local totalWalkSpeed = require(Knit.ModifierService.WalkSpeed).GetModifiedValue(initPlayer)
+        local totalWalkSpeed = require(Knit..WalkSpeed).GetModifiedValue(initPlayer)
         initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
         
     end)

@@ -13,7 +13,7 @@ Knit.Powers = ReplicatedStorage.GameFiles.Powers
 Knit.Abilities = ReplicatedStorage.GameFiles.Abilities
 Knit.Effects = ReplicatedStorage.GameFiles.Effects
 Knit.ItemSpawnTables = ServerScriptService.GameFiles.Services.ItemSpawnService
-Knit.ModifierService = ServerScriptService.GameFiles.Services.ModifierService
+Knit. = ServerScriptService.GameFiles.Services.
 Knit.InventoryModules = ServerScriptService.GameFiles.Modules.InventoryModules
 
 -- Load all services:

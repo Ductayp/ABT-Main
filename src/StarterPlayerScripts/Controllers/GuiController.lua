@@ -14,16 +14,92 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiController = Knit.CreateController { Name = "GuiController" }
 local GuiService = Knit.GetService("GuiService")
 local InventoryService = Knit.GetService("InventoryService")
+local PowersService = Knit.GetService("PowersService")
 
 -- Knit modules
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Gui Defs
-local mainGui = PlayerGui.MainGui
+local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 local defs = {}
 
--- Window Defs
+
+--// ====================================================================================================================================
+--//  BOTTOM GUI
+--// ====================================================================================================================================
+
+--// DEFS - BOTTOM GUI ------------------------------------------------------------
+defs.Bottom_Gui = {
+    Current_Power = mainGui.BottomGui:FindFirstChild("Current_Power", true)
+}
+
+
+--// Setup_PowerButton ------------------------------------------------------------
+function GuiController:Setup_PowerButton()
+
+    --local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
+    local powerButtonFrame = mainGui:FindFirstChild("PowerButtons",true)
+
+    for _,button in pairs(powerButtonFrame:GetDescendants()) do
+        if button:IsA("TextButton") then
+            button.Activated:Connect(function()
+                Knit.Controllers.InputController:SendToPowersService({InputId = button.Name, KeyState = "InputBegan"})
+            end)
+        end
+    end
+end
+
+--// UpdateCharacter ------------------------------------------------------------
+function GuiController:Update_Character(data)
+    defs.Bottom_Gui.Current_Power.Text = data.CurrentPower
+end
+
+
+--// ====================================================================================================================================
+--//  LEFT GUI
+--// ====================================================================================================================================
+
+--// DEFS - LEFT GUI ------------------------------------------------------------
+defs.LeftGui = {
+    Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true),
+    Buttons = {
+        MainMenu_Button = mainGui.LeftGui:FindFirstChild("MainMenu_Button", true),
+        Arrow_Button = mainGui.LeftGui:FindFirstChild("Arrow_Button", true),
+        Storage_Button = mainGui.LeftGui:FindFirstChild("Storage_Button", true),
+    },
+}
+
+--// Setup_LeftGui() ------------------------------------------------------------
+function GuiController:Setup_LeftGui()
+
+    -- connect the clickies
+    defs.LeftGui.Buttons.MainMenu_Button.Activated:Connect(function()
+        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Item_Panel)
+    end)
+
+    defs.LeftGui.Buttons.Arrow_Button.Activated:Connect(function()
+        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Arrow_Panel)
+    end)
+
+    defs.LeftGui.Buttons.Storage_Button.Activated:Connect(function()
+        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Storage_Panel)
+    end)
+end
+
+--// UpdateCash ------------------------------------------------------------
+function GuiController:Update_Cash(value)
+    if value ~= nil then
+        defs.LeftGui.Cash_Value.Text = value
+    end
+end
+
+
+--// ====================================================================================================================================
+--//  WINDOW GUI
+--// ====================================================================================================================================
+
+--// DEFS - WINDOW GUI ------------------------------------------------------------
 defs.Windows = {}
 defs.Windows.MainWindow = {
     Window = mainGui.Windows:FindFirstChild("MainWindow", true),
@@ -46,103 +122,7 @@ defs.Windows.MainWindow = {
     }
 }
 
-defs.LeftGui = {
-    Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true),
-    Buttons = {
-        MainMenu_Button = mainGui.LeftGui:FindFirstChild("MainMenu_Button", true),
-        Arrow_Button = mainGui.LeftGui:FindFirstChild("Arrow_Button", true),
-        Storage_Button = mainGui.LeftGui:FindFirstChild("Storage_Button", true),
-    },
-}
-
-defs.ArrowPanel = {
-    Scrolling_Frame = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("ScrollingFrame", true),
-    Item_Template = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("ItemTemplate", true),
-    UseArrowFrame = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UserArrowPanels"),
-    UseArrowPanels = {
-        UniversalArrow_Common = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Common", true),
-        UniversalArrow_Rare = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Rare", true),
-        UniversalArrow_Legendary = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Legendary", true),
-    },
-    UseArrowButtons = {
-        UniversalArrow_Common = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Common", true),
-        UniversalArrow_Rare = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Rare", true),
-        UniversalArrow_Legendary = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Legendary", true),
-    }
-}
-
-defs.Bottom_Gui = {
-    Current_Power = mainGui.BottomGui:FindFirstChild("Current_Power", true)
-}
-
-
---// ActivateWindow
-function GuiController:ActivateWindow(windowDef,panelDef)
-
-    -- turn off all panels, then turn on the one we want to start on
-    for i,v in pairs(windowDef.Panels) do
-        v.Visible = false
-    end
-    panelDef.Visible = true
-
-    -- toggle the window 
-    if windowDef.Window.Visible then
-        windowDef.Window.Visible = false
-    else
-        windowDef.Window.Visible = true
-    end
-end
-
---// ActivatePanel
-function GuiController:ActivatePanel(windowDef,panelDef)
-
-    -- make sure the window is on
-    if windowDef.Window.Visible == false then
-    windowDef.Window.Visible = true
-    end
-
-    -- turn off all panels, then turn on the one we want to start on
-    for i,v in pairs(windowDef.Panels) do
-        v.Visible = false
-    end
-    panelDef.Visible = true
-
-end
-
-
---// Setup_PowerButton
-function GuiController:Setup_PowerButton()
-
-    --local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
-    local powerButtonFrame = mainGui:FindFirstChild("PowerButtons",true)
-
-    for _,button in pairs(powerButtonFrame:GetDescendants()) do
-        if button:IsA("TextButton") then
-            button.Activated:Connect(function()
-                Knit.Controllers.InputController:SendToPowersService({InputId = button.Name, KeyState = "InputBegan"})
-            end)
-        end
-    end
-end
-
---// Setup_LeftGui()
-function GuiController:Setup_LeftGui()
-
-    -- connect the clickies
-    defs.LeftGui.Buttons.MainMenu_Button.Activated:Connect(function()
-        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Item_Panel)
-    end)
-
-    defs.LeftGui.Buttons.Arrow_Button.Activated:Connect(function()
-        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Arrow_Panel)
-    end)
-
-    defs.LeftGui.Buttons.Storage_Button.Activated:Connect(function()
-        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Storage_Panel)
-    end)
-end
-
---// Setup_MainWindow
+--// Setup_MainWindow ------------------------------------------------------------
 function GuiController:Setup_MainWindow()
 
     -- just be sure main window is off
@@ -179,20 +159,91 @@ function GuiController:Setup_MainWindow()
 
 end
 
---// UpdateCash
-function GuiController:Update_Cash(value)
-    defs.LeftGui.Cash_Value.Text = value
+--// ActivateWindow ------------------------------------------------------------
+function GuiController:ActivateWindow(windowDef,panelDef)
+
+    -- turn off all panels, then turn on the one we want to start on
+    for i,v in pairs(windowDef.Panels) do
+        v.Visible = false
+    end
+    panelDef.Visible = true
+
+    -- toggle the window 
+    if windowDef.Window.Visible then
+        windowDef.Window.Visible = false
+    else
+        windowDef.Window.Visible = true
+    end
 end
 
---// UpdateCharacter
-function GuiController:Update_Character(data)
-    defs.Bottom_Gui.Current_Power.Text = data.CurrentPower
+--// ActivatePanel
+function GuiController:ActivatePanel(windowDef,panelDef)
+
+    -- make sure the window is on
+    if windowDef.Window.Visible == false then
+    windowDef.Window.Visible = true
+    end
+
+    -- turn off all panels, then turn on the one we want to start on
+    for i,v in pairs(windowDef.Panels) do
+        v.Visible = false
+    end
+    panelDef.Visible = true
+
 end
 
---// Update_ArrowPanel
+--// ====================================================================================================================================
+--//  ARROW PANEL
+--// ====================================================================================================================================
+
+--// DEFS - ARROW PANEL ------------------------------------------------------------
+defs.ArrowPanel = {
+    Scrolling_Frame = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("ScrollingFrame", true),
+    Item_Template = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("ItemTemplate", true),
+    UseArrowFrame = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UserArrowPanels"),
+    UseArrowPanels = {
+        Default_Panel = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("Default_Panel", true),
+        UniversalArrow_Common = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Common", true),
+        UniversalArrow_Rare = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Rare", true),
+        UniversalArrow_Legendary = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Legendary", true),
+    },
+    UseArrowButtons = {
+        UniversalArrow_Common = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Common", true),
+        UniversalArrow_Rare = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Rare", true),
+        UniversalArrow_Legendary = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Legendary", true),
+    }
+}
+
+--// Setup_ArrowPanel ------------------------------------------------------------
+function GuiController:Setup_ArrowPanel()
+    defs.ArrowPanel.Item_Template.Visible = false
+
+    -- connect Use Arrow buttons
+    defs.ArrowPanel.UseArrowButtons.UniversalArrow_Common.Activated:Connect(function()
+            params = {}
+            params.Type = "UniversalArrow"
+            params.Rarity = "Common"
+            button = defs.ArrowPanel.UseArrowButtons.UniversalArrow_Common
+            self:Request_UseArrow(params,button)
+    end)
+    defs.ArrowPanel.UseArrowButtons.UniversalArrow_Rare.Activated:Connect(function()
+        params = {}
+        params.Type = "UniversalArrow"
+        params.Rarity = "Rare"
+        button = defs.ArrowPanel.UseArrowButtons.UniversalArrow_Rare
+        self:Request_UseArrow(params,button)
+    end)
+    defs.ArrowPanel.UseArrowButtons.UniversalArrow_Legendary.Activated:Connect(function()
+        params = {}
+        params.Type = "UniversalArrow"
+        params.Rarity = "Legendary"
+        button = defs.ArrowPanel.UseArrowButtons.UniversalArrow_Legendary
+        self:Request_UseArrow(params,button)
+    end)
+end
+
+--// Update_ArrowPanel ------------------------------------------------------------
 function GuiController:Update_ArrowPanel(data)
-
-    print("GuiController:Update_ArrowPanel - RECEIVED EVENT")
 
     -- destroy all arrows int he scrolling frame
     for _,object in pairs(defs.ArrowPanel.Scrolling_Frame:GetChildren()) do
@@ -200,6 +251,15 @@ function GuiController:Update_ArrowPanel(data)
             object:Destroy()
         end
     end
+
+    -- turn off all right panels and show default panel
+    for i,v in pairs(defs.ArrowPanel.UseArrowFrame:GetChildren()) do
+        if v:IsA("Frame") then
+        v.Visible = false
+        end
+    end
+    defs.ArrowPanel.UseArrowPanels.Default_Panel.Visible = true
+
 
     -- build all the arrows and put them in the scrollign frame
     for i,arrow in pairs(data) do
@@ -231,7 +291,7 @@ function GuiController:Update_ArrowPanel(data)
 
         -- connect the click to open the arrow panel
         newListItem.Activated:Connect(function()
-            print("beep beep")
+
             -- turn off all the use arrow panels
             for i,v in pairs(defs.ArrowPanel.UseArrowFrame:GetChildren()) do
                 if v:IsA("Frame") then
@@ -247,38 +307,88 @@ function GuiController:Update_ArrowPanel(data)
     defs.ArrowPanel.Scrolling_Frame.CanvasSize = UDim2.new(0, 0, 0, defs.ArrowPanel.Scrolling_Frame.UIListLayout.AbsoluteContentSize.Y)
 end
 
+--// Request_UseArrow ------------------------------------------------------------
+function GuiController:Request_UseArrow(params,button)
+    local currentPower = PowersService:GetCurrentPower()
+    if currentPower == "Standless" then
+        InventoryService:UseArrow(params)
+    else
+        print("USE ARROW BUTTON: You Must Be Standless")
+        spawn(function()
+            local buttonColor = button.BorderColor3
+            local buttonText = button.Text
+            local textColor = button.TextColor3
+            local buttonSize = button.Size
 
---// Setup_ArrowPanel
-function GuiController:Setup_ArrowPanel()
-    defs.ArrowPanel.Item_Template.Visible = false
+            button.BorderColor3 = Color3.new(255/255, 0/255, 0/255)
+            button.Text = "MUST BE STANDLESS"
+            button.TextColor3 = Color3.new(255/255, 0/255, 0/255)
+            button.Size = button.Size + UDim2.new(0,0,.5,0)
+            button.Active = false
 
-    -- connect Use Arrow buttons
-    defs.ArrowPanel.UseArrowButtons.UniversalArrow_Common.Activated:Connect(function()
-        params = {}
-        params.Type = "UniversalArrow"
-        params.Rarity = "Common"
-        InventoryService:UseArrow(params)
-    end)
-    defs.ArrowPanel.UseArrowButtons.UniversalArrow_Rare.Activated:Connect(function()
-        params = {}
-        params.Type = "UniversalArrow"
-        params.Rarity = "Rare"
-        InventoryService:UseArrow(params)
-    end)
-    defs.ArrowPanel.UseArrowButtons.UniversalArrow_Legendary.Activated:Connect(function()
-        params = {}
-        params.Type = "UniversalArrow"
-        params.Rarity = "Legendary"
-        InventoryService:UseArrow(params)
-    end)
+            wait(3)
+
+            button.BorderColor3 = buttonColor
+            button.Text = buttonText
+            button.TextColor3 = textColor
+            button.Size = buttonSize
+            button.Active = true
+        end)
+    end
 end
 
---/ Request_GuiUpdate
+--// ====================================================================================================================================
+--//  STAND STORAGE PANEL
+--// ====================================================================================================================================
+
+--// DEFS - STAND PANEL ------------------------------------------------------------
+
+--// Setup_StandPanel ------------------------------------------------------------
+function GuiController:Setup_StandPanel()
+
+end
+
+--// Update_StandPanel ------------------------------------------------------------
+function GuiController:Update_StandPanel()
+
+end
+
+--// Request_EquipStand ------------------------------------------------------------
+function GuiController:Request_EquipStand()
+
+end
+
+--// Request_StoreStand ------------------------------------------------------------
+function GuiController:Request_StoreStand()
+
+end
+
+--// Request_EvolveStand ------------------------------------------------------------
+function GuiController:Request_EvolveStand()
+
+end
+
+--// Request_SellStand ------------------------------------------------------------
+function GuiController:Request_SellStand()
+
+end
+
+
+
+--// ====================================================================================================================================
+--//  GENERAL UTILITY
+--// ====================================================================================================================================
+
+--// Request_GuiUpdate ------------------------------------------------------------
 function GuiController:Request_GuiUpdate(requestName)
     GuiService:Request_GuiUpdate(requestName)
 end
 
+--// ====================================================================================================================================
+--//  KNIT
+--// ====================================================================================================================================
 
+--// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
 
     -- do some setups
@@ -306,12 +416,10 @@ function GuiController:KnitStart()
         self:Update_Character(data)
     end)
 
-    
-
 end
 
+--// KnitInit ------------------------------------------------------------
 function GuiController:KnitInit()
-
 
 end
 

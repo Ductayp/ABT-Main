@@ -68,6 +68,9 @@ function PowersService:SetCurrentPower(player,power,rarity)
         if removePowerModule.RemovePower then
             removePowerModule.RemovePower(player,removePowerParams)
         end
+    else
+        print("now power exists with that name")
+        return
     end
 
     playerData.Character.CurrentPower = power
@@ -86,20 +89,9 @@ function PowersService:SetCurrentPower(player,power,rarity)
 end
 
 --// GivePower - this is fired only when a player uses an arrow or is given a power for the first time
-function PowersService:GivePower(player,power)
-
-    -- pick a random rarity
-    local rand = math.random(1,10)
-    local rarity
-    if rand <= 7 then
-        rarity = "Common"
-    elseif rand <= 9 then
-        rarity = "Rare"
-    else
-        rarity = "Legendary"
-    end
-
-    self:SetCurrentPower(player,power,rarity)
+function PowersService:GivePower(player,params)
+    print(params.Power,params.Rarity)
+    self:SetCurrentPower(player,params.Power,params.Rarity)
 
 end
 
@@ -270,7 +262,10 @@ function PowersService:KnitInit()
 
                             if player:IsInGroup(3486129) then                    
                                 print "Player is in the Group: Planet Milo" 
-                                self:GivePower(player,v.Name)    
+                                local params = {}
+                                params.Power = v.Name
+                                params.Rarity = "Common"
+                                self:GivePower(player,params)    
                              end
                             
                         end

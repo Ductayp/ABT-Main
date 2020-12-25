@@ -98,8 +98,6 @@ function InventoryService.Client:UseArrow(player, params)
     for index,dataArrow in pairs(playerData.ArrowInventory) do
         if dataArrow.Type == params.Type then
             if dataArrow.Rarity == params.Rarity then
-                --hasArrow = true
-                print("NOW YOU GET A STANDO!")
 
                 -- remove arrow and update GUI to remove arrow
                 table.remove(playerData.ArrowInventory, index) -- remove the arrow
@@ -122,7 +120,11 @@ function InventoryService.Client:UseArrow(player, params)
 
                 print(pickedStand)
 
-                --self:GiveStand(player, params)
+                print("NOW YOU GET A STANDO!")
+                local newParams = {}
+                newParams.Power = pickedStand
+                newParams.Rarity = params.Rarity
+                Knit.Services.PowersService:GivePower(player,newParams)
 
                 return
 

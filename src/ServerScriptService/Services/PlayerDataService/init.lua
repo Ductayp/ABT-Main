@@ -19,7 +19,7 @@ local PlayerDataService = Knit.CreateService { Name = "PlayerDataService", Clien
 -- This is loading the main functionality of profile service
 -- The first argument is the data store name, the second is the default profile template structure
 PlayerDataService.gameProfileStore = profileService.GetProfileStore(
-	"PlayerData_v7", -- store name, change this to "forget" old data
+	"PlayerData_v10", -- store name, change this to "forget" old data
 	profileTemplate
 )
 
@@ -28,9 +28,6 @@ function PlayerDataService:PlayerConnected(player)
 
     -- just a print so we can see it
     print("ProfileService: Data Loaded for: ",player)
-
-    -- update the DataReplicationService
-    ---Knit.Services.DataReplicationService:UpdateAll(player)
 
     -- change players bool value to true, this is so any script in the game can know the players data is loaded
     local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")

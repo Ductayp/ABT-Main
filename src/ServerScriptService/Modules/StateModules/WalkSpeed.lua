@@ -21,11 +21,11 @@ local DEFAULT_WALKSPEED = 16
 
 local WalkSpeed = {}
 
---// AddModifier - fires after AddModifier from 
-function WalkSpeed.AddModifier(player,thisModifier,params)
+--// AddState - fires after AddState from 
+function WalkSpeed.Entry_Added(player,thisEntry,params)
 
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
-    for _,valueObject in pairs(thisModifier.Parent:GetChildren()) do
+    for _,valueObject in pairs(thisEntry.Parent:GetChildren()) do
         newWalkSpeed = newWalkSpeed + valueObject.Value
     end
 
@@ -33,14 +33,12 @@ function WalkSpeed.AddModifier(player,thisModifier,params)
 
 end
 
---// RemoveModifier - fires after RemoveModifier from 
-function WalkSpeed.RemoveModifier(player, thisModifier, params)
+--// RemoveEntry - fires after RemoveEntry from 
+function WalkSpeed.Entry_Removed(player, thisState, params)
 
-    local classFolder = thisModifier.Parent
-    thisModifier:Destroy()
-    
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
-    for _,valueObject in pairs(classFolder:GetChildren()) do
+
+    for _,valueObject in pairs(thisState:GetChildren()) do
         newWalkSpeed = newWalkSpeed + valueObject.Value
     end
 
@@ -51,12 +49,16 @@ end
 function WalkSpeed.GetModifiedValue(player, params)
 
     local totalWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
-    for _,valueObject in pairs(ReplicatedStorage.[player.UserId].WalkSpeed:GetChildren()) do
-        totalWalkSpeed = totalWalkSpeed + valueObject.Value
+    local walkSpeedState = ReplicatedStorage.StateService[player.UserId]:FindFirstChild("WalkSpeed")
+    if walkSpeedState then
+        for _,valueObject in pairs(walkSpeedState:GetChildren()) do
+            totalWalkSpeed = totalWalkSpeed + valueObject.Value
+        end
+    else
+        print("No STATES or MODIFIERS found for walkspeed, giving the default value")
     end
-
+    
     return totalWalkSpeed
-
 end
 
 function WalkSpeed.Test()

@@ -74,7 +74,7 @@ function StandJump.Activate(initPlayer,params)
         spawn(function()
             initPlayer.Character.Humanoid.WalkSpeed = 0
             wait(1)
-            local totalWalkSpeed = require(Knit..WalkSpeed).GetModifiedValue(initPlayer)
+            local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
             initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
         end)
 

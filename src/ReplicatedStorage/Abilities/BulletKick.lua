@@ -24,7 +24,7 @@ function BulletKick.Activate(initPlayer,params)
     spawn(function()
         initPlayer.Character.Humanoid.WalkSpeed = 5
         wait(2)
-        initPlayer.Character.Humanoid.WalkSpeed = require(Knit..WalkSpeed).GetModifiedValue(initPlayer)
+        initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
     end)
     
 
@@ -43,7 +43,7 @@ function BulletKick.Activate(initPlayer,params)
             boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4.5))
         
             -- set the look vector for the KnockBack effect
-            params.BulletKick.Effects.KnockBack.LookVector = boxParams.CFrame.LookVector 
+            params.BulletKick.HitEffects.KnockBack.LookVector = boxParams.CFrame.LookVector 
     
             -- make a new hitbox
             local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams)
@@ -54,13 +54,14 @@ function BulletKick.Activate(initPlayer,params)
                     if hit.Value ~= initPlayer.Character then
 
                         print(hit,hit.Value)
+                        print("params test",params)
 
                         if count == 3 then
-                            for effect,params in pairs(params.BulletKick.Effects) do
-                                require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
-                            end
+                            local characterHit = hit.Value
+                            Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.BulletKick.HitEffects)
                         else
-                            require(Knit.Effects["Damage"]).Server_ApplyEffect(hit.Value,params.BulletKick.Effects.Damage)
+                            local characterHit = hit.Value
+                            Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,{Damage = params.BulletKick.HitEffects.Damage})
                         end
                         
                     end

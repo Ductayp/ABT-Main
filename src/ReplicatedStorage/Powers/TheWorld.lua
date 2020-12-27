@@ -53,20 +53,18 @@ TheWorld.Defs = {
 
         Barrage = {
             Name = "Barrage",
-            AbilityId = "Barrage",
             Duration = 5,
             Cooldown = 10,
-            Damage = 5,
-            loopTime = .25
+            loopTime = .25,
+            HitEffects = {Damage = {Damage = 5}}
         },
 
         TimeStop = {
             Name = "Time Stop",
-            --Delay = 2,
             Duration = 8,
             Cooldown = 20,
             Range = 150,
-            Effects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
+            HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
         },
 
        KnifeThrow = {
@@ -74,19 +72,19 @@ TheWorld.Defs = {
             Cooldown = 8,
             Range = 75,
             Speed = 40,
-            Effects = {Damage = {Damage = 20}}
+            HitEffects = {Damage = {Damage = 20}}
         },
 
         HeavyPunch = {
             Name = "Heavy Punch",
             Cooldown = 10,
-            Effects = {Damage = {Damage = 30}, ColorShift = {Duration = 1.5}, PinCharacter = {Duration = 1.5}, BlockInput = {Name = "HeavyPunch", Duration = 1.5}, SphereFields = {Size = 7, Duration = 1.5,RandomColor = true, Repeat = 3}}
+            HitEffects = {Damage = {Damage = 30}, ColorShift = {Duration = 1.5}, PinCharacter = {Duration = 1.5}, BlockInput = {Name = "HeavyPunch", Duration = 1.5}, SphereFields = {Size = 7, Duration = 1.5,RandomColor = true, Repeat = 3}}
         },
 
         BulletKick = {
             Name = "Bullet Kick",
             Cooldown = 1,
-            Effects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
+            HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
         },
 
         StandJump = {
@@ -271,7 +269,8 @@ function TheWorld.Barrage(initPlayer,params)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
                 params.CanRun = true
       
-                Barrage.Activate(initPlayer, TheWorld.Defs.Abilities.Barrage)
+                params.Barrage = TheWorld.Defs.Abilities.Barrage
+                Barrage.Activate(initPlayer, params)
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()

@@ -42,17 +42,15 @@ function HeavyPunch.Activate(initPlayer,params)
         newHitbox.ChildAdded:Connect(function(hit)
             if hit.Name == "CharacterHit" then
                 if hit.Value ~= initPlayer.Character then
-                    print(hit.Value)
-                    for effect,params in pairs(params.HeavyPunch.Effects) do
-                        require(Knit.Effects[effect]).Server_ApplyEffect(hit.Value,params)
-                    end
+                    local characterHit = hit.Value
+                    Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.HeavyPunch.HitEffects)
                 end
             end
         end)
 
         -- pause the restore the players WalkSpeed
         wait(1)
-        local totalWalkSpeed = require(Knit..WalkSpeed).GetModifiedValue(initPlayer)
+        local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
         initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
         
     end)

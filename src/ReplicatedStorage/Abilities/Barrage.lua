@@ -31,10 +31,6 @@ function Barrage.Activate(initPlayer,params)
 	newHitBox.Name = "Barrage"
 	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4))
 	
-	-- setup DamageEffect params
-	local damageParams = {}
-	damageParams.Damage = params.Damage
-
 	-- weld it
 	local hitboxWeld = utils.EasyWeld(newHitBox,initPlayer.Character.HumanoidRootPart,newHitBox)
 
@@ -55,8 +51,8 @@ function Barrage.Activate(initPlayer,params)
 			end
 
 			if charactersHit ~= nil then
-				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
-					DamageEffect.Server_ApplyEffect(characterHit,damageParams)
+				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above-- setup DamageEffect params
+					Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.Barrage.HitEffects)
 				end
 			end	
 

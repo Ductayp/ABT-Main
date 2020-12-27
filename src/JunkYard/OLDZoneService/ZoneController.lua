@@ -100,14 +100,14 @@ function ZoneController:CheckZonesLoop()
 
                 -- if either are truem send it tot he server for action
                 if zoneRemoved == true or zoneAdded == true then
-                    ZoneService:UpdateZones(activeZones)
+                    ZoneService:UpdateZonesForPlayer(activeZones)
                 end
 
             else
                 -- if currentZones is empty AND theres entries in activeZones, we make activeZones nil and send that to the server
                 if activeZones_hasEntry == true then
                     activeZones = {}
-                    ZoneService:UpdateZones(activeZones)
+                    ZoneService:UpdateZonesForPlayer(activeZones)
                 end
             end
         end

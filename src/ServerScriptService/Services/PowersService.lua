@@ -96,10 +96,12 @@ function PowersService:GivePower(player,params)
 end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
-function PowersService:RegisterHit(initPlayer,characterHit,params)
-    if params.Damage then
-        characterHit.Humanoid:TakeDamage(params.Damage)
+function PowersService:RegisterHit(initPlayer,characterHit,hitEffects)
+   
+    for effect,params in pairs(hitEffects) do
+        require(Knit.Effects[effect]).Server_ApplyEffect(characterHit,params)
     end
+
 end
 
 --// RenderEffectAllPlayers -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
@@ -173,8 +175,8 @@ function PowersService:PlayerCleanup(player)
     end
 end
 
---// PlayerJoined - run once when the player joins the game
-function PowersService:PlayerJoined(player)
+--// PlayerAdded - run once when the player joins the game
+function PowersService:PlayerAdded(player)
 
     -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
     self:PlayerRefresh(player)
@@ -211,6 +213,23 @@ function PowersService:KnitInit()
     local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 
+    
+    -- Player Added event
+    Players.PlayerAdded:Connect(function(player)
+        self:PlayerAdded(player)
+    end)
+
+    -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
+    for _, player in ipairs(Players:GetPlayers()) do
+        self:PlayerAdded(player)
+    end
+
+    -- Player Removing event
+    Players.PlayerRemoving:Connect(function(player)
+        self:PlayerCleanup(player)
+    end)
+
+    --[[
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
         --self:PlayerRefresh(player)
@@ -227,9 +246,6 @@ function PowersService:KnitInit()
 
     -- Player Added event for studio testing
     for _, player in ipairs(Players:GetPlayers()) do
-        --self:PlayerCleanup(player)
-        --self:PlayerRefresh(player)
-        --self:RenderExistingStands(player)
 
         player.CharacterAdded:Connect(function(character)
             self:PlayerJoined(player)
@@ -245,7 +261,7 @@ function PowersService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         PowersService:PlayerCleanup(player)
     end)
-
+]]--
     
     -- Buttons setup - this is for testing, delete it later
     for i,v in pairs (workspace.StandButtons:GetChildren()) do

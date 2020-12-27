@@ -20,8 +20,6 @@ local Damage = {}
 
 function Damage.Server_ApplyEffect(hitCharacter,params)
 
-    print(hitCharacter)
-    
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 

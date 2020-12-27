@@ -40,10 +40,7 @@ function TimeStop.Activate(initPlayer,params)
 
     -- play effects for all player within range, this happens before immunities
     for player,_ in pairs(affectedPlayers) do
-
-        --local effect = ColorShift
-        require(Knit.Effects["ColorShift"]).Server_ApplyEffect(player.Character,params.TimeStop.Effects.ColorShift)
-
+        require(Knit.Effects["ColorShift"]).Server_ApplyEffect(player.Character,params.TimeStop.HitEffects.ColorShift)
     end
 
     -- remove any player that is immune to timestop
@@ -68,7 +65,8 @@ function TimeStop.Activate(initPlayer,params)
 
         for effect,params in pairs(params.TimeStop.Effects) do
             if effect ~= "ColorShift" then -- we already did colorshift for everyone in range
-                require(Knit.Effects[effect]).Server_ApplyEffect(player.Character,params)
+                local characterHit = hit.Value
+                Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.HeavyPunch.HitEffects)
             end
         end
     end

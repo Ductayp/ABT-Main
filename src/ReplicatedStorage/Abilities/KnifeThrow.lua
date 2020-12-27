@@ -19,11 +19,6 @@ local KnifeThrow = {}
 
 function KnifeThrow.Server_Activate(initPlayer,params)
     
-    print("BEEP 1")
-    for i,v in pairs(params.KnifeThrow.Effects) do
-        print(i,v)
-    end
-
     local hitPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Server:Clone()
     hitPart.Parent = workspace.RenderedEffects
     hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-3)) -- positions somewhere good near the stand
@@ -53,9 +48,7 @@ function KnifeThrow.Server_Activate(initPlayer,params)
                     canHit = false
                     if charactersHit ~= nil then
                         for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
-                            for effect,params in pairs(params.KnifeThrow.Effects) do
-                                require(Knit.Effects[effect]).Server_ApplyEffect(characterHit,params)
-                            end
+                            Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.KnifeThrow.HitEffects)
                         end
                     end	
                 end)

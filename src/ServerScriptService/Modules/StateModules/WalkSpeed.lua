@@ -8,8 +8,6 @@
 --Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local Debris = game:GetService("Debris")
-local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))

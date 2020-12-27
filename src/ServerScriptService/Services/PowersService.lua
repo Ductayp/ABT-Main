@@ -97,6 +97,13 @@ end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
 function PowersService:RegisterHit(initPlayer,characterHit,hitEffects)
+
+    local isPlayer = utils.GetPlayerFromCharacter(characterHit)
+    if isPlayer then
+        print("PowersService:RegisterHit - Hit a player: ", isPlayer)
+    else
+        print("PowersService:RegisterHit - Hit an NPC", characterHit.Name)
+    end
    
     for effect,params in pairs(hitEffects) do
         require(Knit.Effects[effect]).Server_ApplyEffect(characterHit,params)
@@ -176,7 +183,7 @@ function PowersService:PlayerCleanup(player)
 end
 
 --// PlayerAdded - run once when the player joins the game
-function PowersService:PlayerAdded(player)
+function PowersService:PlayerJoined(player)
 
     -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
     self:PlayerRefresh(player)
@@ -213,7 +220,7 @@ function PowersService:KnitInit()
     local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 
-    
+    --[[
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
         self:PlayerAdded(player)
@@ -228,11 +235,12 @@ function PowersService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         self:PlayerCleanup(player)
     end)
+    ]]--
 
-    --[[
+
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
-        --self:PlayerRefresh(player)
+        self:PlayerJoined(player)
         
         player.CharacterAdded:Connect(function(character)
             self:PlayerJoined(player)
@@ -261,7 +269,7 @@ function PowersService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         PowersService:PlayerCleanup(player)
     end)
-]]--
+
     
     -- Buttons setup - this is for testing, delete it later
     for i,v in pairs (workspace.StandButtons:GetChildren()) do
@@ -281,6 +289,7 @@ function PowersService:KnitInit()
                                 local params = {}
                                 params.Power = v.Name
                                 params.Rarity = "Common"
+                                print("button goes beep")
                                 self:GivePower(player,params)    
                              end
                             

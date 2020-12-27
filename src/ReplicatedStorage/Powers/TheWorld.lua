@@ -106,11 +106,13 @@ TheWorld.Defs = {
 --// SETUP - run this once when the stand is equipped
 function TheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function TheWorld.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "TheWorld_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "TheWorld_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.

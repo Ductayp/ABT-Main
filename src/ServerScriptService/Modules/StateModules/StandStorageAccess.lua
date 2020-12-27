@@ -14,18 +14,17 @@ local utils = require(Knit.Shared.Utils)
 --
 local statesFolder = ReplicatedStorage:FindFirstChild("StateService")
 
-
-local Invulnerable = {}
+local StandStorageAccess = {}
 
 --// Entry_Added -- fires after entry added in StateSerive. Can be blank.
-function Invulnerable.Entry_Added(player,thisEntry,params)
+function StandStorageAccess.Entry_Added(player,thisEntry,params)
 
 end
 
 --// Entry_Removed -- fires after entry added in StateSerive. Can be blank.
-function Invulnerable.Entry_Removed(player, thisState, params)
+function StandStorageAccess.Entry_Removed(player, thisState, params)
 
 end
 
 
-return Invulnerable
+return StandStorageAccess

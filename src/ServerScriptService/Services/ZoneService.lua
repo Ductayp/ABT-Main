@@ -20,17 +20,32 @@ local ZonePlusService = require(ZonePlus.ZoneService) -- Retrieve and require Zo
 
 -- Zone: SafeZone
 local safeZoneGroup = Workspace.ZoneServiceGroups.SafeZone -- A container (i.e. Model or Folder) of parts that represent the zone
-local safeZone = ZonePlusService:createZone("safeZone", safeZoneGroup, 15) -- Construct a zone called 'ZoneName' using 'group' and with an extended height of 15
-local playersInSafeZone = safeZone:getPlayers() -- Retrieves an array of players within the zone
+local safeZone = ZonePlusService:createZone("SafeZone", safeZoneGroup, 15) -- Construct a zone called 'ZoneName' using 'group' and with an extended height of 15
+local playersIn_safeZone = safeZone:getPlayers() -- Retrieves an array of players within the zone
+
+-- Zone: StandStorage
+local storageZoneGroup = Workspace.ZoneServiceGroups.StandStorage -- A container (i.e. Model or Folder) of parts that represent the zone
+local storageZone = ZonePlusService:createZone("StorageZone", storageZoneGroup, 15) -- Construct a zone called 'ZoneName' using 'group' and with an extended height of 15
+local playersIn_storageZone = storageZone:getPlayers() -- Retrieves an array of players within the zone
 
 --// AddSafeState
 function ZoneService:AddSafeState(player)
-    Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "ZoneService_SafeZone", true)
+    Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "ZoneService", true)
 end
 
 --// RemoveSafeState
 function ZoneService:RemoveSafeState(player)
-    Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "ZoneService_SafeZone", true)
+    Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "ZoneService", true)
+end
+
+--// AddStorageState
+function ZoneService:AddStorageState(player)
+    Knit.Services.StateService:AddEntryToState(player, "StandStorageAccess", "ZoneService", true)
+end
+
+--// RemoveStorageState
+function ZoneService:RemoveStorageState(player)
+    Knit.Services.StateService:RemoveEntryFromState(player, "StandStorageAccess", "ZoneService", true)
 end
 
 --// PlayerAdded
@@ -46,6 +61,16 @@ function ZoneService:PlayerAdded(player)
         self:RemoveSafeState(player)
     end)
 
+    -- standStorage events
+    storageZone.playerAdded:Connect(function(player) -- Fires when a player enters the zone
+        print(player.Name.." entered: StandStorageZone")
+        self:AddStorageState(player)
+    end)
+    storageZone.playerRemoving:Connect(function(player)  -- Fires when a player exits the zone
+        print(player.Name.." left: StandStorageZone")
+        self:RemoveStorageState(player)
+    end)
+
 end
 
 --// PlayerRemoved
@@ -57,6 +82,7 @@ end
 function ZoneService:KnitStart()
 
     safeZone:initLoop() -- Initiates loop (default 0.5) which enables the events to work
+    storageZone:initLoop()
 
 end
 
@@ -79,6 +105,5 @@ function ZoneService:KnitInit()
     end)
 
 end
-
 
 return ZoneService

@@ -46,9 +46,16 @@ function TimeStop.Activate(initPlayer,params)
     -- remove any player that is immune to timestop
     for player,_ in pairs(affectedPlayers) do
 
+        local isImmune = Knit.StateModules.Immunity.Has_Immunity(player,"TimeStop")
+        if isImmune then
+            affectedPlayers[player] = nil -- commnet this out to run it immune players (for testing only)
+        end
+        
+        --[[
         local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
         local powerModule -- declare it here so the rest can use it
         local findModule = Knit.Powers:FindFirstChild(playerData.Character.CurrentPower)
+
         if findModule then
             powerModule = require(Knit.Powers[playerData.Character.CurrentPower])
         end
@@ -58,6 +65,8 @@ function TimeStop.Activate(initPlayer,params)
                 affectedPlayers[player] = nil -- commnet this out to run it immune players (for testing only)
             end
         end
+
+        ]]--
     end
     
     -- run effects on players still in the affectedPlayers table

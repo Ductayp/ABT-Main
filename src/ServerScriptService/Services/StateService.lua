@@ -27,8 +27,6 @@ local utils = require(Knit.Shared.Utils)
 --// AddState - add a modfier value, if one of the same name exists then do nothing
 function StateService:AddEntryToState(player, stateName, entryName, entryValue, params)
 
-print(player, stateName, entryName, entryValue, params)
-
     -- see if the state exists and make it if it doesnt
     local stateFolder = ReplicatedStorage.StateService[player.UserId]:FindFirstChild(stateName)
     if stateFolder then
@@ -70,11 +68,9 @@ end
 --// RemoveState -- removes  a modfier by name
 function StateService:RemoveEntryFromState(player, stateName, entryName, params)
 
-    print("REMOVE: ",player, stateName, entryName, params)
-
     local thisState = ReplicatedStorage.StateService[player.UserId]:FindFirstChild(stateName)
     if thisState then
-        print(stateName)
+
         local thisEntry = thisState:FindFirstChild(entryName)
         if thisEntry then
 

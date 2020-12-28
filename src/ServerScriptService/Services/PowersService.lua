@@ -69,8 +69,8 @@ function PowersService:SetCurrentPower(player,power,rarity)
             removePowerModule.RemovePower(player,removePowerParams)
         end
     else
-        print("now power exists with that name")
-        return
+        print("no power exists with that name, cant run the REMOVE POWER function")
+        --return
     end
 
     playerData.Character.CurrentPower = power
@@ -78,10 +78,12 @@ function PowersService:SetCurrentPower(player,power,rarity)
     Knit.Services.GuiService:Update_Gui(player, "Character")
 
     -- run the new powers setup function
-    local setupPowerModule = require(Knit.Powers[power])
-    local setupPowerParams = {} --right now this is nil, but we can add things later if we need to
-    if setupPowerModule.SetupPower then
-        setupPowerModule.SetupPower(player,setupPowerParams)
+    if Knit.Powers:FindFirstChild(power) then
+        local setupPowerModule = require(Knit.Powers[power])
+        local setupPowerParams = {} --right now this is nil, but we can add things later if we need to
+        if setupPowerModule.SetupPower then
+            setupPowerModule.SetupPower(player,setupPowerParams)
+        end
     end
 
     -- run the player setup so we can start fresh
@@ -156,7 +158,7 @@ end
 
 --// PlayerRefresh - fires when the player joins and after each death
 function PowersService:PlayerRefresh(player)
-    
+
     -- cleanup before setup
     self:PlayerCleanup(player)
     
@@ -166,7 +168,6 @@ function PowersService:PlayerRefresh(player)
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
     local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
 
-    --Knit.Services.DataReplicationService:UpdateAll(player)
 end
 
 --// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh
@@ -185,13 +186,13 @@ end
 --// PlayerAdded - run once when the player joins the game
 function PowersService:PlayerJoined(player)
 
-    -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
-    self:PlayerRefresh(player)
-
     -- make sure the players data is loaded
     local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
+
+    -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
+    self:PlayerRefresh(player)
 
     -- render existing stands
     self:RenderExistingStands(player)
@@ -220,56 +221,37 @@ function PowersService:KnitInit()
     local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 
-    --[[
+
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
-        self:PlayerAdded(player)
+        self:PlayerJoined(player)
+
+        player.CharacterAdded:Connect(function(character)
+            self:PlayerRefresh(player)
+    
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                -- empty for now
+            end)
+        end)
     end)
 
     -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
     for _, player in ipairs(Players:GetPlayers()) do
-        self:PlayerAdded(player)
+        self:PlayerJoined(player)
+        
+        player.CharacterAdded:Connect(function(character)
+            self:PlayerRefresh(player)
+    
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                -- empty for now
+            end)
+        end)
     end
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
         self:PlayerCleanup(player)
     end)
-    ]]--
-
-
-    -- Player Added event
-    Players.PlayerAdded:Connect(function(player)
-        self:PlayerJoined(player)
-        
-        player.CharacterAdded:Connect(function(character)
-            self:PlayerJoined(player)
-            
-
-            character:WaitForChild("Humanoid").Died:Connect(function()
-                self:PlayerJoined(player)
-            end)
-        end)
-    end)
-
-    -- Player Added event for studio testing
-    for _, player in ipairs(Players:GetPlayers()) do
-
-        player.CharacterAdded:Connect(function(character)
-            self:PlayerJoined(player)
-            
-
-            character:WaitForChild("Humanoid").Died:Connect(function()
-                self:PlayerJoined(player)
-            end)
-        end)
-    end
-
-    -- Player Removing event
-    Players.PlayerRemoving:Connect(function(player)
-        PowersService:PlayerCleanup(player)
-    end)
-
     
     -- Buttons setup - this is for testing, delete it later
     for i,v in pairs (workspace.StandButtons:GetChildren()) do

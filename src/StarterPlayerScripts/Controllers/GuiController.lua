@@ -373,6 +373,67 @@ function GuiController:Request_SellStand()
 
 end
 
+--// ====================================================================================================================================
+--//  OVERLAY - STAND REVEAL
+--// ====================================================================================================================================
+
+--// DEFS - OVERLAY - STAND REVEAL ------------------------------------------------------------
+defs.Stand_Reveal = {
+    Main_Frame = mainGui.Overlays:FindFirstChild("Stand_Reveal", true),
+    Elements = {
+        Button_Frame = mainGui.Overlays.Stand_Reveal:FindFirstChild("Button_Frame", true),
+        Icon_Frame = mainGui.Overlays.Stand_Reveal:FindFirstChild("Icon_Frame", true),
+        Storage_Warning = mainGui.Overlays.Stand_Reveal:FindFirstChild("Storage_Warning", true),
+        Stand_Name = mainGui.Overlays.Stand_Reveal:FindFirstChild("Stand_Name", true),
+        Stand_Rarity = mainGui.Overlays.Stand_Reveal:FindFirstChild("Stand_Rarity", true),
+        Rays_1 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_1", true),
+        Rays_2 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_2", true),
+    },
+    Buttons = {
+        Equip_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Equip_Button", true),
+        Store_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Store_Button", true),
+    }
+}
+
+--// Setup_StandReveal ------------------------------------------------------------
+function GuiController:Setup_StandReveal()
+
+    -- be sure the stand reveal is closed
+    defs.Stand_Reveal.Main_Frame.Visible = false
+
+    -- also be sure all elements have visibility off, we can turn them on one by one
+    for _,element in pairs(defs.Stand_Reveal.Elements) do
+        element.Visible = false
+    end
+
+    print(defs.Stand_Reveal.Buttons.Equip_Button.Name)
+
+    -- setup the buttons
+    defs.Stand_Reveal.Buttons.Equip_Button.Activated:Connect(function()
+        self:StandReveal_ActivateClose()
+    end)
+    defs.Stand_Reveal.Buttons.Store_Button.Activated:Connect(function()
+        self:StandReveal_ActivateQuickStore()
+    end)
+
+end
+
+--// Close_StandReveal ------------------------------------------------------------
+function GuiController:StandReveal_ActivateClose()
+    defs.Stand_Reveal.Main_Frame.Visible = false -- just turn off the stand reveal frame. The player already has stand equipped
+end
+
+--// StandReveal_QuickStore ------------------------------------------------------------
+function GuiController:StandReveal_ActivateQuickStore()
+    
+end
+
+--// Update_StandReveal ------------------------------------------------------------
+function GuiController:Update_StandReveal()
+
+end
+
+
 
 
 --// ====================================================================================================================================
@@ -396,6 +457,7 @@ function GuiController:KnitStart()
     self:Setup_LeftGui()
     self:Setup_MainWindow()
     self:Setup_ArrowPanel()
+    self:Setup_StandReveal()
 
     -- request Gui Updates
     self:Request_GuiUpdate("ArrowPanel")

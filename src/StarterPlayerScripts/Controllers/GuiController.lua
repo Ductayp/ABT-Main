@@ -417,12 +417,6 @@ function GuiController:Setup_StandReveal()
 
 end
 
-
---// Close_StandReveal ------------------------------------------------------------
-function GuiController:StandReveal_ActivateClose()
-    defs.Stand_Reveal.Main_Frame.Visible = false -- just turn off the stand reveal frame. The player already has stand equipped
-end
-
 --// StandReveal_QuickStore ------------------------------------------------------------
 function GuiController:StandReveal_ActivateQuickStore()
 
@@ -471,12 +465,13 @@ end
 --// Show_StandReveal ------------------------------------------------------------
 function GuiController:Show_StandReveal()
 
-    -- setup variables to make life easy
-    --local animationElements = {}
-    --animationElements.iconFrame = defs.Stand_Reveal.Elements.Icon_Frame,
-    --animationElements.standName = defs.Stand_Reveal.Elements.Stand_Name,
-    --animationElements.Rays_1 = defs.Stand_Reveal.Elements.Rays_1,
-    --animationElements.Rays_2 = defs.Stand_Reveal.Elements.Rays_2,
+    -- create some new rays, so we leave to originals in place
+    local newRay_1 = defs.Stand_Reveal.Elements.Rays_1:Clone()
+    local newRay_2 = defs.Stand_Reveal.Elements.Rays_2:Clone()
+    newRay_1.Parent = defs.Stand_Reveal.Main_Frame
+    newRay_2.Parent = defs.Stand_Reveal.Main_Frame
+    newRay_1.Name = "TempRay"
+    newRay_2.Name = "TempRay"
 
     -- save some final sizes for elements
     local finalIconFrame_Size = defs.Stand_Reveal.Elements.Icon_Frame.Size
@@ -496,8 +491,8 @@ function GuiController:Show_StandReveal()
     local sizeTween_Name = TweenService:Create(defs.Stand_Reveal.Elements.Stand_Name,tweenInfo_Size,{Size = finalName_Size})
     local sizeTween_Rays_1 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_1,tweenInfo_Size,{Size = finalRays_1_Size})
     local sizeTween_Rays_2 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_2,tweenInfo_Size,{Size = finalRays_2_Size})
-    local spinTween_Rays_1 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_1,TweenInfo.new(40,Enum.EasingStyle.Linear),{Rotation = 359})
-    local spinTween_Rays_2 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_2,TweenInfo.new(60,Enum.EasingStyle.Linear),{Rotation = -359})
+    local spinTween_Rays_1 = TweenService:Create(newRay_1,TweenInfo.new(40,Enum.EasingStyle.Linear),{Rotation = 359})
+    local spinTween_Rays_2 = TweenService:Create(newRay_2,TweenInfo.new(60,Enum.EasingStyle.Linear),{Rotation = -359})
 
     sizeTween_IconFrame:Play()
     sizeTween_Name:Play()
@@ -507,22 +502,35 @@ function GuiController:Show_StandReveal()
     spinTween_Rays_2:Play()
 
 
-    sizeTween_IconFrame.Completed:Connect(function(playbackState)
+    spinTween_Rays_1.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed then
-
+            self:StandReveal_ActivateClose()
         end
     end)
 
-
-
-    -- make all the sub elements visible
-    for _,element in pairs(defs.Stand_Reveal.Elements) do
-        element.Visible = true
-    end
-
     -- make the whole thing visible
     defs.Stand_Reveal.Main_Frame.Visible = true
+    defs.Stand_Reveal.Elements.Icon_Frame.Visible = true
+    defs.Stand_Reveal.Elements.Button_Frame.Visible = true
+    defs.Stand_Reveal.Elements.Stand_Name.Visible = true
+    defs.Stand_Reveal.Elements.Stand_Rarity.Visible = true
+    newRay_1.Visible = true
+    newRay_2.Visible = true
 
+end
+
+--// Close_StandReveal ------------------------------------------------------------
+function GuiController:StandReveal_ActivateClose()
+
+    -- destroy the TempRays
+    for _,object in pairs(defs.Stand_Reveal.Main_Frame:GetChildren()) do
+        if object.Name == "TempRay" then
+            object:Destroy()
+        end
+    end
+
+    -- make it invisible
+    defs.Stand_Reveal.Main_Frame.Visible = false -- just turn off the stand reveal frame. The player already has stand equipped
 end
 
 

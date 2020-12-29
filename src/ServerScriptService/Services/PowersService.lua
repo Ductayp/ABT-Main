@@ -92,9 +92,7 @@ end
 
 --// GivePower - this is fired only when a player uses an arrow or is given a power for the first time
 function PowersService:GivePower(player,params)
-    print(params.Power,params.Rarity)
     self:SetCurrentPower(player,params.Power,params.Rarity)
-
 end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules

@@ -19,14 +19,14 @@ local ManageStand = require(Knit.Abilities.ManageStand)
 local Barrage = require(Knit.Abilities.Barrage)
 local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 
-local TheHand = {}
+local GoldExperience = {}
 
 
-TheHand.Defs = {
+GoldExperience.Defs = {
 
     -- just some general defs here
-    PowerName = "The Hand",
-    StandModel = ReplicatedStorage.EffectParts.StandModels.TheHand,
+    PowerName = "Gold Experience",
+    StandModel = ReplicatedStorage.EffectParts.StandModels.GoldExperience,
 
     -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {
@@ -99,19 +99,19 @@ TheHand.Defs = {
 }
 
 --// SETUP - run this once when the stand is equipped
-function TheHand.SetupPower(initPlayer,params)
+function GoldExperience.SetupPower(initPlayer,params)
     print("Setup Power - The Hand for: ",initPlayer)
     
 end
 
 --// REMOVE - run this once when the stand is un-equipped
-function TheHand.RemovePower(initPlayer,params)
+function GoldExperience.RemovePower(initPlayer,params)
     print("Removing Power - The Hand for: ",initPlayer)
     
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
-function TheHand.Manager(initPlayer,params)
+function GoldExperience.Manager(initPlayer,params)
 
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
@@ -124,15 +124,15 @@ function TheHand.Manager(initPlayer,params)
 
     -- call the function
     if params.InputId == "Q" then
-        TheHand.EquipStand(initPlayer,params)
+        GoldExperience.EquipStand(initPlayer,params)
     elseif params.InputId == "E" then
-        TheHand.Barrage(initPlayer,params)
+        GoldExperience.Barrage(initPlayer,params)
     elseif params.InputId == "F" then
-        TheHand.Ability_F(initPlayer,params)
+        GoldExperience.Ability_F(initPlayer,params)
     elseif params.InputId == "T" then
-        TheHand.Ability_T(initPlayer,params)
+        GoldExperience.Ability_T(initPlayer,params)
     elseif params.InputId == "R" then
-        TheHand.HeavyPunch(initPlayer,params)
+        GoldExperience.HeavyPunch(initPlayer,params)
     end
 
     return params
@@ -142,7 +142,7 @@ end
 --// EQUIP STAND //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
-function TheHand.EquipStand(initPlayer,params)
+function GoldExperience.EquipStand(initPlayer,params)
     
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
@@ -178,7 +178,7 @@ function TheHand.EquipStand(initPlayer,params)
             else
                 standToggle.Value = true
             end
-            powerUtils.SetCooldown(initPlayer,params,TheHand.Defs.Abilities.EquipStand.Cooldown)
+            powerUtils.SetCooldown(initPlayer,params,GoldExperience.Defs.Abilities.EquipStand.Cooldown)
             params.CanRun = true
         end
 
@@ -196,13 +196,13 @@ function TheHand.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if standToggle.Value == true then
                 print("equip stand - STAND ON")
-                --powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheHand.Defs.Abilities.EquipStand.EquipSound)
-                powerUtils.SetGUICooldown(initPlayer,params.InputId,TheHand.Defs.Abilities.EquipStand.Cooldown)
-                ManageStand.EquipStand(initPlayer,TheHand.Defs.StandModel)
+                --powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,GoldExperience.Defs.Abilities.EquipStand.EquipSound)
+                powerUtils.SetGUICooldown(initPlayer,params.InputId,GoldExperience.Defs.Abilities.EquipStand.Cooldown)
+                ManageStand.EquipStand(initPlayer,GoldExperience.Defs.StandModel)
             else
                 print("equip stand - STAND OFF")
-                --powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,TheHand.Defs.Abilities.EquipStand.RemoveSound)
-                powerUtils.SetGUICooldown(initPlayer,params.InputId,TheHand.Defs.Abilities.EquipStand.Cooldown)
+                --powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,GoldExperience.Defs.Abilities.EquipStand.RemoveSound)
+                powerUtils.SetGUICooldown(initPlayer,params.InputId,GoldExperience.Defs.Abilities.EquipStand.Cooldown)
                 ManageStand.RemoveStand(initPlayer)            
             end
         end
@@ -218,16 +218,16 @@ end
 --// BARRAGE //----------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
-function TheHand.Barrage(initPlayer,params)
+function GoldExperience.Barrage(initPlayer,params)
 
-    local barrageParams = TheHand.Defs.Abilities.Barrage
+    local barrageParams = GoldExperience.Defs.Abilities.Barrage
 
     -- get barrage toggle, setup if it doesnt exist
     local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
 
     -- get stand folder and stand
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-    local thisStand = playerStandFolder:FindFirstChild("TheHand")
+    local thisStand = playerStandFolder:FindFirstChild("GoldExperience")
 
     -- requires Stand to be active via "Q" toggle
     local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
@@ -266,7 +266,7 @@ function TheHand.Barrage(initPlayer,params)
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()
-                    wait(TheHand.Defs.Abilities.Barrage.Duration)
+                    wait(GoldExperience.Defs.Abilities.Barrage.Duration)
                     params.KeyState = "InputEnded"
                     Knit.Services.PowersService:ActivatePower(initPlayer,params)
                 end)
@@ -282,7 +282,7 @@ function TheHand.Barrage(initPlayer,params)
                 params.CanRun = true
 
                 -- set the cooldown
-                powerUtils.SetCooldown(initPlayer,params,TheHand.Defs.Abilities.Barrage.Cooldown)
+                powerUtils.SetCooldown(initPlayer,params,GoldExperience.Defs.Abilities.Barrage.Cooldown)
 
                 -- destroy hitbox
                 Barrage.Server_DestroyHitbox(initPlayer, barrageParams)
@@ -301,16 +301,16 @@ function TheHand.Barrage(initPlayer,params)
                 local soundParams = {}
                 soundParams.SoundProperties = {}
                 soundParams.SoundProperties.Looped = false
-                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheHand.Barrage,soundParams)
+                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.GoldExperience.Barrage,soundParams)
             end
         end
 
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             if barrageToggle.Value == false then
-                powerUtils.SetGUICooldown(initPlayer,params.InputId,TheHand.Defs.Abilities.Barrage.Cooldown)
+                powerUtils.SetGUICooldown(initPlayer,params.InputId,GoldExperience.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
-                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheHand.Barrage.Name,.5)
+                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.GoldExperience.Barrage.Name,.5)
             end 
         end
     end
@@ -320,11 +320,11 @@ end
 --// TIME STOP //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
-function TheHand.TimeStop(initPlayer,params)
+function GoldExperience.TimeStop(initPlayer,params)
 
     -- get stand folder and stand
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-    local thisStand = playerStandFolder:FindFirstChild("TheHand")
+    local thisStand = playerStandFolder:FindFirstChild("GoldExperience")
 
     -- get barrage toggle, setup if it doesnt exist
     local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
@@ -363,8 +363,8 @@ function TheHand.TimeStop(initPlayer,params)
         if params.KeyState == "InputBegan" then
 
             local timeStopParams = {}
-            timeStopParams.Duration = TheHand.Defs.Abilities.TimeStop.Duration
-            timeStopParams.Range = TheHand.Defs.Abilities.TimeStop.Range
+            timeStopParams.Duration = GoldExperience.Defs.Abilities.TimeStop.Duration
+            timeStopParams.Range = GoldExperience.Defs.Abilities.TimeStop.Range
             timeStopParams.Delay = 2
 
             --params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
@@ -372,7 +372,7 @@ function TheHand.TimeStop(initPlayer,params)
             --spawn(function()
                 --wait(2) -- this is here for The Worlds audio to fire the ability at the right time
                 params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
-                powerUtils.SetCooldown(initPlayer,params,TheHand.Defs.Abilities.TimeStop.Cooldown)
+                powerUtils.SetCooldown(initPlayer,params,GoldExperience.Defs.Abilities.TimeStop.Cooldown)
             --end)
             
             params.CanRun = true
@@ -393,16 +393,16 @@ function TheHand.TimeStop(initPlayer,params)
             print("CLIENT - Time Stop - Execute = InputBegan")
 
             ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheHand.TimeStop)
+            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.GoldExperience.TimeStop)
 
             -- wait here for the timestop audio
             wait(2)
 
-            powerUtils.SetGUICooldown(initPlayer,params.InputId,TheHand.Defs.Abilities.TimeStop.Cooldown)
+            powerUtils.SetGUICooldown(initPlayer,params.InputId,GoldExperience.Defs.Abilities.TimeStop.Cooldown)
 
             local timeStopParams = {}
-            timeStopParams.Duration = TheHand.Defs.Abilities.TimeStop.Duration
-            timeStopParams.Range = TheHand.Defs.Abilities.TimeStop.Range
+            timeStopParams.Duration = GoldExperience.Defs.Abilities.TimeStop.Duration
+            timeStopParams.Range = GoldExperience.Defs.Abilities.TimeStop.Range
             TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
         end
 
@@ -418,9 +418,9 @@ end
 --// KNIFE THROW //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
-function TheHand.KnifeThrow(initPlayer,params)
+function GoldExperience.KnifeThrow(initPlayer,params)
     
-    params.KnifeThrow = TheHand.Defs.Abilities.KnifeThrow
+    params.KnifeThrow = GoldExperience.Defs.Abilities.KnifeThrow
   
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
@@ -444,7 +444,7 @@ function TheHand.KnifeThrow(initPlayer,params)
 
          -- KNIFE THROW/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            powerUtils.SetCooldown(initPlayer,params,TheHand.Defs.Abilities.KnifeThrow.Cooldown)
+            powerUtils.SetCooldown(initPlayer,params,GoldExperience.Defs.Abilities.KnifeThrow.Cooldown)
             KnifeThrow.Server_ThrowKnife(initPlayer,params)
             params.CanRun = true
         end
@@ -460,7 +460,7 @@ function TheHand.KnifeThrow(initPlayer,params)
 
          -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            powerUtils.SetGUICooldown(initPlayer,params.InputId,TheHand.Defs.Abilities.KnifeThrow.Cooldown)
+            powerUtils.SetGUICooldown(initPlayer,params.InputId,GoldExperience.Defs.Abilities.KnifeThrow.Cooldown)
             powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
             KnifeThrow.Client_KnifeThrow(initPlayer,params)
         end
@@ -476,9 +476,9 @@ end
 --// HEAVY  PUNCH //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
-function TheHand.HeavyPunch(initPlayer,params)
+function GoldExperience.HeavyPunch(initPlayer,params)
     
-    params.HeavyPunch = TheHand.Defs.Abilities.HeavyPunch
+    params.HeavyPunch = GoldExperience.Defs.Abilities.HeavyPunch
   
     -- get stand folder, setup if it doesnt exist
     local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
@@ -502,10 +502,10 @@ function TheHand.HeavyPunch(initPlayer,params)
 
          -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            local heavyPunchParams = TheHand.Defs.Abilities.HeavyPunch
+            local heavyPunchParams = GoldExperience.Defs.Abilities.HeavyPunch
             
             HeavyPunch.Activate(initPlayer,heavyPunchParams)
-            powerUtils.SetCooldown(initPlayer,params,TheHand.Defs.Abilities.HeavyPunch.Cooldown)
+            powerUtils.SetCooldown(initPlayer,params,GoldExperience.Defs.Abilities.HeavyPunch.Cooldown)
 
             params.CanRun = true
         end
@@ -522,9 +522,9 @@ function TheHand.HeavyPunch(initPlayer,params)
          -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
-            local heavyPunchParams = TheHand.Defs.Abilities.HeavyPunch
-            --heavyPunchParams.Color = Color3.new(255/255, 253/255, 156/255) -- yellow for TheHand 255, 176, 0
-            powerUtils.SetGUICooldown(initPlayer,params.InputId,TheHand.Defs.Abilities.HeavyPunch.Cooldown)
+            local heavyPunchParams = GoldExperience.Defs.Abilities.HeavyPunch
+            --heavyPunchParams.Color = Color3.new(255/255, 253/255, 156/255) -- yellow for GoldExperience 255, 176, 0
+            powerUtils.SetGUICooldown(initPlayer,params.InputId,GoldExperience.Defs.Abilities.HeavyPunch.Cooldown)
             HeavyPunch.Execute(initPlayer,heavyPunchParams)
         end
 
@@ -535,4 +535,4 @@ function TheHand.HeavyPunch(initPlayer,params)
     end
 end
 
-return TheHand
+return GoldExperience

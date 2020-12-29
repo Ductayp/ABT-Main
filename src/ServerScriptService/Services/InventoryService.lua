@@ -124,7 +124,11 @@ function InventoryService.Client:UseArrow(player, params)
                 local newParams = {}
                 newParams.Power = pickedStand
                 newParams.Rarity = params.Rarity
+
                 Knit.Services.PowersService:GivePower(player,newParams)
+
+                -- fire Show_StandReveal to the player, we do this after we set the data because the Gui pudates based on current data
+                Knit.Services.GuiService:Update_Gui(player, "StandReveal")
 
                 return
 

@@ -34,6 +34,17 @@ Morioh_B.Items = {
         }
     },
 
+    UniversalArrow_3 = {
+        Weight = 5,
+        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
+        Params = {
+            DataKey = "UniversalArrow",
+            DataCategory = "ArrowInventory",
+            Rarity = "Legendary",
+            ArrowName = "Universal Arrow"
+        }
+    },
+
     Cash = {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.Cash,

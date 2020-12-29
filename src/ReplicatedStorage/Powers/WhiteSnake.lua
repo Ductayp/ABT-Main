@@ -25,7 +25,7 @@ local WhiteSnake = {}
 WhiteSnake.Defs = {
 
     -- just some general defs here
-    PowerName = "Crazy Diamond",
+    PowerName = "White Snake",
     StandModel = ReplicatedStorage.EffectParts.StandModels.WhiteSnake,
 
     -- only include true values of immunities, if they are not immune then dont have anything in here

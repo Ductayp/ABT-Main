@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local PlayerGui = Players.LocalPlayer.PlayerGui
+local TweenService = game:GetService("TweenService")
 
 
 -- setup Knit
@@ -406,8 +407,6 @@ function GuiController:Setup_StandReveal()
         element.Visible = false
     end
 
-    print(defs.Stand_Reveal.Buttons.Equip_Button.Name)
-
     -- setup the buttons
     defs.Stand_Reveal.Buttons.Equip_Button.Activated:Connect(function()
         self:StandReveal_ActivateClose()
@@ -418,6 +417,7 @@ function GuiController:Setup_StandReveal()
 
 end
 
+
 --// Close_StandReveal ------------------------------------------------------------
 function GuiController:StandReveal_ActivateClose()
     defs.Stand_Reveal.Main_Frame.Visible = false -- just turn off the stand reveal frame. The player already has stand equipped
@@ -425,15 +425,105 @@ end
 
 --// StandReveal_QuickStore ------------------------------------------------------------
 function GuiController:StandReveal_ActivateQuickStore()
+
+    if Knit.StateModules.GamePass:HasPass(player,"MobileStandStorage") then
+        print("Quick Store the stand - BEEP!")
+    else
+        print("NOPE! - You dont have the MobileStandStorage pass")
+    end
     
 end
 
 --// Update_StandReveal ------------------------------------------------------------
-function GuiController:Update_StandReveal()
+function GuiController:Update_StandReveal(data)
+
+    print("data.CurrentPower: ", data.CurrentPower)
+    print("data.CurrentPowerRarity: ", data.CurrentPowerRarity)
+
+    -- get the module for the stand that just got revealed, also the players CurrentStand, we need this to get the actual name
+    local currentPowerModule = Knit.Powers:FindFirstChild(data.CurrentPower)
+    local powerModule = require(currentPowerModule)
+
+    -- set the text and do some colors
+    defs.Stand_Reveal.Elements.Stand_Name.Text = powerModule.Defs.PowerName
+    defs.Stand_Reveal.Elements.Stand_Rarity.Text = data.CurrentPowerRarity
+    if data.CurrentPowerRarity == "Common" then
+        defs.Stand_Reveal.Elements.Stand_Rarity.TextColor3 = Color3.new(255/255, 255/255, 255/255)
+    elseif data.CurrentPowerRarity == "Rare" then
+        defs.Stand_Reveal.Elements.Stand_Rarity.TextColor3 = Color3.new(10/255, 202/255, 0/255)
+    elseif data.CurrentPowerRarity == "Legendary" then
+        defs.Stand_Reveal.Elements.Stand_Rarity.TextColor3 = Color3.new(255/255, 149/255, 43/255)
+    end
+
+    -- clear old icons out of the container
+    defs.Stand_Reveal.Elements.Icon_Frame.Icon_Container:ClearAllChildren()
+
+    print(data.CurrentPower)
+    -- clone in a new icon
+    local newIcon = mainGui.Stand_Icons:FindFirstChild(data.CurrentPower):Clone()
+    newIcon.Visible = true
+    newIcon.Parent = defs.Stand_Reveal.Elements.Icon_Frame.Icon_Container
+
+    self:Show_StandReveal()
 
 end
 
+--// Show_StandReveal ------------------------------------------------------------
+function GuiController:Show_StandReveal()
 
+    -- setup variables to make life easy
+    --local animationElements = {}
+    --animationElements.iconFrame = defs.Stand_Reveal.Elements.Icon_Frame,
+    --animationElements.standName = defs.Stand_Reveal.Elements.Stand_Name,
+    --animationElements.Rays_1 = defs.Stand_Reveal.Elements.Rays_1,
+    --animationElements.Rays_2 = defs.Stand_Reveal.Elements.Rays_2,
+
+    -- save some final sizes for elements
+    local finalIconFrame_Size = defs.Stand_Reveal.Elements.Icon_Frame.Size
+    local finalName_Size = defs.Stand_Reveal.Elements.Stand_Name.Size
+    local finalRays_1_Size = defs.Stand_Reveal.Elements.Rays_1.Size
+    local finalRays_2_Size = defs.Stand_Reveal.Elements.Rays_2.Size
+
+    --now lets make them all smaller so we can pop them
+    defs.Stand_Reveal.Elements.Icon_Frame.Size = UDim2.new(0, 0, 0, 0)
+    defs.Stand_Reveal.Elements.Stand_Name.Size = UDim2.new(0, 0, 0, 0)
+    defs.Stand_Reveal.Elements.Rays_1.Size = UDim2.new(0, 0, 0, 0)
+    defs.Stand_Reveal.Elements.Rays_1.Size = UDim2.new(0, 0, 0, 0)
+
+    -- tweens 
+    local tweenInfo_Size = TweenInfo.new(.5,Enum.EasingStyle.Bounce)
+    local sizeTween_IconFrame = TweenService:Create(defs.Stand_Reveal.Elements.Icon_Frame,tweenInfo_Size,{Size = finalIconFrame_Size})
+    local sizeTween_Name = TweenService:Create(defs.Stand_Reveal.Elements.Stand_Name,tweenInfo_Size,{Size = finalName_Size})
+    local sizeTween_Rays_1 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_1,tweenInfo_Size,{Size = finalRays_1_Size})
+    local sizeTween_Rays_2 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_2,tweenInfo_Size,{Size = finalRays_2_Size})
+    local spinTween_Rays_1 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_1,TweenInfo.new(40,Enum.EasingStyle.Linear),{Rotation = 359})
+    local spinTween_Rays_2 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_2,TweenInfo.new(60,Enum.EasingStyle.Linear),{Rotation = -359})
+
+    sizeTween_IconFrame:Play()
+    sizeTween_Name:Play()
+    sizeTween_Rays_1:Play()
+    sizeTween_Rays_2:Play()
+    spinTween_Rays_1:Play()
+    spinTween_Rays_2:Play()
+
+
+    sizeTween_IconFrame.Completed:Connect(function(playbackState)
+        if playbackState == Enum.PlaybackState.Completed then
+
+        end
+    end)
+
+
+
+    -- make all the sub elements visible
+    for _,element in pairs(defs.Stand_Reveal.Elements) do
+        element.Visible = true
+    end
+
+    -- make the whole thing visible
+    defs.Stand_Reveal.Main_Frame.Visible = true
+
+end
 
 
 --// ====================================================================================================================================
@@ -476,6 +566,10 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_Character:Connect(function(data)
         self:Update_Character(data)
+    end)
+
+    GuiService.Event_Update_StandReveal:Connect(function(data)
+        self:Update_StandReveal(data)
     end)
 
 end

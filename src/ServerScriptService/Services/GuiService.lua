@@ -19,9 +19,10 @@ local utils = require(Knit.Shared.Utils)
 GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Cash = RemoteEvent.new()
 GuiService.Client.Event_Update_Character = RemoteEvent.new()
+GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 
 --// Update_Gui
-function GuiService:Update_Gui(player, requestName)
+function GuiService:Update_Gui(player, requestName, optionalParams)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
@@ -33,6 +34,9 @@ function GuiService:Update_Gui(player, requestName)
     end
     if requestName == "Character" then
         self.Client.Event_Update_Character:Fire(player,playerData.Character)
+    end
+    if requestName == "StandReveal" then
+        self.Client.Event_Update_StandReveal:Fire(player,playerData.Character)
     end
 end
 

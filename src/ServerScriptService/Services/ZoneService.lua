@@ -15,8 +15,8 @@ local ZoneService = Knit.CreateService { Name = "ZoneService", Client = {}}
 local utils = require(Knit.Shared.Utils)
 
 -- ZonePlus Setup
-local ZonePlus = require(4664437268) -- Initiate Zone+
-local ZonePlusService = require(ZonePlus.ZoneService) -- Retrieve and require ZoneService
+--local ZonePlus = require(4664437268) -- Initiate Zone+ - i removed this, now we have the code permanently in our file system - pdab
+local ZonePlusService = require(ReplicatedStorage.GameFiles.Shared.ZonePlus:FindFirstChild("ZoneService", true))  --require(ZonePlus.ZoneService) -- Retrieve and require ZoneService
 
 -- Zone: SafeZone
 local safeZoneGroup = Workspace.ZoneServiceGroups.SafeZone -- A container (i.e. Model or Folder) of parts that represent the zone

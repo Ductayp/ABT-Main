@@ -27,5 +27,26 @@ function GamePass.Entry_Removed(player, thisState, params)
 
 end
 
+function GamePass.Has_Pass(player,passName)
+
+    local hasPass = false
+
+    local playerFolder = statesFolder:FindFirstChild(player.UserId)
+    if playerFolder then
+        local gamePassFolder = playerFolder:FindFirstChild("GamePass")
+        if gamePassFolder then
+            local gamePassEntry = gamePassFolder:FindFirstChild(passName)
+            if gamePassEntry then
+                if gamePassEntry.Value == true then
+                    hasPass = true
+                end
+            end
+        end
+    end
+
+    return hasPass
+
+end
+
 
 return GamePass

@@ -16,6 +16,7 @@ local GuiController = Knit.CreateController { Name = "GuiController" }
 local GuiService = Knit.GetService("GuiService")
 local InventoryService = Knit.GetService("InventoryService")
 local PowersService = Knit.GetService("PowersService")
+local GamePassService = Knit.GetService("GamePassService")
 
 -- Knit modules
 local utils = require(Knit.Shared.Utils)
@@ -361,7 +362,7 @@ end
 
 --// Request_StoreStand ------------------------------------------------------------
 function GuiController:Request_StoreStand()
-
+    print("GuiController:Request_StoreStand() - DO THIS NEXT")
 end
 
 --// Request_EvolveStand ------------------------------------------------------------
@@ -400,6 +401,7 @@ defs.Stand_Reveal = {
     Buttons = {
         Equip_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Equip_Button", true),
         Store_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Store_Button", true),
+        MobileStorage_BuyButton = mainGui.Overlays.Stand_Reveal:FindFirstChild("MobileStorage_Buy_Button", true),
     }
 }
 
@@ -422,25 +424,27 @@ function GuiController:Setup_StandReveal()
     defs.Stand_Reveal.Buttons.Store_Button.Activated:Connect(function()
         self:StandReveal_ActivateQuickStore()
     end)
+    defs.Stand_Reveal.Buttons.MobileStorage_BuyButton.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
+    end)
 
 end
 
 --// StandReveal_QuickStore ------------------------------------------------------------
 function GuiController:StandReveal_ActivateQuickStore()
 
-    if Knit.StateModules.GamePass:HasPass(player,"MobileStandStorage") then
-        print("Quick Store the stand - BEEP!")
+
+    if GamePassService:Has_GamePass("MobileStandStorage") then
+        self:Request_StoreStand()
+        self:StandReveal_ActivateClose()
     else
-        print("NOPE! - You dont have the MobileStandStorage pass")
+        self:StandReveal_StorageWarning()
     end
     
 end
 
 --// Update_StandReveal ------------------------------------------------------------
 function GuiController:Update_StandReveal(data)
-
-    print("data.CurrentPower: ", data.CurrentPower)
-    print("data.CurrentPowerRarity: ", data.CurrentPowerRarity)
 
     -- get the module for the stand that just got revealed, also the players CurrentStand, we need this to get the actual name
     local currentPowerModule = Knit.Powers:FindFirstChild(data.CurrentPower)
@@ -466,13 +470,12 @@ function GuiController:Update_StandReveal(data)
     newIcon.Visible = true
     newIcon.Parent = defs.Stand_Reveal.Elements.Icon_Frame.Icon_Container
 
-    self:Show_StandReveal()
+    self:StandReveal_RevealStand()
 
 end
 
-
 --// Show_StandReveal ------------------------------------------------------------
-function GuiController:Show_StandReveal()
+function GuiController:StandReveal_RevealStand()
 
     -- create some new animation objects, so we leave to originals in place
     local newRay_1 = defs.Stand_Reveal.Elements.Rays_1:Clone()
@@ -486,7 +489,6 @@ function GuiController:Show_StandReveal()
     local newBalls_1 = defs.Stand_Reveal.Elements.Balls_1:Clone()
     local newBalls_2 = defs.Stand_Reveal.Elements.Balls_2:Clone()
 
-
     newRay_1.Parent = defs.Stand_Reveal.Temp_Assets
     newRay_2.Parent = defs.Stand_Reveal.Temp_Assets
     newRay_3.Parent = defs.Stand_Reveal.Temp_Assets
@@ -495,7 +497,6 @@ function GuiController:Show_StandReveal()
     newBurst_2.Parent = defs.Stand_Reveal.Temp_Assets
     newBalls_1.Parent = defs.Stand_Reveal.Temp_Assets
     newBalls_2.Parent = defs.Stand_Reveal.Temp_Assets
-
 
     -- save some final sizes for elements
     local finalIconFrame_Size = defs.Stand_Reveal.Elements.Icon_Frame.Size
@@ -617,9 +618,7 @@ function GuiController:Show_StandReveal()
         newRay_3:Destroy()
         newRay_4:Destroy()
     
-    
     end)
-
 
 end
 
@@ -629,7 +628,55 @@ function GuiController:StandReveal_ActivateClose()
     defs.Stand_Reveal.Temp_Assets:ClearAllChildren()
 
     -- make it invisible
-    defs.Stand_Reveal.Main_Frame.Visible = false -- just turn off the stand reveal frame. The player already has stand equipped
+    defs.Stand_Reveal.Main_Frame.Visible = false 
+
+    -- also be sure all elements have visibility off, we can turn them on one by one
+    for _,element in pairs(defs.Stand_Reveal.Elements) do
+        element.Visible = false
+    end
+
+    
+    --defs.Stand_Reveal.Elements.Storage_Warning.Visible = false
+end
+
+--// StandReveal_ActivateMobileStorageFrame
+function GuiController:StandReveal_StorageWarning()
+
+    -- stroe the destination position
+    local finalPosition = defs.Stand_Reveal.Elements.Storage_Warning.Position
+
+    -- move it over and mae it visible
+    defs.Stand_Reveal.Elements.Storage_Warning.Position = defs.Stand_Reveal.Elements.Storage_Warning.Position + UDim2.new(1,0,0,0)
+    defs.Stand_Reveal.Elements.Storage_Warning.Visible = true
+
+    -- setup tween
+    local moveTween = TweenService:Create(defs.Stand_Reveal.Elements.Storage_Warning,TweenInfo.new(.5),{Position = finalPosition})
+    moveTween:Play()
+
+    spawn(function()
+
+        local originalSize = defs.Stand_Reveal.Buttons.Store_Button.Size
+        local originalColor = defs.Stand_Reveal.Buttons.Store_Button.TextColor3
+        local originalText = defs.Stand_Reveal.Buttons.Store_Button.Text
+        local originalBackgroundColor = defs.Stand_Reveal.Buttons.Store_Button.BackgroundColor3
+
+        defs.Stand_Reveal.Buttons.Store_Button.Size = defs.Stand_Reveal.Buttons.Store_Button.Size + UDim2.new(.01,0,.01,0)
+        defs.Stand_Reveal.Buttons.Store_Button.BackgroundColor3 = Color3.new(45/255, 45/255, 45/255)
+        defs.Stand_Reveal.Buttons.Store_Button.TextColor3 = Color3.new(255/255, 0/255, 0/255)
+        defs.Stand_Reveal.Buttons.Store_Button.Text = "NOPE"
+        defs.Stand_Reveal.Buttons.Store_Button.Active = false
+
+        wait(3)
+
+        defs.Stand_Reveal.Buttons.Store_Button.Size = originalSize
+        defs.Stand_Reveal.Buttons.Store_Button.BackgroundColor3 = originalBackgroundColor
+        defs.Stand_Reveal.Buttons.Store_Button.TextColor3 = originalColor
+        defs.Stand_Reveal.Buttons.Store_Button.Text = originalText
+        defs.Stand_Reveal.Buttons.Store_Button.Active = true
+
+
+    end)
+
 end
 
 

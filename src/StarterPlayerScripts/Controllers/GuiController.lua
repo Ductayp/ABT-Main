@@ -381,20 +381,28 @@ end
 --// DEFS - OVERLAY - STAND REVEAL ------------------------------------------------------------
 defs.Stand_Reveal = {
     Main_Frame = mainGui.Overlays:FindFirstChild("Stand_Reveal", true),
+    Asset_Folder = mainGui.Overlays.Stand_Reveal:FindFirstChild("Assets", true),
+    Temp_Assets = mainGui.Overlays.Stand_Reveal:FindFirstChild("TempAssets", true),
     Elements = {
         Button_Frame = mainGui.Overlays.Stand_Reveal:FindFirstChild("Button_Frame", true),
         Icon_Frame = mainGui.Overlays.Stand_Reveal:FindFirstChild("Icon_Frame", true),
         Storage_Warning = mainGui.Overlays.Stand_Reveal:FindFirstChild("Storage_Warning", true),
         Stand_Name = mainGui.Overlays.Stand_Reveal:FindFirstChild("Stand_Name", true),
         Stand_Rarity = mainGui.Overlays.Stand_Reveal:FindFirstChild("Stand_Rarity", true),
-        Rays_1 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_1", true),
-        Rays_2 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_2", true),
+        Rays_1 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Rays_1", true),
+        Rays_2 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Rays_2", true),
+        Rays_3 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Rays_3", true),
+        Burst_1 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Burst_1", true),
+        Burst_2 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Burst_2", true),
+        Balls_1 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Balls_1", true),
+        Balls_2 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Balls_2", true),
     },
     Buttons = {
         Equip_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Equip_Button", true),
         Store_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Store_Button", true),
     }
 }
+
 
 --// Setup_StandReveal ------------------------------------------------------------
 function GuiController:Setup_StandReveal()
@@ -462,72 +470,163 @@ function GuiController:Update_StandReveal(data)
 
 end
 
+
 --// Show_StandReveal ------------------------------------------------------------
 function GuiController:Show_StandReveal()
 
-    -- create some new rays, so we leave to originals in place
+    -- create some new animation objects, so we leave to originals in place
     local newRay_1 = defs.Stand_Reveal.Elements.Rays_1:Clone()
     local newRay_2 = defs.Stand_Reveal.Elements.Rays_2:Clone()
-    newRay_1.Parent = defs.Stand_Reveal.Main_Frame
-    newRay_2.Parent = defs.Stand_Reveal.Main_Frame
-    newRay_1.Name = "TempRay"
-    newRay_2.Name = "TempRay"
+    local newRay_3 = defs.Stand_Reveal.Elements.Rays_3:Clone()
+    local newRay_4 = defs.Stand_Reveal.Elements.Rays_3:Clone()
+
+    local newBurst_1 = defs.Stand_Reveal.Elements.Burst_1:Clone()
+    local newBurst_2 = defs.Stand_Reveal.Elements.Burst_2:Clone()
+
+    local newBalls_1 = defs.Stand_Reveal.Elements.Balls_1:Clone()
+    local newBalls_2 = defs.Stand_Reveal.Elements.Balls_2:Clone()
+
+
+    newRay_1.Parent = defs.Stand_Reveal.Temp_Assets
+    newRay_2.Parent = defs.Stand_Reveal.Temp_Assets
+    newRay_3.Parent = defs.Stand_Reveal.Temp_Assets
+    newRay_4.Parent = defs.Stand_Reveal.Temp_Assets
+    newBurst_1.Parent = defs.Stand_Reveal.Temp_Assets
+    newBurst_2.Parent = defs.Stand_Reveal.Temp_Assets
+    newBalls_1.Parent = defs.Stand_Reveal.Temp_Assets
+    newBalls_2.Parent = defs.Stand_Reveal.Temp_Assets
+
 
     -- save some final sizes for elements
     local finalIconFrame_Size = defs.Stand_Reveal.Elements.Icon_Frame.Size
     local finalName_Size = defs.Stand_Reveal.Elements.Stand_Name.Size
     local finalRays_1_Size = defs.Stand_Reveal.Elements.Rays_1.Size
     local finalRays_2_Size = defs.Stand_Reveal.Elements.Rays_2.Size
+    local finalRays_3_Size = defs.Stand_Reveal.Elements.Rays_3.Size
+    local finalRays_4_Size = defs.Stand_Reveal.Elements.Rays_3.Size
+    local finalBurst_1_Size = defs.Stand_Reveal.Elements.Burst_1.Size
+    local finalBurst_2_Size = defs.Stand_Reveal.Elements.Burst_2.Size
+    local finalBalls_1_Size = defs.Stand_Reveal.Elements.Balls_1.Size
+    local finalBalls_2_Size = defs.Stand_Reveal.Elements.Balls_2.Size
 
-    --now lets make them all smaller so we can pop them
+    --now lets make some smaller so we can pop them
     defs.Stand_Reveal.Elements.Icon_Frame.Size = UDim2.new(0, 0, 0, 0)
     defs.Stand_Reveal.Elements.Stand_Name.Size = UDim2.new(0, 0, 0, 0)
-    defs.Stand_Reveal.Elements.Rays_1.Size = UDim2.new(0, 0, 0, 0)
-    defs.Stand_Reveal.Elements.Rays_1.Size = UDim2.new(0, 0, 0, 0)
+    newRay_1.Size = UDim2.new(0, 0, 0, 0)
+    newRay_2.Size = UDim2.new(0, 0, 0, 0)
+    newRay_3.Size = UDim2.new(0, 0, 0, 0)
+    newRay_4.Size = UDim2.new(0, 0, 0, 0)
+    newBurst_1.Size = UDim2.new(2, 0, 2, 0)
+    newBurst_2.Size = UDim2.new(0, 0, 0, 0)
+    newBalls_1.Size = UDim2.new(2, 0, 2, 0)
+    newBalls_2.Size = UDim2.new(0, 0, 0, 0)
 
     -- tweens 
     local tweenInfo_Size = TweenInfo.new(.5,Enum.EasingStyle.Bounce)
+
+    -- icon and text
     local sizeTween_IconFrame = TweenService:Create(defs.Stand_Reveal.Elements.Icon_Frame,tweenInfo_Size,{Size = finalIconFrame_Size})
     local sizeTween_Name = TweenService:Create(defs.Stand_Reveal.Elements.Stand_Name,tweenInfo_Size,{Size = finalName_Size})
-    local sizeTween_Rays_1 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_1,tweenInfo_Size,{Size = finalRays_1_Size})
-    local sizeTween_Rays_2 = TweenService:Create(defs.Stand_Reveal.Elements.Rays_2,tweenInfo_Size,{Size = finalRays_2_Size})
+
+    -- Rays_1
+    local sizeTween_Rays_1 = TweenService:Create(newRay_1,tweenInfo_Size,{Size = finalRays_1_Size})
     local spinTween_Rays_1 = TweenService:Create(newRay_1,TweenInfo.new(40,Enum.EasingStyle.Linear),{Rotation = 359})
+
+    -- Ray_2
+    local sizeTween_Rays_2 = TweenService:Create(newRay_2,tweenInfo_Size,{Size = finalRays_2_Size})
     local spinTween_Rays_2 = TweenService:Create(newRay_2,TweenInfo.new(60,Enum.EasingStyle.Linear),{Rotation = -359})
 
-    sizeTween_IconFrame:Play()
-    sizeTween_Name:Play()
-    sizeTween_Rays_1:Play()
-    sizeTween_Rays_2:Play()
-    spinTween_Rays_1:Play()
-    spinTween_Rays_2:Play()
+    -- Ray_3
+    local sizeTween_Rays_3 = TweenService:Create(newRay_3,tweenInfo_Size,{Size = finalRays_3_Size})
+    local spinTween_Rays_3 = TweenService:Create(newRay_3,TweenInfo.new(10,Enum.EasingStyle.Linear),{Rotation = 359})
 
+    -- Ray_3
+    local sizeTween_Rays_4 = TweenService:Create(newRay_4,tweenInfo_Size,{Size = finalRays_4_Size})
+    local spinTween_Rays_4 = TweenService:Create(newRay_4,TweenInfo.new(10,Enum.EasingStyle.Linear),{Rotation = -359})
 
+    -- newBurst_1
+    local sizeTween_newBurst_1 = TweenService:Create(newBurst_1,TweenInfo.new(2,Enum.EasingStyle.Elastic),{Size = finalBurst_1_Size})
+    local spinTween_newBurst_1 = TweenService:Create(newBurst_1,TweenInfo.new(5,Enum.EasingStyle.Linear),{Rotation = -359})
+
+    -- newBalls_1
+    local sizeTween_newBalls_1 = TweenService:Create(newBalls_1,tweenInfo_Size,{Size = finalBalls_1_Size})
+    local spinTween_newBalls_1 = TweenService:Create(newBalls_1,TweenInfo.new(10,Enum.EasingStyle.Linear),{Rotation = 359})
+
+    -- newBurst_2
+    local sizeTween_newBurst_2 = TweenService:Create(newBurst_2,TweenInfo.new(1,Enum.EasingStyle.Elastic),{Size = finalBurst_2_Size})
+    local spinTween_newBurst_2 = TweenService:Create(newBurst_2,TweenInfo.new(60,Enum.EasingStyle.Linear),{Rotation = 359})
+
+    -- newBalls_2
+    local sizeTween_newBalls_2 = TweenService:Create(newBalls_2,tweenInfo_Size,{Size = finalBalls_2_Size})
+    local spinTween_newBalls_2 = TweenService:Create(newBalls_2,TweenInfo.new(180,Enum.EasingStyle.Linear),{Rotation = -359})
+
+    -- completed event
     spinTween_Rays_1.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed then
             self:StandReveal_ActivateClose()
         end
     end)
 
-    -- make the whole thing visible
-    defs.Stand_Reveal.Main_Frame.Visible = true
-    defs.Stand_Reveal.Elements.Icon_Frame.Visible = true
-    defs.Stand_Reveal.Elements.Button_Frame.Visible = true
-    defs.Stand_Reveal.Elements.Stand_Name.Visible = true
-    defs.Stand_Reveal.Elements.Stand_Rarity.Visible = true
-    newRay_1.Visible = true
-    newRay_2.Visible = true
+    spawn(function()
+
+        -- make some things visible
+        defs.Stand_Reveal.Main_Frame.Visible = true
+        newBurst_1.Visible = true
+        newBalls_1.Visible = true
+        newRay_3.Visible = true
+        newRay_4.Visible = true
+
+        -- start the initial tweens
+        sizeTween_Rays_3:Play()
+        spinTween_Rays_3:Play()
+        sizeTween_Rays_4:Play()
+        spinTween_Rays_4:Play()
+        sizeTween_newBurst_1:Play()
+        sizeTween_newBalls_1:Play()
+        spinTween_newBurst_1:Play()
+        spinTween_newBalls_1:Play()
+
+        wait(1.5)
+
+        -- more makign of things visible
+        defs.Stand_Reveal.Elements.Icon_Frame.Visible = true
+        defs.Stand_Reveal.Elements.Button_Frame.Visible = true
+        defs.Stand_Reveal.Elements.Stand_Name.Visible = true
+        defs.Stand_Reveal.Elements.Stand_Rarity.Visible = true
+        newRay_1.Visible = true
+        newRay_2.Visible = true
+        newBurst_2.Visible = true
+        newBalls_2.Visible = true
+
+        sizeTween_IconFrame:Play()
+        sizeTween_Name:Play()
+
+        sizeTween_Rays_1:Play()
+        sizeTween_Rays_2:Play()
+        spinTween_Rays_1:Play()
+        spinTween_Rays_2:Play()
+
+        sizeTween_newBurst_2:Play()
+        spinTween_newBurst_2:Play()
+
+        sizeTween_newBalls_2:Play()
+        spinTween_newBalls_2:Play()
+
+        newBurst_1:Destroy()
+        newBalls_1:Destroy()
+        newRay_3:Destroy()
+        newRay_4:Destroy()
+    
+    
+    end)
+
 
 end
 
 --// Close_StandReveal ------------------------------------------------------------
 function GuiController:StandReveal_ActivateClose()
 
-    -- destroy the TempRays
-    for _,object in pairs(defs.Stand_Reveal.Main_Frame:GetChildren()) do
-        if object.Name == "TempRay" then
-            object:Destroy()
-        end
-    end
+    defs.Stand_Reveal.Temp_Assets:ClearAllChildren()
 
     -- make it invisible
     defs.Stand_Reveal.Main_Frame.Visible = false -- just turn off the stand reveal frame. The player already has stand equipped

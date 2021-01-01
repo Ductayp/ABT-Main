@@ -27,6 +27,7 @@ WhiteSnake.Defs = {
     -- just some general defs here
     PowerName = "White Snake",
     StandModel = ReplicatedStorage.EffectParts.StandModels.WhiteSnake,
+    BaseSacrificeValue = 10,
 
     -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {

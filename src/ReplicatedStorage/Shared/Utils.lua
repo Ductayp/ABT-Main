@@ -70,6 +70,7 @@ end
 
 --// NEW VALUE OBJECT
 function module.NewValueObject(name,value,parent)
+	
 	local NewValue
 	if type(value) == "number" then
 		NewValue = Instance.new("NumberValue")
@@ -77,7 +78,10 @@ function module.NewValueObject(name,value,parent)
 		NewValue = Instance.new("BoolValue")
 	elseif type(value) == "string" then
 		NewValue = Instance.new("StringValue")
+	elseif value == nil then
+		return
 	end
+
 	
 	-- assign a name if argument exists
 	if name then

@@ -57,7 +57,7 @@ function PowersService.Client:GetCurrentPower(player)
 end
 
 --// SetPower -- sets the players curret power
-function PowersService:SetCurrentPower(player,power,rarity)
+function PowersService:SetCurrentPower(player,params)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -73,26 +73,33 @@ function PowersService:SetCurrentPower(player,power,rarity)
         --return
     end
 
-    playerData.Character.CurrentPower = power
-    playerData.Character.CurrentPowerRarity = rarity
-    Knit.Services.GuiService:Update_Gui(player, "Character")
-
     -- run the new powers setup function
-    if Knit.Powers:FindFirstChild(power) then
-        local setupPowerModule = require(Knit.Powers[power])
+    if Knit.Powers:FindFirstChild(params.Power) then
+        local setupPowerModule = require(Knit.Powers[params.Power])
         local setupPowerParams = {} --right now this is nil, but we can add things later if we need to
         if setupPowerModule.SetupPower then
             setupPowerModule.SetupPower(player,setupPowerParams)
         end
     end
 
+    -- update player data
+    playerData.Character.CurrentPower = params.Power
+    playerData.Character.CurrentPowerRarity = params.Rarity
+    playerData.Character.CurrentPowerXp = params.Xp
+    playerData.Character.CurrentPowerGUID = params.GUID
+
+    -- update the gui
+    Knit.Services.GuiService:Update_Gui(player, "Character")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
     -- run the player setup so we can start fresh
     self:PlayerRefresh(player)
+
 end
 
 --// GivePower - this is fired only when a player uses an arrow or is given a power for the first time
 function PowersService:GivePower(player,params)
-    self:SetCurrentPower(player,params.Power,params.Rarity)
+    self:SetCurrentPower(player,params) 
 end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
@@ -197,11 +204,15 @@ function PowersService:PlayerJoined(player)
 
     -- get the players current power
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local currentPower = playerData.Character.CurrentPower
-    local currentPowerRarity = playerData.Character.CurrentPowerRarity
+
+    local params = {}
+    params.Power = playerData.Character.CurrentPower
+    params.Rarity = playerData.Character.CurrentPowerRarity
+    params.Xp = playerData.Character.CurrentPowerXp
+    params.GUID = playerData.Character.CurrentPowerGUID
 
     -- set the power, this is done when the player joins so they get any modifiers in the power setup
-    self:SetCurrentPower(player, currentPower, currentPowerRarity)
+    self:SetCurrentPower(player, params)
 end
 
 --// KnitStart
@@ -269,6 +280,11 @@ function PowersService:KnitInit()
                                 local params = {}
                                 params.Power = v.Name
                                 params.Rarity = "Common"
+                                params.Xp = 7800
+
+                                local HttpService = game:GetService("HttpService")
+                                params.GUID = HttpService:GenerateGUID(false)
+
                                 print("button goes beep")
                                 self:GivePower(player,params)    
                              end

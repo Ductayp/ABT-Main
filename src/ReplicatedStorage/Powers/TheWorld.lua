@@ -38,11 +38,7 @@ TheWorld.Defs = {
     -- just some general defs here
     PowerName = "The World",
     StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
-
-    -- only include true values of immunities, if they are not immune then dont have anything in here
-    Immunities = {
-        TimeStop = true
-    },
+    BaseSacrificeValue = 10,
 
     Abilities = {
 

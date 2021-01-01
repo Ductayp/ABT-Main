@@ -1,6 +1,5 @@
 --// Profile Tempalte for Player Data Service
 -- this module returns a table fo the players data, the values here are default values
--- all keys MUST be unique, regardles of tables organization
 
 
 local module = {
@@ -9,16 +8,18 @@ local module = {
 	},
 	
 	Character = {
-		XP = 0,
-		Level = 1,
-		CurrentPower = "Standless"
+		CurrentPower = "Standless",
 	},
+
 	
 	ItemInventory = {},
 
 	ArrowInventory = {},
 	
-	StandInventory = {},
+	StandStorage = {
+		MaxSlots = 6,
+		StoredStands = {}
+	},
 	
 	Modifiers = {},
 	

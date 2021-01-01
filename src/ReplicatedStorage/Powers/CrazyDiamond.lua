@@ -27,6 +27,7 @@ CrazyDiamond.Defs = {
     -- just some general defs here
     PowerName = "Crazy Diamond",
     StandModel = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond,
+    BaseSacrificeValue = 10,
 
     -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {

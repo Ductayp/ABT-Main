@@ -27,6 +27,7 @@ TheHand.Defs = {
     -- just some general defs here
     PowerName = "The Hand",
     StandModel = ReplicatedStorage.EffectParts.StandModels.TheHand,
+    BaseSacrificeValue = 10,
 
     -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {

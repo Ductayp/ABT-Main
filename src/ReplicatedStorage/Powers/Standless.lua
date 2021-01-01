@@ -18,6 +18,7 @@ local Standless = {}
 
 Standless.Defs = {
     PowerName = "Standless",
+    BaseSacrificeValue = 0,
 }
 
 --// MANAGER - this is the single point of entry from PowerService.

@@ -10,6 +10,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local HttpService = game:GetService("HttpService")
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -124,6 +125,8 @@ function InventoryService.Client:UseArrow(player, params)
                 local newParams = {}
                 newParams.Power = pickedStand
                 newParams.Rarity = params.Rarity
+                newParams.Xp = 1
+                newParams.GUID = HttpService:GenerateGUID(false)
 
                 Knit.Services.PowersService:GivePower(player,newParams)
 
@@ -136,23 +139,84 @@ function InventoryService.Client:UseArrow(player, params)
         end
     end
 
-    --[[
-    -- remove the arrow and do all the STUFF
-    if hasArrow == true then
-        
-        Knit.Services.GuiService:Update_ArrowPanel(player) -- update the gui
-        print("NOW YOU GET A STANDO!")
-        local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
-        local thisArrowDef = arroweDefs[params.Type]
-        self:GiveStand(player, params)
+end
+
+--// StoreStand
+function InventoryService:StoreStand(player)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    if playerData.Character.CurrentPower == "Standless" then
+        print("You cant store STANDLESS, you noob!")
+        return
     end
-    ]]--
+
+    -- count the number of stands stored
+    local count = 0
+    for _,stand in pairs(playerData.StandStorage.StoredStands) do
+        count = count + 1
+    end
+
+    -- only store if theres room left
+    if count < playerData.StandStorage.MaxSlots then
+
+        -- make a new entry in StoredStands with the key of the stands GUID
+        playerData.StandStorage.StoredStands[playerData.Character.CurrentPowerGUID] = {}
+
+        -- setup params based on the players CurrentPower then fill out the new table we just made
+        local params = {}
+        params.Power = playerData.Character.CurrentPower
+        params.Rarity = playerData.Character.CurrentPowerRarity
+        params.Xp = playerData.Character.CurrentPowerXp
+        for key,value in pairs(params) do
+            print("key/value",key,value)
+            playerData.StandStorage.StoredStands[playerData.Character.CurrentPowerGUID][key] = value
+        end
+
+        -- give the player the Standless power
+        local newParams = {}
+        newParams.Power = "Standless"
+        newParams.Rarity = nil
+        newParams.Xp = nil
+        newParams.GUID = nil
+        Knit.Services.PowersService:GivePower(player, newParams)
+
+    end
+end
+
+--// SacrificeStand
+function InventoryService:SacrificeStand(player, GUID)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    local thisStand = playerData.StandStorage.StoredStands[GUID]
+    local findPowerModule = Knit.Powers:FindFirstChild(thisStand.Power)
+    if findPowerModule then
+        powerModule = require(findPowerModule)
+
+        local params = {}
+        params.DataCategory = "ItemInventory"
+        params.DataKey = "SoulOrb"
+        --params.Value = 
+        
+        self:GiveItemToPlayer(player, params)
+        
+    end
 
 end
 
---// GiveStand
-function InventoryService:GiveStand(player, params)
+---------------------------------------------------------------------------------------------
+--// CLIENT METHODS
+---------------------------------------------------------------------------------------------
 
+--// Client:StoreStand
+function InventoryService.Client:StoreStand(player)
+    self.Server:StoreStand(player)
+end
+
+--// Client:SacrificeStand
+function InventoryService.Client:SacrificeStand(player, GUID)
+    self.Server:SacrificeStand(player, GUID)
 end
 
 

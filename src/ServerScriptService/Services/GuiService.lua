@@ -20,6 +20,7 @@ GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Cash = RemoteEvent.new()
 GuiService.Client.Event_Update_Character = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
+GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 
 --// Update_Gui
 function GuiService:Update_Gui(player, requestName, optionalParams)
@@ -37,6 +38,10 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
     if requestName == "StandReveal" then
         self.Client.Event_Update_StandReveal:Fire(player,playerData.Character)
+    end
+    if requestName == "StoragePanel" then 
+        print("yes")
+        self.Client.Event_Update_StoragePanel:Fire(player, playerData.Character, playerData.StandStorage)
     end
 end
 

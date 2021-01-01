@@ -77,15 +77,15 @@ function GuiController:Setup_LeftGui()
 
     -- connect the clickies
     defs.LeftGui.Buttons.MainMenu_Button.Activated:Connect(function()
-        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Item_Panel)
+        self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Item_Panel)
     end)
 
     defs.LeftGui.Buttons.Arrow_Button.Activated:Connect(function()
-        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Arrow_Panel)
+        self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Arrow_Panel)
     end)
 
     defs.LeftGui.Buttons.Storage_Button.Activated:Connect(function()
-        self:ActivateWindow(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Storage_Panel)
+        self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Storage_Panel)
     end)
 end
 
@@ -102,61 +102,59 @@ end
 --// ====================================================================================================================================
 
 --// DEFS - WINDOW GUI ------------------------------------------------------------
-defs.Windows = {}
-defs.Windows.MainWindow = {
-    Window = mainGui.Windows:FindFirstChild("MainWindow", true),
-    Buttons = {
-        Item_Button = mainGui.Windows.MainWindow:FindFirstChild("Item_Button", true),
-        Storage_Button = mainGui.Windows.MainWindow:FindFirstChild("Storage_Button", true),
-        Arrow_Button = mainGui.Windows.MainWindow:FindFirstChild("Arrow_Button", true),
-        Shop_Button = mainGui.Windows.MainWindow:FindFirstChild("Shop_Button", true),
-        Code_Button = mainGui.Windows.MainWindow:FindFirstChild("Code_Button", true),
-        Setting_Button = mainGui.Windows.MainWindow:FindFirstChild("Setting_Button", true),
-        Close_Button = mainGui.Windows.MainWindow:FindFirstChild("CloseButton", true)
-    },
-    Panels = {
-        Arrow_Panel = mainGui.Windows.MainWindow:FindFirstChild("Arrow_Panel", true),
-        Code_Panel = mainGui.Windows.MainWindow:FindFirstChild("Code_Panel", true),
-        Item_Panel = mainGui.Windows.MainWindow:FindFirstChild("Item_Panel", true),
-        Shop_Panel = mainGui.Windows.MainWindow:FindFirstChild("Shop_Panel", true),
-        Storage_Panel = mainGui.Windows.MainWindow:FindFirstChild("Storage_Panel", true),
-        Setting_Panel = mainGui.Windows.MainWindow:FindFirstChild("Setting_Panel", true)
+defs.MainWindow = {}
+defs.MainWindow.Window = mainGui.Windows:FindFirstChild("MainWindow", true)
+defs.MainWindow.Buttons = {
+        Item_Button = defs.MainWindow.Window:FindFirstChild("Item_Button", true),
+        Storage_Button = defs.MainWindow.Window:FindFirstChild("Storage_Button", true),
+        Arrow_Button = defs.MainWindow.Window:FindFirstChild("Arrow_Button", true),
+        Shop_Button = defs.MainWindow.Window:FindFirstChild("Shop_Button", true),
+        Code_Button = defs.MainWindow.Window:FindFirstChild("Code_Button", true),
+        Setting_Button = defs.MainWindow.Window:FindFirstChild("Setting_Button", true),
+        Close_Button = defs.MainWindow.Window:FindFirstChild("CloseButton", true)
     }
-}
+defs.MainWindow.Panels = {
+        Arrow_Panel = defs.MainWindow.Window:FindFirstChild("Arrow_Panel", true),
+        Code_Panel = defs.MainWindow.Window:FindFirstChild("Code_Panel", true),
+        Item_Panel = defs.MainWindow.Window:FindFirstChild("Item_Panel", true),
+        Shop_Panel = defs.MainWindow.Window:FindFirstChild("Shop_Panel", true),
+        Storage_Panel = defs.MainWindow.Window:FindFirstChild("Storage_Panel", true),
+        Setting_Panel = defs.MainWindow.Window:FindFirstChild("Setting_Panel", true)
+    }
 
 --// Setup_MainWindow ------------------------------------------------------------
 function GuiController:Setup_MainWindow()
 
     -- just be sure main window is off
-    defs.Windows.MainWindow.Window.Visible = false
+    defs.MainWindow.Window.Visible = false
 
     -- connect buttons
-    defs.Windows.MainWindow.Buttons.Close_Button.Activated:Connect(function()
-        defs.Windows.MainWindow.Window.Visible = false
+    defs.MainWindow.Buttons.Close_Button.Activated:Connect(function()
+        defs.MainWindow.Window.Visible = false
     end)
 
-    defs.Windows.MainWindow.Buttons.Item_Button.Activated:Connect(function()
-        self:ActivatePanel(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Item_Panel)
+    defs.MainWindow.Buttons.Item_Button.Activated:Connect(function()
+        self:ActivatePanel(defs.MainWindow,defs.MainWindow.Panels.Item_Panel)
     end)
 
-    defs.Windows.MainWindow.Buttons.Arrow_Button.Activated:Connect(function()
-        self:ActivatePanel(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Arrow_Panel)
+    defs.MainWindow.Buttons.Arrow_Button.Activated:Connect(function()
+        self:ActivatePanel(defs.MainWindow,defs.MainWindow.Panels.Arrow_Panel)
     end)
 
-    defs.Windows.MainWindow.Buttons.Storage_Button.Activated:Connect(function()
-        self:ActivatePanel(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Storage_Panel)
+    defs.MainWindow.Buttons.Storage_Button.Activated:Connect(function()
+        self:ActivatePanel(defs.MainWindow,defs.MainWindow.Panels.Storage_Panel)
     end)
 
-    defs.Windows.MainWindow.Buttons.Shop_Button.Activated:Connect(function()
-        self:ActivatePanel(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Shop_Panel)
+    defs.MainWindow.Buttons.Shop_Button.Activated:Connect(function()
+        self:ActivatePanel(defs.MainWindow,defs.MainWindow.Panels.Shop_Panel)
     end)
 
-    defs.Windows.MainWindow.Buttons.Code_Button.Activated:Connect(function()
-        self:ActivatePanel(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Code_Panel)
+    defs.MainWindow.Buttons.Code_Button.Activated:Connect(function()
+        self:ActivatePanel(defs.MainWindow,defs.MainWindow.Panels.Code_Panel)
     end)
 
-    defs.Windows.MainWindow.Buttons.Setting_Button.Activated:Connect(function()
-        self:ActivatePanel(defs.Windows.MainWindow,defs.Windows.MainWindow.Panels.Setting_Panel)
+    defs.MainWindow.Buttons.Setting_Button.Activated:Connect(function()
+        self:ActivatePanel(defs.MainWindow,defs.MainWindow.Panels.Setting_Panel)
     end)
 
 end
@@ -183,7 +181,7 @@ function GuiController:ActivatePanel(windowDef,panelDef)
 
     -- make sure the window is on
     if windowDef.Window.Visible == false then
-    windowDef.Window.Visible = true
+        windowDef.Window.Visible = true
     end
 
     -- turn off all panels, then turn on the one we want to start on
@@ -200,19 +198,19 @@ end
 
 --// DEFS - ARROW PANEL ------------------------------------------------------------
 defs.ArrowPanel = {
-    Scrolling_Frame = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("ScrollingFrame", true),
-    Item_Template = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("ItemTemplate", true),
-    UseArrowFrame = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UserArrowPanels"),
+    Scrolling_Frame = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("ScrollingFrame", true),
+    Item_Template = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("ItemTemplate", true),
+    UseArrowFrame = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UserArrowPanels"),
     UseArrowPanels = {
-        Default_Panel = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("Default_Panel", true),
-        UniversalArrow_Common = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Common", true),
-        UniversalArrow_Rare = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Rare", true),
-        UniversalArrow_Legendary = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Legendary", true),
+        Default_Panel = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("Default_Panel", true),
+        UniversalArrow_Common = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Common", true),
+        UniversalArrow_Rare = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Rare", true),
+        UniversalArrow_Legendary = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UniversalArrow_Legendary", true),
     },
     UseArrowButtons = {
-        UniversalArrow_Common = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Common", true),
-        UniversalArrow_Rare = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Rare", true),
-        UniversalArrow_Legendary = defs.Windows.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Legendary", true),
+        UniversalArrow_Common = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Common", true),
+        UniversalArrow_Rare = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Rare", true),
+        UniversalArrow_Legendary = defs.MainWindow.Panels.Arrow_Panel:FindFirstChild("UseArrow_Universal_Legendary", true),
     }
 }
 
@@ -343,26 +341,314 @@ end
 --//  STAND STORAGE PANEL
 --// ====================================================================================================================================
 
---// DEFS - STAND PANEL ------------------------------------------------------------
+--// DEFS - Storage PANEL ------------------------------------------------------------
+defs.StoragePanel = {}
+defs.StoragePanel.Panel = mainGui.Windows:FindFirstChild("Storage_Panel", true)
+defs.StoragePanel.DefaultCard = defs.StoragePanel.Panel:FindFirstChild("Default_Card", true)
+defs.StoragePanel.Stand_Icons = mainGui.Stand_Icons
+
+-- scrolling frame 
+defs.StoragePanel.ItemTemplate = defs.StoragePanel.Panel:FindFirstChild("Item_Template", true)
+defs.StoragePanel.ScrollingFrame = defs.StoragePanel.Panel:FindFirstChild("Scrolling_Frame", true)
+
+-- stand card
+defs.StoragePanel.StandCard = defs.StoragePanel.Panel:FindFirstChild("Stand_Card", true)
+defs.StoragePanel.StandIconFrame = defs.StoragePanel.Panel:FindFirstChild("Stand_Icon_Frame", true)
+defs.StoragePanel.StandName = defs.StoragePanel.Panel:FindFirstChild("Stand_Name", true)
+defs.StoragePanel.StandRarity = defs.StoragePanel.Panel:FindFirstChild("Stand_Rarity", true)
+defs.StoragePanel.Level = defs.StoragePanel.Panel:FindFirstChild("Stand_Level", true)
+defs.StoragePanel.XpBar = defs.StoragePanel.Panel:FindFirstChild("Xp_Bar", true)
+defs.StoragePanel.BaseValue = defs.StoragePanel.Panel:FindFirstChild("Base_Value", true)
+defs.StoragePanel.TotalSlots = defs.StoragePanel.Panel:FindFirstChild("Total_Slots", true)
+defs.StoragePanel.UsedSlots = defs.StoragePanel.Panel:FindFirstChild("Used_Slots", true)
+defs.StoragePanel.ButtonPanelCurrent = defs.StoragePanel.Panel:FindFirstChild("ButtonPanel_Current", true)
+defs.StoragePanel.ButtonPanelStored = defs.StoragePanel.Panel:FindFirstChild("ButtonPanel_Stored", true)
+
+-- buttons
+defs.StoragePanel.Button_CurrentStand = defs.StoragePanel.Panel:FindFirstChild("Button_CurrentStand", true)
+defs.StoragePanel.Button_BuyStorage = defs.StoragePanel.Panel:FindFirstChild("Button_BuyStorage", true)
+defs.StoragePanel.Button_EvolveStand = defs.StoragePanel.Panel:FindFirstChild("Button_EvolveStand", true)
+defs.StoragePanel.Button_StoreStand = defs.StoragePanel.Panel:FindFirstChild("Button_StoreStand", true)
+defs.StoragePanel.Button_SacrificeStand = defs.StoragePanel.Panel:FindFirstChild("Button_SacrificeStand", true)
+defs.StoragePanel.Button_EquipStand = defs.StoragePanel.Panel:FindFirstChild("Button_EquipStand", true)
+
+
+
 
 --// Setup_StandPanel ------------------------------------------------------------
-function GuiController:Setup_StandPanel()
+function GuiController:Setup_StoragePanel()
+    print("GuiController:Setup_StoragePanel()")
+
+    -- make stand item template not visible
+    defs.StoragePanel.ItemTemplate.Visible = false
+    defs.StoragePanel.StandCard.Visible = false
+    defs.StoragePanel.DefaultCard.Visible = true
+
+    -- BUTTON - Current Stand
+    defs.StoragePanel.Button_CurrentStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_CurrentStand)
+        self:Show_StandCard(defs.StoragePanel.Button_CurrentStand) -- Show_StandCard method uses value objects inside the button, these arre defined in the Update of the panel
+    end)
+
+    -- BUTTON - Buy Storage
+    defs.StoragePanel.Button_BuyStorage.Activated:Connect(function()
+        print(defs.StoragePanel.Button_BuyStorage)
+    end)
+
 
 end
 
+--// Setup_StandButton
+function GuiController:Setup_StandButton(list_Item, data, GUID)
+
+    -- dont do this setup if the player is standless
+    if data.Power == "Standless" then
+        return
+    end
+
+    -- setup value objects
+    local findPowerModule = Knit.Powers:FindFirstChild(data.Power)
+    if findPowerModule then
+        local powerModule = require(findPowerModule)
+
+        -- GUID value object - GUID is the unique identifier for this stand
+        local GUIDValue_Object = list_Item:FindFirstChild("GUIDValue_Object", true)
+        if not GUIDValue_Object then
+            GUIDValue_Object = utils.NewValueObject("GUIDValue_Object", GUID, list_Item)
+        else
+            GUIDValue_Object.Value = GUID
+        end
+
+        -- id value
+        local idValue_Object = list_Item:FindFirstChild("idValue_Object", true)
+        if not idValue_Object then
+            idValue_Object = utils.NewValueObject("idValue_Object", data.Power, list_Item)
+        else
+            idValue_Object.Value = data.Power
+        end
+
+        -- name value
+        local nameValue_Object = list_Item:FindFirstChild("nameValue_Object", true)
+        if not nameValue_Object then
+            nameValue_Object = utils.NewValueObject("nameValue_Object", powerModule.Defs.PowerName, list_Item)
+        else
+            nameValue_Object.Value = powerModule.Defs.PowerName
+        end
+
+        -- xp value
+        local xpValue_Object = list_Item:FindFirstChild("xpValue_Object", true)
+        if not xpValue_Object then
+            xpValue_Object = utils.NewValueObject("xpValue_Object", data.Xp, list_Item)
+        else
+            xpValue_Object.Value = data.Xp
+        end
+
+        -- rarity value
+        local rarityValue_Object = list_Item:FindFirstChild("rarityValue_Object", true)
+        if not rarityValue_Object then
+            rarityValue_Object = utils.NewValueObject("rarityValue_Object", data.Rarity, list_Item)
+        else
+            rarityValue_Object.Value = data.Rarity
+        end
+
+        -- base sacrifice value
+        local sacrificeValue_Object = list_Item:FindFirstChild("sacrificeValue_Object", true)
+        if not sacrificeValue_Object then
+            sacrificeValue_Object = utils.NewValueObject("sacrificeValue_Object", powerModule.Defs.BaseSacrificeValue, list_Item)
+        else
+            sacrificeValue_Object.Value = powerModule.Defs.BaseSacrificeValue
+        end
+
+        -- stand icon value
+        local iconName = data.Power .. "_" .. data.Rarity
+        local iconValue_Object = list_Item:FindFirstChild("iconValue_Object", true)
+        if not iconValue_Object then
+            iconValue_Object = Instance.new("ObjectValue")
+            iconValue_Object.Name = "iconValue_Object"
+            iconValue_Object.Value = defs.StoragePanel.Stand_Icons:FindFirstChild(iconName)
+            iconValue_Object.Parent = list_Item
+        else
+            iconValue_Object.Value = defs.StoragePanel.Stand_Icons:FindFirstChild(iconName)
+        end
+
+        -- setup the list_Item text stuff
+        if list_Item:FindFirstChild("List_Item_StandName", true) then
+            local listItemName = list_Item:FindFirstChild("List_Item_StandName", true)
+            listItemName.Text = powerModule.Defs.PowerName
+            if data.Rarity == "Common" then
+                listItemName.TextColor3 = Color3.new(239/255, 239/255, 239/255)
+            elseif data.Rarity == "Rare" then
+                listItemName.TextColor3 = Color3.new(10/255, 202/255, 0/255)
+            elseif data.Rarity == "Legendary" then
+                listItemName.TextColor3 = Color3.new(255/255, 149/255, 43/255)
+            end
+        end
+
+        if list_Item:FindFirstChild("List Item_StandLevel", true) then
+            local level = self:GetLevelFromXp(data.Xp)
+            list_Item:FindFirstChild("List Item_StandLevel", true).Text = tostring(level)
+        end
+
+        list_Item.Activated:Connect(function()
+            self:Show_StandCard(list_Item)
+        end)
+
+    end
+end
+
 --// Update_StandPanel ------------------------------------------------------------
-function GuiController:Update_StandPanel()
+function GuiController:Update_StoragePanel(characterData, storageData)
+
+    defs.StoragePanel.StandCard.Visible = false
+    defs.StoragePanel.DefaultCard.Visible = true
+
+    -- update the max slots and used slots
+    local counter = 0 
+    if storageData.StoredStands ~= nil then
+        for _,v in pairs(storageData.StoredStands) do
+            counter = counter + 1
+        end
+    end
+    defs.StoragePanel.TotalSlots.Text = storageData.MaxSlots
+    defs.StoragePanel.UsedSlots.Text = counter
+
+    -- setup the current stand button
+    if characterData.CurrentPower == "Standless" then
+        
+        -- the setup doesnt run when this button is standless, so we need to set the text here
+        local textLabel = defs.StoragePanel.Button_CurrentStand:FindFirstChild("List_Item_StandName", true)
+        textLabel.Text = "Standless"
+        textLabel.TextColor3 = Color3.new(239/255, 239/255, 239/255)
+
+        -- deactivate the button
+        defs.StoragePanel.Button_CurrentStand.Active = false
+
+    else
+        print("NOT standless!")
+        -- make it active if the player has a stand
+        defs.StoragePanel.Button_CurrentStand.Active = true
+    end
+
+    -- setup the current stand button
+    local currentStandData = {}
+    currentStandData.Power = characterData.CurrentPower
+    currentStandData.Rarity = characterData.CurrentPowerRarity
+    currentStandData.Xp = characterData.CurrentPowerXp
+    self:Setup_StandButton(defs.StoragePanel.Button_CurrentStand, currentStandData)
+
+    
+    -- clear out the list
+    for _,object in pairs(defs.StoragePanel.ScrollingFrame:GetChildren()) do
+        if object.Name == "standItem" then
+            object:Destroy()
+        end
+    end
+
+    -- add stored stands to the list
+    if storageData.StoredStands ~= nil then
+        for GUID,stand in pairs(storageData.StoredStands) do
+
+            -- make a new list item
+            local newListItem = defs.StoragePanel.ItemTemplate:Clone()
+            newListItem.Parent = defs.StoragePanel.ScrollingFrame
+            newListItem.Visible = true
+            newListItem.Name = "standItem"
+
+            print("Stand",GUID,stand)
+
+            self:Setup_StandButton(newListItem, stand, GUID)
+            
+        end
+    end
+
+end
+
+--// Show_StandCard
+function GuiController:Show_StandCard(button)
+
+    -- set the icon
+    local newIcon -- decalre it up here, yup
+    if button.iconValue_Object.Value == nil then
+        -- print its nil!
+    else
+        newIcon = button.iconValue_Object.Value:Clone()
+        newIcon.BorderSizePixel = 4
+        newIcon.Parent = defs.StoragePanel.StandIconFrame
+        newIcon.Visible = true
+    end
+
+    -- set name and rarity
+    defs.StoragePanel.StandName.Text = button.nameValue_Object.Value
+    defs.StoragePanel.StandRarity.Text = button.rarityValue_Object.Value
+    if button.rarityValue_Object.Value == "Common" then
+        defs.StoragePanel.StandRarity.TextColor3 = Color3.new(239/255, 239/255, 239/255)
+    elseif button.rarityValue_Object.Value == "Rare" then
+        defs.StoragePanel.StandRarity.TextColor3 = Color3.new(10/255, 202/255, 0/255)
+    elseif button.rarityValue_Object.Value == "Legendary" then
+        defs.StoragePanel.StandRarity.TextColor3 = Color3.new(255/255, 149/255, 43/255)
+    end
+
+    -- set level and xp bar
+    local level, remainingPercent = self:GetLevelFromXp(button.xpValue_Object.Value)
+    defs.StoragePanel.Level.Text = tostring(level)
+    local width = remainingPercent / 100
+    defs.StoragePanel.XpBar.Size = UDim2.new(width, defs.StoragePanel.XpBar.Size.X.Offset, defs.StoragePanel.XpBar.Size.Y.Scale, defs.StoragePanel.XpBar.Size.Y.Offset)
+
+    -- set base value
+    defs.StoragePanel.BaseValue.Text = button.sacrificeValue_Object.Value
+
+    
+    -- the the Visible settings at the end
+    defs.StoragePanel.StandCard.Visible = true
+    defs.StoragePanel.DefaultCard.Visible = false
+
+    -- setup the button panel
+    if button.Name == "Button_CurrentStand" then
+        defs.StoragePanel.ButtonPanelCurrent.Visible = true
+        defs.StoragePanel.ButtonPanelStored.Visible = false
+
+        defs.StoragePanel.Button_StoreStand.Active = true
+        defs.StoragePanel.Button_SacrificeStand.Active = true
+
+        defs.StoragePanel.Button_EquipStand.Active = false
+        defs.StoragePanel.Button_EvolveStand.Active = false
+    else
+        defs.StoragePanel.ButtonPanelCurrent.Visible = false
+        defs.StoragePanel.ButtonPanelStored.Visible = true
+
+        defs.StoragePanel.Button_StoreStand.Active = false
+        defs.StoragePanel.Button_SacrificeStand.Active = false
+
+        defs.StoragePanel.Button_EquipStand.Active = true
+        defs.StoragePanel.Button_EvolveStand.Active = true
+    end
+
+    -- BUTTON - Evolve Stand
+    defs.StoragePanel.Button_EvolveStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_EvolveStand)
+    end)
+
+    -- BUTTON - Store Stand
+    defs.StoragePanel.Button_StoreStand.Activated:Connect(function()
+        InventoryService:StoreStand()
+    end)
+
+    -- BUTTON - Sacrifice Stand
+    defs.StoragePanel.Button_SacrificeStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_SacrificeStand)
+        InventoryService:SacrificeStand(buttons.GUIDValue_Object.Value) -- send the GUID of the stand shown
+    end)
+
+    -- BUTTON - Equip Stand
+    defs.StoragePanel.Button_EquipStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_EquipStand)
+    end)
 
 end
 
 --// Request_EquipStand ------------------------------------------------------------
 function GuiController:Request_EquipStand()
 
-end
-
---// Request_StoreStand ------------------------------------------------------------
-function GuiController:Request_StoreStand()
-    print("GuiController:Request_StoreStand() - DO THIS NEXT")
 end
 
 --// Request_EvolveStand ------------------------------------------------------------
@@ -390,13 +676,13 @@ defs.Stand_Reveal = {
         Storage_Warning = mainGui.Overlays.Stand_Reveal:FindFirstChild("Storage_Warning", true),
         Stand_Name = mainGui.Overlays.Stand_Reveal:FindFirstChild("Stand_Name", true),
         Stand_Rarity = mainGui.Overlays.Stand_Reveal:FindFirstChild("Stand_Rarity", true),
-        Rays_1 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Rays_1", true),
-        Rays_2 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Rays_2", true),
-        Rays_3 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Rays_3", true),
-        Burst_1 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Burst_1", true),
-        Burst_2 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Burst_2", true),
-        Balls_1 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Balls_1", true),
-        Balls_2 = mainGui.Overlays.Stand_Reveal.Assets:FindFirstChild("Balls_2", true),
+        Rays_1 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_1", true),
+        Rays_2 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_2", true),
+        Rays_3 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Rays_3", true),
+        Burst_1 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Burst_1", true),
+        Burst_2 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Burst_2", true),
+        Balls_1 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Balls_1", true),
+        Balls_2 = mainGui.Overlays.Stand_Reveal:FindFirstChild("Balls_2", true),
     },
     Buttons = {
         Equip_Button = mainGui.Overlays.Stand_Reveal:FindFirstChild("Equip_Button", true),
@@ -450,7 +736,7 @@ function GuiController:Update_StandReveal(data)
     local currentPowerModule = Knit.Powers:FindFirstChild(data.CurrentPower)
     local powerModule = require(currentPowerModule)
 
-    -- set the text and do some colors
+    -- set things based on rarity
     defs.Stand_Reveal.Elements.Stand_Name.Text = powerModule.Defs.PowerName
     defs.Stand_Reveal.Elements.Stand_Rarity.Text = data.CurrentPowerRarity
     if data.CurrentPowerRarity == "Common" then
@@ -464,9 +750,12 @@ function GuiController:Update_StandReveal(data)
     -- clear old icons out of the container
     defs.Stand_Reveal.Elements.Icon_Frame.Icon_Container:ClearAllChildren()
 
-    print(data.CurrentPower)
+    print("Poop",data.CurrentPower)
+
     -- clone in a new icon
-    local newIcon = mainGui.Stand_Icons:FindFirstChild(data.CurrentPower):Clone()
+    --local newIcon = mainGui.Stand_Icons:FindFirstChild(data.CurrentPower):Clone()
+    local standIcon = data.CurrentPower .. "_" .. data.CurrentPowerRarity
+    local newIcon = mainGui.Stand_Icons:FindFirstChild(standIcon):Clone()
     newIcon.Visible = true
     newIcon.Parent = defs.Stand_Reveal.Elements.Icon_Frame.Icon_Container
 
@@ -689,6 +978,20 @@ function GuiController:Request_GuiUpdate(requestName)
     GuiService:Request_GuiUpdate(requestName)
 end
 
+function GuiController:GetLevelFromXp(xpNumber)
+
+    local xpPerLevel = 3600
+
+    local rawLevel = xpNumber / xpPerLevel
+    local actualLevel = math.floor(rawLevel)
+
+    local remainingXp = (xpNumber - (actualLevel * xpPerLevel))
+    local percentageRemaining = (remainingXp / xpPerLevel * 100)
+
+    return actualLevel, percentageRemaining
+
+end
+
 --// ====================================================================================================================================
 --//  KNIT
 --// ====================================================================================================================================
@@ -702,11 +1005,13 @@ function GuiController:KnitStart()
     self:Setup_MainWindow()
     self:Setup_ArrowPanel()
     self:Setup_StandReveal()
+    self:Setup_StoragePanel()
 
     -- request Gui Updates
     self:Request_GuiUpdate("ArrowPanel")
     self:Request_GuiUpdate("Cash")
     self:Request_GuiUpdate("Character")
+    self:Request_GuiUpdate("StoragePanel")
 
 
     -- connect events
@@ -724,6 +1029,10 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_StandReveal:Connect(function(data)
         self:Update_StandReveal(data)
+    end)
+
+    GuiService.Event_Update_StoragePanel:Connect(function(characterData, storageData)
+        self:Update_StoragePanel(characterData, storageData)
     end)
 
 end

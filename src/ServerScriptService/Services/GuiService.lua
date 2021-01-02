@@ -18,7 +18,7 @@ local utils = require(Knit.Shared.Utils)
 -- events
 GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Cash = RemoteEvent.new()
-GuiService.Client.Event_Update_Character = RemoteEvent.new()
+GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 
@@ -28,20 +28,23 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     if requestName == "ArrowPanel" then
-        self.Client.Event_Update_ArrowPanel:Fire(player,playerData.ArrowInventory)
+        self.Client.Event_Update_ArrowPanel:Fire(player, playerData.ArrowInventory)
     end
+
     if requestName == "Cash" then
-        self.Client.Event_Update_Cash:Fire(player,playerData.ItemInventory.Cash)
+        self.Client.Event_Update_Cash:Fire(player, playerData.ItemInventory.Cash)
     end
-    if requestName == "Character" then
-        self.Client.Event_Update_Character:Fire(player,playerData.Character)
+
+    if requestName == "BottomGUI" then
+        self.Client.Event_Update_BottomGUI:Fire(player, playerData.CurrentStand)
     end
+
     if requestName == "StandReveal" then
-        self.Client.Event_Update_StandReveal:Fire(player,playerData.Character)
+        self.Client.Event_Update_StandReveal:Fire(player, playerData.CurrentStand)
     end
+
     if requestName == "StoragePanel" then 
-        print("yes")
-        self.Client.Event_Update_StoragePanel:Fire(player, playerData.Character, playerData.StandStorage)
+        self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage)
     end
 end
 

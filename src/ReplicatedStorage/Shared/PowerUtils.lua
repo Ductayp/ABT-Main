@@ -17,7 +17,7 @@ local localPlayer = game.Players.LocalPlayer
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local RayastHitbox = require(Knit.Shared.RaycastHitboxV3)
---local DamageEffect = require(Knit.Effects.Damage)
+
 
 local PowerUtils = {}
 
@@ -208,6 +208,23 @@ function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	end
 	
 	return part
+end
+
+--// GetLevelFromXp
+function PowerUtils.GetLevelFromXp(xpNumber)
+
+    print(xpNumber)
+    
+    local xpPerLevel = 3600
+
+    local rawLevel = xpNumber / xpPerLevel
+    local actualLevel = math.floor(rawLevel)
+
+    local remainingXp = (xpNumber - (actualLevel * xpPerLevel))
+    local percentageRemaining = (remainingXp / xpPerLevel * 100)
+
+    return actualLevel, percentageRemaining
+
 end
 
 --// SimpleHitBox -- just creates a simple hitbox - HIS HITBOX CAN ONLY HIT A HUMANOID ONCE PER INSTANCE

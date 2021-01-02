@@ -46,39 +46,25 @@ function TimeStop.Activate(initPlayer,params)
     -- remove any player that is immune to timestop
     for player,_ in pairs(affectedPlayers) do
 
-        local isImmune = Knit.StateModules.Immunity.Has_Immunity(player,"TimeStop")
+        local isImmune = require(Knit.StateModules.Immunity).Has_Immunity(player,"TimeStop")
         if isImmune then
             affectedPlayers[player] = nil -- commnet this out to run it immune players (for testing only)
         end
-        
-        --[[
-        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-        local powerModule -- declare it here so the rest can use it
-        local findModule = Knit.Powers:FindFirstChild(playerData.Character.CurrentPower)
-
-        if findModule then
-            powerModule = require(Knit.Powers[playerData.Character.CurrentPower])
-        end
-
-        if powerModule.Defs.Immunities then
-            if powerModule.Defs.Immunities.TimeStop then
-                affectedPlayers[player] = nil -- commnet this out to run it immune players (for testing only)
-            end
-        end
-
-        ]]--
     end
     
+--[[
     -- run effects on players still in the affectedPlayers table
     for player,_ in pairs(affectedPlayers) do
 
-        for effect,params in pairs(params.TimeStop.Effects) do
+        for effect,thisParams in pairs(params.TimeStop.HitEffects) do
             if effect ~= "ColorShift" then -- we already did colorshift for everyone in range
-                local characterHit = hit.Value
-                Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.HeavyPunch.HitEffects)
+                local characterHit = player.Character
+                Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,thisParams)
             end
         end
     end
+]]--
+
 end
 
 --// EXECUTE ----------------------------------

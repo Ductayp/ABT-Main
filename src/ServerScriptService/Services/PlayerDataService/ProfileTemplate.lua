@@ -7,8 +7,15 @@ local module = {
 		Visits = 0
 	},
 	
-	Character = {
-		CurrentPower = "Standless",
+	--Character = {
+		--CurrentPower = "Standless",
+	--},
+
+	CurrentStand = {
+		Power = "Standless",
+		--Rarity = "Common",
+		--Xp = 0,
+		--GUID = "nope"
 	},
 
 	

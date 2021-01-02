@@ -24,7 +24,7 @@ function PowersService:ActivatePower(player,params)
 
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if not playerData.Character.CurrentPower == params.PowerId then
+    if not playerData.CurrentStand.Power == params.PowerId then
         print("PlayerData doesn't match the PowerID sent")
         return
     end
@@ -42,6 +42,7 @@ function PowersService:ActivatePower(player,params)
 
 end
 
+
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ClientActivatePower(player,params)
     self.Server:ActivatePower(player,params)
@@ -51,7 +52,7 @@ end
 function PowersService.Client:GetCurrentPower(player)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local currentPower = playerData.Character.CurrentPower
+    local currentPower = playerData.CurrentStand.Power
 
     return currentPower
 end
@@ -61,7 +62,7 @@ function PowersService:SetCurrentPower(player,params)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.Character.CurrentPower)
+    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
     if currentPowerModule then
         local removePowerModule = require(currentPowerModule)
         local removePowerParams = {} --right now this is nil, but we can add things later if we need to
@@ -82,14 +83,11 @@ function PowersService:SetCurrentPower(player,params)
         end
     end
 
-    -- update player data
-    playerData.Character.CurrentPower = params.Power
-    playerData.Character.CurrentPowerRarity = params.Rarity
-    playerData.Character.CurrentPowerXp = params.Xp
-    playerData.Character.CurrentPowerGUID = params.GUID
+    -- give the stand t the playerData
+    playerData.CurrentStand = params
 
     -- update the gui
-    Knit.Services.GuiService:Update_Gui(player, "Character")
+    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
     -- run the player setup so we can start fresh
@@ -127,6 +125,7 @@ end
 function PowersService:RenderEffect_SinglePlayer(player,effect,params)
     self.Client.RenderEffect:Fire(player,effect,params)
 end
+
 
 -- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game
 function PowersService:RenderExistingStands(player)
@@ -205,14 +204,8 @@ function PowersService:PlayerJoined(player)
     -- get the players current power
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
-    local params = {}
-    params.Power = playerData.Character.CurrentPower
-    params.Rarity = playerData.Character.CurrentPowerRarity
-    params.Xp = playerData.Character.CurrentPowerXp
-    params.GUID = playerData.Character.CurrentPowerGUID
-
-    -- set the power, this is done when the player joins so they get any modifiers in the power setup
-    self:SetCurrentPower(player, params)
+    -- now just set it
+    self:SetCurrentPower(player, playerData.CurrentStand)
 end
 
 --// KnitStart

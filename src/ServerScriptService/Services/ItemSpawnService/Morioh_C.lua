@@ -41,7 +41,7 @@ Morioh_C.Items = {
             DataKey = "Cash",
             DataCategory = "ItemInventory",
             MinValue = 1,
-            Maxvalue = 10
+            MaxValue = 10
         }
     }
 

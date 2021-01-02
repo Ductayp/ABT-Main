@@ -21,6 +21,11 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
+-- Sacrifice Constants
+local SACRIFICE_BONUS_COMMON = 0 -- none
+local SACRIFICE_BONUS_RARE = 1 -- 50% bonus added
+local SACRIFICE_BONUS_LEGENDARY = 5 -- effectively 100% bonus equivalent to double the value
+
 --// GiveItemToPlayer
 function InventoryService:GiveItemToPlayer(player, params)
 
@@ -30,11 +35,14 @@ function InventoryService:GiveItemToPlayer(player, params)
     -- Regular Items
     if params.DataCategory == "ItemInventory" then
 
-        -- by default, when you pick up an item, you get 1 of them
+        -- give the default value of 1 or give the amount in params.Value
         local value = 1 
+        if params.Value then
+            value = params.Value
+        end
 
         --check if we have a range of values possible, if so, valulate it
-        if params.MinValue and params.MaxValue then
+        if params.MinValue ~= nil and params.MaxValue ~= nil then
             value = math.random(params.MinValue,params.MaxValue)
         end
 
@@ -42,6 +50,11 @@ function InventoryService:GiveItemToPlayer(player, params)
         if not playerData.ItemInventory[params.DataKey] then
             playerData.ItemInventory[params.DataKey] = 0
         end
+
+        if Knit.Services.GamePassService:Has_GamePass(player, "DoubleCash") then
+            value = value * 2
+        end
+
         playerData.ItemInventory[params.DataKey] += value
 
     end
@@ -134,11 +147,9 @@ function InventoryService.Client:UseArrow(player, params)
                 Knit.Services.GuiService:Update_Gui(player, "StandReveal")
 
                 return
-
             end
         end
     end
-
 end
 
 --// StoreStand
@@ -184,6 +195,7 @@ function InventoryService:SacrificeStand(player, GUID)
             thisPower = stand.Power
             thisIndex = index
             thisXp = stand.Xp
+            thisRarity = stand.Rarity
             break
         end
     end
@@ -191,23 +203,34 @@ function InventoryService:SacrificeStand(player, GUID)
     -- remove the stand from storage
     table.remove(playerData.StandStorage.StoredStands, thisIndex)
 
-
-
-
     local findPowerModule = Knit.Powers:FindFirstChild(thisPower)
     if findPowerModule then
         powerModule = require(findPowerModule)
 
         -- get the values
         local level = powerUtils.GetLevelFromXp(thisXp)
-        --local baseValue = powerModule.Defs
+        local unmodifiedValue = level * powerModule.Defs.BaseSacrificeValue
+        print(powerModule.Defs.BaseSacrificeValue)
+        print("unmodifiedValue",unmodifiedValue)
+        local finalValue = 0
+        if thisRarity == "Common" then
+            finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_COMMON)
+        elseif thisRarity == "Rare" then
+            finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_RARE)
+        elseif thisRarity == "Legendary" then
+            finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_LEGENDARY)
+        end
 
         local params = {}
         params.DataCategory = "ItemInventory"
         params.DataKey = "SoulOrb"
-        --params.Value = 
+        params.Value = finalValue
+
+        print("finaValue",finalValue)
         
         self:GiveItemToPlayer(player, params)
+
+        print(playerData)
         
     end
 

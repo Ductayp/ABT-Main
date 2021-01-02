@@ -213,12 +213,10 @@ end
 --// GetLevelFromXp
 function PowerUtils.GetLevelFromXp(xpNumber)
 
-    print(xpNumber)
-    
     local xpPerLevel = 3600
 
     local rawLevel = xpNumber / xpPerLevel
-    local actualLevel = math.floor(rawLevel)
+    local actualLevel = math.floor(rawLevel) + 1
 
     local remainingXp = (xpNumber - (actualLevel * xpPerLevel))
     local percentageRemaining = (remainingXp / xpPerLevel * 100)
@@ -227,7 +225,7 @@ function PowerUtils.GetLevelFromXp(xpNumber)
 
 end
 
---// SimpleHitBox -- just creates a simple hitbox - HIS HITBOX CAN ONLY HIT A HUMANOID ONCE PER INSTANCE
+--// SimpleHitBox -- just creates a simple hitbox - THIS HITBOX CAN ONLY HIT A HUMANOID ONCE PER INSTANCE
 -- boxParams define the box itself such as size
 function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 
@@ -302,19 +300,6 @@ end
 
 --// WeldedHitBox - will run until the part is destroyed
 function PowerUtils.LoopedHitbox(initPlayer,params)
-
-	--[[
-		--// required params
-		params.Size = Vector3
-		params.Name = something to find it again by
-		params.CFrame = the CFrame
-		params.WeldTo = the part to weld it to
-		params.Damage = how much per tick
-		params.Tick = time per tick
-		
-		--// optional params
-		params.Exclude = an array of characters to exclude. DOES NOT ACCEPT players. Instead do player.Character.
-	]]
 
 	-- get the right folder if server or client
 	local hitboxFolder

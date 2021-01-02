@@ -33,6 +33,9 @@ local GUI_COLOR = {
     LEGENDARY = Color3.new(255/255, 149/255, 43/255)
 }
 
+-- variables
+local standCardGUID -- this gets set when the stand card shows, it stores the GUID of the shown stand. Its used in buttons
+
 --// ====================================================================================================================================
 --//  BOTTOM GUI
 --// ====================================================================================================================================
@@ -397,7 +400,26 @@ function GuiController:Setup_StoragePanel()
         print(defs.StoragePanel.Button_BuyStorage)
     end)
 
+    -- BUTTON - Evolve Stand
+    defs.StoragePanel.Button_EvolveStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_EvolveStand)
+    end)
 
+    -- BUTTON - Store Stand
+    defs.StoragePanel.Button_StoreStand.Activated:Connect(function()
+        InventoryService:StoreStand() -- you can only store the active stand, so we dont need to send any data here
+    end)
+
+    -- BUTTON - Sacrifice Stand
+    defs.StoragePanel.Button_SacrificeStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_SacrificeStand)
+        InventoryService:SacrificeStand(standCardGUID) -- send the GUID of the stand shown on the stand card
+    end)
+
+    -- BUTTON - Equip Stand
+    defs.StoragePanel.Button_EquipStand.Activated:Connect(function()
+        print(defs.StoragePanel.Button_EquipStand)
+    end)
 end
 
 --// Setup_StandButton
@@ -513,8 +535,6 @@ function GuiController:Update_StoragePanel(currentStand, storageData)
     if storageData.StoredStands ~= nil then
         for index,stand in pairs(storageData.StoredStands) do
 
-            print(index,stand)
-
             -- make a new list item
             local newListItem = defs.StoragePanel.ItemTemplate:Clone()
             newListItem.Parent = defs.StoragePanel.ScrollingFrame
@@ -525,17 +545,26 @@ function GuiController:Update_StoragePanel(currentStand, storageData)
             
         end
     end
-
 end
 
 --// Show_StandCard
 function GuiController:Show_StandCard(standData, buttonType)
+
+    standCardGUID = standData.GUID
+
+    -- delete the old icons
+    for _,object in pairs(defs.StoragePanel.StandIconFrame:GetChildren()) do
+        if object.name == "TempIcon" then
+            object:Destroy()
+        end
+    end
 
     -- set icon
     newIcon = standData.Icon:Clone()
     newIcon.BorderSizePixel = 4
     newIcon.Parent = defs.StoragePanel.StandIconFrame
     newIcon.Visible = true
+    newIcon.Name = "TempIcon"
 
     -- set name and rarity
     defs.StoragePanel.StandName.Text = standData.Name
@@ -578,27 +607,6 @@ function GuiController:Show_StandCard(standData, buttonType)
         defs.StoragePanel.Button_SacrificeStand.Active = true
         defs.StoragePanel.Button_EquipStand.Active = true
     end
-
-    -- BUTTON - Evolve Stand
-    defs.StoragePanel.Button_EvolveStand.Activated:Connect(function()
-        print(defs.StoragePanel.Button_EvolveStand)
-    end)
-
-    -- BUTTON - Store Stand
-    defs.StoragePanel.Button_StoreStand.Activated:Connect(function()
-        InventoryService:StoreStand()
-    end)
-
-    -- BUTTON - Sacrifice Stand
-    defs.StoragePanel.Button_SacrificeStand.Activated:Connect(function()
-        print(defs.StoragePanel.Button_SacrificeStand)
-        InventoryService:SacrificeStand(standData.GUID) -- send the GUID of the stand shown
-    end)
-
-    -- BUTTON - Equip Stand
-    defs.StoragePanel.Button_EquipStand.Activated:Connect(function()
-        print(defs.StoragePanel.Button_EquipStand)
-    end)
 
     -- the the Visible settings at the end
     defs.StoragePanel.StandCard.Visible = true

@@ -13,9 +13,6 @@ local module = {
 
 	CurrentStand = {
 		Power = "Standless",
-		--Rarity = "Common",
-		--Xp = 0,
-		--GUID = "nope"
 	},
 
 	

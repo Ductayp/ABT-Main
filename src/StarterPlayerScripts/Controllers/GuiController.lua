@@ -18,9 +18,12 @@ local InventoryService = Knit.GetService("InventoryService")
 local PowersService = Knit.GetService("PowersService")
 local GamePassService = Knit.GetService("GamePassService")
 
--- Knit modules
+-- utility modules
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
+
+-- gui modules
+local SacrificePopUp = require(Knit.GuiModules.SacrificePopUp)
 
 -- Gui Defs
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
@@ -412,8 +415,7 @@ function GuiController:Setup_StoragePanel()
 
     -- BUTTON - Sacrifice Stand
     defs.StoragePanel.Button_SacrificeStand.Activated:Connect(function()
-        print(defs.StoragePanel.Button_SacrificeStand)
-        InventoryService:SacrificeStand(standCardGUID) -- send the GUID of the stand shown on the stand card
+        -- InventoryService:SacrificeStand(standCardGUID) -- send the GUID of the stand shown on the stand card
     end)
 
     -- BUTTON - Equip Stand
@@ -962,6 +964,7 @@ function GuiController:KnitStart()
     self:Setup_ArrowPanel()
     self:Setup_StandReveal()
     self:Setup_StoragePanel()
+    SacrificePopUp.Setup()
 
     -- request Gui Updates
     self:Request_GuiUpdate("ArrowPanel")

@@ -21,7 +21,9 @@ local gamePasses = {
     MobileStandStorage = 13434519,
     DoubleCash = 13434733,
     DoubleArrowLuck = 13434798,
-    ItemFinder = 13434805
+    DoubleOrbs = 13740628,
+    ItemFinder = 13434805,
+
 }
 
 --// Has_GamePass

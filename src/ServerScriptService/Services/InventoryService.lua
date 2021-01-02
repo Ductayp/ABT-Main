@@ -23,8 +23,8 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Sacrifice Constants
 local SACRIFICE_BONUS_COMMON = 0 -- none
-local SACRIFICE_BONUS_RARE = 1 -- 50% bonus added
-local SACRIFICE_BONUS_LEGENDARY = 5 -- effectively 100% bonus equivalent to double the value
+local SACRIFICE_BONUS_RARE = 1
+local SACRIFICE_BONUS_LEGENDARY = 5
 
 --// GiveItemToPlayer
 function InventoryService:GiveItemToPlayer(player, params)

@@ -30,7 +30,7 @@ SacrificePopUp.Defs.Button_Cancel = mainGui:FindFirstChild("Button_Cancel", true
 SacrificePopUp.Defs.Button_Sacrifice = mainGui:FindFirstChild("Button_Sacrifice", true)
 
 -- this gets set by the Update function
-SacrificePopUp.standCardGUID
+SacrificePopUp.CurrentData = {}
 
 --// Setup
 function SacrificePopUp.Setup()
@@ -48,13 +48,19 @@ function SacrificePopUp.Setup()
 
     -- Button - Sacrifice
     SacrificePopUp.Defs.Button_Sacrifice.Activated:Connect(function()
-        InventoryService:SacrificeStand(standCardGUID) -- send the GUID of the stand shown on the stand card
+        if SacrificePopUp.CurrentData.GUID ~= nil then
+            InventoryService:SacrificeStand(SacrificePopUp.CurrentData.GUID) -- send the GUID of the stand shown on the stand card
+        end
     end)
 
 end
 
 --// Updare
 function SacrificePopUp.Update(standData)
+
+    SacrificePopUp.CurrentData = standData
+
+    SacrificePopUp.Defs.StandName = standData.Power
 
 end
 

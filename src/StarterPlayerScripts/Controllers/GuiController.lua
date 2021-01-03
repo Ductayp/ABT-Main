@@ -386,6 +386,16 @@ defs.StoragePanel.Button_StoreStand = defs.StoragePanel.Panel:FindFirstChild("Bu
 defs.StoragePanel.Button_SacrificeStand = defs.StoragePanel.Panel:FindFirstChild("Button_SacrificeStand", true)
 defs.StoragePanel.Button_EquipStand = defs.StoragePanel.Panel:FindFirstChild("Button_EquipStand", true)
 
+--[[
+defs.StoragePanel.SacrificePopUp.Frame = mainGui:FindFirstChild("SacrificePopUp", true)
+defs.StoragePanel.SacrificePopUp.StandName = mainGui:FindFirstChild("Stand_Name", true)
+defs.StoragePanel.SacrificePopUp.StandLevel = mainGui:FindFirstChild("Stand_Level", true)
+defs.StoragePanel.SacrificePopUp.BaseValue = mainGui:FindFirstChild("Base_Value", true)
+defs.StoragePanel.SacrificePopUp.TotalValue = mainGui:FindFirstChild("Total_Value", true)
+defs.StoragePanel.SacrificePopUp.Button_DoubleOrbsPass = mainGui:FindFirstChild("Button_DoubleOrbsPass", true)
+defs.StoragePanel.SacrificePopUp.Button_Cancel = mainGui:FindFirstChild("Button_Cancel", true)
+defs.StoragePanel.SacrificePopUp.Button_Sacrifice = mainGui:FindFirstChild("Button_Sacrifice", true)
+]]--
 
 
 

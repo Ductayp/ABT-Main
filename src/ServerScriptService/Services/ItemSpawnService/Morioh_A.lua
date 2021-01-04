@@ -7,7 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Morioh_A = {}
 
 Morioh_A.Region = "Morioh"
-Morioh_A.MaxSpawned = 4
+Morioh_A.MaxSpawned = 15
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_A.Items = {

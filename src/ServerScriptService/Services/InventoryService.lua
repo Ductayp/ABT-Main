@@ -205,7 +205,7 @@ function InventoryService:SacrificeStand(player, GUID)
 
     local findPowerModule = Knit.Powers:FindFirstChild(thisPower)
     if findPowerModule then
-        powerModule = require(findPowerModule)
+        local powerModule = require(findPowerModule)
 
         -- get the values
         local level = powerUtils.GetLevelFromXp(thisXp)
@@ -226,11 +226,7 @@ function InventoryService:SacrificeStand(player, GUID)
         params.DataKey = "SoulOrb"
         params.Value = finalValue
 
-        print("finaValue",finalValue)
-        
         self:GiveItemToPlayer(player, params)
-
-        print(playerData)
         
     end
 

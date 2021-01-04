@@ -26,5 +26,28 @@ function StandStorageAccess.Entry_Removed(player, thisState, params)
 
 end
 
+--// HasAccess
+function StandStorageAccess.HasAccess(player)
+
+    local hasAccess = false
+    local playerFolder = stateFolder:FindFirstChild(player.UserId)
+    if playerFolder then
+        thisStatFolder = playerFolder:FindFirstChild("StandStorageAccess")
+        if thisStateFolder then
+            local entryObjects = thisStateFolder:GetChildren()
+            if entryObjects ~= nil then
+                for _,object in pairs(entryObjects) do
+                    if object.Value == true then
+                        hasAccess = true
+                        break
+                    end
+                end
+            end
+        end
+    end
+
+    return hasAcces
+end
+
 
 return StandStorageAccess

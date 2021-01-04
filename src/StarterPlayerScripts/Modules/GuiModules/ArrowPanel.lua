@@ -10,6 +10,7 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local InventoryService = Knit.GetService("InventoryService")
+local PowersService = Knit.GetService("PowersService")
 
 -- utils
 local utils = require(Knit.Shared.Utils)
@@ -39,9 +40,9 @@ ArrowPanel.UniversalArrow_Common = ArrowPanel.Panel:FindFirstChild("UniversalArr
 ArrowPanel.UniversalArrow_Rare = ArrowPanel.Panel:FindFirstChild("UniversalArrow_Rare", true)
 ArrowPanel.UniversalArrow_Legendary = ArrowPanel.Panel:FindFirstChild("UniversalArrow_Legendary", true)
 
-ArrowPanel.UniversalArrow_Common = ArrowPanel.Panel:FindFirstChild("UseArrow_Universal_Common", true)
-ArrowPanel.UniversalArrow_Rare = ArrowPanel.Panel:FindFirstChild("UseArrow_Universal_Rare", true)
-ArrowPanel.UniversalArrow_Legendary = ArrowPanel.Panel:FindFirstChild("UseArrow_Universal_Legendary", true)
+ArrowPanel.Button_UniversalArrow_Common = ArrowPanel.Panel:FindFirstChild("Button_Universal_Common", true)
+ArrowPanel.Button_UniversalArrow_Rare = ArrowPanel.Panel:FindFirstChild("Button_Universal_Rare", true)
+ArrowPanel.Button_UniversalArrow_Legendary = ArrowPanel.Panel:FindFirstChild("Button_Universal_Legendary", true)
 
 
 
@@ -50,25 +51,25 @@ function ArrowPanel.Setup()
     ArrowPanel.Item_Template.Visible = false
 
     -- connect Use Arrow buttons
-    ArrowPanel.UniversalArrow_Common.Activated:Connect(function()
+    ArrowPanel.Button_UniversalArrow_Common.Activated:Connect(function()
             params = {}
             params.Type = "UniversalArrow"
             params.Rarity = "Common"
-            button = defs.ArrowPanel.UseArrowButtons.UniversalArrow_Common
+            button = ArrowPanel.Button_UniversalArrow_Common
             ArrowPanel.Request_UseArrow(params,button)
     end)
-    ArrowPanel.UniversalArrow_Rare.Activated:Connect(function()
+    ArrowPanel.Button_UniversalArrow_Rare.Activated:Connect(function()
         params = {}
         params.Type = "UniversalArrow"
         params.Rarity = "Rare"
-        button = defs.ArrowPanel.UseArrowButtons.UniversalArrow_Rare
+        button = ArrowPanel.Button_UniversalArrow_Rare
         ArrowPanel.Request_UseArrow(params,button)
     end)
-    ArrowPanel.UniversalArrow_Legendary.Activated:Connect(function()
+    ArrowPanel.Button_UniversalArrow_Legendary.Activated:Connect(function()
         params = {}
         params.Type = "UniversalArrow"
         params.Rarity = "Legendary"
-        button = defs.ArrowPanel.UseArrowButtons.UniversalArrow_Legendary
+        button = ArrowPanel.Button_UniversalArrow_Legendary
         ArrowPanel.Request_UseArrow(params,button)
     end)
 end
@@ -132,7 +133,7 @@ function ArrowPanel.Update(data)
                 end
             end
  
-            print(targetPanel.Parent)
+            print(targetPanel.Parent.Parent)
 
             targetPanel.Visible = true
         end)

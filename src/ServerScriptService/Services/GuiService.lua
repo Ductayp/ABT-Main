@@ -45,7 +45,6 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
 
     if requestName == "StoragePanel" then 
         self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage)
-        print("gui service",playerData.StandStorage)
     end
 end
 

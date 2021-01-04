@@ -10,6 +10,7 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local InventoryService = Knit.GetService("InventoryService")
+local GamePassService = Knit.GetService("GamePassService")
 
 -- utils
 local utils = require(Knit.Shared.Utils)
@@ -84,7 +85,14 @@ function StoragePanel.Setup()
 
     -- BUTTON - Store Stand
     StoragePanel.Button_StoreStand.Activated:Connect(function()
-        InventoryService:StoreStand() -- you can only store the active stand, so we dont need to send any data here
+        local hasAcces = require(Knit.StateModules.StandStorageAccess(Players.LocalPlayer)).HasAccess
+        if GamePassService:Has_GamePass("MobileStandStorage") or hasAcces == true then
+            InventoryService:StoreStand()
+            --StandReveal.ActivateClose()
+        else
+            --StandReveal.StorageWarning()
+        end
+        --InventoryService:StoreStand() -- you can only store the active stand, so we dont need to send any data here
     end)
 
     -- BUTTON - Sacrifice Stand
@@ -152,7 +160,7 @@ function StoragePanel.Update(currentStand, storageData)
 
     -- update the max slots and used slots
     local counter = 0 
-    if storageData.storageData ~= nil then
+    if storageData.StoredStands ~= nil then
         for _,v in pairs(storageData.StoredStands) do
             counter = counter + 1
         end

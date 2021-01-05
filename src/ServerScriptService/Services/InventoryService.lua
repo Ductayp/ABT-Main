@@ -78,25 +78,10 @@ function InventoryService:GiveItemToPlayer(player, params)
     end
 end
 
---// RemoveItemFromPlayer
-function InventoryService:RemoveItemFromPlayer(player, params)
-
-    -- get the players data
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-
-    if params.DataCategory == "ItemInvetory" then
-
-    end
-
-    if params.DataCategory == "ArrowInventory" then
-
-    end
-
-end
-
 --// UseArrow
-function InventoryService.Client:UseArrow(player, params)
+function InventoryService:UseArrow(player, params)
 
+    -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     -- check in player is standless
@@ -106,7 +91,6 @@ function InventoryService.Client:UseArrow(player, params)
         print("you must be standless to use an arrow!")
         return
     end
-
 
     -- check if the player has this arrow
     for index,dataArrow in pairs(playerData.ArrowInventory) do
@@ -141,7 +125,8 @@ function InventoryService.Client:UseArrow(player, params)
                 newParams.Xp = 1
                 newParams.GUID = HttpService:GenerateGUID(false)
 
-                Knit.Services.PowersService:GivePower(player,newParams)
+                -- set teh current power
+                Knit.Services.PowersService:SetCurrentPower(player,newParams)
 
                 -- fire Show_StandReveal to the player, we do this after we set the data because the Gui pudates based on current data
                 Knit.Services.GuiService:Update_Gui(player, "StandReveal")
@@ -150,11 +135,22 @@ function InventoryService.Client:UseArrow(player, params)
             end
         end
     end
+
 end
 
 --// StoreStand
 function InventoryService:StoreStand(player)
 
+    -- sanity check to see if player has access
+    local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
+    if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
+        -- yup were good
+    else
+        -- nope were not good
+        return
+    end
+
+    -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     if playerData.CurrentStand.Power == "Standless" then
@@ -178,7 +174,7 @@ function InventoryService:StoreStand(player)
         -- give the player the Standless power
         local newParams = {}
         newParams.Power = "Standless"
-        Knit.Services.PowersService:GivePower(player, newParams)
+        Knit.Services.PowersService:SetCurrentPower(player, newParams)
 
     end
 end
@@ -189,6 +185,7 @@ function InventoryService:GetStandValue(player, GUID)
     -- this methods returns this value, after its modified
     local finalValue = 0
 
+    -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     --find the stand by GUID and set some variable we need
@@ -233,6 +230,16 @@ end
 --// SacrificeStand
 function InventoryService:SacrificeStand(player, GUID)
 
+    -- sanity check to see if player has access
+    local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
+    if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
+        -- yup were good
+    else
+        -- nope were not good
+        return
+    end
+
+    -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     -- give the soul orbs to player
@@ -243,7 +250,53 @@ function InventoryService:SacrificeStand(player, GUID)
     self:GiveItemToPlayer(player, params)
 
     -- remove the stand from storage
-    table.remove(playerData.StandStorage.StoredStands, thisIndex)
+    for index,stand in pairs(playerData.StandStorage.StoredStands) do
+        if stand.GUID == GUID then
+            table.remove(playerData.StandStorage.StoredStands, index)
+            break
+        end
+    end
+
+    -- update the GUI
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+end
+
+--// EquipStand
+function InventoryService:EquipStand(player, GUID)
+
+    -- sanity check to see if player has access
+    local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
+    if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
+        -- yup were good
+    else
+        -- nope were not good
+        return
+    end
+
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- save the current stand in a variable to store it after we equip the new one
+    local tempStoredStand = playerData.CurrentStand
+
+    --find the stand by GUID and set some variable we need
+    for index,stand in pairs(playerData.StandStorage.StoredStands) do
+        if stand.GUID == GUID then
+
+            -- set the new stand
+            print(stand)
+            Knit.Services.PowersService:SetCurrentPower(player, stand)
+
+            -- remove the old stand form storage
+            table.remove(playerData.StandStorage.StoredStands, index)
+
+            -- store the tempStored stand
+            table.insert(playerData.StandStorage.StoredStands, tempStoredStand)
+
+            break
+        end
+    end
 
     -- update the GUI
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
@@ -264,9 +317,20 @@ function InventoryService.Client:SacrificeStand(player, GUID)
     self.Server:SacrificeStand(player, GUID)
 end
 
+--// Client:GetStandValue
 function InventoryService.Client:GetStandValue(player, GUID)
     local finalValue = self.Server:GetStandValue(player, GUID)
     return finalValue
+end
+
+--// Client:EquipStand
+function InventoryService.Client:EquipStand(player, GUID)
+    self.Server:EquipStand(player, GUID)
+end
+
+--// Client:UseArrow
+function InventoryService.Client:UseArrow(player, params)
+    self.Server:UseArrow(player, params)
 end
 
 

@@ -30,14 +30,17 @@ function LeftGui.Setup()
 
     -- connect the clickies
     LeftGui.Inventory_Button.Activated:Connect(function()
+        Knit.Controllers.GuiController:CloseAllWindows()
         Knit.Controllers.GuiController.InventoryWindow.Open()
     end)
 
     LeftGui.Codes_Button.Activated:Connect(function()
+        Knit.Controllers.GuiController:CloseAllWindows()
         --self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Arrow_Panel)
     end)
 
     LeftGui.Shop_Button.Activated:Connect(function()
+        Knit.Controllers.GuiController:CloseAllWindows()
         --self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Storage_Panel)
     end)
 end

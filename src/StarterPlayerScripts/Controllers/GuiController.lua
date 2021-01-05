@@ -31,6 +31,16 @@ GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
 -- Gui Defs
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
+--// CloseAllWindows ------------------------------------------------------------
+function GuiController:CloseAllWindows()
+    for _,instance in pairs(mainGui.Windows.ScaleFrame:GetChildren()) do
+        if instance:IsA("Frame") then
+            instance.Visible = false
+        end
+    end
+end
+
+
 --// Request_GuiUpdate ------------------------------------------------------------
 function GuiController:Request_GuiUpdate(requestName)
     GuiService:Request_GuiUpdate(requestName)

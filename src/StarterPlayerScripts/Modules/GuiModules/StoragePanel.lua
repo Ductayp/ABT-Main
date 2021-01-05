@@ -76,11 +76,18 @@ StoragePanel.RarityBonus_Common = StoragePanel.Confirmation_Frame:FindFirstChild
 StoragePanel.RarityBonus_Rare = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Rare", true)
 StoragePanel.RarityBonus_Legendary = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Legendary", true)
 
+-- Storage Warning
+StoragePanel.Warning_Frame = mainGui.Windows:FindFirstChild("StorageWarningPopUp", true)
+StoragePanel.Warning_MobileBuyButton = StoragePanel.Warning_Frame:FindFirstChild("Button_MobileStorage", true)
+StoragePanel.Warning_CloseButton = StoragePanel.Warning_Frame:FindFirstChild("Button_Close", true)
+
+
 --// Setup_StandPanel ------------------------------------------------------------
 function StoragePanel.Setup()
 
-    -- make confimration popup not visible
+    -- make  popups not visible
     StoragePanel.Confirmation_Frame.Visible = false
+    StoragePanel.Warning_Frame.Visible = false
 
     -- make stand item template not visible
     StoragePanel.ItemTemplate.Visible = false
@@ -89,12 +96,31 @@ function StoragePanel.Setup()
 
     -- BUTTON - Buy Storage
     StoragePanel.Button_BuyStorage.Activated:Connect(function()
-        print(StoragePanel.Button_BuyStorage)
+        print("beep beep!")
     end)
 
     -- BUTTON - Evolve Stand
     StoragePanel.Button_EvolveStand.Activated:Connect(function()
-        print(StoragePanel.Button_EvolveStand)
+        print("yeeeeeehhoooo!!")
+        spawn(function()
+
+            local originalText = StoragePanel.Button_EvolveStand.Text
+            local originalBorderColor = StoragePanel.Button_EvolveStand.BorderColor3
+            local originalTextColor = StoragePanel.Button_EvolveStand.TextColor3 
+
+            StoragePanel.Button_EvolveStand.Text = "COMING SOON"
+            StoragePanel.Button_EvolveStand.BorderColor3 = Color3.new(255/255, 0/255, 0/255)
+            StoragePanel.Button_EvolveStand.TextColor3 = Color3.new(255/255, 0/255, 0/255)
+            StoragePanel.Button_EvolveStand.Active = false
+
+            wait(3)
+
+            StoragePanel.Button_EvolveStand.Text = originalText
+            StoragePanel.Button_EvolveStand.BorderColor3 = originalBorderColor
+            StoragePanel.Button_EvolveStand.TextColor3 = originalTextColor
+            StoragePanel.Button_EvolveStand.Active = true
+
+        end)
     end)
 
     -- BUTTON - Store Stand
@@ -105,7 +131,8 @@ function StoragePanel.Setup()
         if GamePassService:Has_GamePass("MobileStandStorage") or hasAcces == true then
             InventoryService:StoreStand()
         else
-            -- insert a panel here to ask the player to go to puccis or to get the pass
+            Knit.Controllers.GuiController.InventoryWindow.Window.Visible = false
+            StoragePanel.Warning_Frame.Visible = true
         end
     end)
 
@@ -117,14 +144,34 @@ function StoragePanel.Setup()
 
     -- BUTTON - Equip Stand
     StoragePanel.Button_EquipStand.Activated:Connect(function()
-        print(StoragePanel.Button_EquipStand)
+
+        local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(Players.LocalPlayer)
+
+        if GamePassService:Has_GamePass("MobileStandStorage") or hasAcces == true then
+            InventoryService:EquipStand(StoragePanel.StandCardGUID)
+        else
+            Knit.Controllers.GuiController.InventoryWindow.Window.Visible = false
+            StoragePanel.Warning_Frame.Visible = true
+        end
+
+        
+
     end)
 
     -- BUTTON - Confirmation - Sacrifice
     StoragePanel.Confirmation_Button_Sacrifice.Activated:Connect(function()
-        InventoryService:SacrificeStand(StoragePanel.StandCardGUID)
-        StoragePanel.Confirmation_Frame.Visible = false
-        Knit.Controllers.GuiController.InventoryWindow.Window.Visible = true
+
+        local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(Players.LocalPlayer)
+
+        if GamePassService:Has_GamePass("MobileStandStorage") or hasAcces == true then
+            InventoryService:SacrificeStand(StoragePanel.StandCardGUID)
+            StoragePanel.Confirmation_Frame.Visible = false
+            Knit.Controllers.GuiController.InventoryWindow.Window.Visible = true
+        else
+            Knit.Controllers.GuiController.InventoryWindow.Window.Visible = false
+            StoragePanel.Confirmation_Frame.Visible = false
+            StoragePanel.Warning_Frame.Visible = true
+        end
     end)
 
     -- BUTTON - Confirmation - Cancel
@@ -135,6 +182,18 @@ function StoragePanel.Setup()
 
     -- BUTTON - Confirmation - Double Orb Pass
     StoragePanel.Confirmation_Button_DoubleOrbsPass.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
+    end)
+
+    -- BUTTON - Warning - Close
+    StoragePanel.Warning_CloseButton.Activated:Connect(function()
+        StoragePanel.Warning_Frame.Visible = false
+        StoragePanel.Confirmation_Frame.Visible = false
+        Knit.Controllers.GuiController.InventoryWindow.Window.Visible = true
+    end)
+
+    -- BUTTON - Warning - MobileBuyButton
+    StoragePanel.Warning_MobileBuyButton.Activated:Connect(function()
         GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
     end)
 end

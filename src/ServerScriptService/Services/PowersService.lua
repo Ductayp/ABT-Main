@@ -95,10 +95,6 @@ function PowersService:SetCurrentPower(player,params)
 
 end
 
---// GivePower - this is fired only when a player uses an arrow or is given a power for the first time
-function PowersService:GivePower(player,params)
-    self:SetCurrentPower(player,params) 
-end
 
 --// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
 function PowersService:RegisterHit(initPlayer,characterHit,hitEffects)
@@ -279,7 +275,7 @@ function PowersService:KnitInit()
                                 params.GUID = HttpService:GenerateGUID(false)
 
                                 print("button goes beep")
-                                self:GivePower(player,params)    
+                                self:SetCurrentPower(player,params)    
                              end
                             
                         end

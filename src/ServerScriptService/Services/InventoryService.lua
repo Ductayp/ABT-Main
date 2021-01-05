@@ -183,13 +183,19 @@ function InventoryService:StoreStand(player)
     end
 end
 
---// SacrificeStand
-function InventoryService:SacrificeStand(player, GUID)
+--// GetStandValue
+function InventoryService:GetStandValue(player, GUID)
+
+    -- this methods returns this value, after its modified
+    local finalValue = 0
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     --find the stand by GUID and set some variable we need
+    local thisPower
     local thisIndex
+    local thisXp
+    local thisRarity
     for index,stand in pairs(playerData.StandStorage.StoredStands) do
         if stand.GUID == GUID then
             thisPower = stand.Power
@@ -200,35 +206,44 @@ function InventoryService:SacrificeStand(player, GUID)
         end
     end
 
+    if thisPower then
+        local findPowerModule = Knit.Powers:FindFirstChild(thisPower)
+        if findPowerModule then
+            local powerModule = require(findPowerModule)
+    
+            -- get the values
+            local level = powerUtils.GetLevelFromXp(thisXp)
+            local unmodifiedValue = level * powerModule.Defs.BaseSacrificeValue
+            print(powerModule.Defs.BaseSacrificeValue)
+            
+            if thisRarity == "Common" then
+                finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_COMMON)
+            elseif thisRarity == "Rare" then
+                finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_RARE)
+            elseif thisRarity == "Legendary" then
+                finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_LEGENDARY)
+            end  
+        end
+    end
+
+    return finalValue
+
+end
+
+--// SacrificeStand
+function InventoryService:SacrificeStand(player, GUID)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- give the soul orbs to player
+    local params = {}
+    params.DataCategory = "ItemInventory"
+    params.DataKey = "SoulOrb"
+    params.Value = self:GetStandValue(player, GUID)
+    self:GiveItemToPlayer(player, params)
+
     -- remove the stand from storage
     table.remove(playerData.StandStorage.StoredStands, thisIndex)
-
-    local findPowerModule = Knit.Powers:FindFirstChild(thisPower)
-    if findPowerModule then
-        local powerModule = require(findPowerModule)
-
-        -- get the values
-        local level = powerUtils.GetLevelFromXp(thisXp)
-        local unmodifiedValue = level * powerModule.Defs.BaseSacrificeValue
-        print(powerModule.Defs.BaseSacrificeValue)
-        print("unmodifiedValue",unmodifiedValue)
-        local finalValue = 0
-        if thisRarity == "Common" then
-            finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_COMMON)
-        elseif thisRarity == "Rare" then
-            finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_RARE)
-        elseif thisRarity == "Legendary" then
-            finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_LEGENDARY)
-        end
-
-        local params = {}
-        params.DataCategory = "ItemInventory"
-        params.DataKey = "SoulOrb"
-        params.Value = finalValue
-
-        self:GiveItemToPlayer(player, params)
-        
-    end
 
     -- update the GUI
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
@@ -247,6 +262,11 @@ end
 --// Client:SacrificeStand
 function InventoryService.Client:SacrificeStand(player, GUID)
     self.Server:SacrificeStand(player, GUID)
+end
+
+function InventoryService.Client:GetStandValue(player, GUID)
+    local finalValue = self.Server:GetStandValue(player, GUID)
+    return finalValue
 end
 
 

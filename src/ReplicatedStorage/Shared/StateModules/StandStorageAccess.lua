@@ -30,9 +30,9 @@ end
 function StandStorageAccess.HasAccess(player)
 
     local hasAccess = false
-    local playerFolder = stateFolder:FindFirstChild(player.UserId)
+    local playerFolder = statesFolder:FindFirstChild(player.UserId)
     if playerFolder then
-        thisStatFolder = playerFolder:FindFirstChild("StandStorageAccess")
+        local thisStateFolder = playerFolder:FindFirstChild("StandStorageAccess")
         if thisStateFolder then
             local entryObjects = thisStateFolder:GetChildren()
             if entryObjects ~= nil then
@@ -46,7 +46,9 @@ function StandStorageAccess.HasAccess(player)
         end
     end
 
-    return hasAcces
+    print("hasAcccess",hasAccess)
+
+    return hasAccess
 end
 
 

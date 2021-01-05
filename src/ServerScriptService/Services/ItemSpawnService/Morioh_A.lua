@@ -7,7 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Morioh_A = {}
 
 Morioh_A.Region = "Morioh"
-Morioh_A.MaxSpawned = 15
+Morioh_A.MaxSpawned = 6
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_A.Items = {
@@ -18,13 +18,24 @@ Morioh_A.Items = {
         Params = {
             DataKey = "UniversalArrow",
             DataCategory = "ArrowInventory",
-            Rarity = "Rare",
+            Rarity = "Legendary",
             ArrowName = "Universal Arrow"
         }
     },
 
     UniversalArrow_2 = {
-        Weight = 5,
+        Weight = 200,
+        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
+        Params = {
+            DataKey = "UniversalArrow",
+            DataCategory = "ArrowInventory",
+            Rarity = "Rare",
+            ArrowName = "Universal Arrow"
+        }
+    },
+
+    UniversalArrow_3 = {
+        Weight = 1000,
         Model = ReplicatedStorage.SpawnItems.UniversalArrow,
         Params = {
             DataKey = "UniversalArrow",
@@ -33,17 +44,6 @@ Morioh_A.Items = {
             ArrowName = "Universal Arrow"
         }
     },
-
-    Cash = {
-        Weight = 10,
-        Model = ReplicatedStorage.SpawnItems.Cash,
-        Params = {
-            DataKey = "Cash",
-            DataCategory = "ItemInventory",
-            MinValue = 1,
-            MaxValue = 10
-        }
-    }
 }
 
 

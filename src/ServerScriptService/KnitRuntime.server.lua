@@ -9,11 +9,11 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 -- Expose Moudles to Knit
 Knit.Shared = ReplicatedStorage.GameFiles.Shared
-Knit.Powers = ReplicatedStorage.GameFiles.Powers
-Knit.Abilities = ReplicatedStorage.GameFiles.Abilities
-Knit.Effects = ReplicatedStorage.GameFiles.Effects
+Knit.Powers = ReplicatedStorage.GameFiles.Shared.PowerModules.Powers
+Knit.Abilities = ReplicatedStorage.GameFiles.Shared.PowerModules.Abilities
+Knit.Effects = ReplicatedStorage.GameFiles.Shared.PowerModules.Effects
 Knit.ItemSpawnTables = ServerScriptService.GameFiles.Services.ItemSpawnService
-Knit.StateModules = ServerScriptService.GameFiles.Modules.StateModules
+Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 Knit.InventoryModules = ServerScriptService.GameFiles.Modules.InventoryModules
 
 -- Load all services:

@@ -63,10 +63,24 @@ StoragePanel.Button_StoreStand = StoragePanel.Panel:FindFirstChild("Button_Store
 StoragePanel.Button_SacrificeStand = StoragePanel.Panel:FindFirstChild("Button_SacrificeStand", true)
 StoragePanel.Button_EquipStand = StoragePanel.Panel:FindFirstChild("Button_EquipStand", true)
 
-
+-- confirmation pop up
+StoragePanel.Confirmation_Frame = mainGui.Windows:FindFirstChild("SacrificePopUp", true)
+StoragePanel.Confirmation_StandName = StoragePanel.Confirmation_Frame:FindFirstChild("Stand_Name", true)
+StoragePanel.Confirmation_StandLevel = StoragePanel.Confirmation_Frame:FindFirstChild("Stand_Level", true)
+StoragePanel.Confirmation_BaseValue = StoragePanel.Confirmation_Frame:FindFirstChild("Base_Value", true)
+StoragePanel.Confirmation_TotalValue = StoragePanel.Confirmation_Frame:FindFirstChild("Total_Value", true)
+StoragePanel.Confirmation_Button_DoubleOrbsPass = StoragePanel.Confirmation_Frame:FindFirstChild("Button_DoubleOrbsPass", true)
+StoragePanel.Confirmation_Button_Cancel = StoragePanel.Confirmation_Frame:FindFirstChild("Button_Cancel", true)
+StoragePanel.Confirmation_Button_Sacrifice = StoragePanel.Confirmation_Frame:FindFirstChild("Button_Sacrifice", true)
+StoragePanel.RarityBonus_Common = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Common", true)
+StoragePanel.RarityBonus_Rare = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Rare", true)
+StoragePanel.RarityBonus_Legendary = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Legendary", true)
 
 --// Setup_StandPanel ------------------------------------------------------------
 function StoragePanel.Setup()
+
+    -- make confimration popup not visible
+    StoragePanel.Confirmation_Frame.Visible = false
 
     -- make stand item template not visible
     StoragePanel.ItemTemplate.Visible = false
@@ -85,72 +99,46 @@ function StoragePanel.Setup()
 
     -- BUTTON - Store Stand
     StoragePanel.Button_StoreStand.Activated:Connect(function()
-        local hasAcces = require(Knit.StateModules.StandStorageAccess(Players.LocalPlayer)).HasAccess
+
+        local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(Players.LocalPlayer)
+
         if GamePassService:Has_GamePass("MobileStandStorage") or hasAcces == true then
             InventoryService:StoreStand()
-            --StandReveal.ActivateClose()
         else
-            --StandReveal.StorageWarning()
+            -- insert a panel here to ask the player to go to puccis or to get the pass
         end
-        --InventoryService:StoreStand() -- you can only store the active stand, so we dont need to send any data here
     end)
 
     -- BUTTON - Sacrifice Stand
     StoragePanel.Button_SacrificeStand.Activated:Connect(function()
-        InventoryService:SacrificeStand(StoragePanel.StandCardGUID) -- send the GUID of the stand shown on the stand card
+        StoragePanel.Confirmation_Frame.Visible = true
+        Knit.Controllers.GuiController.InventoryWindow.Window.Visible = false
     end)
 
     -- BUTTON - Equip Stand
     StoragePanel.Button_EquipStand.Activated:Connect(function()
         print(StoragePanel.Button_EquipStand)
     end)
+
+    -- BUTTON - Confirmation - Sacrifice
+    StoragePanel.Confirmation_Button_Sacrifice.Activated:Connect(function()
+        InventoryService:SacrificeStand(StoragePanel.StandCardGUID)
+        StoragePanel.Confirmation_Frame.Visible = false
+        Knit.Controllers.GuiController.InventoryWindow.Window.Visible = true
+    end)
+
+    -- BUTTON - Confirmation - Cancel
+    StoragePanel.Confirmation_Button_Cancel.Activated:Connect(function()
+        StoragePanel.Confirmation_Frame.Visible = false
+        Knit.Controllers.GuiController.InventoryWindow.Window.Visible = true
+    end)
+
+    -- BUTTON - Confirmation - Double Orb Pass
+    StoragePanel.Confirmation_Button_DoubleOrbsPass.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
+    end)
 end
 
---// Setup_StandButton
-function StoragePanel.Build_StandButton(list_Item, standData, buttonType)
-
-    local findPowerModule = Knit.Powers:FindFirstChild(standData.Power)
-    if findPowerModule then
-
-        -- require it
-        local powerModule = require(findPowerModule)
-
-        -- setup the list_Item text stuff
-        if list_Item:FindFirstChild("List_Item_StandName", true) then
-            local listItemName = list_Item:FindFirstChild("List_Item_StandName", true)
-            listItemName.Text = powerModule.Defs.PowerName
-            if standData.Rarity == "Common" then
-                listItemName.TextColor3 = GUI_COLOR.COMMON
-            elseif standData.Rarity == "Rare" then
-                listItemName.TextColor3 = GUI_COLOR.RARE
-            elseif standData.Rarity == "Legendary" then
-                listItemName.TextColor3 = GUI_COLOR.LEGENDARY
-            end
-        end
-
-        -- set the level on the list item
-        local listItemLevel = list_Item:FindFirstChild("List_Item_StandLevel", true)
-        if listItemLevel then
-            local level = powerUtils.GetLevelFromXp(standData.Xp)
-            listItemLevel.Text = tostring(level)
-        end
-
-        -- add the icon to the standData
-        standData.Icon = StoragePanel.Stand_Icons:FindFirstChild(standData.Power .. "_" .. standData.Rarity)
-
-        -- add sacrifice value to teh standData
-        standData.BaseValue = powerModule.Defs.BaseSacrificeValue
-
-        -- add the actual name to the standData
-        standData.Name = powerModule.Defs.PowerName
-
-        -- connect the button click
-        list_Item.Activated:Connect(function()
-            StoragePanel.Show_StandCard(standData, buttonType)
-        end)
-
-    end
-end
 
 --// Update_StandPanel ------------------------------------------------------------
 function StoragePanel.Update(currentStand, storageData)
@@ -203,7 +191,7 @@ function StoragePanel.Update(currentStand, storageData)
         newButton.Name = "TempButton"
 
         -- do the setup
-            StoragePanel.Build_StandButton(newButton, currentStand, "CurrentStand")
+        StoragePanel.Build_StandButton(newButton, currentStand, "CurrentStand")
 
     end
 
@@ -229,6 +217,53 @@ function StoragePanel.Update(currentStand, storageData)
             
         end
     end
+
+end
+
+--// Build_StandButton
+function StoragePanel.Build_StandButton(list_Item, standData, buttonType)
+
+    local findPowerModule = Knit.Powers:FindFirstChild(standData.Power)
+    if findPowerModule then
+
+        -- require it
+        local powerModule = require(findPowerModule)
+
+        -- setup the list_Item text stuff
+        if list_Item:FindFirstChild("List_Item_StandName", true) then
+            local listItemName = list_Item:FindFirstChild("List_Item_StandName", true)
+            listItemName.Text = powerModule.Defs.PowerName
+            if standData.Rarity == "Common" then
+                listItemName.TextColor3 = GUI_COLOR.COMMON
+            elseif standData.Rarity == "Rare" then
+                listItemName.TextColor3 = GUI_COLOR.RARE
+            elseif standData.Rarity == "Legendary" then
+                listItemName.TextColor3 = GUI_COLOR.LEGENDARY
+            end
+        end
+
+        -- set the level on the list item
+        local listItemLevel = list_Item:FindFirstChild("List_Item_StandLevel", true)
+        if listItemLevel then
+            local level = powerUtils.GetLevelFromXp(standData.Xp)
+            listItemLevel.Text = tostring(level)
+        end
+
+        -- add the icon to the standData
+        standData.Icon = StoragePanel.Stand_Icons:FindFirstChild(standData.Power .. "_" .. standData.Rarity)
+
+        -- add sacrifice value to teh standData
+        standData.BaseValue = powerModule.Defs.BaseSacrificeValue
+
+        -- add the actual name to the standData
+        standData.Name = powerModule.Defs.PowerName
+
+        -- connect the button click
+        list_Item.Activated:Connect(function()
+            StoragePanel.Show_StandCard(standData, buttonType)
+        end)
+
+    end
 end
 
 --// Show_StandCard
@@ -244,21 +279,30 @@ function StoragePanel.Show_StandCard(standData, buttonType)
     end
 
     -- set icon
-    newIcon = standData.Icon:Clone()
+    local newIcon = standData.Icon:Clone()
     newIcon.BorderSizePixel = 4
     newIcon.Parent = StoragePanel.StandIconFrame
     newIcon.Visible = true
     newIcon.Name = "TempIcon"
+
+    -- confirmation popup - turn off all the a raity bonus info panels
+    local allBonus_info = {StoragePanel.RarityBonus_Common,StoragePanel.RarityBonus_Rare,StoragePanel.RarityBonus_Legendary}
+    for _,frame in pairs(allBonus_info) do
+        frame.Visible = false
+    end
 
     -- set name and rarity
     StoragePanel.StandName.Text = standData.Name
     StoragePanel.StandRarity.Text = standData.Rarity
     if standData.Rarity == "Common" then
         StoragePanel.StandRarity.TextColor3 = GUI_COLOR.COMMON
+        StoragePanel.RarityBonus_Common.Visible = true
     elseif standData.Rarity == "Rare" then
         StoragePanel.StandRarity.TextColor3 = GUI_COLOR.RARE
+        StoragePanel.RarityBonus_Rare.Visible = true
     elseif standData.Rarity == "Legendary" then
         StoragePanel.StandRarity.TextColor3 = GUI_COLOR.LEGENDARY
+        StoragePanel.RarityBonus_Legendary.Visible = true
     end
 
     -- set level and xp bar
@@ -269,6 +313,12 @@ function StoragePanel.Show_StandCard(standData, buttonType)
 
     -- set base value
     StoragePanel.BaseValue.Text = standData.BaseValue
+
+    -- confirmation popup - setup
+    StoragePanel.Confirmation_StandName.Text = standData.Name
+    StoragePanel.Confirmation_StandLevel.Text = tostring(level)
+    StoragePanel.Confirmation_BaseValue.Text = standData.BaseValue
+    StoragePanel.Confirmation_TotalValue.Text = InventoryService:GetStandValue(StoragePanel.StandCardGUID)
 
     -- setup the button panel
     if buttonType == "CurrentStand" then
@@ -295,21 +345,6 @@ function StoragePanel.Show_StandCard(standData, buttonType)
     -- the the Visible settings at the end
     StoragePanel.StandCard.Visible = true
     StoragePanel.DefaultCard.Visible = false
-
-end
-
---// Request_EquipStand ------------------------------------------------------------
-function StoragePanel.Request_EquipStand()
-
-end
-
---// Request_EvolveStand ------------------------------------------------------------
-function StoragePanel.Request_EvolveStand()
-
-end
-
---// Request_SellStand ------------------------------------------------------------
-function StoragePanel.Request_SellStand()
 
 end
 

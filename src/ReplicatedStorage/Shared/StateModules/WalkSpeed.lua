@@ -27,7 +27,8 @@ function WalkSpeed.Entry_Added(player,thisEntry,params)
         newWalkSpeed = newWalkSpeed + valueObject.Value
     end
 
-    player.Character.Humanoid.WalkSpeed = newWalkSpeed
+    local humanoid = player.Character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = newWalkSpeed
 
 end
 
@@ -40,7 +41,8 @@ function WalkSpeed.Entry_Removed(player, thisState, params)
         newWalkSpeed = newWalkSpeed + valueObject.Value
     end
 
-    player.Character.Humanoid.WalkSpeed = newWalkSpeed
+    local humanoid = player.Character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = newWalkSpeed
 end
 
 --// GetModifiedValue - can be accessed from anywhere, will return DEFUALT_WALKSPEED plus all current modifiers

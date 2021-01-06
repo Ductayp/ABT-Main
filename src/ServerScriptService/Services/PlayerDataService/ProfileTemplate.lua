@@ -7,10 +7,6 @@ local module = {
 		Visits = 0
 	},
 	
-	--Character = {
-		--CurrentPower = "Standless",
-	--},
-
 	CurrentStand = {
 		Power = "Standless",
 	},
@@ -27,7 +23,9 @@ local module = {
 	
 	Modifiers = {},
 	
-	ClientSettings = {}
+	ClientSettings = {},
+
+	DeveloperProductPurchases = {}
 }
 
 return module

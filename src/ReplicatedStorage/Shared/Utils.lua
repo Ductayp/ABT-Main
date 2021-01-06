@@ -6,6 +6,7 @@ local debris = game:GetService("Debris")
 
 local module = {}
 
+-- get character form player
 function module.GetPlayerFromCharacter(character)
 	for _, player in pairs(game:GetService("Players"):GetPlayers()) do
 		if player.Character == character then
@@ -103,17 +104,11 @@ function module.NewValueObject(name,value,parent)
 end
 
 function module.GetPlayerByUserId(userId)
-	print("Utils first ",userId)
-	
 	for _, player in pairs(Players:GetPlayers()) do
-		print("Utils second ",player.UserId)
 		if player.UserId == userId then
-			print("Utils third ",player)
 			return player
 		end
 	end
 end
-
-
 
 return module

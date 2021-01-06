@@ -16,6 +16,11 @@ local GamePassService = Knit.CreateService { Name = "GamePassService", Client = 
 -- modules
 local utils = require(Knit.Shared.Utils)
 
+
+----------------------------------------------------------------------------------------------------------------
+--// GAME PASSES
+----------------------------------------------------------------------------------------------------------------
+
 -- GAME PASSES
 local gamePasses = {
     MobileStandStorage = 13434519,
@@ -23,7 +28,6 @@ local gamePasses = {
     DoubleArrowLuck = 13434798,
     DoubleOrbs = 13740628,
     ItemFinder = 13434805,
-
 }
 
 --// Has_GamePass
@@ -78,6 +82,162 @@ function GamePassService:Finished_GamePassPurchase(player, passId, wasPurchased)
     end
 end
 
+----------------------------------------------------------------------------------------------------------------
+--// DEVELOPER PRODUCTS
+----------------------------------------------------------------------------------------------------------------
+
+-- setup the callback
+MarketplaceService.ProcessReceipt = function(receiptInfo)
+    return GamePassService:ProcessReceipt(receiptInfo)
+end
+
+-- DEV PRODUCTS
+local devProducts = {}
+
+devProducts.Cash_A = {}
+devProducts.Cash_A.ProductId = 1137882746
+devProducts.Cash_A.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "Cash",
+    Value = 1000,
+    Source = "DeveloperProduct"
+}
+
+
+devProducts.Cash_B = {}
+devProducts.Cash_B.ProductId = 1137883156
+devProducts.Cash_B.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "Cash",
+    Value = 10000,
+    Source = "DeveloperProduct"
+}
+
+devProducts.Cash_C = {}
+devProducts.Cash_C.ProductId = 1137883275
+devProducts.Cash_C.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "Cash",
+    Value = 50000,
+    Source = "DeveloperProduct"
+}
+
+devProducts.Cash_D = {}
+devProducts.Cash_D.ProductId = 1137883348
+devProducts.Cash_D.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "Cash",
+    Value = 100000,
+    Source = "DeveloperProduct"
+}
+
+devProducts.Orbs_A = {}
+devProducts.Orbs_A.ProductId = 1137883425
+devProducts.Orbs_A.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "SoulOrb",
+    Value = 100,
+    Source = "DeveloperProduct"
+}
+
+devProducts.Orbs_B = {}
+devProducts.Orbs_B.ProductId = 1137883502
+devProducts.Orbs_B.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "SoulOrb",
+    Value = 1000,
+    Source = "DeveloperProduct"
+}
+
+devProducts.Orbs_C = {}
+devProducts.Orbs_C.ProductId = 1137883593
+devProducts.Orbs_C.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "SoulOrb",
+    Value = 5000,
+    Source = "DeveloperProduct"
+}
+
+devProducts.Orbs_D = {}
+devProducts.Orbs_D.ProductId = 1137883674
+devProducts.Orbs_D.Params = {
+    DataCategory = "ItemInventory",
+    DataKey = "SoulOrb",
+    Value = 10000,
+    Source = "DeveloperProduct"
+}
+
+
+--// Prompt_ProductPurchase
+function GamePassService:Prompt_ProductPurchase(player, productName)
+    print(player, productName)
+    local productId = devProducts[productName].ProductId
+    MarketplaceService:PromptProductPurchase(player, productId)
+end
+
+--// Client.Prompt_ProductPurchase
+function GamePassService.Client:Prompt_ProductPurchase(player, productName)
+    self.Server:Prompt_ProductPurchase(player, productName)
+end
+
+--// ProcessReceipt
+function GamePassService:ProcessReceipt(receiptInfo)
+
+    print(receiptInfo)
+
+    if receiptInfo then
+        -- get the player by their PlayerId
+        local player = utils.GetPlayerByUserId(receiptInfo.PlayerId)
+        if player then
+
+            -- get the players data
+            local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+            -- check if this product has already been granted
+            local purchaseExists = false
+            for key,value in pairs(playerData.DeveloperProductPurchases) do
+                if key == receiptInfo.PurchaseId then
+                    purchaseExists = true
+                end
+            end
+
+            -- process the results
+            if purchaseExists then
+                print("puchase already existed, NOPERS!")
+
+                -- return to Roblox that we did not give the product
+                return Enum.ProductPurchaseDecision.NotProcessedYet
+            else
+                print(player," bought a dev product with this PurchaseId: ", receiptInfo.PurchaseId)
+
+                -- add this to the layers table so we dont buy it again
+                playerData.DeveloperProductPurchases[receiptInfo.PurchaseId] = receiptInfo.CurrencySpent
+
+                -- find the dev product by the productId sent
+                for _, productTable in pairs(devProducts) do
+                    if productTable.ProductId == receiptInfo.ProductId then
+                        Knit.Services.InventoryService:GiveItemToPlayer(player, productTable.Params)
+                        print("Match!")
+                        print(productTable.ProductId, productTable.Params.DataKey, productTable.Params.Value, productTable.Params.DataCategory)
+                    end
+                end
+
+
+
+                -- return to Roblox we successfully processed this
+                return Enum.ProductPurchaseDecision.PurchaseGranted
+            end
+            
+        end
+
+    end
+
+end
+
+----------------------------------------------------------------------------------------------------------------
+--// Service Utility
+----------------------------------------------------------------------------------------------------------------
+
 --// PlayerAdded
 function GamePassService:PlayerAdded(player)
 
@@ -102,6 +262,7 @@ end
 
 --// KnitStart
 function GamePassService:KnitStart()
+
 
 end
 
@@ -132,5 +293,6 @@ function GamePassService:KnitInit()
     end)
 
 end
+
 
 return GamePassService

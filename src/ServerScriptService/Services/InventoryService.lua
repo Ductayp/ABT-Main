@@ -51,17 +51,22 @@ function InventoryService:GiveItemToPlayer(player, params)
             playerData.ItemInventory[params.DataKey] = 0
         end
 
-        if Knit.Services.GamePassService:Has_GamePass(player, "DoubleCash") then
-            value = value * 2
+        -- Double cash if they have the gamepass
+        if params.DataKey == "Cash" then
+            if Knit.Services.GamePassService:Has_GamePass(player, "DoubleCash") then
+                value = value * 2
+            end
+        end
+
+        -- Double sould orbs if they have the gamepass
+        if params.DataKey == "SoulOrb" then
+            if Knit.Services.GamePassService:Has_GamePass(player, "DoubleOrbs") then
+                value = value * 2
+            end
         end
 
         playerData.ItemInventory[params.DataKey] += value
 
-    end
-
-    -- Cash - fire Gui Updates
-    if params.DataKey == "Cash" then
-        Knit.Services.GuiService:Update_Gui(player, "Cash")
     end
 
     -- Arrows
@@ -76,6 +81,13 @@ function InventoryService:GiveItemToPlayer(player, params)
         Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
         
     end
+
+    -- Gui Updates
+    -- Cash 
+    if params.DataKey == "Cash" then
+        Knit.Services.GuiService:Update_Gui(player, "Cash")
+    end
+
 end
 
 --// UseArrow

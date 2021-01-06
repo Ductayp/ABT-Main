@@ -36,12 +36,12 @@ function LeftGui.Setup()
 
     LeftGui.Codes_Button.Activated:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
-        --self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Arrow_Panel)
+        
     end)
 
     LeftGui.Shop_Button.Activated:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
-        --self:ActivatePanel(defs.MainWindow, defs.MainWindow.Panels.Storage_Panel)
+        Knit.Controllers.GuiController.ShopWindow.Open()
     end)
 end
 

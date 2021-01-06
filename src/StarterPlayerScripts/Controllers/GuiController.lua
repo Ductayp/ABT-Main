@@ -21,12 +21,16 @@ local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- gui modules
+GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
 GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
 GuiController.ArrowPanel = require(Knit.GuiModules.ArrowPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
 GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
-GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
+
+
+GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
+GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
 
 -- Gui Defs
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
@@ -50,12 +54,15 @@ end
 function GuiController:KnitStart()
 
     -- do some setups NEW NEW NEW
+    GuiController.InventoryWindow.Setup()
     GuiController.StoragePanel.Setup()
     GuiController.ArrowPanel.Setup()
     GuiController.StandReveal.Setup()
     GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
-    GuiController.InventoryWindow.Setup()
+    
+    GuiController.ShopWindow.Setup()
+    GuiController.ShopWindow_LootPanel.Setup()
 
 
     -- request Gui Updates

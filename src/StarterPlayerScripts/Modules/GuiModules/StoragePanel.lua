@@ -150,9 +150,6 @@ function StoragePanel.Setup()
             Knit.Controllers.GuiController.InventoryWindow.Window.Visible = false
             StoragePanel.Warning_Frame.Visible = true
         end
-
-        
-
     end)
 
     -- BUTTON - Confirmation - Sacrifice

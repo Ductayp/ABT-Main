@@ -67,7 +67,8 @@ function GuiController:KnitStart()
 
     -- request Gui Updates
     self:Request_GuiUpdate("ArrowPanel")
-    self:Request_GuiUpdate("Cash")
+    self:Request_GuiUpdate("Currency")
+    self:Request_GuiUpdate("SoulOrb")
     self:Request_GuiUpdate("StoragePanel")
     self:Request_GuiUpdate("BottomGUI")
 
@@ -77,8 +78,8 @@ function GuiController:KnitStart()
         GuiController.ArrowPanel.Update(data)
     end)
 
-    GuiService.Event_Update_Cash:Connect(function(value)
-        GuiController.LeftGui.Update_Cash(value)
+    GuiService.Event_Update_Currency:Connect(function(value)
+        GuiController.ShopWindow.Update_Currency(value)
     end)
 
     GuiService.Event_Update_BottomGUI:Connect(function(data)

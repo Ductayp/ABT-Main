@@ -145,8 +145,8 @@ end
 
 --// Request_UseArrow ------------------------------------------------------------
 function ArrowPanel.Request_UseArrow(params,button)
-    local currentPower = PowersService:GetCurrentPower()
-    if currentPower == "Standless" then
+    local currentPowerData = PowersService:GetCurrentPower()
+    if currentPowerData.Power == "Standless" then
         InventoryService:UseArrow(params)
     else
         print("USE ARROW BUTTON: You Must Be Standless")

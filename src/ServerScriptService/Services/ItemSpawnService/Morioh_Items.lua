@@ -1,16 +1,16 @@
--- Morioh_A Spawn Table
+-- Morioh_Items Spawn Table
 -- PDab
 -- 12/14/2020
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Morioh_A = {}
+local Morioh_Items = {}
 
-Morioh_A.Region = "Morioh"
-Morioh_A.MaxSpawned = 6
+Morioh_Items.Region = "Morioh"
+Morioh_Items.MaxSpawned = 6
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
-Morioh_A.Items = {
+Morioh_Items.Items = {
 
     UniversalArrow_1 = {
         Weight = 1,
@@ -49,4 +49,4 @@ Morioh_A.Items = {
 
 
 
-return Morioh_A
+return Morioh_Items

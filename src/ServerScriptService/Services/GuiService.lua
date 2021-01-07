@@ -17,10 +17,11 @@ local utils = require(Knit.Shared.Utils)
 
 -- events
 GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
-GuiService.Client.Event_Update_Cash = RemoteEvent.new()
+GuiService.Client.Event_Update_Currency = RemoteEvent.new()
 GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
+
 
 --// Update_Gui
 function GuiService:Update_Gui(player, requestName, optionalParams)
@@ -31,8 +32,8 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         self.Client.Event_Update_ArrowPanel:Fire(player, playerData.ArrowInventory)
     end
 
-    if requestName == "Cash" then
-        self.Client.Event_Update_Cash:Fire(player, playerData.ItemInventory.Cash)
+    if requestName == "Currency" then
+        self.Client.Event_Update_Currency:Fire(player, playerData.Currency)
     end
 
     if requestName == "BottomGUI" then

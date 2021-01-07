@@ -33,7 +33,7 @@ function InventoryService:GiveItemToPlayer(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     -- Regular Items
-    if params.DataCategory == "ItemInventory" then
+    if params.DataCategory == "Currency" then
 
         -- give the default value of 1 or give the amount in params.Value
         local value = 1 
@@ -51,21 +51,25 @@ function InventoryService:GiveItemToPlayer(player, params)
             playerData.ItemInventory[params.DataKey] = 0
         end
 
-        -- Double cash if they have the gamepass
-        if params.DataKey == "Cash" then
-            if Knit.Services.GamePassService:Has_GamePass(player, "DoubleCash") then
-                value = value * 2
+        -- do the 2x modifiers only if these didnt come from a dev product
+        if params.Source ~= "GamePassService" then 
+
+            -- Double cash if they have the gamepass
+            if params.DataKey == "Cash" then
+                if Knit.Services.GamePassService:Has_GamePass(player, "DoubleCash") then
+                    value = value * 2
+                end
+            end
+
+            -- Double sould orbs if they have the gamepass
+            if params.DataKey == "SoulOrbs" then
+                if Knit.Services.GamePassService:Has_GamePass(player, "DoubleOrbs") then
+                    value = value * 2
+                end
             end
         end
 
-        -- Double sould orbs if they have the gamepass
-        if params.DataKey == "SoulOrb" then
-            if Knit.Services.GamePassService:Has_GamePass(player, "DoubleOrbs") then
-                value = value * 2
-            end
-        end
-
-        playerData.ItemInventory[params.DataKey] += value
+        playerData.Currency[params.DataKey] += value
 
     end
 
@@ -85,7 +89,10 @@ function InventoryService:GiveItemToPlayer(player, params)
     -- Gui Updates
     -- Cash 
     if params.DataKey == "Cash" then
-        Knit.Services.GuiService:Update_Gui(player, "Cash")
+        Knit.Services.GuiService:Update_Gui(player, "Currency")
+    end
+    if params.DataKey == "SoulOrbs" then
+        Knit.Services.GuiService:Update_Gui(player, "Currency")
     end
 
 end
@@ -222,21 +229,11 @@ function InventoryService:GetStandValue(player, GUID)
     
             -- get the values
             local level = powerUtils.GetLevelFromXp(thisXp)
-            local unmodifiedValue = level * powerModule.Defs.BaseSacrificeValue
-            print(powerModule.Defs.BaseSacrificeValue)
-            
-            if thisRarity == "Common" then
-                finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_COMMON)
-            elseif thisRarity == "Rare" then
-                finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_RARE)
-            elseif thisRarity == "Legendary" then
-                finalValue = unmodifiedValue + (unmodifiedValue * SACRIFICE_BONUS_LEGENDARY)
-            end  
+            finalValue = level * powerModule.Defs.SacrificeValue[thisRarity]
         end
     end
 
     return finalValue
-
 end
 
 --// SacrificeStand
@@ -256,8 +253,8 @@ function InventoryService:SacrificeStand(player, GUID)
 
     -- give the soul orbs to player
     local params = {}
-    params.DataCategory = "ItemInventory"
-    params.DataKey = "SoulOrb"
+    params.DataCategory = "Currency"
+    params.DataKey = "SoulOrbs"
     params.Value = self:GetStandValue(player, GUID)
     self:GiveItemToPlayer(player, params)
 

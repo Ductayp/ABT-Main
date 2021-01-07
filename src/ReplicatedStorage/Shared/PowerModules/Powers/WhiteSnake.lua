@@ -26,14 +26,16 @@ WhiteSnake.Defs = {
 
     -- just some general defs here
     PowerName = "White Snake",
-    StandModel = ReplicatedStorage.EffectParts.StandModels.WhiteSnake,
-    BaseSacrificeValue = 10,
-
-    -- only include true values of immunities, if they are not immune then dont have anything in here
-    Immunities = {
-        TimeStop = true
+    SacrificeValue = {
+        Common = 5,
+        Rare = 15,
+        Legendary = 60,
     },
-
+    StandModels = {
+        Common = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Common,
+        Rare = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Rare,
+        Legendary = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Legendary,
+    },
     Abilities = {
 
         EquipStand = {

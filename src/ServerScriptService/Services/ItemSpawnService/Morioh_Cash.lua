@@ -17,7 +17,7 @@ Morioh_Cash.Items = {
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",
-            DataCategory = "ItemInventory",
+            DataCategory = "Currency",
             MinValue = 10,
             MaxValue = 50
         }
@@ -28,7 +28,7 @@ Morioh_Cash.Items = {
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",
-            DataCategory = "ItemInventory",
+            DataCategory = "Currency",
             MinValue = 1,
             MaxValue = 10
         }

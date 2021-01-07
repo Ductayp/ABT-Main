@@ -97,74 +97,74 @@ local devProducts = {}
 devProducts.Cash_A = {}
 devProducts.Cash_A.ProductId = 1137882746
 devProducts.Cash_A.Params = {
-    DataCategory = "ItemInventory",
+    DataCategory = "Currency",
     DataKey = "Cash",
     Value = 1000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 
 devProducts.Cash_B = {}
 devProducts.Cash_B.ProductId = 1137883156
 devProducts.Cash_B.Params = {
-    DataCategory = "ItemInventory",
+    DataCategory = "Currency",
     DataKey = "Cash",
     Value = 10000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 devProducts.Cash_C = {}
 devProducts.Cash_C.ProductId = 1137883275
 devProducts.Cash_C.Params = {
-    DataCategory = "ItemInventory",
+    DataCategory = "Currency",
     DataKey = "Cash",
     Value = 50000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 devProducts.Cash_D = {}
 devProducts.Cash_D.ProductId = 1137883348
 devProducts.Cash_D.Params = {
-    DataCategory = "ItemInventory",
+    DataCategory = "Currency",
     DataKey = "Cash",
     Value = 100000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 devProducts.Orbs_A = {}
 devProducts.Orbs_A.ProductId = 1137883425
 devProducts.Orbs_A.Params = {
-    DataCategory = "ItemInventory",
-    DataKey = "SoulOrb",
+    DataCategory = "Currency",
+    DataKey = "SoulOrbs",
     Value = 100,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 devProducts.Orbs_B = {}
 devProducts.Orbs_B.ProductId = 1137883502
 devProducts.Orbs_B.Params = {
-    DataCategory = "ItemInventory",
-    DataKey = "SoulOrb",
+    DataCategory = "Currency",
+    DataKey = "SoulOrbs",
     Value = 1000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 devProducts.Orbs_C = {}
 devProducts.Orbs_C.ProductId = 1137883593
 devProducts.Orbs_C.Params = {
-    DataCategory = "ItemInventory",
-    DataKey = "SoulOrb",
+    DataCategory = "Currency",
+    DataKey = "SoulOrbs",
     Value = 5000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 devProducts.Orbs_D = {}
 devProducts.Orbs_D.ProductId = 1137883674
 devProducts.Orbs_D.Params = {
-    DataCategory = "ItemInventory",
-    DataKey = "SoulOrb",
+    DataCategory = "Currency",
+    DataKey = "SoulOrbs",
     Value = 10000,
-    Source = "DeveloperProduct"
+    Source = "GamePassService"
 }
 
 

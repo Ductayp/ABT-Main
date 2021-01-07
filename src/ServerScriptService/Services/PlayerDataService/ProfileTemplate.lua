@@ -11,6 +11,10 @@ local module = {
 		Power = "Standless",
 	},
 
+	Currency = {
+		Cash = 0,
+		SoulOrbs = 0,
+	},
 	
 	ItemInventory = {},
 

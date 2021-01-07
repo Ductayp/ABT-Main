@@ -72,9 +72,6 @@ StoragePanel.Confirmation_TotalValue = StoragePanel.Confirmation_Frame:FindFirst
 StoragePanel.Confirmation_Button_DoubleOrbsPass = StoragePanel.Confirmation_Frame:FindFirstChild("Button_DoubleOrbsPass", true)
 StoragePanel.Confirmation_Button_Cancel = StoragePanel.Confirmation_Frame:FindFirstChild("Button_Cancel", true)
 StoragePanel.Confirmation_Button_Sacrifice = StoragePanel.Confirmation_Frame:FindFirstChild("Button_Sacrifice", true)
-StoragePanel.RarityBonus_Common = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Common", true)
-StoragePanel.RarityBonus_Rare = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Rare", true)
-StoragePanel.RarityBonus_Legendary = StoragePanel.Confirmation_Frame:FindFirstChild("RarityBonus_Legendary", true)
 
 -- Storage Warning
 StoragePanel.Warning_Frame = mainGui.Windows:FindFirstChild("StorageWarningPopUp", true)
@@ -288,7 +285,7 @@ function StoragePanel.Build_StandButton(list_Item, standData, buttonType)
         -- require it
         local powerModule = require(findPowerModule)
 
-        -- setup the list_Item text stuff
+        -- rarity based stuff
         if list_Item:FindFirstChild("List_Item_StandName", true) then
             local listItemName = list_Item:FindFirstChild("List_Item_StandName", true)
             listItemName.Text = powerModule.Defs.PowerName
@@ -311,8 +308,9 @@ function StoragePanel.Build_StandButton(list_Item, standData, buttonType)
         -- add the icon to the standData
         standData.Icon = StoragePanel.Stand_Icons:FindFirstChild(standData.Power .. "_" .. standData.Rarity)
 
-        -- add sacrifice value to teh standData
-        standData.BaseValue = powerModule.Defs.BaseSacrificeValue
+        -- add sacrifice value to the standData
+        standData.BaseValue = powerModule.Defs.SacrificeValue[standData.Rarity]
+        --standData.BaseValue = powerModule.Defs.BaseSacrificeValue
 
         -- add the actual name to the standData
         standData.Name = powerModule.Defs.PowerName
@@ -355,21 +353,19 @@ function StoragePanel.Show_StandCard(standData, buttonType)
     StoragePanel.StandRarity.Text = standData.Rarity
     if standData.Rarity == "Common" then
         StoragePanel.StandRarity.TextColor3 = GUI_COLOR.COMMON
-        StoragePanel.RarityBonus_Common.Visible = true
     elseif standData.Rarity == "Rare" then
         StoragePanel.StandRarity.TextColor3 = GUI_COLOR.RARE
-        StoragePanel.RarityBonus_Rare.Visible = true
     elseif standData.Rarity == "Legendary" then
         StoragePanel.StandRarity.TextColor3 = GUI_COLOR.LEGENDARY
-        StoragePanel.RarityBonus_Legendary.Visible = true
     end
 
     -- set level and xp bar
     local level, remainingPercent = powerUtils.GetLevelFromXp(standData.Xp)
     StoragePanel.Level.Text = tostring(level)
-    local width = remainingPercent / 100
+    local width = math.floor((remainingPercent / 100) + 1)
     StoragePanel.XpBar.Size = UDim2.new(width, StoragePanel.XpBar.Size.X.Offset, StoragePanel.XpBar.Size.Y.Scale, StoragePanel.XpBar.Size.Y.Offset)
 
+    print("standData",standData)
     -- set base value
     StoragePanel.BaseValue.Text = standData.BaseValue
 

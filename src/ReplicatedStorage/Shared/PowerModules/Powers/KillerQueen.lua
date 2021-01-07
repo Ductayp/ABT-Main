@@ -26,8 +26,17 @@ KillerQueen.Defs = {
 
     -- just some general defs here
     PowerName = "Killer Queen",
-    StandModel = ReplicatedStorage.EffectParts.StandModels.KillerQueen,
-    BaseSacrificeValue = 10,
+    SacrificeValue = {
+        Common = 20,
+        Rare = 25,
+        Legendary = 30,
+    },
+    StandModels = {
+        Common = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Common,
+        Rare = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Rare,
+        Legendary = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Legendary,
+    },
+    
 
     -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {

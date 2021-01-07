@@ -27,7 +27,9 @@ local PowersService = Knit.GetService("PowersService")
 function PowersController:InitializePower(params)
 
     params.SystemStage = "Intialize"
-    params.PowerID = PowersService:GetCurrentPower(Players.LocalPlayer)
+    local powerData = PowersService:GetCurrentPower(Players.LocalPlayer)
+    params.PowerID = powerData.Power
+    params.PowerRarity = powerData.Rarity
 
     -- if we find the powerModule, then run its INITIALIZE stage
     local powerModule

@@ -26,8 +26,16 @@ GoldExperience.Defs = {
 
     -- just some general defs here
     PowerName = "Gold Experience",
-    StandModel = ReplicatedStorage.EffectParts.StandModels.GoldExperience,
-    BaseSacrificeValue = 10,
+    SacrificeValue = {
+        Common = 10,
+        Rare = 20,
+        Legendary = 40,
+    },
+    StandModels = {
+        Common = ReplicatedStorage.EffectParts.StandModels.GoldExperience_Common,
+        Rare = ReplicatedStorage.EffectParts.StandModels.GoldExperience_Rare,
+        Legendary = ReplicatedStorage.EffectParts.StandModels.GoldExperience_Legendary,
+    },
 
     -- only include true values of immunities, if they are not immune then dont have anything in here
     Immunities = {

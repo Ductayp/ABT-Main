@@ -32,9 +32,25 @@ ShopWindow.ArrowsPanel = ShopWindow.Window:FindFirstChild("ShopWindow_ArrowPanel
 ShopWindow.PassesPanel = ShopWindow.Window:FindFirstChild("ShopWindow_PassesPanel", true)
 ShopWindow.BoostsPanel = ShopWindow.Window:FindFirstChild("ShopWindow_BoostsPanel", true)
 
+-- update values
+ShopWindow.Current_Cash = ShopWindow.Window:FindFirstChild("Current_Cash", true)
+ShopWindow.Current_SoulOrbs = ShopWindow.Window:FindFirstChild("Current_SoulOrbs", true)
+
 ShopWindow.All_Panels = {ShopWindow.LootPanel, ShopWindow.ArrowsPanel, ShopWindow.PassesPanel, ShopWindow.BoostsPanel}
 
 local DEFAULT_PANEL = ShopWindow.LootPanel
+
+--// UpdateCash
+function ShopWindow.Update_Currency(data)
+    print(data)
+    ShopWindow.Current_Cash.Text = data.Cash
+    ShopWindow.Current_SoulOrbs.Text = data.SoulOrbs
+end
+
+--// UpdateCash
+function ShopWindow.Update_SoulOrb(value)
+    ShopWindow.Current_SoulOrbs.Text = value
+end
 
 --// Setup
 function ShopWindow.Setup()

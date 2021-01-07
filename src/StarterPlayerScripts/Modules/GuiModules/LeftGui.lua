@@ -47,10 +47,7 @@ end
 
 --// UpdateCash ------------------------------------------------------------
 function LeftGui.Update_Cash(value)
-    for i = 1,3 do
-        LeftGui.Cash_Value.Text = math.random(1,99999)
-        wait(.1)
-    end
+
     if value ~= nil then
         LeftGui.Cash_Value.Text = value
     end

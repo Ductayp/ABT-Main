@@ -37,8 +37,16 @@ TheWorld.Defs = {
 
     -- just some general defs here
     PowerName = "The World",
-    StandModel = ReplicatedStorage.EffectParts.StandModels.TheWorld,
-    BaseSacrificeValue = 10,
+    SacrificeValue = {
+        Common = 10,
+        Rare = 20,
+        Legendary = 40,
+    },
+    StandModels = {
+        Common = ReplicatedStorage.EffectParts.StandModels.TheWorld_Common,
+        Rare = ReplicatedStorage.EffectParts.StandModels.TheWorld_Rare,
+        Legendary = ReplicatedStorage.EffectParts.StandModels.TheWorld_Legendary,
+    },
 
     Abilities = {
 
@@ -203,7 +211,8 @@ function TheWorld.EquipStand(initPlayer,params)
          if params.KeyState == "InputBegan" then
             if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
                 powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon)
-                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModel)
+                print("params yo",params)
+                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModels[params.PowerRarity])
             else
                 powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon)
                 ManageStand.RemoveStand(initPlayer)            

@@ -39,9 +39,7 @@ function PowersService:ActivatePower(player,params)
     if params.CanRun == true then
         self.Client.ExecutePower:FireAll(player,params)
     end
-
 end
-
 
 --// Client:ActivatePower -- fired by client to activate apower
 function PowersService.Client:ClientActivatePower(player,params)
@@ -52,7 +50,7 @@ end
 function PowersService.Client:GetCurrentPower(player)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local currentPower = playerData.CurrentStand.Power
+    local currentPower = playerData.CurrentStand
 
     return currentPower
 end

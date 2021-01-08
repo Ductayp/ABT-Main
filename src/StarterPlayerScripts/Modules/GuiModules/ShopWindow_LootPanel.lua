@@ -46,7 +46,7 @@ function ShopWindow_LootPanel.Setup()
 
     -- Button_Cash3
     ShopWindow_LootPanel.Button_Cash3.Activated:Connect(function()
-        GamePassService:Prompt_ProductPurchase("Cash_D")
+        GamePassService:Prompt_ProductPurchase("Cash_C")
     end)
 
     -- Button_Cash4

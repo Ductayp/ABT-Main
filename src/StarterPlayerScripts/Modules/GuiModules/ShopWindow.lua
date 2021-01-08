@@ -21,14 +21,14 @@ ShopWindow.Window = mainGui.Windows:FindFirstChild("ShopWindow", true)
 
 -- main buttons
 ShopWindow.MainButton_Loot = ShopWindow.Window:FindFirstChild("MainButton_Loot", true)
-ShopWindow.MainButton_Arrows = ShopWindow.Window:FindFirstChild("MainButton_Arrows", true)
+ShopWindow.MainButton_Storage = ShopWindow.Window:FindFirstChild("MainButton_Storage", true)
 ShopWindow.MainButton_Passes = ShopWindow.Window:FindFirstChild("MainButton_Passes", true)
 ShopWindow.MainButton_Boosts = ShopWindow.Window:FindFirstChild("MainButton_Boosts", true)
 ShopWindow.MainButton_Close = ShopWindow.Window:FindFirstChild("MainButton_Close", true)
 
 -- panels
 ShopWindow.LootPanel = ShopWindow.Window:FindFirstChild("ShopWindow_LootPanel", true)
-ShopWindow.ArrowsPanel = ShopWindow.Window:FindFirstChild("ShopWindow_ArrowPanel", true)
+ShopWindow.StoragePanel = ShopWindow.Window:FindFirstChild("ShopWindow_StoragePanel", true)
 ShopWindow.PassesPanel = ShopWindow.Window:FindFirstChild("ShopWindow_PassesPanel", true)
 ShopWindow.BoostsPanel = ShopWindow.Window:FindFirstChild("ShopWindow_BoostsPanel", true)
 
@@ -36,20 +36,15 @@ ShopWindow.BoostsPanel = ShopWindow.Window:FindFirstChild("ShopWindow_BoostsPane
 ShopWindow.Current_Cash = ShopWindow.Window:FindFirstChild("Current_Cash", true)
 ShopWindow.Current_SoulOrbs = ShopWindow.Window:FindFirstChild("Current_SoulOrbs", true)
 
-ShopWindow.All_Panels = {ShopWindow.LootPanel, ShopWindow.ArrowsPanel, ShopWindow.PassesPanel, ShopWindow.BoostsPanel}
+ShopWindow.All_Panels = {ShopWindow.LootPanel, ShopWindow.StoragePanel, ShopWindow.PassesPanel, ShopWindow.BoostsPanel}
 
 local DEFAULT_PANEL = ShopWindow.LootPanel
 
---// UpdateCash
+--// Update_Currency
 function ShopWindow.Update_Currency(data)
-    print(data)
+
     ShopWindow.Current_Cash.Text = data.Cash
     ShopWindow.Current_SoulOrbs.Text = data.SoulOrbs
-end
-
---// UpdateCash
-function ShopWindow.Update_SoulOrb(value)
-    ShopWindow.Current_SoulOrbs.Text = value
 end
 
 --// Setup
@@ -61,13 +56,13 @@ function ShopWindow.Setup()
     -- MainButton_Loot
     ShopWindow.MainButton_Loot.Activated:Connect(function()
         ShopWindow.CloseAllPanels()
-        ShopWindow.LooPanel.Visible = true
+        ShopWindow.LootPanel.Visible = true
     end)
 
     -- MainButton_Arrows
-    ShopWindow.MainButton_Arrows.Activated:Connect(function()
+    ShopWindow.MainButton_Storage.Activated:Connect(function()
         ShopWindow.CloseAllPanels()
-        ShopWindow.ArrowsPanel.Visible = true
+        ShopWindow.StoragePanel.Visible = true
     end)
 
     -- MainButton_Passes

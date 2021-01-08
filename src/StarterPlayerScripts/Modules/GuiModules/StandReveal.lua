@@ -144,9 +144,9 @@ function StandReveal.StorageWarning()
         local originalText = StandReveal.Store_Button.Text
         local originalBackgroundColor = StandReveal.Store_Button.BackgroundColor3
 
-        StandReveal.Store_Button.Size = defs.Stand_Reveal.Buttons.Store_Button.Size + UDim2.new(.01,0,.01,0)
+        StandReveal.Store_Button.Size = StandReveal.Store_Button.Size + UDim2.new(.01,0,.01,0)
         StandReveal.Store_Button.BackgroundColor3 = Color3.new(45/255, 45/255, 45/255)
-        StandReveals.Store_Button.TextColor3 = Color3.new(255/255, 0/255, 0/255)
+        StandReveal.Store_Button.TextColor3 = Color3.new(255/255, 0/255, 0/255)
         StandReveal.Store_Button.Text = "NOPE"
         StandReveal.Store_Button.Active = false
 

@@ -52,7 +52,7 @@ TheWorld.Defs = {
 
         EquipStand = {
             Name = "Equip Stand",
-            Cooldown = 5
+            Cooldown = 1
         },
 
         Barrage = {

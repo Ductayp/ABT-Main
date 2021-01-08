@@ -17,7 +17,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- constants
 local INITIAL_WAIT = 5
-local SPAWN_LOOP_TIME = 1 -- is set at 1 for testing, but we should probbaly be much slower like 10 or more later on
+local SPAWN_LOOP_TIME = 20 -- is set at 1 for testing, but we should probbaly be much slower like 10 or more later on
 
 -- variables & stuff :)
 ItemSpawnService.CanSpawn = false

@@ -28,6 +28,7 @@ local gamePasses = {
     DoubleArrowLuck = 13434798,
     DoubleOrbs = 13740628,
     ItemFinder = 13434805,
+    DoubleExperience = 13855263,
 }
 
 --// Has_GamePass

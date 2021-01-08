@@ -12,8 +12,8 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Default Stand Anchor Offsets
 local anchors = {}
-anchors.Idle = CFrame.new(-2, -1.75, -3)
-anchors.Front = CFrame.new(0, 0, 4)
+anchors.Idle = CFrame.new(2,1,2.5)
+anchors.Front = CFrame.new(0,0,-2)
 anchors.StandJump = CFrame.new(0,1.2,2)
 
 local ManageStand = {}
@@ -39,41 +39,26 @@ function ManageStand.EquipStand(initPlayer,standModel)
 	end
 
 	-- cframe and weld
-	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame --initPlayerRoot.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
-
-	local newWeld = Instance.new("Weld")
-	newWeld.Name = "StandWeld"
-	newWeld.C1 =  CFrame.new(0, 0, 0)
-	newWeld.Part0 = initPlayerRoot
-	newWeld.Part1 = newStand.HumanoidRootPart
-	newWeld.Parent = newStand.HumanoidRootPart
-
-	-- do the auras
-	ManageStand.Aura_On(initPlayer,params)
+	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
+	utils.EasyWeld(newStand.HumanoidRootPart,initPlayerRoot,newStand)
+	
+	-- pop some particles
+	powerUtils.WeldParticles(newStand.HumanoidRootPart.CFrame.Position,initPlayerRoot,newStand.Particles.MoveStand,1) -- weld burst particles
+	powerUtils.WeldParticles(newStand.Head.CFrame.Position,initPlayerRoot,newStand.Particles.MoveStand,1)
 	wait(.5)
-	spawn(function()
-		wait(5)
-		ManageStand.Aura_Off(initPlayer,params)
-	end)
 
-	local spawnTween = TweenService:Create(newWeld,TweenInfo.new(.5),{C1 = anchors.Idle})
-	spawnTween:Play()
-
-	-- tween character transparency
-	for i, v in pairs (newStand:GetChildren()) do
+	-- Tween transparency
+	local tweenDuration = .5
+	for i,v in pairs(newStand:GetDescendants()) do
 		if v:IsA("BasePart") then
-			if v.Name ~= "HumanoidRootPart" then
-				local thisTween = TweenService:Create(v,TweenInfo.new(.5),{Transparency = 0})
+			if v.Name == "HumanoidRootPart" then
+				--print("nope")
+			elseif v.Parent.Name == "NoTween" then
+				--print("nope")
+			else
+				local thisTween = TweenService:Create(v,TweenInfo.new(tweenDuration),{Transparency = 0})
 				thisTween:Play()
 			end
-		end
-	end
-
-	-- tween stand parts transparency
-	for i, v in pairs (newStand.StandParts:GetChildren()) do
-		if v:IsA("BasePart") then
-			local thisTween = TweenService:Create(v,TweenInfo.new(.2),{Transparency = 0})
-			thisTween:Play()
 		end
 	end
 
@@ -88,7 +73,7 @@ function ManageStand.EquipStand(initPlayer,standModel)
 		end)
 	end
 
-	-- run the idle animation
+	-- run the idles animation
 	local animationController = newStand:FindFirstChild("AnimationController")
 	if animationController then
 		local idleAnimation = animationController:FindFirstChild("Idle")
@@ -100,6 +85,10 @@ function ManageStand.EquipStand(initPlayer,standModel)
 		end
 	end
 
+	-- setup trails
+	for i,v in pairs (newStand.Trails.Idle:GetChildren()) do 
+		v.Enabled = true
+	end
 end
 
 --// removes the stand for the target player
@@ -108,28 +97,17 @@ function ManageStand.RemoveStand(initPlayer,params)
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
-	-- do the auras
-	ManageStand.Aura_On(initPlayer,params)
-	wait(.2)
-	spawn(function()
-		wait(1)
-		ManageStand.Aura_Off(initPlayer,params)
-	end)
-
 	-- if theres a stand, get rid of it
 	if targetStand then
-		
+		targetStand.Trails:Destroy()
+		powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayerRoot,targetStand.Particles.MoveStand,1) -- weld burst particles
+
 		local noTweenFolder = targetStand:FindFirstChild("NoTween")
 		if noTweenFolder then
 			for i,v in pairs (noTweenFolder:GetChildren()) do 
 				v:Destroy()
 			end
 		end
-
-		-- weld tween
-		local thisWeld = targetStand:FindFirstChild("StandWeld", true)
-		local spawnTween = TweenService:Create(thisWeld,TweenInfo.new(.5),{C1 = CFrame.new(0,0,0)})
-		spawnTween:Play()
 		
 		-- Tween transparency
 		local tweenDuration = .5
@@ -162,6 +140,47 @@ function ManageStand.RemoveStand(initPlayer,params)
 	end
 end
 
+-- ToggleTrails = turn all trails off then turns on the ones we want
+function ManageStand.ToggleTrails(initPlayer,params,trailName)
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	if targetStand then
+
+		-- disable all trails
+		for i,v in pairs(targetStand.Trails:GetDescendants()) do
+			if v:IsA("Trail") then
+				v.Enabled = false
+			end
+		end
+
+		-- enable the ones we want
+		local trailFolder = targetStand.Trails:FindFirstChild(trailName)
+		if trailFolder then
+			for i,v in pairs(trailFolder:GetDescendants()) do
+				v.Enabled = true
+			end
+		end
+	end
+end
+
+-- SetTrails - just turns on the trails we want
+function ManageStand.SetTrails(initPlayer,params,trailName)
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+
+	if targetStand then
+		-- enable the ones we want
+		local trailFolder = targetStand.Trails:FindFirstChild(trailName)
+		if trailFolder then
+			for i,v in pairs(trailFolder:GetDescendants()) do
+				v.Enabled = true
+			end
+		end
+	end
+end
 
 -- PlayAnimation
 function ManageStand.PlayAnimation(initPlayer,params,animationName)
@@ -197,33 +216,6 @@ function ManageStand.StopAnimation(initPlayer,params)
 	end
 end
 
---// Aura_On
-function ManageStand.Aura_On(initPlayer,params)
-
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-
-	for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
-		if emitter:IsA("ParticleEmitter") then
-			emitter.Enabled = true
-		end
-	end
-
-end
-
---// Aura_Off
-function ManageStand.Aura_Off(initPlayer,params)
-
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-
-	for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
-		if emitter:IsA("ParticleEmitter") then
-			emitter.Enabled = false
-		end
-	end
-end
-
 -- Move Stand
 -- required params: params.AnchorName
 function ManageStand.MoveStand(initPlayer,params)
@@ -232,11 +224,23 @@ function ManageStand.MoveStand(initPlayer,params)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
-	local standWeld = targetStand:FindFirstChild("StandWeld", true)
+	local standWeld = targetStand:FindFirstChild("WeldConstraint")
+
+	-- active effects
+	ManageStand.ToggleTrails(initPlayer,params,"Active")
+	wait(.1)
+	powerUtils.WeldParticles(targetStand.HumanoidRootPart.CFrame.Position,initPlayer.Character.HumanoidRootPart,targetStand.Particles.MoveStand,.5) -- weld burst particles
 
 	-- move it
-	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(.25),{C1 = anchors[params.AnchorName]})
-	spawnTween:Play()
+	standWeld.Enabled = false
+	targetStand.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(anchors[params.AnchorName]) -- move
+	standWeld.Enabled = true
+
+	-- idle effects
+	spawn(function()
+		wait(.1)
+		ManageStand.ToggleTrails(initPlayer,params,"Idle")
+	end)
 
 end
 

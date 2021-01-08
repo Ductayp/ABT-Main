@@ -46,8 +46,6 @@ function StandStorageAccess.HasAccess(player)
         end
     end
 
-    print("hasAcccess",hasAccess)
-
     return hasAccess
 end
 

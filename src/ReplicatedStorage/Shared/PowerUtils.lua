@@ -213,6 +213,10 @@ end
 --// GetLevelFromXp
 function PowerUtils.GetLevelFromXp(xpNumber)
 
+	if xpNumber == nil then
+		xpNumber = 1
+	end
+
     local xpPerLevel = 3600
 
     local rawLevel = xpNumber / xpPerLevel

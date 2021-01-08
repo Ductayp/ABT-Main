@@ -31,6 +31,8 @@ GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
 
 GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
 GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
+GuiController.ShopWindow_StoragePanel = require(Knit.GuiModules.ShopWindow_StoragePanel)
+GuiController.ShopWindow_PassesPanel = require(Knit.GuiModules.ShopWindow_PassesPanel)
 
 -- Gui Defs
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
@@ -53,7 +55,7 @@ end
 --// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
 
-    -- do some setups NEW NEW NEW
+    -- do some setups
     GuiController.InventoryWindow.Setup()
     GuiController.StoragePanel.Setup()
     GuiController.ArrowPanel.Setup()
@@ -63,6 +65,8 @@ function GuiController:KnitStart()
     
     GuiController.ShopWindow.Setup()
     GuiController.ShopWindow_LootPanel.Setup()
+    GuiController.ShopWindow_StoragePanel.Setup()
+    GuiController.ShopWindow_PassesPanel.Setup()
 
 
     -- request Gui Updates

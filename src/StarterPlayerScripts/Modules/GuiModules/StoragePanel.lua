@@ -362,7 +362,6 @@ function StoragePanel.Show_StandCard(standData, buttonType)
     local width = math.floor((remainingPercent / 100) + 1)
     StoragePanel.XpBar.Size = UDim2.new(width, StoragePanel.XpBar.Size.X.Offset, StoragePanel.XpBar.Size.Y.Scale, StoragePanel.XpBar.Size.Y.Offset)
 
-    print("standData",standData)
     -- set base value
     StoragePanel.BaseValue.Text = standData.BaseValue
 

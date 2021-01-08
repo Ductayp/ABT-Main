@@ -18,8 +18,8 @@ Morioh_Cash.Items = {
         Params = {
             DataKey = "Cash",
             DataCategory = "Currency",
-            MinValue = 10,
-            MaxValue = 50
+            MinValue = 50,
+            MaxValue = 250
         }
     },
 
@@ -29,8 +29,8 @@ Morioh_Cash.Items = {
         Params = {
             DataKey = "Cash",
             DataCategory = "Currency",
-            MinValue = 1,
-            MaxValue = 10
+            MinValue = 5,
+            MaxValue = 50
         }
     }
 }

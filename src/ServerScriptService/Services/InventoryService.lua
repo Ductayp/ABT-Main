@@ -277,9 +277,8 @@ function InventoryService:EquipStand(player, GUID)
     -- sanity check to see if player has access
     local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
     if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
-        -- yup were good
     else
-        -- nope were not good
+        print("You cant equip a stand: Either no Mobile Storage or you are not at Puccis")
         return
     end
 
@@ -301,8 +300,9 @@ function InventoryService:EquipStand(player, GUID)
             table.remove(playerData.StandStorage.StoredStands, index)
 
             -- store the tempStored stand
-            table.insert(playerData.StandStorage.StoredStands, tempStoredStand)
-
+            if tempStoredStand.Power ~= "Standless" then
+                table.insert(playerData.StandStorage.StoredStands, tempStoredStand)
+            end
             break
         end
     end
@@ -310,6 +310,34 @@ function InventoryService:EquipStand(player, GUID)
     -- update the GUI
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
+end
+
+--// BuyStorage
+function InventoryService:BuyStorage(player, params)
+
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    if playerData.Currency.Cash >= params.Cost then
+        playerData.StandStorage.MaxSlots += params.Slots
+    end
+
+    -- update the GUI
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+end
+
+--// GetCurrencyData
+function InventoryService:GetCurrencyData(player)
+
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currencyData = playerData.Currency
+
+    print(playerData)
+    print(currencyData)
+
+    return currencyData
 end
 
 ---------------------------------------------------------------------------------------------
@@ -341,6 +369,19 @@ end
 function InventoryService.Client:UseArrow(player, params)
     self.Server:UseArrow(player, params)
 end
+
+--// Client:BuyStorage
+function InventoryService.Client:BuyStorage(player, params)
+    self.Server:BuyStorage(player, params)
+end
+
+--// Client:GetCurrencyData
+function InventoryService.Client:GetCurrencyData(player)
+    local currencyData = self.Server:GetCurrencyData(player)
+    return currencyData
+end
+
+
 
 
 --// KnitStart

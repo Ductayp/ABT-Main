@@ -16,6 +16,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
+--local Config = require(Knit.MobModules)
 
 -- events
 MobService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
@@ -24,7 +25,16 @@ MobService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
 
 --// PlayerAdded
 function MobService:PlayerAdded(player)
-
+--[[
+    -- set players collision group according to Config
+    if Config.PlayerCollide == false then
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+		SetCollisionGroup(Character, "Mob_NoCollide");
+		Player.CharacterAdded:Connect(function(Character)
+			SetCollisionGroup(Character, "Mob_NoCollide");
+		end)
+    end
+    ]]--
 
 end
 
@@ -32,8 +42,15 @@ end
 --// KnitStart
 function MobService:KnitStart()
 
-    PhysicsService:CreateCollisionGroup("Mystifine")
-PhysicsService:CollisionGroupSetCollidable("Mystifine", "Mystifine", false)
+    -- create no-collision group and set it
+    PhysicsService:CreateCollisionGroup("Mob_NoCollide")
+    PhysicsService:CollisionGroupSetCollidable("Mob_NoCollide", "Mob_NoCollide", false)
+
+    -- start the main loop
+    spawn(function()
+        --self:MainLoop()
+    end)
+    
     
 end
 

@@ -12,9 +12,10 @@ local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
+--local PowerService = Knit.GetService("PowerService")
 
+--modules
+local utils = require(Knit.Shared.Utils)
 
 local Cooldown = {}
 
@@ -45,24 +46,22 @@ function Cooldown.SetCooldown(player,cooldownName,cooldownValue)
     cooldownParams.cooldownValue = cooldownValue
     cooldownParams.cooldownTime = thisCooldown.Value
     Knit.Services.PowersService:RenderEffect_SinglePlayer(player,"Cooldown",cooldownParams)
+    --PowerService:RenderEffect_SinglePlayer(player,"Cooldown",cooldownParams)
 
     return thisCooldown
 end
 
 --// CheckCooldown - receives the power params and returns params.CanRun as true or false
-function Cooldown.GetCooldownValue(player,cooldownName)
+function Cooldown.GetCooldownValue(player, params)
 
     local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
     if not cooldownFolder then
         cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
 
-    local thisCooldown = cooldownFolder:FindFirstChild(cooldownName)
+    local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
     if not thisCooldown then
-        thisCooldown = Instance.new("NumberValue")
-        thisCooldown.Name = cooldownName
-        thisCooldown.Value = os.time() - 1 -- set it to the past for now
-        thisCooldown.Parent = cooldownFolder
+        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
     return thisCooldown.Value
@@ -94,7 +93,7 @@ function Cooldown.Client_RenderEffect(params)
 
 			for count = 1, params.cooldownValue + 1 do
 				wait(waitTime)
-				newButton.Text = params.cooldownValue - count
+                newButton.Text = params.cooldownValue - count
             end
 
             newButton:Destroy()

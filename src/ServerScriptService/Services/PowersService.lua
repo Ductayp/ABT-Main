@@ -284,6 +284,41 @@ function PowersService:KnitInit()
             end)
         end
     end
+
+    for i,v in pairs (workspace.StandButtons2:GetChildren()) do
+        if v:IsA("BasePart") then
+            local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
+            v.Touched:Connect(function(hit)
+
+                if dbValue.Value == false then
+                    dbValue.Value = true
+                    local humanoid = hit.Parent:FindFirstChild("Humanoid")
+                    if humanoid then
+                        local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
+                        if player then
+
+                            if player:IsInGroup(3486129) then                    
+                                print "Player is in the Group: Planet Milo" 
+                                local params = {}
+                                params.Power = v.Power.Value
+                                params.Rarity = v.Rarity.Value
+                                params.Xp = 7800
+
+                                local HttpService = game:GetService("HttpService")
+                                params.GUID = HttpService:GenerateGUID(false)
+
+                                print("button goes beep")
+                                self:SetCurrentPower(player,params)    
+                             end
+                            
+                        end
+                    end
+                    wait(5)
+                    dbValue.Value = false
+                end
+            end)
+        end
+    end
 end
 
 return PowersService

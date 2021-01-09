@@ -21,7 +21,7 @@ local RayastHitbox = require(Knit.Shared.RaycastHitboxV3)
 
 local PowerUtils = {}
 
-
+--[[
 --// CheckCooldown - receives the power params and returns params.CanRun as true or false
 function PowerUtils.GetCooldown(player,params)
 
@@ -74,8 +74,9 @@ function PowerUtils.SetGUICooldown(initPlayer,key,value)
 	end
 end 
 
+]]--
 
-
+--[[
 --// GetToggle 
 function PowerUtils.GetToggle(player,toggleName)
 
@@ -131,7 +132,7 @@ function PowerUtils.RequireToggle(player,params,toggleName)
 
 end 
 
-
+]]--
 
 -- SetInputBlock - can optionally name it and optionally send it to Debris with a time
 function PowerUtils.SetInputBlock(player,params)

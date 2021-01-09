@@ -1,9 +1,6 @@
--- The Hand
+-- White Snake
 -- PDab
--- 12/7/2020
---[[
-Handles all thing related to the power and is triggered by BOTH PowersController AND PowerService
-]]
+-- 1/8/2020
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -11,7 +8,11 @@ local RunService = game:GetService("RunService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
+
+-- Effect modules
+local AbilityToggle = require(Knit.Effects.AbilityToggle)
+local Cooldown = require(Knit.Effects.Cooldown)
+local SoundPlayer = require(Knit.Effects.SoundPlayer)
 
 
 -- Ability modules
@@ -27,9 +28,9 @@ WhiteSnake.Defs = {
     -- just some general defs here
     PowerName = "White Snake",
     SacrificeValue = {
-        Common = 5,
-        Rare = 15,
-        Legendary = 60,
+        Common = 20,
+        Rare = 25,
+        Legendary = 30,
     },
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Common,
@@ -37,13 +38,11 @@ WhiteSnake.Defs = {
         Legendary = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Legendary,
     },
     Abilities = {
-
         EquipStand = {
             Name = "Equip Stand",
-            Cooldown = 5,
+            Cooldown = 1,
             Override = false,
         },
-
         Barrage = {
             Name = "Barrage",
             AbilityId = "Barrage",
@@ -52,65 +51,18 @@ WhiteSnake.Defs = {
             Override = true,
             Damage = 5,
             loopTime = .25
-        },
-
-        TimeStop = {
-            Name = "Time Stop",
-            Duration = 5,
-            Cooldown = 10,
-            Range = 150,
-            Override = false
-        },
-
-       KnifeThrow = {
-            Name = "Knife Throw",
-            Cooldown = 5,
-            Override = false,
-            Range = 75,
-            Speed = 40,
-            Damage = 20
-        },
-
-        HeavyPunch = {
-            Name = "Heavy Punch",
-            Damage = 30,
-            Cooldown = 1,
-            Override = false
-        },
-
-        Ability_6 = {
-            Name = "Ability 6",
-            Duration = 0,
-            Cooldown = 1,
-            Override = false
-        },
-
-        Ability_7 = {
-            Name = "Ability 7",
-            Duration = 0,
-            Cooldown = 1,
-            Override = false
-        },
-
-        Ability_8 = {
-            Name = "Ability 8",
-            Duration = 0,
-            Cooldown = 1,
-            Override = false,
-        },
+        }
     }
 }
 
 --// SETUP - run this once when the stand is equipped
 function WhiteSnake.SetupPower(initPlayer,params)
-    print("Setup Power - The Hand for: ",initPlayer)
-    
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function WhiteSnake.RemovePower(initPlayer,params)
-    print("Removing Power - The Hand for: ",initPlayer)
-    
+
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -118,8 +70,9 @@ function WhiteSnake.Manager(initPlayer,params)
 
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
-        local cooldown = powerUtils.GetCooldown(initPlayer,params)
-        if os.time() < cooldown.Value  then
+        local cooldown = Cooldown.GetCooldownValue(initPlayer, params)
+        print(os.time(), cooldown)
+        if os.time() <= cooldown then
             params.CanRun = false
             return params
         end
@@ -130,12 +83,18 @@ function WhiteSnake.Manager(initPlayer,params)
         WhiteSnake.EquipStand(initPlayer,params)
     elseif params.InputId == "E" then
         WhiteSnake.Barrage(initPlayer,params)
-    elseif params.InputId == "F" then
-        WhiteSnake.Ability_F(initPlayer,params)
-    elseif params.InputId == "T" then
-        WhiteSnake.Ability_T(initPlayer,params)
     elseif params.InputId == "R" then
-        WhiteSnake.HeavyPunch(initPlayer,params)
+        print("No Ability for this Key")
+    elseif params.InputId == "T" then
+        print("No Ability for this Key")
+    elseif params.InputId == "F" then
+        print("No Ability for this Key")
+    elseif params.InputId == "Z" then
+        print("No Ability for this Key")
+    elseif params.InputId == "X" then
+        print("No Ability for this Key")
+    elseif params.InputId == "C" then
+        print("No Ability for this Key")
     end
 
     return params
@@ -147,17 +106,9 @@ end
 
 function WhiteSnake.EquipStand(initPlayer,params)
     
-    -- get stand folder, setup if it doesnt exist
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-
-    
-
-    -- get stand toggle, setup if it doesnt exist
-    local standToggle = powerUtils.GetToggle(initPlayer,params.InputId)
 
     -- EQUIP STAND/INITIALIZE
     if params.SystemStage == "Intialize" then
-    print("The World - Equip Stand - Initialize")
 
         -- EQUIP STAND/INITIALIZE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
@@ -172,16 +123,20 @@ function WhiteSnake.EquipStand(initPlayer,params)
 
     -- EQUIP STAND/ACTIVATE
     if params.SystemStage == "Activate" then
-        print("The World - Equip Stand - Activate")
 
          -- EQUIP STAND/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            if standToggle.Value == true then
-                standToggle.Value = false
+
+            -- set cooldown
+            Cooldown.SetCooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.EquipStand.Cooldown)
+
+            -- toggle the stand, effect runs off of this toggle
+            if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
             else
-                standToggle.Value = true
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
             end
-            powerUtils.SetCooldown(initPlayer,params,WhiteSnake.Defs.Abilities.EquipStand.Cooldown)
+            
             params.CanRun = true
         end
 
@@ -193,19 +148,14 @@ function WhiteSnake.EquipStand(initPlayer,params)
 
     -- EQUIP STAND/EXECUTE
     if params.SystemStage == "Execute" then
-        print("The World - Equip Stand - Execute")
 
          -- EQUIP STAND/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            if standToggle.Value == true then
-                print("equip stand - STAND ON")
-                --powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,WhiteSnake.Defs.Abilities.EquipStand.EquipSound)
-                powerUtils.SetGUICooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.EquipStand.Cooldown)
-                ManageStand.EquipStand(initPlayer,WhiteSnake.Defs.StandModel)
+            if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon)
+                ManageStand.EquipStand(initPlayer,WhiteSnake.Defs.StandModels[params.PowerRarity])
             else
-                print("equip stand - STAND OFF")
-                --powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,WhiteSnake.Defs.Abilities.EquipStand.RemoveSound)
-                powerUtils.SetGUICooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.EquipStand.Cooldown)
+                -- weld sound here
                 ManageStand.RemoveStand(initPlayer)            
             end
         end
@@ -223,21 +173,23 @@ end
 
 function WhiteSnake.Barrage(initPlayer,params)
 
-    local barrageParams = WhiteSnake.Defs.Abilities.Barrage
+    -- server actions
+    if RunService:IsServer() then
+        -- requires Stand to be active via "Q" toggle
+        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
+            print("Stand not active, cannot run this ability")
+            params.CanRun = false
+            return params
+        end
 
-    -- get barrage toggle, setup if it doesnt exist
-    local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
-
-    -- get stand folder and stand
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-    local thisStand = playerStandFolder:FindFirstChild("WhiteSnake")
-
-    -- requires Stand to be active via "Q" toggle
-    local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
-    if RunService:IsServer() and standToggle.Value == false then
-        print("Stand not active, cannot run this ability")
-        params.CanRun = false
-        return
+        -- require toggles to be inactive, excluding "Q"
+        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
+            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
+                print("Cant fire ability, another ability is active")
+                params.CanRun = false
+                return params
+            end
+        end
     end
 
     -- BARRAGE/INIALIZE
@@ -285,7 +237,7 @@ function WhiteSnake.Barrage(initPlayer,params)
                 params.CanRun = true
 
                 -- set the cooldown
-                powerUtils.SetCooldown(initPlayer,params,WhiteSnake.Defs.Abilities.Barrage.Cooldown)
+                Cooldown.SetCooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.EquipStand.Cooldown)
 
                 -- destroy hitbox
                 Barrage.Server_DestroyHitbox(initPlayer, barrageParams)
@@ -304,238 +256,19 @@ function WhiteSnake.Barrage(initPlayer,params)
                 local soundParams = {}
                 soundParams.SoundProperties = {}
                 soundParams.SoundProperties.Looped = false
-                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.WhiteSnake.Barrage,soundParams)
+                -- weld sound here
             end
         end
 
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             if barrageToggle.Value == false then
-                powerUtils.SetGUICooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.Barrage.Cooldown)
                 Barrage.EndEffect(initPlayer,params)
-                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.WhiteSnake.Barrage.Name,.5)
+                -- weld sound here
             end 
         end
     end
 end
 
---------------------------------------------------------------------------------------------------
---// TIME STOP //---------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------
-
-function WhiteSnake.TimeStop(initPlayer,params)
-
-    -- get stand folder and stand
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-    local thisStand = playerStandFolder:FindFirstChild("WhiteSnake")
-
-    -- get barrage toggle, setup if it doesnt exist
-    local barrageToggle = powerUtils.GetToggle(initPlayer,params.InputId)
-    if RunService:IsServer() and barrageToggle.Value == true then
-        print("cannot run while doing barrage")
-        params.CanRun = false
-        return
-    end
-
-    -- requires Stand to be active via "Q" toggle
-    local standToggle  = powerUtils.GetToggle(initPlayer,"Q")
-    if RunService:IsServer() and standToggle.Value == false then
-        print("Stand not active, cannot run this ability")
-        params.CanRun = false
-        return
-    end
-
-    -- TIME STOP/INIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- TIME STOP/INIALIZE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-
-        -- TIME STOP/INIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
-        end
-    end
-
-    -- TIME STOP/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-        -- TIME STOP/ACTIVATE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-
-            local timeStopParams = {}
-            timeStopParams.Duration = WhiteSnake.Defs.Abilities.TimeStop.Duration
-            timeStopParams.Range = WhiteSnake.Defs.Abilities.TimeStop.Range
-            timeStopParams.Delay = 2
-
-            --params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
-
-            --spawn(function()
-                --wait(2) -- this is here for The Worlds audio to fire the ability at the right time
-                params = TimeStop.Server_RunTimeStop(initPlayer,params,timeStopParams)
-                powerUtils.SetCooldown(initPlayer,params,WhiteSnake.Defs.Abilities.TimeStop.Cooldown)
-            --end)
-            
-            params.CanRun = true
-
-        end
-
-        -- TIME STOP/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
-        end
-    end
-
-    -- TIME STOP/EXECUTE
-    if params.SystemStage == "Execute" then
-
-        -- TIME STOP/EXECUTE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-            print("CLIENT - Time Stop - Execute = InputBegan")
-
-            ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.WhiteSnake.TimeStop)
-
-            -- wait here for the timestop audio
-            wait(2)
-
-            powerUtils.SetGUICooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.TimeStop.Cooldown)
-
-            local timeStopParams = {}
-            timeStopParams.Duration = WhiteSnake.Defs.Abilities.TimeStop.Duration
-            timeStopParams.Range = WhiteSnake.Defs.Abilities.TimeStop.Range
-            TimeStop.Client_RunTimeStop(initPlayer,params,timeStopParams)
-        end
-
-        -- TIME STOP/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-
-        end
-
-    end
-end
-
---------------------------------------------------------------------------------------------------
---// KNIFE THROW //-------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------
-
-function WhiteSnake.KnifeThrow(initPlayer,params)
-    
-    params.KnifeThrow = WhiteSnake.Defs.Abilities.KnifeThrow
-  
-    -- get stand folder, setup if it doesnt exist
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-
-    -- KNIFE THROW/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- KNIFE THROW/INITIALIZE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-
-        -- KNIFE THROW/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
-        end
-    end
-
-    -- KNIFE THROW/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-         -- KNIFE THROW/ACTIVATE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-            powerUtils.SetCooldown(initPlayer,params,WhiteSnake.Defs.Abilities.KnifeThrow.Cooldown)
-            KnifeThrow.Server_ThrowKnife(initPlayer,params)
-            params.CanRun = true
-        end
-
-        -- KNIFE THROW/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
-        end
-    end
-
-    -- KNIFE THROW/EXECUTE
-    if params.SystemStage == "Execute" then
-
-         -- KNIFE THROW/EXECUTE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-            powerUtils.SetGUICooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.KnifeThrow.Cooldown)
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
-            KnifeThrow.Client_KnifeThrow(initPlayer,params)
-        end
-
-        -- KNIFE THROW/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
-        end
-    end
-end
-
---------------------------------------------------------------------------------------------------
---// HEAVY  PUNCH //------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------
-
-function WhiteSnake.HeavyPunch(initPlayer,params)
-    
-    params.HeavyPunch = WhiteSnake.Defs.Abilities.HeavyPunch
-  
-    -- get stand folder, setup if it doesnt exist
-    local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-
-    -- HEAVY PUNCH/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- HEAVY PUNCH/INITIALIZE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-
-        -- HEAVY PUNCH/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
-        end
-    end
-
-    -- HEAVY PUNCH/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-         -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-            local heavyPunchParams = WhiteSnake.Defs.Abilities.HeavyPunch
-            
-            HeavyPunch.Activate(initPlayer,heavyPunchParams)
-            powerUtils.SetCooldown(initPlayer,params,WhiteSnake.Defs.Abilities.HeavyPunch.Cooldown)
-
-            params.CanRun = true
-        end
-
-        -- HEAVY PUNCH/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
-        end
-    end
-
-    -- HEAVY PUNCH/EXECUTE
-    if params.SystemStage == "Execute" then
-
-         -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-
-            local heavyPunchParams = WhiteSnake.Defs.Abilities.HeavyPunch
-            --heavyPunchParams.Color = Color3.new(255/255, 253/255, 156/255) -- yellow for WhiteSnake 255, 176, 0
-            powerUtils.SetGUICooldown(initPlayer,params.InputId,WhiteSnake.Defs.Abilities.HeavyPunch.Cooldown)
-            HeavyPunch.Execute(initPlayer,heavyPunchParams)
-        end
-
-        -- HEAVY PUNCH/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
-        end
-    end
-end
 
 return WhiteSnake

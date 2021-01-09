@@ -15,6 +15,7 @@ Knit.Effects = ReplicatedStorage.GameFiles.Shared.PowerModules.Effects
 Knit.ItemSpawnTables = ServerScriptService.GameFiles.Services.ItemSpawnService
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 Knit.InventoryModules = ServerScriptService.GameFiles.Modules.InventoryModules
+Knit.MobModules = ServerScriptService.GameFiles.Modules.MobModules
 
 -- Load all services:
 for _,v in ipairs(script.Parent.Services:GetDescendants()) do

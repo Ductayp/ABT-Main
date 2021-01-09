@@ -49,11 +49,11 @@ function ManageStand.EquipStand(initPlayer,standModel)
 	newWeld.Parent = newStand.HumanoidRootPart
 
 	-- do the auras
-	ManageStand.Aura_On(initPlayer,params)
+	ManageStand.Aura_On(initPlayer)
 	wait(.5)
 	spawn(function()
 		wait(5)
-		ManageStand.Aura_Off(initPlayer,params)
+		ManageStand.Aura_Off(initPlayer)
 	end)
 
 	local spawnTween = TweenService:Create(newWeld,TweenInfo.new(.5),{C1 = anchors.Idle})
@@ -70,7 +70,7 @@ function ManageStand.EquipStand(initPlayer,standModel)
 	end
 
 	-- tween stand parts transparency
-	for i, v in pairs (newStand.StandParts:GetChildren()) do
+	for i, v in pairs (newStand.StandParts:GetDescendants()) do
 		if v:IsA("BasePart") then
 			local thisTween = TweenService:Create(v,TweenInfo.new(.2),{Transparency = 0})
 			thisTween:Play()
@@ -203,12 +203,13 @@ function ManageStand.Aura_On(initPlayer,params)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
-	for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
-		if emitter:IsA("ParticleEmitter") then
-			emitter.Enabled = true
+	if targetStand then
+		for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
+			if emitter:IsA("ParticleEmitter") then
+				emitter.Enabled = true
+			end
 		end
 	end
-
 end
 
 --// Aura_Off
@@ -217,9 +218,11 @@ function ManageStand.Aura_Off(initPlayer,params)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
-	for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
-		if emitter:IsA("ParticleEmitter") then
-			emitter.Enabled = false
+	if targetStand then
+		for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
+			if emitter:IsA("ParticleEmitter") then
+				emitter.Enabled = false
+			end
 		end
 	end
 end

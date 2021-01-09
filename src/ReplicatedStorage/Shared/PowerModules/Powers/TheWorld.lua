@@ -11,8 +11,6 @@ local RunService = game:GetService("RunService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
-
 
 -- Ability modules
 local ManageStand = require(Knit.Abilities.ManageStand)
@@ -26,6 +24,7 @@ local StandJump = require(Knit.Abilities.StandJump)
 -- Effect modules
 local AbilityToggle = require(Knit.Effects.AbilityToggle)
 local Cooldown = require(Knit.Effects.Cooldown)
+local SoundPlayer = require(Knit.Effects.SoundPlayer)
 
 -- variables
 local playerStandFolder -- defined up here so all functions can use it
@@ -124,8 +123,8 @@ function TheWorld.Manager(initPlayer,params)
 
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
-        local cooldown = powerUtils.GetCooldown(initPlayer,params)
-        if os.time() <= cooldown.Value then
+        local cooldown = Cooldown.GetCooldownValue(initPlayer, params)
+        if os.time() <= cooldown then
             params.CanRun = false
             return params
         end
@@ -161,9 +160,7 @@ end
 
 function TheWorld.EquipStand(initPlayer,params)
 
-    -- get stand toggle, setup if it doesnt exist
-    --local standToggle = powerUtils.GetToggle(initPlayer,params.InputId)
-
+ 
     -- EQUIP STAND/INITIALIZE
     if params.SystemStage == "Intialize" then
 
@@ -210,11 +207,10 @@ function TheWorld.EquipStand(initPlayer,params)
          -- EQUIP STAND/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
-                powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon)
-                print("params yo",params)
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon) -- specific stand sound
                 ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModels[params.PowerRarity])
             else
-                powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon)
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon) -- specific stand sound
                 ManageStand.RemoveStand(initPlayer)            
             end
         end
@@ -328,7 +324,7 @@ function TheWorld.Barrage(initPlayer,params)
                 local soundParams = {}
                 soundParams.SoundProperties = {}
                 soundParams.SoundProperties.Looped = false
-                powerUtils.WeldSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage,soundParams)
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage, soundParams)
             end
         end
 
@@ -336,7 +332,7 @@ function TheWorld.Barrage(initPlayer,params)
         if params.KeyState == "InputEnded" then
             if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
                 Barrage.EndEffect(initPlayer,params)
-                powerUtils.StopSpeakerSound(thisStand.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage.Name,.5)
+                SoundPlayer.StopWeldedSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage.Name,.5)
             end 
         end
     end
@@ -422,7 +418,7 @@ function TheWorld.TimeStop(initPlayer,params)
             print("CLIENT - Time Stop - Execute = InputBegan")
 
             ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop)
+            SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop)
 
             -- wait here for the timestop audio
             wait(2)
@@ -510,7 +506,7 @@ function TheWorld.KnifeThrow(initPlayer,params)
 
          -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
-            powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
+            SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
             KnifeThrow.Client_Execute(initPlayer,params)
         end
 
@@ -599,7 +595,7 @@ function TheWorld.HeavyPunch(initPlayer,params)
 
             spawn(function()
                 wait(.3)
-                powerUtils.WeldSpeakerSound(initPlayer.Character.HumanoidRootPart,ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.HeavyPunch)
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.HeavyPunch)
             end)
            
             local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch

@@ -7,9 +7,9 @@ local Debris = game:GetService("Debris")
 -- knite and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local DamageEffect = require(Knit.Effects.Damage)
+local AbilityToggle = require(Knit.Effects.AbilityToggle)
 
 -- local variables
 local armSpawnRate = .05
@@ -159,7 +159,7 @@ function Barrage.RunEffect(initPlayer,params)
 	ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
 
 	-- setup coroutine and run it while the toggle is on
-	local thisToggle = powerUtils.GetToggle(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
+	local thisToggle = AbilityToggle.GetToggleObject(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
 	local newThread = coroutine.create(function()
 		while wait(armSpawnRate) do
 			if thisToggle.Value then

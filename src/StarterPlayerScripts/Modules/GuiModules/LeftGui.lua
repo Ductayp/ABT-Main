@@ -20,9 +20,10 @@ local LeftGui = {}
 
 
 LeftGui.Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true)
-LeftGui.Inventory_Button = mainGui.LeftGui:FindFirstChild("Inventory_Button", true)
-LeftGui.Codes_Button = mainGui.LeftGui:FindFirstChild("Codes_Button", true)
-LeftGui.Shop_Button = mainGui.LeftGui:FindFirstChild("Shop_Button", true)
+LeftGui.Inventory_Button = mainGui.LeftGui:FindFirstChild("A_Inventory_Button", true)
+LeftGui.Codes_Button = mainGui.LeftGui:FindFirstChild("D_Codes_Button", true)
+LeftGui.Shop_Button = mainGui.LeftGui:FindFirstChild("B_Shop_Button", true)
+LeftGui.Settings_Button = mainGui.LeftGui:FindFirstChild("C_Shop_Button", true)
 
 
 --// Setup_LeftGui() ------------------------------------------------------------

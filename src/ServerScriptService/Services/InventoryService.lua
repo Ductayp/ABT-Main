@@ -228,7 +228,7 @@ function InventoryService:GetStandValue(player, GUID)
             local powerModule = require(findPowerModule)
     
             -- get the values
-            local level = powerUtils.GetLevelFromXp(thisXp)
+            local level = Knit.Services.PowersService:GetLevelFromXp(thisXp, thisRarity)
             finalValue = level * powerModule.Defs.SacrificeValue[thisRarity]
         end
     end

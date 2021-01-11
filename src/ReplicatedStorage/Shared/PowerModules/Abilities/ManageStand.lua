@@ -238,7 +238,7 @@ function ManageStand.MoveStand(initPlayer,params)
 	local standWeld = targetStand:FindFirstChild("StandWeld", true)
 
 	-- move it
-	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(.25),{C1 = anchors[params.AnchorName]})
+	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(.175),{C1 = anchors[params.AnchorName]})
 	spawnTween:Play()
 
 end

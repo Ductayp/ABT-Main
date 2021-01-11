@@ -211,24 +211,6 @@ function PowerUtils.WeldParticles(position,weldTo,emitter,duration)
 	return part
 end
 
---// GetLevelFromXp
-function PowerUtils.GetLevelFromXp(xpNumber)
-
-	if xpNumber == nil then
-		xpNumber = 1
-	end
-
-    local xpPerLevel = 3600
-
-    local rawLevel = xpNumber / xpPerLevel
-    local actualLevel = math.floor(rawLevel) + 1
-
-    local remainingXp = (xpNumber - (actualLevel * xpPerLevel))
-    local percentageRemaining = (remainingXp / xpPerLevel * 100)
-
-    return actualLevel, percentageRemaining
-
-end
 
 --// SimpleHitBox -- just creates a simple hitbox - THIS HITBOX CAN ONLY HIT A HUMANOID ONCE PER INSTANCE
 -- boxParams define the box itself such as size
@@ -382,7 +364,7 @@ function PowerUtils.LoopedHitbox(initPlayer,params)
 	return newHitBox
 end
 
-
+--[[
 --// WeldSpeakerSound - weld a speaker into the target and plays sounds according to params
 function PowerUtils.WeldSpeakerSound(target,sound,params)
 
@@ -459,5 +441,6 @@ function PowerUtils.StopSpeakerSound(target,name,fadeTime)
 		end
 	end 
 end
+]]--
 
 return PowerUtils

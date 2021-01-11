@@ -59,7 +59,7 @@ TheWorld.Defs = {
             Duration = 5,
             Cooldown = 10,
             loopTime = .25,
-            HitEffects = {Damage = {Damage = 5}}
+            HitEffects = {Damage = {Damage = 20}}
         },
 
         TimeStop = {

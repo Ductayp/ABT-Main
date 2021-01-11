@@ -18,19 +18,26 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local Damage = {}
 
-function Damage.Server_ApplyEffect(hitCharacter,params)
+function Damage.Server_ApplyEffect(hitCharacter, effectParams, hitParams)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
         -- do the damage
-        hitCharacter.Humanoid:TakeDamage(params.Damage)
+        hitCharacter.Humanoid:TakeDamage(effectParams.Damage)
+
+        -- if it is a mob, add the hit values
+        local mobIdObject = characterHit:FindFirstChild("MobId")
+        if mobIdObject then
+            
+            -- send damage to MobService
+        end
 
         -- send the visual effects to all clients
-        local effectParams = {}
-        effectParams.Damage = params.Damage
-        effectParams.HitCharacter = hitCharacter
-        Knit.Services.PowersService:RenderEffect_AllPlayers("Damage",effectParams)
+        local renderParams = {}
+        renderParams.Damage = effectParams.Damage
+        renderParams.HitCharacter = hitCharacter
+        Knit.Services.PowersService:RenderEffect_AllPlayers("Damage", renderParams)
     end
 
 end

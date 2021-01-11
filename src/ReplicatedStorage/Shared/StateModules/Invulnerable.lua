@@ -27,5 +27,28 @@ function Invulnerable.Entry_Removed(player, thisState, params)
 
 end
 
+function Invulnerable.IsInvulnerable(player)
+
+    local isInvulnerable = false
+    local playerFolder = statesFolder:FindFirstChild(player.UserId)
+    if playerFolder then
+        local stateFolder = playerFolder:FindFirstChild("Invulnerable")
+        if stateFolder then
+            local entryObjects = stateFolder:GetChildren()
+            if entryObjects ~= nil then
+                for _,object in pairs(entryObjects) do
+                    if object.Value == true then
+                        isInvulnerable = true
+                        break
+                    end
+                end
+            end
+        end
+    end
+
+    return isInvulnerable
+
+end
+
 
 return Invulnerable

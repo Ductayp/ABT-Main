@@ -11,6 +11,7 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local InventoryService = Knit.GetService("InventoryService")
 local GamePassService = Knit.GetService("GamePassService")
+local PowersService = Knit.GetService("PowersService")
 
 -- utils
 local utils = require(Knit.Shared.Utils)
@@ -298,7 +299,7 @@ function StoragePanel.Build_StandButton(list_Item, standData, buttonType)
         -- set the level on the list item
         local listItemLevel = list_Item:FindFirstChild("List_Item_StandLevel", true)
         if listItemLevel then
-            local level = powerUtils.GetLevelFromXp(standData.Xp)
+            local level = PowersService:GetLevelFromXp(standData.Xp, standData.Rarity)
             listItemLevel.Text = tostring(level)
         end
 
@@ -357,7 +358,8 @@ function StoragePanel.Show_StandCard(standData, buttonType)
     end
 
     -- set level and xp bar
-    local level, remainingPercent = powerUtils.GetLevelFromXp(standData.Xp)
+    local level, remainingPercent = PowersService:GetLevelFromXp(standData.Xp, standData.Rarity)
+    print(level, remainingPercent)
     StoragePanel.Level.Text = tostring(level)
     local width = math.floor((remainingPercent / 100) + 1)
     StoragePanel.XpBar.Size = UDim2.new(width, StoragePanel.XpBar.Size.X.Offset, StoragePanel.XpBar.Size.Y.Scale, StoragePanel.XpBar.Size.Y.Offset)

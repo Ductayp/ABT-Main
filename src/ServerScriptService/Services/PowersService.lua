@@ -14,6 +14,13 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 
+-- constants
+local XP_PER_LEVEL = {
+    Common = 3600,
+    Rare = 10800,
+    Legendary = 32400
+}
+
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
 PowersService.Client.RenderEffect = RemoteEvent.new()
@@ -55,6 +62,30 @@ function PowersService.Client:GetCurrentPower(player)
     return currentPower
 end
 
+--// GetLevelFromXp
+function PowersService:GetLevelFromXp(standXp, standRarity)
+
+	if xpNumber == nil then
+		xpNumber = 1
+	end
+
+    local xpPerLevel = XP_PER_LEVEL[standRarity]
+
+    local rawLevel = xpNumber / xpPerLevel
+    local actualLevel = math.floor(rawLevel) + 1
+
+    local remainingXp = (xpNumber - (actualLevel * xpPerLevel))
+    local percentageRemaining = (remainingXp / xpPerLevel * 100)
+
+    return actualLevel, percentageRemaining
+end
+
+--// Client:GetLevelFromXp
+function PowersService.Client:GetLevelFromXp(player, standXp, standRarity) -- player arg is not used but gets passed in by Knit. we just ignore it
+    local actualLevel, percentageRemaining = self.Server:GetLevelFromXp(standXp, standRarity)
+    return actualLevel, percentageRemaining
+end
+
 --// SetPower -- sets the players curret power
 function PowersService:SetCurrentPower(player,params)
 
@@ -93,19 +124,43 @@ function PowersService:SetCurrentPower(player,params)
 
 end
 
+--// AwardXpForKill
+function PowersService:AwardXpForKill(player, xpValue)
 
---// RegisterHit -- this is currently not in use, instead we send hits directly to their Effect modules
-function PowersService:RegisterHit(initPlayer,characterHit,hitEffects)
+    print(player, " Just got Xp: ", xpValue)
 
+end
+
+
+--// RegisterHit
+function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
+
+    -- setup some variables
+    local canHit = false
+    local hitParams = {} -- additional params we need to pass into the effects
+    hitParams.InitPlayer = initPlayer -- pass the initPlayer argument into the hitParmas table, mostly used for tallyign damage on Mobs
+
+    -- test if a palyer or a mob, then set variables
     local isPlayer = utils.GetPlayerFromCharacter(characterHit)
     if isPlayer then
-        print("PowersService:RegisterHit - Hit a player: ", isPlayer)
+        local isInvulnerable = require(Knit.StateModules.Invulnerable).IsInvulnerable(isPlayer)
+        if not isInvulnerable then
+            canHit = true
+            hitParams.IsMob = false
+        end
     else
-        print("PowersService:RegisterHit - Hit an NPC", characterHit.Name)
+        local mobIdObject = characterHit:FindFirstChild("MobId")
+        if mobIdObject then
+            canHit = true
+            --hitParams.IsMob = true
+        end
     end
    
-    for effect,params in pairs(hitEffects) do
-        require(Knit.Effects[effect]).Server_ApplyEffect(characterHit,params)
+    -- do hitEffects if canHit is true
+    if canHit == true then
+        for effect,effectParams in pairs(hitEffects) do
+            require(Knit.Effects[effect]).Server_ApplyEffect(characterHit, effectParams, hitParams)
+        end
     end
 
 end

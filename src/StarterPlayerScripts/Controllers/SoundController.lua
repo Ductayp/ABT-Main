@@ -15,6 +15,9 @@ local SoundController = Knit.CreateController { Name = "SoundController" }
 -- utility modules
 local utils = require(Knit.Shared.Utils)
 
+-- Constants
+local playlistFolder = ReplicatedStorage.Audio.Music.ShufflePlaylist
+
 -- Variables
 SoundController.MusicOn = true
 SoundController.PlayStack = nil
@@ -31,12 +34,9 @@ function SoundController:PlayTrack()
 
     -- if the playstack table is empty, fill it with all tracks
     if SoundController.PlayStack == nil then
-        SoundController.PlayStack = ReplicatedStorage.Audio.Music.ShufflePlaylist:GetChildren()
+        SoundController.PlayStack = playlistFolder:GetChildren()
     end
 
-    print(SoundController.PlayStack)
-    print(#SoundController.PlayStack)
-    
     -- pick a soung from the PlayStack table, play it then remove it from the list
     local pick = math.random(1, #SoundController.PlayStack)
     SoundController.CurrentTrack = SoundController.PlayStack[pick]

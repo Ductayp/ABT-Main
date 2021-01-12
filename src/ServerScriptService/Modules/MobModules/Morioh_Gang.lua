@@ -26,8 +26,8 @@ Morioh_Gang.AttackRange = 3
 
 --/ Agression Chase Behavior
 Morioh_Gang.Agressive = false
-Morioh_Gang.SeekRange = 30 -- In Studs
-Morioh_Gang.ChaseRange = 100 -- In Studs
+Morioh_Gang.SeekRange = 60 -- In Studs
+Morioh_Gang.ChaseRange = 70 -- In Studs
 
 --/ Spawn
 Morioh_Gang.RespawnTime = 10

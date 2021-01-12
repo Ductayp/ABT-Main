@@ -1,7 +1,7 @@
 local Config = {}
 
-Config.MobCollide = false -- Great For Optimization, turn it off for NPC-NPC collision, if PlayerCollide is off it'll also remove collision with players;
-Config.PlayerCollide = false -- Greate For Optimization, turn it off for Player-Player and Player-NPC collision;
+Config.MobCollide = true -- Great For Optimization, turn it off for NPC-NPC collision, if PlayerCollide is off it'll also remove collision with players;
+Config.PlayerCollide = true -- Greate For Optimization, turn it off for Player-Player and Player-NPC collision;
 Config.HumanoidStates = { -- | To optimize
 	[Enum.HumanoidStateType.Climbing] = false,
 	[Enum.HumanoidStateType.Dead] = false,

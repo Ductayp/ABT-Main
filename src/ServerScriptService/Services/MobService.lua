@@ -55,27 +55,50 @@ function MobService:MobBrain()
                     end
 
                     -- set target to the player with the most damage
-                    local playerTarget
-                    local highestDamage = 0
-                    for player, damage in pairs(playerTargets) do
-                        if damage > highestDamage then
-                            highestDamage = damage
-                            playerTarget = player
+                    if playerTargets == nil then
+                        mobData.ChaseTarget = nil
+                    else
+                        local highestDamage = 0
+                        for player, damage in pairs(playerTargets) do
+                            if damage > highestDamage then
+                                highestDamage = damage
+                                mobData.ChaseTarget = player
+                            end
                         end
                     end
 
-                    if playerTarget == nil then
+                    if mobData.ChaseTarget == nil then
                         mobData.BrainState = "Wait"
                         mobData.StateTime = os.time()
                     else
                         mobData.BrainState = "Chase"
                         mobData.StateTime = os.time()
                     end
-            
+                end
+
+                -- BRAIN EVENT: Cancel Chase. Return Home
+                local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.HomePosition).Magnitude
+                if rangeMagnitude > mobData.Defs.ChaseRange then -- and mobData.BrainState ~= "Wait"
+                    print("too far!!!")
+                    mobData.Model.Humanoid:MoveTo(mobData.HomePosition)
+                    mobData.BrainState = "Return"
+                    mobData.ChaseTarget = nil
+                    mobData.StateTime = os.time()
+                end
+                
+
+                -- BRAIN EVENT : Chase Player
+                if mobData.BrainState == "Chase" then
+                    mobData.Model.Humanoid:MoveTo(mobData.ChaseTarget.Character.HumanoidRootPart.Position, mobData.ChaseTarget.Character.HumanoidRootPart)
+                end
+
+                if mobData.ChaseTarget ~= nil then
+                    print(mobData.ChaseTarget)
+                    print(mobData.BrainState)
                 end
             end
 
-            if mobData.BrainState == "Chase" then
+            if mobData.BrainState == "Wait" then
 
             end
 
@@ -90,7 +113,7 @@ function MobService:MobBrain()
             end
 
         end
-        wait(.1)
+        wait()
     end
 end
 

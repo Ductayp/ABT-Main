@@ -12,7 +12,7 @@ local Morioh_Gang = {}
 Morioh_Gang.Model = ReplicatedStorage.Mobs.Morioh_Gang
 
 --/ Xp
-Morioh_Gang.XpValue = 25
+Morioh_Gang.XpValue = 500
 
 --/ Humanoid Settings
 Morioh_Gang.Health = 100

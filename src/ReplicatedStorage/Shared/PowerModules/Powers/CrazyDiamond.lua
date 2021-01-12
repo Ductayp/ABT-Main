@@ -32,6 +32,11 @@ CrazyDiamond.Defs = {
         Rare = 25,
         Legendary = 30,
     },
+    DamageMultiplier = {
+        Common = 1,
+        Rare = 2,
+        Legendary = 3,
+    },
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Common,
         Rare = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Rare,

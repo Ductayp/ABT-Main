@@ -23,74 +23,115 @@ local mobStorage = ReplicatedStorage.Mobs
 
 -- variables
 local serialNumber = 1 -- this starts at one and goes up for every mob spawned, used as a unique ID for each mob
-local spawnGroupFolders = {} -- table of all spawn group folders in workspace. EACH NAME MUST BE UNIQUE!
+--local spawnGroupFolders = {} -- table of all spawn group folders in workspace. EACH NAME MUST BE UNIQUE!
+local allSpawners = {}
 local spawnedMobs = {} -- table of all spawned mobs
 
---// MobAction
+--// MobBrain
 function MobService:MobBrain()
 
-    -- spawn a function that loops for the lifetime of the server
-    spawn(function()
-        while true do
+    while true do
        
-            -- iterate through all spawned mobs on each loop
-            for mobIndex, mobData in pairs(spawnedMobs) do
+        -- iterate through all spawned mobs on each loop
+        for index, mobData in pairs(spawnedMobs) do
+
+            -- if this mob is NOT dead, do the brain!
+            if mobData.IsDead == false then
 
                 -- BRAIN EVENT: Is Mob Dead? -- check if mob is dead, handle death
                 if mobData.Model.Humanoid.Health <= 0 then
-                    print("dead", mobData.Model.Humanoid.Health)
+                    mobData.IsDead = true
+                    mobData.DeadTime = os.time()
                     self:KillMob(mobData)
-                    spawnedMobs[mobIndex] = nil
-                end
-
-                -- BRAIN EVENT: Chase Target? -- will chase the player with the highest damage against it, as logn as that player is in range of spawner
-                local damageObjects = mobData.Model.PlayerDamage:GetChildren()
-                if #damageObjects > 0 then
-
-                    local playerTable = {}
-                    for _, object in pairs(damageObjects) do
-                        local player = utils.GetPlayerByUserId(tonumber(object.Name))
-                        playerTable[player] = object.Value
-                    end
-
-                    -- get the target character
-                    local player = utils.GetPlayerByUserId(tonumber(largestObject.Name))
-                    print("Chasing player:", player)
-
-
-
                 end
                 
+                -- BRAIN EVENT: Set Target
+                local playerTargets = {}
+                for player, damage in pairs (mobData.PlayerDamage) do
 
+                    -- build table of players within range of the spawner part who have done damage
+                    if player:DistanceFromCharacter(mobData.HomePosition) <= mobData.Defs.SeekRange then
+                        playerTargets[player] = damage
+                    end
 
+                    -- set target to the player with the most damage
+                    local playerTarget
+                    local highestDamage = 0
+                    for player, damage in pairs(playerTargets) do
+                        if damage > highestDamage then
+                            highestDamage = damage
+                            playerTarget = player
+                        end
+                    end
 
+                    if playerTarget == nil then
+                        mobData.BrainState = "Wait"
+                        mobData.StateTime = os.time()
+                    else
+                        mobData.BrainState = "Chase"
+                        mobData.StateTime = os.time()
+                    end
+            
+                end
+            end
+
+            if mobData.BrainState == "Chase" then
 
             end
-            wait()
+
+            -- cleanup the dead mobs
+            if mobData.IsDead == true then 
+                if os.time() > mobData.DeadTime + 5 then
+                    mobData.Spawner.SpawnerCooldown = os.time() + mobData.Spawner.SpawnerDefs.RespawnTime 
+                    mobData.Model:Destroy()
+                    table.remove(spawnedMobs, index)
+                    print(spawnedMobs)
+                end
+            end
+
         end
-    end)
+        wait(.1)
+    end
 end
 
-function MobService:KillMob(mobData)
+--// DamageMob
+function MobService:DamageMob(player, mobId, damage)
 
-    -- award xp if a player did more than 1/3 of total damage
-    for _, object in pairs(mobData.Model.PlayerDamage:GetChildren()) do
-        if object.Value > mobData.Defs.Health / 3 then
-
-            -- get player formt he objects name
-            local player = utils.GetPlayerByUserId(tonumber(object.Name))
-
-            --award the XP thorugh PowersService
-            Knit.Services.PowersService:AwardXpForKill(player, mobData.Defs.XpValue)
+    -- get the mob form all spawnedMobs using the MobId
+    local thisMob 
+    for _, mobData in pairs(spawnedMobs) do
+        if mobData.MobId == mobId then
+            thisMob = mobData
+            break
         end
     end
 
-    -- set the respawn timer
-    mobData.Timer.Value = os.time() + mobData.Defs.RespawnTime
+    if thisMob == nil then
+        return
+    end
 
-    -- destroy the model
-    mobData.Model:Destroy()
+    -- apply player damage counts only if the mob is not dead
+    if thisMob.BrainState ~= "Dead" then
+        -- apply damage to the mobData table
+        if thisMob.PlayerDamage[player] == nil then
+            thisMob.PlayerDamage[player] = damage
+        else
+            thisMob.PlayerDamage[player] += damage
+        end
+    end
+end
 
+--// KillMob
+function MobService:KillMob(mobData)
+
+    -- award xp if a player did more than 1/3 of total damage
+    for player, damage in pairs(mobData.PlayerDamage) do
+        if damage > mobData.Defs.Health / 3 then
+            Knit.Services.PowersService:AwardXp(player, mobData.Defs.XpValue)
+        end
+    end
+
+    mobData.Model:BreakJoints()
 end
 
 
@@ -135,14 +176,11 @@ function MobService:NewMob(mobDefs)
 		mobData.Model.Humanoid:SetStateEnabled(state, value)
     end
     
-    -- make a bool value so this model can receive damage from PowerService
-    --utils.NewValueObject("IsMob", true, mobData.Model)
-
     -- setup table for player damage
     mobData.PlayerDamage = {}
-
-    -- make a folder to hold player damage value objects
-    --utils.EasyInstance("Folder", {Name = "PlayerDamage", Parent = mobData.Model})
+    mobData.BrainState = "Wait"
+    mobData.StateTime = os.time()
+    mobData.IsDead = false
 
     return mobData
 end
@@ -150,57 +188,44 @@ end
 --// SpawnLoop
 function MobService:SpawnLoop()
 
-    -- initial wait
-    wait(5)
+    wait(5) -- initial wait
 
-    spawn(function()
-        
-        while wait(1) do -- basic spawn loop time
-             
-            -- iterate through all groups and spawn stuff
-            for groupName, groupFolder in pairs(spawnGroupFolders) do
+    while wait(1) do -- basic spawn loop time
+            
+        -- iterate through all groups and spawn stuff
+        for _, spawner in pairs(allSpawners) do
 
-                local mobDefs = require(Knit.MobModules[groupName])
+            -- spawn mobs if the spawner does not have max spawned
+            local mobsSpawned = spawner.SpawnerPart:GetChildren()
+            if #mobsSpawned < spawner.SpawnerDefs.MaxSpawned  then
 
-                -- iterate through all the spawner part in this folder, check if we have enough mobs spawned
-                for _,spawner in pairs(groupFolder:GetChildren()) do
+                -- check spawner cooldown
+                if spawner.SpawnerCooldown < os.time() then
 
-                    for count = 1, mobDefs.MaxSpawned do
+                    -- create a new mobData object and add soem values
+                    local mobData = self:NewMob(spawner.SpawnerDefs)
 
-                        -- find respawn cooldown objects for each possible spawned mob
-                        local thisTimerObject = spawner:FindFirstChild("Timer_" .. count)
-                        if not thisTimerObject then
-                            thisTimerObject = utils.NewValueObject("Timer_" .. count, os.time() - 1, spawner)
-                        end
+                    -- set the spawner this mob is owned by
+                    mobData.Spawner = spawner
 
-                        local mobModel = spawner:FindFirstChild("Mob_" .. count)
+                    -- assign serialNumber to mob model and also add the mobData table to spawnedMobs table
+                    utils.NewValueObject("MobId", serialNumber, mobData.Model)
+                    mobData.MobId = serialNumber
+                    serialNumber += 1
+                    table.insert(spawnedMobs, mobData)
 
-                        -- check if the timer is less than current time, and no mob is spawned
-                        if thisTimerObject.Value < os.time() and mobModel == nil then
-
-                            -- create a new mobData and then spawn the model
-                            local mobData = self:NewMob(mobDefs)
-                            local offsetX = math.random(-spawner.Size.X / 2, spawner.Size.X / 2)
-                            local offsetZ = math.random(-spawner.Size.Z / 2, spawner.Size.Z / 2)
-                            mobData.Model.PrimaryPart.CFrame = spawner.CFrame * CFrame.new(offsetX, 30, offsetZ)
-                            mobData.Model.Parent = spawner
-                            mobData.Model.Name = "Mob_" .. count
-
-                            -- add a reference to the timer object to the mobData table, this is used when the mob is killed
-                            mobData.Timer = thisTimerObject
-
-                            -- assign serialNUmber to MobId object and also add the mobData table to spawnedMobs table
-                            utils.NewValueObject("MobId", serialNumber, mobData.Model)
-                            spawnedMobs[serialNumber] = mobData
-                            serialNumber += 1
-
-                        end
-                    end
+                    -- spawn it out
+                    local offsetX = math.random(-spawner.SpawnerPart.Size.X / 2, spawner.SpawnerPart.Size.X / 2)
+                    local offsetZ = math.random(-spawner.SpawnerPart.Size.Z / 2, spawner.SpawnerPart.Size.Z / 2)
+                    mobData.HomePosition = spawner.SpawnerPart.Position + Vector3.new(offsetX, 0, offsetZ)
+                    mobData.SpawnCFrame = spawner.SpawnerPart.CFrame * CFrame.new(offsetX, 30, offsetZ)
+                    mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
+                    mobData.Model.Parent = spawner.SpawnerPart
+                    
                 end
             end
-        end 
-    
-    end)
+        end
+    end 
 end
 
 --// SetCollisionGroup
@@ -236,9 +261,14 @@ end
 --// KnitStart
 function MobService:KnitStart()
 
-    self:SpawnLoop() -- this loops and respawns mobs
-    self:MobBrain() -- this loops and performs actions on each spawned mob
+    spawn(function()
+        self:SpawnLoop() -- this loops and respawns mobs
+    end)
 
+    spawn(function()
+        self:MobBrain() -- this loops and performs actions on each spawned mob
+    end)
+    
 end
 
 --// KnitInit
@@ -248,12 +278,21 @@ function MobService:KnitInit()
     PhysicsService:CreateCollisionGroup("Mob_NoCollide")
     PhysicsService:CollisionGroupSetCollidable("Mob_NoCollide", "Mob_NoCollide", false)
 
-    -- find all spawn group folders and put them in their table, also make the spawners invis
+    -- find all spawner, build a data table for each, also make the spawners invis
     for _,instance in pairs(Workspace:GetDescendants()) do
         if instance.Name == "MobService" then
             for _,folder in pairs(instance:GetChildren()) do
-                spawnGroupFolders[folder.Name] = folder
                 for _,spawner in pairs(folder:GetChildren()) do
+
+                    -- build a data table for the spawenr and insert it inthe allSpawners table
+                    local spawnerData = {
+                        SpawnerPart = spawner,
+                        SpawnerCooldown = os.time() - 1,
+                        SpawnerDefs = require(Knit.MobModules[spawner.Parent.Name])
+                    }
+                    table.insert(allSpawners, spawnerData)
+
+                    -- make it transparent
                     spawner.Transparency = 1
                 end
             end

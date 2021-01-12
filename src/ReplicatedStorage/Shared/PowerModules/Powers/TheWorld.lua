@@ -41,6 +41,13 @@ TheWorld.Defs = {
         Rare = 20,
         Legendary = 40,
     },
+
+    DamageMultiplier = {
+        Common = 1,
+        Rare = 2,
+        Legendary = 3,
+    },
+    
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.TheWorld_Common,
         Rare = ReplicatedStorage.EffectParts.StandModels.TheWorld_Rare,

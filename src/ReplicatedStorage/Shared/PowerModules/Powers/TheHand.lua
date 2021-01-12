@@ -32,11 +32,19 @@ TheHand.Defs = {
         Rare = 25,
         Legendary = 30,
     },
+
+    DamageMultiplier = {
+        Common = 1,
+        Rare = 2,
+        Legendary = 3,
+    },
+
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.TheHand_Common,
         Rare = ReplicatedStorage.EffectParts.StandModels.TheHand_Rare,
         Legendary = ReplicatedStorage.EffectParts.StandModels.TheHand_Legendary,
     },
+    
     Abilities = {
         EquipStand = {
             Name = "Equip Stand",

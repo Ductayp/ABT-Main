@@ -19,7 +19,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local DepthOfField = {}
 
-function DepthOfField.Server_ApplyEffect(hitCharacter,params)
+function DepthOfField.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     local player = utils.GetPlayerFromCharacter(hitCharacter)
     if player then

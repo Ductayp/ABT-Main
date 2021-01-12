@@ -13,9 +13,10 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
+local BlockInput = require(Knit.Effects.BlockInput)
 
 -- constants
-local XP_PER_LEVEL = {
+PowersService.XP_PER_LEVEL = {
     Common = 3600,
     Rare = 10800,
     Legendary = 32400
@@ -28,6 +29,11 @@ PowersService.Client.RenderExistingStands = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
+
+    -- check if the players input is block
+    if BlockInput.IsBlocked(player) then
+        return
+    end
 
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -65,28 +71,40 @@ end
 --// GetLevelFromXp
 function PowersService:GetLevelFromXp(standXp, standRarity)
 
-	if xpNumber == nil then
-		xpNumber = 1
+	if standXp == nil then
+		standXp = 1
 	end
 
-    local xpPerLevel = XP_PER_LEVEL[standRarity]
+    local xpPerLevel = PowersService.XP_PER_LEVEL[standRarity]
 
-    local rawLevel = xpNumber / xpPerLevel
-    local actualLevel = math.floor(rawLevel) + 1
+    local rawLevel = math.floor(standXp / xpPerLevel)
+    local adjustedLevel = rawLevel + 1
 
-    local remainingXp = (xpNumber - (actualLevel * xpPerLevel))
-    local percentageRemaining = (remainingXp / xpPerLevel * 100)
+    local completedXp = adjustedLevel * xpPerLevel
+    local adjustedXp = standXp + xpPerLevel
 
-    return actualLevel, percentageRemaining
+    local remainingXpToLevel = xpPerLevel - (adjustedXp - completedXp)
+    local percentageComplete = 1 - (remainingXpToLevel / xpPerLevel)
+    percentageComplete *= 100
+    percentageComplete = math.floor(percentageComplete)
+    percentageComplete = percentageComplete / 100
+
+    if percentageComplete <= 0 then
+        percentageComplete = 0.01
+    elseif percentageComplete >= 1 then
+        percentageComplete = 1
+    end
+ 
+    return adjustedLevel, percentageComplete, remainingXpToLevel
 end
 
 --// Client:GetLevelFromXp
 function PowersService.Client:GetLevelFromXp(player, standXp, standRarity) -- player arg is not used but gets passed in by Knit. we just ignore it
-    local actualLevel, percentageRemaining = self.Server:GetLevelFromXp(standXp, standRarity)
-    return actualLevel, percentageRemaining
+    local actualLevel, percentageRemaining, remainingXpToLevel = self.Server:GetLevelFromXp(standXp, standRarity)
+    return actualLevel, percentageRemaining, remainingXpToLevel
 end
 
---// SetPower -- sets the players curret power
+--// SetPower -- sets the players current power
 function PowersService:SetCurrentPower(player,params)
 
     -- get the players current power and run the remove function if it exists
@@ -125,9 +143,16 @@ function PowersService:SetCurrentPower(player,params)
 end
 
 --// AwardXpForKill
-function PowersService:AwardXpForKill(player, xpValue)
+function PowersService:AwardXp(player, xpValue)
 
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    playerData.CurrentStand.Xp += xpValue
     print(player, " Just got Xp: ", xpValue)
+    print(playerData.CurrentStand.Xp)
+
+    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
 end
 
@@ -138,28 +163,38 @@ function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
     -- setup some variables
     local canHit = false
     local hitParams = {} -- additional params we need to pass into the effects
-    hitParams.InitPlayer = initPlayer -- pass the initPlayer argument into the hitParmas table, mostly used for tallyign damage on Mobs
+
+    -- get damage multiplier
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(initPlayer)
+    local findPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
+    if findPowerModule then
+        hitParams.DamageMultiplier = require(findPowerModule).Defs.DamageMultiplier[playerData.CurrentStand.Rarity]
+    end
 
     -- test if a palyer or a mob, then set variables
     local isPlayer = utils.GetPlayerFromCharacter(characterHit)
     if isPlayer then
+
+        -- check if players character is invulnerable
         local isInvulnerable = require(Knit.StateModules.Invulnerable).IsInvulnerable(isPlayer)
         if not isInvulnerable then
             canHit = true
             hitParams.IsMob = false
         end
+
     else
         local mobIdObject = characterHit:FindFirstChild("MobId")
         if mobIdObject then
             canHit = true
-            --hitParams.IsMob = true
+            hitParams.IsMob = true
+            hitParams.MobId = mobIdObject.Value
         end
     end
    
     -- do hitEffects if canHit is true
     if canHit == true then
         for effect,effectParams in pairs(hitEffects) do
-            require(Knit.Effects[effect]).Server_ApplyEffect(characterHit, effectParams, hitParams)
+            require(Knit.Effects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
         end
     end
 

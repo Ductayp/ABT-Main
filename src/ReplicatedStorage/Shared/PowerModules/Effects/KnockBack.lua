@@ -18,7 +18,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local KnockBack = {}
 
-function KnockBack.Server_ApplyEffect(hitCharacter,params)
+function KnockBack.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then

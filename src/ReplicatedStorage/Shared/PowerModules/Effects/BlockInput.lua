@@ -18,7 +18,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local BlockInput = {}
 
-function BlockInput.Server_ApplyEffect(hitCharacter,params)
+function BlockInput.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     local player = utils.GetPlayerFromCharacter(hitCharacter)
     if player then
@@ -46,9 +46,12 @@ function BlockInput.Server_ApplyEffect(hitCharacter,params)
             inputBlockedBool.Name = params.Name
         end
 
+        -- if we set a duration, then add to debirs for that value, else duration is 1 second
         if params.Duration then
             --print("beep",params.Duration)
             Debris:AddItem(inputBlockedBool, params.Duration)
+        else 
+            Debris:AddItem(inputBlockedBool, 1)
         end
 
         --return inputBlockedBool
@@ -57,6 +60,27 @@ end
 
 function BlockInput.Client_RenderEffect(params)
     -- nothign right now
+end
+
+function BlockInput.IsBlocked(player)
+
+    local isBlocked = false
+
+    local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
+    if inputBlockFolder then
+        local inputBlockObjects = inputBlockFolder:GetChildren()
+        if #inputBlockObjects > 0 then
+            for _, object in pairs(inputBlockObjects) do
+                if object.Value == true then
+                    inBlocked = true
+                    return isBlocked
+                end
+            end
+        end
+    end
+
+    return isBlocked
+
 end
 
 

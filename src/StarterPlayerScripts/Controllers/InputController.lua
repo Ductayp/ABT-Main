@@ -19,13 +19,6 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 --// SendToPowersService
 function InputController:SendToPowersService(params)
 
-    local player = Players.LocalPlayer
-    local isBlocked = powerUtils.CheckInputBlock(player)
-
-    if isBlocked then
-        return -- end function if isBlocked returns true
-    end
-
     Knit.Controllers.PowersController:InitializePower(params)
 
 end

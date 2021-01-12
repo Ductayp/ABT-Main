@@ -20,11 +20,14 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersController = Knit.CreateController { Name = "PowersController" }
 local PowersService = Knit.GetService("PowersService")
-
--- instance references
+local BlockInput = require(Knit.Effects.BlockInput)
 
 --// InitializePower
 function PowersController:InitializePower(params)
+
+    if BlockInput.IsBlocked(Players.LocalPlayer) then
+        return
+    end
 
     params.SystemStage = "Intialize"
     local powerData = PowersService:GetCurrentPower(Players.LocalPlayer)

@@ -38,7 +38,7 @@ local colors = {
 
 local SphereFields = {}
 
-function SphereFields.Server_ApplyEffect(hitCharacter,params)
+function SphereFields.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     params.HitCharacter = hitCharacter
     Knit.Services.PowersService:RenderEffect_AllPlayers("SphereFields",params)

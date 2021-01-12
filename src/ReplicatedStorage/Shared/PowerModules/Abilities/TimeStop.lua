@@ -12,12 +12,12 @@ local Players = game:GetService('Players')
 -- Knits and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
+--local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Effect modules
-local PinCharacter = require(Knit.Effects.PinCharacter)
-local ColorShift = require(Knit.Effects.ColorShift)
-local BlockInput = require(Knit.Effects.BlockInput)
+--local PinCharacter = require(Knit.Effects.PinCharacter)
+--local ColorShift = require(Knit.Effects.ColorShift)
+--local BlockInput = require(Knit.Effects.BlockInput)
 
 local TimeStop = {}
 

@@ -19,7 +19,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local ColorShift = {}
 
-function ColorShift.Server_ApplyEffect(hitCharacter,params)
+function ColorShift.Server_ApplyEffect(initPlayer,hitCharacter, params)
     
     -- only apply this effect to players
     local player = utils.GetPlayerFromCharacter(hitCharacter)

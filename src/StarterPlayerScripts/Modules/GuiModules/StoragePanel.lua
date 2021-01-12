@@ -358,11 +358,10 @@ function StoragePanel.Show_StandCard(standData, buttonType)
     end
 
     -- set level and xp bar
-    local level, remainingPercent = PowersService:GetLevelFromXp(standData.Xp, standData.Rarity)
+    local level, percentageComplete = PowersService:GetLevelFromXp(standData.Xp, standData.Rarity)
     print(level, remainingPercent)
     StoragePanel.Level.Text = tostring(level)
-    local width = math.floor((remainingPercent / 100) + 1)
-    StoragePanel.XpBar.Size = UDim2.new(width, StoragePanel.XpBar.Size.X.Offset, StoragePanel.XpBar.Size.Y.Scale, StoragePanel.XpBar.Size.Y.Offset)
+    StoragePanel.XpBar.Size = UDim2.new(percentageComplete, StoragePanel.XpBar.Size.X.Offset, StoragePanel.XpBar.Size.Y.Scale, StoragePanel.XpBar.Size.Y.Offset)
 
     -- set base value
     StoragePanel.BaseValue.Text = standData.BaseValue

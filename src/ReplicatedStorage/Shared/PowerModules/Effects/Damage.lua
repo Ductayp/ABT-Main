@@ -12,30 +12,33 @@ local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+
+
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
 
 local Damage = {}
 
-function Damage.Server_ApplyEffect(hitCharacter, effectParams, hitParams)
+function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
-        -- do the damage
-        hitCharacter.Humanoid:TakeDamage(effectParams.Damage)
+        -- multiply damage based on passed params
+        local actualDamage = effectParams.Damage * hitParams.DamageMultiplier
 
-        -- if it is a mob, add the hit values
-        local mobIdObject = characterHit:FindFirstChild("MobId")
-        if mobIdObject then
-            
-            -- send damage to MobService
+        -- do the damage
+        hitCharacter.Humanoid:TakeDamage(actualDamage)
+
+        -- if it is a mob
+        if hitParams.IsMob then
+            Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage)
         end
 
         -- send the visual effects to all clients
         local renderParams = {}
-        renderParams.Damage = effectParams.Damage
+        renderParams.Damage = actualDamage
         renderParams.HitCharacter = hitCharacter
         Knit.Services.PowersService:RenderEffect_AllPlayers("Damage", renderParams)
     end

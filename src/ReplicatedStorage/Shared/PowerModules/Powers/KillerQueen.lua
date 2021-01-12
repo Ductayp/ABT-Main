@@ -32,11 +32,19 @@ KillerQueen.Defs = {
         Rare = 25,
         Legendary = 30,
     },
+
+    DamageMultiplier = {
+        Common = 1,
+        Rare = 2,
+        Legendary = 3,
+    },
+
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Common,
         Rare = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Rare,
         Legendary = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Legendary,
     },
+    
     Abilities = {
         EquipStand = {
             Name = "Equip Stand",

@@ -32,11 +32,19 @@ WhiteSnake.Defs = {
         Rare = 25,
         Legendary = 30,
     },
+
+    DamageMultiplier = {
+        Common = 1,
+        Rare = 2,
+        Legendary = 3,
+    },
+
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Common,
         Rare = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Rare,
         Legendary = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_Legendary,
     },
+    
     Abilities = {
         EquipStand = {
             Name = "Equip Stand",

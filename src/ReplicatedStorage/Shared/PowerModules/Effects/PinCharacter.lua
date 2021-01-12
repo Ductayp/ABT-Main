@@ -18,7 +18,7 @@ local powerUtils = require(Knit.Shared.PowerUtils)
 
 local PinCharacter = {}
 
-function PinCharacter.Server_ApplyEffect(hitCharacter,params)
+function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     spawn(function()
 

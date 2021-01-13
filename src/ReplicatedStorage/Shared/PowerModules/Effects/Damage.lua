@@ -33,7 +33,17 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
         -- if it is a mob
         if hitParams.IsMob then
-            Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage)
+            if hitCharacter.Humanoid then 
+
+                Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage)
+
+                local defaultWalkspeed = hitCharacter:FindFirstChild("DefaultWalkSpeed")
+                if not defaultWalkspeed then
+                    defaultWalkspeed = Instance.new("NumberValue")
+                    defaultWalkspeed.Name = "DefaultWalkSpeed"
+                    defaultWalkspeed.Value = 16
+                    defaultWalkspeed.Parent = hitCharacter
+                end
         end
 
         -- send the visual effects to all clients

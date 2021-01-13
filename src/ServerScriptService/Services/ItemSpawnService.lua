@@ -17,7 +17,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- constants
 local INITIAL_WAIT = 5
-local SPAWN_LOOP_TIME = 20 -- is set at 1 for testing, but we should probbaly be much slower like 10 or more later on
+local SPAWN_LOOP_TIME = 1 --20 -- is set at 1 for testing, but we should probbaly be much slower like 10 or more later on
 
 -- variables & stuff :)
 ItemSpawnService.CanSpawn = false
@@ -114,8 +114,7 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
         if hit.Parent:FindFirstChild("Humanoid") then
             local player = utils.GetPlayerFromCharacter(hit.Parent)
             if player then
-
-                Knit.Services.InventoryService:GiveItemToPlayer(player, itemDefs.Params)
+                self:GiveItem(player, itemDefs.Params)
                 spawner.ItemPointer.Value = nil
                 item:Destroy()
             end
@@ -123,13 +122,39 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
     end)
 end
 
+function ItemSpawnService:GiveItem(player, itemParams)
+
+    -- always give at least 1 as the value
+    local value = 1
+
+    if itemParams.Value then
+        value = itemParams.Value
+    end
+
+    --check if we have a range of values possible, if so, valuate it
+    if itemParams.MinValue ~= nil and itemParams.MaxValue ~= nil then
+        value = math.random(itemParams.MinValue, itemParams.MaxValue)
+    end
+
+    if itemParams.DataCategory == "StandExperience" then
+        Knit.Services.PowersService:AwardXp(player, value)
+
+    elseif itemParams.DataCategory == "Currency" then
+        Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")
+
+    elseif  itemParams.DataCategory == "Arrow" then
+        Knit.Services.InventoryService:Give_Arrow(player, itemParams.DataKey, itemParams.Rarity, 1)
+
+    elseif  itemParams.DataCategory == "Item" then
+        Knit.Services.InventoryService:Give_Item(player, itemParams.Params)
+    else    
+        print("This spawn item had no matching DataCategory. Nothing given to player")
+    end
+    
+end
+
 --// KnitStart
 function ItemSpawnService:KnitStart()
-
-    -- a testing print
-    --for i,v in pairs(ItemSpawnService.SpawnerGroups) do
-        --print(i,v)
-    --end
 
     -- main spawner loop
     spawn(function()
@@ -144,7 +169,6 @@ function ItemSpawnService:KnitStart()
             end
         end
     end)
-
 end
 
 --// KnitInit
@@ -169,9 +193,6 @@ function ItemSpawnService:KnitInit()
             end
         end
     end
-
-
-
 end
 
 

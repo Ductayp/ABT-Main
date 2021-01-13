@@ -104,7 +104,7 @@ function ArrowPanel.Update(data)
 
         -- change text
         local textLabel = newListItem:FindFirstChild("Arrow_Name", true)
-        textLabel.Text = arrow.ArrowName
+        textLabel.Text = arrow.Name
 
         -- set some values based on rarity
         local icon = newListItem:FindFirstChild("Arrow_Icon", true)

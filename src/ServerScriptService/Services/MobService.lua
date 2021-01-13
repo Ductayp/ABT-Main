@@ -35,83 +35,148 @@ function MobService:MobBrain()
         -- iterate through all spawned mobs on each loop
         for index, mobData in pairs(spawnedMobs) do
 
-            -- if this mob is NOT dead, do the brain!
-            if mobData.IsDead == false then
-
-                -- BRAIN EVENT: Is Mob Dead? -- check if mob is dead, handle death
-                if mobData.Model.Humanoid.Health <= 0 then
-                    mobData.IsDead = true
-                    mobData.DeadTime = os.time()
-                    self:KillMob(mobData)
-                end
+            if mobData.LastUpdate < os.clock() + 0.25 then
+                --print("update mob")
+                mobData.LastUpdate = os.clock()
                 
-                -- BRAIN EVENT: Set Target
-                local playerTargets = {}
-                for player, damage in pairs (mobData.PlayerDamage) do
+                --print(mobData.BrainState)
 
-                    -- build table of players within range of the spawner part who have done damage
-                    if player:DistanceFromCharacter(mobData.HomePosition) <= mobData.Defs.SeekRange then
-                        playerTargets[player] = damage
+                -- if this mob is NOT dead, do the brain!
+                if mobData.IsDead == false then
+
+                    -- BRAIN EVENT: Is Mob Dead? -- check if mob is dead, handle death
+                    if mobData.Model.Humanoid.Health <= 0 then
+                        mobData.BrainState = nil
+                        mobData.IsDead = true
+                        mobData.DeadTime = os.clock()
+                        self:KillMob(mobData)
                     end
 
-                    -- set target to the player with the most damage
-                    if playerTargets == nil then
-                        mobData.ChaseTarget = nil
-                    else
-                        local highestDamage = 0
-                        for player, damage in pairs(playerTargets) do
-                            if damage > highestDamage then
-                                highestDamage = damage
-                                mobData.ChaseTarget = player
+                    -- BRAIN EVENT: Seek Target
+                    local playerTargets = {}
+                    for player, damage in pairs (mobData.PlayerDamage) do
+
+                        -- build table of players within range of the spawner part who have done damage
+                        if player:DistanceFromCharacter(mobData.Spawner.SpawnerPart.Position) <= mobData.Defs.SeekRange then
+                            playerTargets[player] = damage
+                        end
+
+                        -- set target to the player with the most damage
+                        if playerTargets == nil then
+                            mobData.ChaseTarget = nil
+                        else
+                            local highestDamage = 0
+                            for player, damage in pairs(playerTargets) do
+                                if damage > highestDamage then
+                                    highestDamage = damage
+                                    mobData.ChaseTarget = player
+                                end
                             end
                         end
                     end
 
-                    if mobData.ChaseTarget == nil then
-                        mobData.BrainState = "Wait"
-                        mobData.StateTime = os.time()
-                    else
+                    -- BRAIN EVENT: Attack Target
+                    if mobData.ChaseTarget ~= nil then
+                        if mobData.ChaseTarget:DistanceFromCharacter(mobData.Model.HumanoidRootPart.Position) <= mobData.Defs.AttackRange then
+                            if mobData.LastAttack < os.clock() - mobData.Defs.AttackSpeed then
+                                mobData.LastAttack = os.clock()
+                                mobData.BrainState = "Attack"
+                                mobData.StateTime = os.clock()
+                            end
+                        end
+                    end
+
+                    -- BRAIN STATE: Attack
+                    if mobData.BrainState == "Attack" then
+                        mobData.Model.Humanoid:MoveTo(mobData.Model.HumanoidRootPart.Position)
+                        local rand = math.random(1, #mobData.Animations.Attack)
+                        mobData.Animations.Attack[rand]:Play()
+                        print("attack")
                         mobData.BrainState = "Chase"
-                        mobData.StateTime = os.time()
+                    end
+                    
+                    -- BRAIN STATE: Wait
+                    if mobData.BrainState == "Wait" then
+                        -- set move
+                        mobData.Model.Humanoid:MoveTo(mobData.Model.HumanoidRootPart.Position)
+                        if not mobData.Animations.Idle.IsPlaying then mobData.Animations.Idle:Play() end
+                        mobData.Animations.Walk:Stop()
+
+
+                        if mobData.ChaseTarget ~= nil then
+                            mobData.BrainState = "Chase"
+                            mobData.StateTime = os.clock()
+                        end
+
+                    end
+
+                    -- BRAIN STATE: Chase
+                    if mobData.BrainState == "Chase" then
+
+                        -- set move
+                        mobData.Model.Humanoid:MoveTo(mobData.ChaseTarget.Character.HumanoidRootPart.Position, mobData.ChaseTarget.Character.HumanoidRootPart) 
+                        if not mobData.Animations.Walk.IsPlaying then mobData.Animations.Walk:Play() end
+                        mobData.Animations.Idle:Stop()
+
+                        -- if we get too far away, return to the spawner
+                        local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.SpawnerPart.Position).Magnitude
+                        if rangeMagnitude > mobData.Defs.ChaseRange then
+                            mobData.BrainState = "Return"
+                            mobData.ChaseTarget = nil
+                            mobData.StateTime = os.clock()
+                        end
+
+                        -- if chaseTarget is nil, then return to home
+                        if mobData.ChaseTarget == nil then
+                            mobData.BrainState = "Return"
+                        end
+                    end
+                    
+                    -- BRAIN STATE: Return
+                    if mobData.BrainState == "Return" then
+
+                        -- set move
+                        mobData.Model.Humanoid:MoveTo(mobData.Spawner.SpawnerPart.Position, mobData.Spawner.SpawnerPart)
+                        if not mobData.Animations.Walk.IsPlaying then mobData.Animations.Walk:Play() end
+                        mobData.Animations.Idle:Stop()
+
+                        -- check if we are too far from Home
+                        local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.SpawnerPart.Position).Magnitude
+                        if rangeMagnitude < 5 then 
+                            mobData.BrainState = "Wait"
+                            mobData.ChaseTarget = nil
+                            mobData.StateTime = os.clock()
+                        end
+
+                        -- if we get stuck in the return state too long, kill the mob
+                        if os.clock() > mobData.StateTime + 10 then
+                            mobData.PlayerDamage = nil
+                            mobData.IsDead = true
+                            mobData.DeadTime = os.clock()
+                        end
+
+                        -- if a player gets back in range, set it back to chase
+                        if mobData.ChaseTarget ~= nil then
+                            if os.clock() > mobData.StateTime + 1 then
+                                mobData.BrainState = "Chase"
+                                mobData.StateTime = os.clock()
+                            end
+
+                        end
+
                     end
                 end
 
-                -- BRAIN EVENT: Cancel Chase. Return Home
-                local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.HomePosition).Magnitude
-                if rangeMagnitude > mobData.Defs.ChaseRange then -- and mobData.BrainState ~= "Wait"
-                    print("too far!!!")
-                    mobData.Model.Humanoid:MoveTo(mobData.HomePosition)
-                    mobData.BrainState = "Return"
-                    mobData.ChaseTarget = nil
-                    mobData.StateTime = os.time()
-                end
-                
-
-                -- BRAIN EVENT : Chase Player
-                if mobData.BrainState == "Chase" then
-                    mobData.Model.Humanoid:MoveTo(mobData.ChaseTarget.Character.HumanoidRootPart.Position, mobData.ChaseTarget.Character.HumanoidRootPart)
-                end
-
-                if mobData.ChaseTarget ~= nil then
-                    print(mobData.ChaseTarget)
-                    print(mobData.BrainState)
+                -- cleanup the dead mobs
+                if mobData.IsDead == true then 
+                    if os.clock() > mobData.DeadTime + 5 then
+                        mobData.Spawner.SpawnerCooldown = os.clock() + mobData.Spawner.SpawnerDefs.RespawnTime 
+                        mobData.Model:Destroy()
+                        table.remove(spawnedMobs, index)
+                        --print(spawnedMobs)
+                    end
                 end
             end
-
-            if mobData.BrainState == "Wait" then
-
-            end
-
-            -- cleanup the dead mobs
-            if mobData.IsDead == true then 
-                if os.time() > mobData.DeadTime + 5 then
-                    mobData.Spawner.SpawnerCooldown = os.time() + mobData.Spawner.SpawnerDefs.RespawnTime 
-                    mobData.Model:Destroy()
-                    table.remove(spawnedMobs, index)
-                    print(spawnedMobs)
-                end
-            end
-
         end
         wait()
     end
@@ -153,8 +218,6 @@ function MobService:KillMob(mobData)
             Knit.Services.PowersService:AwardXp(player, mobData.Defs.XpValue)
         end
     end
-
-    mobData.Model:BreakJoints()
 end
 
 
@@ -180,6 +243,42 @@ function MobService:NewMob(mobDefs)
 	mobData.Model.Humanoid.Health = mobData.Model.Humanoid.MaxHealth;
 	mobData.Model.Humanoid.WalkSpeed = mobDefs.WalkSpeed;
     mobData.Model.Humanoid.JumpPower = mobDefs.JumpPower;
+
+    -- add a default Walkspeed object
+    local defaultWalkspeed = Instance.new("NumberValue")
+    defaultWalkspeed.Name = "DefaultWalkSpeed"
+    defaultWalkspeed.Value = mobDefs.WalkSpeed
+    defaultWalkspeed.Parent = mobData.Model
+
+    -- parent to workspace so we can load animations
+    mobData.Model.Parent = Workspace
+
+    -- add an animator
+    mobData.Animations = {} -- setup a table
+    mobData.Animations.Attack = {} -- we need another table for attack aniamtions
+    local animator = Instance.new("Animator")
+    animator.Parent = mobData.Model.Humanoid
+
+    -- idle animation
+    local idleAnimation = Instance.new("Animation")
+    idleAnimation.AnimationId = mobDefs.Animations.Idle
+    mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
+    idleAnimation:Destroy()
+
+    -- walk animation
+    local walkAnimation = Instance.new("Animation")
+    walkAnimation.AnimationId = mobDefs.Animations.Walk
+    mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
+    walkAnimation:Destroy()
+
+    -- attack animations
+    for index, animationId in pairs(mobDefs.Animations.Attack) do
+        local newAnimation = Instance.new("Animation")
+        newAnimation.AnimationId = animationId
+        local newTrack = animator:LoadAnimation(newAnimation)
+        table.insert(mobData.Animations.Attack, newTrack)
+        newAnimation:Destroy()
+    end
     
     -- add a body gyro
     local BodyGyro = Instance.new("BodyGyro");
@@ -199,11 +298,13 @@ function MobService:NewMob(mobDefs)
 		mobData.Model.Humanoid:SetStateEnabled(state, value)
     end
     
-    -- setup table for player damage
+    -- setup assorted mobData values
     mobData.PlayerDamage = {}
     mobData.BrainState = "Wait"
-    mobData.StateTime = os.time()
+    mobData.StateTime = os.clock()
     mobData.IsDead = false
+    mobData.LastUpdate = os.clock()
+    mobData.LastAttack = os.clock()
 
     return mobData
 end
@@ -223,7 +324,7 @@ function MobService:SpawnLoop()
             if #mobsSpawned < spawner.SpawnerDefs.MaxSpawned  then
 
                 -- check spawner cooldown
-                if spawner.SpawnerCooldown < os.time() then
+                if spawner.SpawnerCooldown < os.clock() then
 
                     -- create a new mobData object and add soem values
                     local mobData = self:NewMob(spawner.SpawnerDefs)
@@ -310,7 +411,7 @@ function MobService:KnitInit()
                     -- build a data table for the spawenr and insert it inthe allSpawners table
                     local spawnerData = {
                         SpawnerPart = spawner,
-                        SpawnerCooldown = os.time() - 1,
+                        SpawnerCooldown = os.clock() - 1,
                         SpawnerDefs = require(Knit.MobModules[spawner.Parent.Name])
                     }
                     table.insert(allSpawners, spawnerData)

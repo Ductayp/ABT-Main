@@ -16,8 +16,8 @@ Morioh_XP.Items = {
         Weight = 1,
         Model = ReplicatedStorage.SpawnItems.XpToken,
         Params = {
-            DataKey = "StandXP",
-            DataCategory = "StandXP",
+            --DataKey = "StandXP",
+            DataCategory = "StandExperience",
             MinValue = 10,
             MaxValue = 50
         }
@@ -27,8 +27,8 @@ Morioh_XP.Items = {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.XpToken,
         Params = {
-            DataKey = "StandXP",
-            DataCategory = "StandXP",
+            --DataKey = "StandXP",
+            DataCategory = "StandExperience",
             MinValue = 1,
             MaxValue = 10
         }

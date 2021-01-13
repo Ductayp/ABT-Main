@@ -53,9 +53,6 @@ function BulletKick.Activate(initPlayer,params)
                 if hit.Name == "CharacterHit" then
                     if hit.Value ~= initPlayer.Character then
 
-                        print(hit,hit.Value)
-                        print("params test",params)
-
                         if count == 3 then
                             local characterHit = hit.Value
                             Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.BulletKick.HitEffects)

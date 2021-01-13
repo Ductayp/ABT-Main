@@ -23,12 +23,39 @@ local utils = require(Knit.Shared.Utils)
 
 -- GAME PASSES
 local gamePasses = {
-    MobileStandStorage = 13434519,
-    DoubleCash = 13434733,
-    DoubleArrowLuck = 13434798,
-    DoubleOrbs = 13740628,
-    ItemFinder = 13434805,
-    DoubleExperience = 13855263,
+
+    MobileStandStorage = {
+        Id = 13434519,
+        CreateState = nil
+    },
+
+    DoubleCash = {
+        Id = 13434733,
+        CreateState = "Multiplier_Cash",
+        StateValue = 2
+    },
+
+    ArrowLuck = {
+        Id = 13434798,
+        CreateState = nil
+    },
+
+    DoubleOrbs = {
+        Id = 13740628,
+        CreateState = "Multiplier_Orbs",
+        StateValue = 2
+    },
+
+    ItemFinder = {
+        Id = 13434805,
+        CreateState = nil
+    },
+
+    DoubleExperience = {
+        Id = 13855263,
+        CreateState = "Multiplier_Experience",
+        StateValue = 2
+    }
 }
 
 --// Has_GamePass
@@ -57,7 +84,7 @@ end
 
 --// Prompt_GamePassPurchase
 function GamePassService:Prompt_GamePassPurchase(player,passName)
-    local passId = gamePasses[passName]
+    local passId = gamePasses[passName].Id
     MarketplaceService:PromptGamePassPurchase(player, passId)
 end
 
@@ -69,18 +96,34 @@ end
 --// Finished_GamePassPurchase
 function GamePassService:Finished_GamePassPurchase(player, passId, wasPurchased)
     
-    local playerFolder = ReplicatedStorage.GamePassService:FindFirstChild(player.UserId)
-
     if wasPurchased then
-        for key,value in pairs(gamePasses) do
-            if value == passId then
-                local thisObject = playerFolder:FindFirstChild(key)
+
+        -- get the pass from the table
+        for passName, passTable in pairs(gamePasses) do
+            if passTable.Id == passId then
+                
+                -- set the bool value object in the GamePassService player folder
+                local playerFolder = ReplicatedStorage.GamePassService:FindFirstChild(player.UserId)
+                local thisObject = playerFolder:FindFirstChild(passName)
                 if thisObject then
                     thisObject.Value = true
                 end
+
+                -- create state is StateService 
+                if passTable.CreateState then
+                    Knit.Services.StateService:AddEntryToState(player, passTable.CreateState, "GamePassService", passTable.StateValue)
+                end
+
             end
         end
+
+       
+
+
+
+
     end
+
 end
 
 ----------------------------------------------------------------------------------------------------------------
@@ -217,13 +260,13 @@ function GamePassService:ProcessReceipt(receiptInfo)
                 -- find the dev product by the productId sent
                 for _, productTable in pairs(devProducts) do
                     if productTable.ProductId == receiptInfo.ProductId then
-                        Knit.Services.InventoryService:GiveItemToPlayer(player, productTable.Params)
+                        if productTable.Params.DataCategory == "Currency" then
+                            Knit.Services.InventoryService:Give_Currency(player, productTable.Params.DataKey, productTable.Params.Value, "GamePassService")
+                        end
                         print("Match!")
                         print(productTable.ProductId, productTable.Params.DataKey, productTable.Params.Value, productTable.Params.DataCategory)
                     end
                 end
-
-
 
                 -- return to Roblox we successfully processed this
                 return Enum.ProductPurchaseDecision.PurchaseGranted
@@ -246,11 +289,20 @@ function GamePassService:PlayerAdded(player)
     local playerFolder = utils.EasyInstance("Folder",{Name = player.UserId, Parent = ReplicatedStorage.GamePassService})
 
     -- get gamepasses for player and create states for them
-    for passName,passId in pairs(gamePasses) do
+    for passName,passTable in pairs(gamePasses) do
+        local passId = passTable.Id
         if MarketplaceService:UserOwnsGamePassAsync(player.UserId,passId) then
-            --utils.NewValueObject(player, "GamePass", passName, true)
+
+            -- create and set valueObject to true
             utils.NewValueObject(passName,true,playerFolder)
+
+            -- create state in StateService 
+            if passTable.CreateState then
+                Knit.Services.StateService:AddEntryToState(player, passTable.CreateState, "GamePassService", passTable.StateValue)
+            end
         else
+
+            -- create and set valueObject to false
             utils.NewValueObject(passName,false,playerFolder)
         end
     end

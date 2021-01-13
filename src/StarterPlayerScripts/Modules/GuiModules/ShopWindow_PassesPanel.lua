@@ -47,7 +47,7 @@ function ShopWindow_PassesPanel.Setup()
 
     -- Button_2XArrowLuck
     ShopWindow_PassesPanel.Button_2XArrowLuck.Activated:Connect(function()
-        GamePassService:Prompt_GamePassPurchase("DoubleArrowLuck")
+        GamePassService:Prompt_GamePassPurchase("ArrowLuck")
     end)
 
     -- Button_MobileStorage

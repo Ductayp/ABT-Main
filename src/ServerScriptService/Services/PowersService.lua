@@ -145,7 +145,21 @@ end
 --// AwardXpForKill
 function PowersService:AwardXp(player, xpValue)
 
+    -- check if player has any bonuses
+    local multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
+    print("XP Multiplier is: ", multiplier)
+
+    -- multiply the value
+    xpValue = xpValue * multiplier
+
+    -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- check if player is standless, if they are return out of here
+    if playerData.CurrentStand.Power == "Standless" then
+        print("you cant get any xp if you are standless!")
+        return
+    end
 
     playerData.CurrentStand.Xp += xpValue
     print(player, " Just got Xp: ", xpValue)

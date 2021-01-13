@@ -254,7 +254,6 @@ function PowerUtils.SimpleHitbox(initPlayer,boxParams)
 			newValueObject.Name = "CharacterHit"
 			newValueObject.Value = characterHit
 			newValueObject.Parent = hitBox
-			print("hit this character with already touching hits: ", newValueObject.Value, newValueObject.Parent)
 		end
 	end)
 	

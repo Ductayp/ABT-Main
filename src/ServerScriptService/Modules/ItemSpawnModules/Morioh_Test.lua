@@ -17,7 +17,7 @@ Morioh_B.Items = {
         Model = ReplicatedStorage.SpawnItems.UniversalArrow,
         Params = {
             DataKey = "UniversalArrow",
-            DataCategory = "ArrowInventory",
+            DataCategory = "Arrow",
             Rarity = "Rare",
             ArrowName = "Universal Arrow"
         }
@@ -28,7 +28,7 @@ Morioh_B.Items = {
         Model = ReplicatedStorage.SpawnItems.UniversalArrow,
         Params = {
             DataKey = "UniversalArrow",
-            DataCategory = "ArrowInventory",
+            DataCategory = "Arrow",
             Rarity = "Common",
             ArrowName = "Universal Arrow"
         }
@@ -39,7 +39,7 @@ Morioh_B.Items = {
         Model = ReplicatedStorage.SpawnItems.UniversalArrow,
         Params = {
             DataKey = "UniversalArrow",
-            DataCategory = "ArrowInventory",
+            DataCategory = "Arrow",
             Rarity = "Legendary",
             ArrowName = "Universal Arrow"
         }
@@ -50,7 +50,7 @@ Morioh_B.Items = {
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",
-            DataCategory = "ItemInventory",
+            DataCategory = "Currency",
             MinValue = 1,
             MaxValue = 10
         }

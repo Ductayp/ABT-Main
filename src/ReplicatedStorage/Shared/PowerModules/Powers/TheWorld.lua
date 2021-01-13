@@ -66,7 +66,7 @@ TheWorld.Defs = {
             Duration = 5,
             Cooldown = 10,
             loopTime = .25,
-            HitEffects = {Damage = {Damage = 20}}
+            HitEffects = {Damage = {Damage = 5}}
         },
 
         TimeStop = {
@@ -88,7 +88,7 @@ TheWorld.Defs = {
         HeavyPunch = {
             Name = "Heavy Punch",
             Cooldown = 10,
-            HitEffects = {Damage = {Damage = 30}, ColorShift = {Duration = 1.5}, PinCharacter = {Duration = 1.5}, BlockInput = {Name = "HeavyPunch", Duration = 1.5}, SphereFields = {Size = 7, Duration = 1.5,RandomColor = true, Repeat = 3}}
+            HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 1.5}, PinCharacter = {Duration = 1.5}, BlockInput = {Name = "HeavyPunch", Duration = 1.5}, SphereFields = {Size = 7, Duration = 1.5,RandomColor = true, Repeat = 3}}
         },
 
         BulletKick = {

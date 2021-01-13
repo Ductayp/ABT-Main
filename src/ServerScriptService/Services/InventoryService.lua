@@ -21,80 +21,80 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local utils = require(Knit.Shared.Utils)
 local powerUtils = require(Knit.Shared.PowerUtils)
 
--- Sacrifice Constants
-local SACRIFICE_BONUS_COMMON = 0 -- none
-local SACRIFICE_BONUS_RARE = 1
-local SACRIFICE_BONUS_LEGENDARY = 5
+--// Give_Currency
+function InventoryService:Give_Currency(player, key, value, source)
 
---// GiveItemToPlayer
-function InventoryService:GiveItemToPlayer(player, params)
-
-    -- get the players data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
-    -- Regular Items
-    if params.DataCategory == "Currency" then
+    -- do the 2x modifiers only if these didnt come from a dev product
+    if source ~= "GamePassService" then 
 
-        -- give the default value of 1 or give the amount in params.Value
-        local value = 1 
-        if params.Value then
-            value = params.Value
+        -- Double cash if they have the gamepass
+        if key == "Cash" then
+            local multiplier = require(Knit.StateModules.Multiplier_Cash).GetTotalMultiplier(player)
+            value = value * multiplier
+            print("multiplier is: ", multiplier)
+            print("value is: ", value)
         end
 
-        --check if we have a range of values possible, if so, valulate it
-        if params.MinValue ~= nil and params.MaxValue ~= nil then
-            value = math.random(params.MinValue,params.MaxValue)
+        -- Double sould orbs if they have the gamepass
+        if key == "SoulOrbs" then
+            local multiplier = require(Knit.StateModules.Multiplier_Orbs).GetTotalMultiplier(player)
+            value = value * multiplier
+            print("multiplier is: ", multiplier)
+            print("value is: ", value)
         end
+    else
+        print("Bought currency as a dev product, gamepass mutlipliers do not work!")
+    end
 
-        -- add the value to the players data
-        if not playerData.ItemInventory[params.DataKey] then
-            playerData.ItemInventory[params.DataKey] = 0
-        end
+    -- add it to the playerData
+    playerData.Currency[key] += value
 
-        -- do the 2x modifiers only if these didnt come from a dev product
-        if params.Source ~= "GamePassService" then 
+    -- update the gui
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
 
-            -- Double cash if they have the gamepass
-            if params.DataKey == "Cash" then
-                if Knit.Services.GamePassService:Has_GamePass(player, "DoubleCash") then
-                    value = value * 2
-                end
+end
+
+--// Give_Arrow
+function InventoryService:Give_Arrow(player, key, rarity, quantity)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
+        print("You have the arrow luck pass, LUCKY YOU!")
+        local rand = math.random(1,100)
+        if rand <= 25 then
+            print("SUCCESS! This Arrow just improved 1 rarity level!!!")
+            if rarity == "Common" then
+                rarity = "Rare"
+            elseif rarity == "Rare" then
+                rarity = "Legendary"
             end
-
-            -- Double sould orbs if they have the gamepass
-            if params.DataKey == "SoulOrbs" then
-                if Knit.Services.GamePassService:Has_GamePass(player, "DoubleOrbs") then
-                    value = value * 2
-                end
-            end
         end
-
-        playerData.Currency[params.DataKey] += value
-
     end
 
-    -- Arrows
-    if params.DataCategory == "ArrowInventory" then
+    -- get the arrow defs
+    local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
+    local thisArrowDef = arrowDefs[key]
 
-        local thisArrow = {}
-        thisArrow.Type = params.DataKey
-        thisArrow.Rarity = params.Rarity
-        thisArrow.ArrowName = params.ArrowName
+    -- setup an table entry for playerData
+    local thisArrow = {}
+    thisArrow.Type = key
+    thisArrow.Rarity = rarity
+    thisArrow.Name = thisArrowDef.Name
 
-        table.insert(playerData.ArrowInventory, thisArrow)
-        Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
-        
-    end
+    -- insert it into playerData
+    table.insert(playerData.ArrowInventory, thisArrow)
 
-    -- Gui Updates
-    -- Cash 
-    if params.DataKey == "Cash" then
-        Knit.Services.GuiService:Update_Gui(player, "Currency")
-    end
-    if params.DataKey == "SoulOrbs" then
-        Knit.Services.GuiService:Update_Gui(player, "Currency")
-    end
+    -- update the gui
+    Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
 
+end
+
+--// Give_Item
+function InventoryService:Give_Item(player, params)
+    print("BOOP! Nothign here yet :)")
 end
 
 --// UseArrow
@@ -126,7 +126,7 @@ function InventoryService:UseArrow(player, params)
                 
                 -- add stands to weighted table
                 local pickTable = {}
-                for name,weight in pairs(thisArrowDef) do
+                for name,weight in pairs(thisArrowDef.Stands) do
                     for count = 1,weight do
                         table.insert(pickTable,name)
                     end
@@ -251,12 +251,11 @@ function InventoryService:SacrificeStand(player, GUID)
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
-    -- give the soul orbs to player
-    local params = {}
-    params.DataCategory = "Currency"
-    params.DataKey = "SoulOrbs"
-    params.Value = self:GetStandValue(player, GUID)
-    self:GiveItemToPlayer(player, params)
+    -- get the stands value
+    value = self:GetStandValue(player, GUID)
+
+    -- give the currency
+    self:Give_Currency(player, "SoulOrbs", value, "Sacrifice")
 
     -- remove the stand from storage
     for index,stand in pairs(playerData.StandStorage.StoredStands) do

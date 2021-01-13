@@ -44,6 +44,13 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
                     defaultWalkspeed.Value = 16
                     defaultWalkspeed.Parent = hitCharacter
                 end
+
+                spawn(function()
+                        hitCharacter.Humanoid.WalkSpeed = 8
+                        wait(1)
+                        hitCharacter.Humanoid.WalkSpeed = defaultWalkspeed.Value
+                end)
+            end
         end
 
         -- send the visual effects to all clients

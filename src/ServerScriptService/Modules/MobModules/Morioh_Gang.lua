@@ -22,7 +22,8 @@ Morioh_Gang.JumpPower = 50
 --/ Damage Data
 Morioh_Gang.Damage = 10
 Morioh_Gang.AttackSpeed = 2
-Morioh_Gang.AttackRange = 3
+Morioh_Gang.AttackRange = 3.5
+Morioh_Gang.ApproachDistance = 3.5
 
 --/ Agression Chase Behavior
 Morioh_Gang.Agressive = false

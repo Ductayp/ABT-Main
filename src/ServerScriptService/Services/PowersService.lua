@@ -170,6 +170,16 @@ function PowersService:AwardXp(player, xpValue)
 
 end
 
+--// NPC_RegisterHit
+function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
+    print("YOU GOT HIT HOMES!")
+    hitParams = {}
+    hitParams.DamageMultiplier = 1
+    for effect,effectParams in pairs(hitEffects) do
+        require(Knit.Effects[effect]).Server_ApplyEffect(nil, targetPlayer.Character, effectParams, hitParams)
+    end
+end
+
 
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
@@ -308,6 +318,19 @@ end
 
 --// KnitStart
 function PowersService:KnitStart()
+
+        -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
+        for _, player in ipairs(Players:GetPlayers()) do
+            self:PlayerJoined(player)
+            
+            player.CharacterAdded:Connect(function(character)
+                self:PlayerRefresh(player)
+        
+                character:WaitForChild("Humanoid").Died:Connect(function()
+                    -- empty for now
+                end)
+            end)
+        end
     
 end
 
@@ -335,18 +358,6 @@ function PowersService:KnitInit()
         end)
     end)
 
-    -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
-    for _, player in ipairs(Players:GetPlayers()) do
-        self:PlayerJoined(player)
-        
-        player.CharacterAdded:Connect(function(character)
-            self:PlayerRefresh(player)
-    
-            character:WaitForChild("Humanoid").Died:Connect(function()
-                -- empty for now
-            end)
-        end)
-    end
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)

@@ -20,8 +20,6 @@ Santana_Mob.RandomPlacement = true
 Santana_Mob.Spawn_Z_Offset = 5
 Santana_Mob.Max_Spawned = 4
 
-
-
 --/ Animations
 Santana_Mob.Animations = {
     Idle = "rbxassetid://507766666",
@@ -34,12 +32,15 @@ Santana_Mob.Defs.XpValue = 500
 Santana_Mob.Defs.Health = 100
 Santana_Mob.Defs.WalkSpeed = 16
 Santana_Mob.Defs.JumpPower = 50
+Santana_Mob.Defs.Aggressive = false
 Santana_Mob.Defs.AttackSpeed = 2
 Santana_Mob.Defs.AttackRange = 4.5
 Santana_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
 Santana_Mob.Defs.SeekRange = 60 -- In Studs
 Santana_Mob.Defs.ChaseRange = 80 -- In Studs
 Santana_Mob.Defs.IsMobile = true
+Santana_Mob.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
+
 
 
 --/ Spawn Function
@@ -131,7 +132,7 @@ function  Santana_Mob.Attack(mobData)
         wait(.25)
         mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
 
-        Knit.Services.MobService:HitPlayer(mobData.ChaseTarget, mobData.Defs.HitEffects)
+        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
     end)  
                                
 end
@@ -148,9 +149,22 @@ function Santana_Mob.Death(mobData)
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
         wait(.1)
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 5
-    
     end)
+end
 
+--// Setup_Drop
+function Santana_Mob.Setup_Drop(mobData)
+    -- nothing here, yet ...
+end
+
+--// Drop
+function Santana_Mob.Drop(player, mobData)
+    print("you got a drop!!!")
+    local params = {
+        one = "Test",
+        two = "Boop"
+    }
+    Knit.Services.GuiService:Update_Notifications(player, params)
 end
 
 

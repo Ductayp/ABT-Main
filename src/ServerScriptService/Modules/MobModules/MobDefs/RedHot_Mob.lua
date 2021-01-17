@@ -1,120 +1,189 @@
--- Santana_Mob Mob
+-- RedHot_Mob Mob
 -- Pdab
 -- 1/10/21
 
 -- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
 -- Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 
-local Santana_Mob = {}
+local RedHot_Mob = {}
 
 --/ Model
-Santana_Mob.Model = ReplicatedStorage.Mobs.RedHotChiliPepper_TEST
+RedHot_Mob.Model = ReplicatedStorage.Mobs.RHCP_Model
 
 --/ Spawn
-Santana_Mob.RespawnTime = 10
-Santana_Mob.RandomPlacement = true
-Santana_Mob.Spawn_Z_Offset = 0
-Santana_Mob.Max_Spawned = 6
+RedHot_Mob.RespawnTime = 5
+RedHot_Mob.RandomPlacement = true
+RedHot_Mob.Spawn_Z_Offset = 0
+RedHot_Mob.Max_Spawned = 4
 
+--/ Animations
+RedHot_Mob.Animations = {
+    Idle = "rbxassetid://507766666",
+    Walk = "rbxassetid://507777826",
+    Attack = {"rbxassetid://6245847704"},
+}
 
-
-
-Santana_Mob.Defs = {}
-Santana_Mob.Defs.XpValue = 500
-Santana_Mob.Defs.Health = 100
-Santana_Mob.Defs.WalkSpeed = 16
-Santana_Mob.Defs.JumpPower = 50
-Santana_Mob.Defs.AttackSpeed = 2
-Santana_Mob.Defs.AttackRange = 4.5
-Santana_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
-Santana_Mob.Defs.SeekRange = 60 -- In Studs
-Santana_Mob.Defs.ChaseRange = 80 -- In Studs
-Santana_Mob.Defs.IsMobile = false
+--/ Defs
+RedHot_Mob.Defs = {}
+RedHot_Mob.Defs.XpValue = 500
+RedHot_Mob.Defs.Health = 100
+RedHot_Mob.Defs.WalkSpeed = 0
+RedHot_Mob.Defs.JumpPower = 50
+RedHot_Mob.Defs.Aggressive = true
+RedHot_Mob.Defs.AttackSpeed = 3
+RedHot_Mob.Defs.AttackRange = 20
+RedHot_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
+RedHot_Mob.Defs.SeekRange = 60 -- In Studs
+RedHot_Mob.Defs.ChaseRange = 80 -- In Studs
+RedHot_Mob.Defs.IsMobile = false
+RedHot_Mob.Defs.LifeSpan = 60 -- how long the mob lives before resapwn, in seconds
 
 --/ Spawn Function
-function Santana_Mob.Pre_Spawn(mobData)
+function RedHot_Mob.Pre_Spawn(mobData)
 
     -- set mob to inactive so its brain doesnt run yet
     mobData.Active = false
+    mobData.SpawnCFrame = mobData.SpawnCFrame * CFrame.new(0,-4,0)
 
-    -- make everything trasnparent for the spawn
-    for _,instance in pairs(mobData.Model:GetDescendants()) do
-        if instance:IsA("BasePart") then
-            instance.Transparency = 1
-        end
-    end
 end
 
 --/ Spawn Function
-function Santana_Mob.Post_Spawn(mobData)
+function RedHot_Mob.Post_Spawn(mobData)
 
     mobData.Model.HumanoidRootPart.Anchored = true
     
-    spawn(function()
+    local spawnTween = TweenService:Create(mobData.Model.HumanoidRootPart, TweenInfo.new(.5), {Position = mobData.Model.HumanoidRootPart.Position + Vector3.new(0, 4, 0)})
+    spawnTween:Play()
 
+    spawnTween.Completed:Connect(function()
         -- make the mob active so the brain runs
         mobData.Active = true
-
-        -- make it visible
-        for _,instance in pairs(mobData.Model:GetDescendants()) do
-            if instance:IsA("BasePart") then
-                if instance.Name == "HumanoidRootPart" then
-                    instance.Transparency = 1
-                else
-                    instance.Transparency = 0
-                end
-            end
-        end
     end)
+
 end
 
 --// Setup_Animations
-function Santana_Mob.Setup_Animations(mobData)
+function RedHot_Mob.Setup_Animations(mobData)
 
+        -- add an animator
+        mobData.Animations = {} -- setup a table
+        mobData.Animations.Attack = {} -- we need another table for attack aniamtions
+        local animator = Instance.new("Animator")
+        animator.Parent = mobData.Model.Humanoid
+    
+        -- idle animation
+        local idleAnimation = Instance.new("Animation")
+        idleAnimation.AnimationId = RedHot_Mob.Animations.Idle
+        mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
+        idleAnimation:Destroy()
+    
+        -- walk animation
+        local walkAnimation = Instance.new("Animation")
+        walkAnimation.AnimationId = RedHot_Mob.Animations.Walk
+        mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
+        walkAnimation:Destroy()
+    
+        -- attack animations
+        for index, animationId in pairs(RedHot_Mob.Animations.Attack) do
+            local newAnimation = Instance.new("Animation")
+            newAnimation.AnimationId = animationId
+            local newTrack = animator:LoadAnimation(newAnimation)
+            table.insert(mobData.Animations.Attack, newTrack)
+            newAnimation:Destroy()
+        end
 
 end
 
 --// Setup_Attack
-function  Santana_Mob.Setup_Attack(mobData)
+function  RedHot_Mob.Setup_Attack(mobData)
     -- nothing here. yet ...
 end
 
 --// Attack
-function  Santana_Mob.Attack(mobData)
+function  RedHot_Mob.Attack(mobData)
 
     spawn(function()
-        mobData.Model.Humanoid.WalkSpeed = 2
+
+        -- play attack animation
         local rand = math.random(1, #mobData.Animations.Attack)
         mobData.Animations.Attack[rand]:Play()
-        wait(.25)
-        mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
 
-        Knit.Services.MobService:HitPlayer(mobData.ChaseTarget, mobData.Defs.HitEffects)
-    end)  
-                               
+        local shockBall = ReplicatedStorage.EffectParts.Projectiles.ShockBall:Clone()
+        shockBall.CFrame = mobData.Model.HumanoidRootPart.CFrame
+        shockBall.Parent = Workspace
+        shockBall.Anchored = false
+        shockBall.BodyPosition.D = 125
+        shockBall.BodyPosition.P = 1000
+        shockBall.BodyPosition.MaxForce = Vector3.new(1,1,1) * 2000
+        shockBall:SetNetworkOwner(nil)
+
+        local expireTime = os.clock() + 5
+
+        -- destroy the shockBall if the targetplayer dies
+        local diedConnection = mobData.AttackTarget.Character.Humanoid.Died:Connect(function()
+            shockBall:Destroy()
+            diedConnection = nil
+        end)
+
+        while true do
+
+            -- expire the shockball if its too old
+            if os.clock() > expireTime then
+                shockBall:Destroy()
+                break
+            end
+
+            -- destroy shockBall if the player is already dead
+            if mobData.AttackTarget.Character.Humanoid.Health == 0 then
+                shockBall:Destroy()
+                break
+            end
+
+            -- check for hits
+            local magnitude = (shockBall.Position - mobData.AttackTarget.Character.HumanoidRootPart.Position).Magnitude
+            if magnitude < .5 then
+                shockBall:Destroy()
+                Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
+                break
+            end
+
+            -- update the BodyPosition
+            shockBall.BodyPosition.Position = mobData.AttackTarget.Character.HumanoidRootPart.Position
+            wait()
+        end
+    
+    end)                          
 end
 
 --// Setup_Death
-function Santana_Mob.Setup_Death(mobData)
+function RedHot_Mob.Setup_Death(mobData)
     -- nothing here, yet ...
 end
 
 --// Death
-function Santana_Mob.Death(mobData)
+function RedHot_Mob.Death(mobData)
 
-    spawn(function()
-        mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
-        wait(.1)
-        mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 5
-    
-    end)
+    local deathTween = TweenService:Create(mobData.Model.HumanoidRootPart, TweenInfo.new(.5), {Position = mobData.Model.HumanoidRootPart.Position + Vector3.new(0, -4, 0)})
+    deathTween:Play()
+
+end
+
+--// Setup_Drop
+function RedHot_Mob.Setup_Drop(mobData)
+
+end
+
+--// Drop
+function RedHot_Mob.Drop(player, mobData)
 
 end
 
 
 
-return Santana_Mob
+return RedHot_Mob

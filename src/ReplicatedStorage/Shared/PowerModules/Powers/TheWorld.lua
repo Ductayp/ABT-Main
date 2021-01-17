@@ -81,7 +81,7 @@ TheWorld.Defs = {
             Name = "Knife Throw",
             Cooldown = 8,
             Range = 75,
-            Speed = 40,
+            Speed = 60,
             HitEffects = {Damage = {Damage = 20}}
         },
 

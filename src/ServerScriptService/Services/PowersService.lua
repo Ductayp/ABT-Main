@@ -4,6 +4,7 @@
 
 -- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 
 -- setup Knit
@@ -309,15 +310,34 @@ function PowersService:PlayerJoined(player)
     -- render existing stands
     self:RenderExistingStands(player)
 
-    -- get the players current power
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local character = player.Character or player.CharacterAdded:Wait()
+    if character then
 
-    -- now just set it
-    self:SetCurrentPower(player, playerData.CurrentStand)
+        -- get the players current power
+        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+        -- now just set it
+        self:SetCurrentPower(player, playerData.CurrentStand)
+
+    end
+
 end
 
 --// KnitStart
 function PowersService:KnitStart()
+
+        -- Player Added event
+        Players.PlayerAdded:Connect(function(player)
+            self:PlayerJoined(player)
+    
+            player.CharacterAdded:Connect(function(character)
+                self:PlayerRefresh(player)
+        
+                character:WaitForChild("Humanoid").Died:Connect(function()
+                    -- empty for now
+                end)
+            end)
+        end)
 
         -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
         for _, player in ipairs(Players:GetPlayers()) do
@@ -345,18 +365,7 @@ function PowersService:KnitInit()
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 
 
-    -- Player Added event
-    Players.PlayerAdded:Connect(function(player)
-        self:PlayerJoined(player)
 
-        player.CharacterAdded:Connect(function(character)
-            self:PlayerRefresh(player)
-    
-            character:WaitForChild("Humanoid").Died:Connect(function()
-                -- empty for now
-            end)
-        end)
-    end)
 
 
     -- Player Removing event
@@ -365,7 +374,8 @@ function PowersService:KnitInit()
     end)
     
     -- Buttons setup - this is for testing, delete it later
-    for i,v in pairs (workspace.StandButtons:GetChildren()) do
+    local standButtons = Workspace:FindFirstChild("StandButtons", true)
+    for i,v in pairs (standButtons:GetChildren()) do
         if v:IsA("BasePart") then
             local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
             v.Touched:Connect(function(hit)
@@ -400,7 +410,8 @@ function PowersService:KnitInit()
         end
     end
 
-    for i,v in pairs (workspace.StandButtons2:GetChildren()) do
+    local standButtons2 = Workspace:FindFirstChild("StandButtons2", true)
+    for i,v in pairs (standButtons2:GetChildren()) do
         if v:IsA("BasePart") then
             local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
             v.Touched:Connect(function(hit)

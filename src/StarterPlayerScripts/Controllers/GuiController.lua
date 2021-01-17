@@ -27,7 +27,7 @@ GuiController.ArrowPanel = require(Knit.GuiModules.ArrowPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
 GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
-
+GuiController.Notifications = require(Knit.GuiModules.Notifications)
 
 GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
 GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
@@ -62,6 +62,7 @@ function GuiController:KnitStart()
     GuiController.StandReveal.Setup()
     GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
+    GuiController.Notifications.Setup()
     
     GuiController.ShopWindow.Setup()
     GuiController.ShopWindow_LootPanel.Setup()
@@ -78,6 +79,10 @@ function GuiController:KnitStart()
 
 
     -- connect events
+    GuiService.Event_Update_Notifications:Connect(function(params)
+        GuiController.Notifications.Update(params)
+    end)
+
     GuiService.Event_Update_ArrowPanel:Connect(function(data)
         GuiController.ArrowPanel.Update(data)
     end)

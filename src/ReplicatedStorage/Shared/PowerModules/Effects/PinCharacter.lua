@@ -22,6 +22,8 @@ function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     spawn(function()
 
+        local storedAnchorState = part.Anchored
+
         -- anchor the hitCharacter
         for _,part in pairs(hitCharacter:GetChildren()) do
             if part:IsA("BasePart") then
@@ -35,7 +37,7 @@ function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, params)
         -- un-anchor the targetPlayer
         for _,part in pairs(hitCharacter:GetChildren()) do
             if part:IsA("BasePart") then
-                part.Anchored = false
+                part.Anchored = storedAnchorState
             end
         end
 

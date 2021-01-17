@@ -16,12 +16,19 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local utils = require(Knit.Shared.Utils)
 
 -- events
+GuiService.Client.Event_Update_Notifications = RemoteEvent.new()
 GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Currency = RemoteEvent.new()
 GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 
+
+
+--// Update_Notifications
+function GuiService:Update_Notifications(player, params)
+    self.Client.Event_Update_Notifications:Fire(player, params)
+end
 
 --// Update_Gui
 function GuiService:Update_Gui(player, requestName, optionalParams)
@@ -56,20 +63,13 @@ end
 
 --// PlayerAdded
 function GuiService:PlayerAdded(player)
-
-    --[[
-    -- make sure the players data is loaded
-    local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
-    local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
-    repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true
-    ]]--
-
+    -- nothing here 
 end
 
 
 --// KnitStart
 function GuiService:KnitStart()
-    
+    -- nothing here 
 end
 
 --// KnitInit

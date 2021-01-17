@@ -54,6 +54,12 @@ function InventoryService:Give_Currency(player, key, value, source)
     -- update the gui
     Knit.Services.GuiService:Update_Gui(player, "Currency")
 
+    local notificationParams = {}
+    notificationParams.Icon = key
+    notificationParams.Text = "You got: x" .. tostring(value) .. " " .. key
+
+    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+
 end
 
 --// Give_Arrow

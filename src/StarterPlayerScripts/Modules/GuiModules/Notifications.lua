@@ -30,11 +30,14 @@ Notifications.Icons = {}
 Notifications.Icons.Arrow = Notifications.Frame:FindFirstChild("Icon_Arrow", true)
 Notifications.Icons.Cash = Notifications.Frame:FindFirstChild("Icon_Cash", true)
 Notifications.Icons.Item = Notifications.Frame:FindFirstChild("Icon_Item", true)
-Notifications.Icons.Orbs = Notifications.Frame:FindFirstChild("Icon_Orbs", true)
+Notifications.Icons.SoulOrbs = Notifications.Frame:FindFirstChild("Icon_Orbs", true)
+Notifications.Icons.XP = Notifications.Frame:FindFirstChild("Icon_XP", true)
 
 --// ShowNotification
 function Notifications.ShowNotification(params)
 
+    print(params)
+    
     -- make all icons invisible
     for _,icon in pairs(Notifications.Icons) do
         icon.Visible = false
@@ -84,7 +87,6 @@ function Notifications.Setup()
                 Notifications.ShowNotification(Notifications.NotifyList[1])
                 Notifications.LastUpdate = os.clock()
                 table.remove(Notifications.NotifyList, 1)
-                print(Notifications.NotifyList)
             end
             wait(1)
         end

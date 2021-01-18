@@ -210,7 +210,7 @@ function StoragePanel.Update(currentStand, storageData)
     StoragePanel.TotalSlots.Text = storageData.MaxSlots
     StoragePanel.UsedSlots.Text = counter
 
-    -- get rid of the old tempoirary Current Power buttons
+    -- get rid of the old temporary Current Power buttons
     for _,object in pairs(StoragePanel.Button_CurrentStand.Parent:GetChildren()) do
         if object.Name == "TempButton" then
             object:Destroy()
@@ -249,7 +249,7 @@ function StoragePanel.Update(currentStand, storageData)
 
     end
 
-    
+
     -- clear out the list of objects from last time
     for _,object in pairs(StoragePanel.ScrollingFrame:GetChildren()) do
         if object.Name == "standItem" then
@@ -359,7 +359,6 @@ function StoragePanel.Show_StandCard(standData, buttonType)
 
     -- set level and xp bar
     local level, percentageComplete = PowersService:GetLevelFromXp(standData.Xp, standData.Rarity)
-    print(level, remainingPercent)
     StoragePanel.Level.Text = tostring(level)
     StoragePanel.XpBar.Size = UDim2.new(percentageComplete, StoragePanel.XpBar.Size.X.Offset, StoragePanel.XpBar.Size.Y.Scale, StoragePanel.XpBar.Size.Y.Offset)
 

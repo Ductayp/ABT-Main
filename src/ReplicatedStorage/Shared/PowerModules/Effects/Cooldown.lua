@@ -72,6 +72,7 @@ function Cooldown.Client_RenderEffect(params)
 
         spawn(function()
             
+            --[[
             -- get the wait time so that the countdown reaches zero when the cooldown is actually over
             local waitTime = (params.cooldownTime - os.time()) / params.cooldownValue
 
@@ -98,6 +99,7 @@ function Cooldown.Client_RenderEffect(params)
 
             newButton:Destroy()
 
+            ]]--
 		end)
 end 
 

@@ -25,7 +25,7 @@ GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
 GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
 GuiController.ArrowPanel = require(Knit.GuiModules.ArrowPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
-GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
+--GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
 GuiController.Notifications = require(Knit.GuiModules.Notifications)
 
@@ -60,7 +60,7 @@ function GuiController:KnitStart()
     GuiController.StoragePanel.Setup()
     GuiController.ArrowPanel.Setup()
     GuiController.StandReveal.Setup()
-    GuiController.BottomGui.Setup()
+    --GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
     GuiController.Notifications.Setup()
     
@@ -74,8 +74,8 @@ function GuiController:KnitStart()
     self:Request_GuiUpdate("ArrowPanel")
     self:Request_GuiUpdate("Currency")
     self:Request_GuiUpdate("SoulOrb")
-    self:Request_GuiUpdate("StoragePanel")
-    self:Request_GuiUpdate("BottomGUI")
+    --self:Request_GuiUpdate("StoragePanel") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
+    --self:Request_GuiUpdate("BottomGUI")
 
 
     -- connect events
@@ -92,7 +92,7 @@ function GuiController:KnitStart()
     end)
 
     GuiService.Event_Update_BottomGUI:Connect(function(data)
-        GuiController.BottomGui.Update(data)
+        --GuiController.BottomGui.Update(data)
     end)
 
     GuiService.Event_Update_StandReveal:Connect(function(data)

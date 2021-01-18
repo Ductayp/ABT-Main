@@ -1,4 +1,4 @@
--- Santana_Mob Mob
+-- Fugo_Mob Mob
 -- Pdab
 -- 1/10/21
 
@@ -9,42 +9,45 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 
-local Santana_Mob = {}
+local Fugo_Mob = {}
 
 --/ Model
-Santana_Mob.Model = ReplicatedStorage.Mobs.Santana
+Fugo_Mob.Model = ReplicatedStorage.Mobs.Fugo
 
 --/ Spawn
-Santana_Mob.RespawnTime = 10
-Santana_Mob.RandomPlacement = true
-Santana_Mob.Spawn_Z_Offset = 5
-Santana_Mob.Max_Spawned = 4
+Fugo_Mob.RespawnTime = 10
+Fugo_Mob.RandomPlacement = true
+Fugo_Mob.Spawn_Z_Offset = 5
+Fugo_Mob.Max_Spawned = 4
 
 --/ Animations
-Santana_Mob.Animations = {
+Fugo_Mob.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
 }
 
-Santana_Mob.Defs = {}
-Santana_Mob.Defs.XpValue = 500
-Santana_Mob.Defs.Health = 100
-Santana_Mob.Defs.WalkSpeed = 16
-Santana_Mob.Defs.JumpPower = 50
-Santana_Mob.Defs.Aggressive = false
-Santana_Mob.Defs.AttackSpeed = 2
-Santana_Mob.Defs.AttackRange = 4.5
-Santana_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
-Santana_Mob.Defs.SeekRange = 60 -- In Studs
-Santana_Mob.Defs.ChaseRange = 80 -- In Studs
-Santana_Mob.Defs.IsMobile = true
-Santana_Mob.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
+Fugo_Mob.Defs = {}
+Fugo_Mob.Defs.XpValue = 500
+Fugo_Mob.Defs.Health = 100
+Fugo_Mob.Defs.WalkSpeed = 16
+Fugo_Mob.Defs.JumpPower = 50
+Fugo_Mob.Defs.Aggressive = false
+Fugo_Mob.Defs.AttackSpeed = 2
+Fugo_Mob.Defs.AttackRange = 4.5
+Fugo_Mob.Defs.SeekRange = 50 -- In Studs
+Fugo_Mob.Defs.ChaseRange = 50 -- In Studs
+Fugo_Mob.Defs.IsMobile = true
+Fugo_Mob.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
 
+
+-- attack defs
+Fugo_Mob.HitEffects = {Damage = {Damage = 10}}
+Fugo_Mob.Special_HitEffects = {Poison = {TickTime = 1, TickCount = 4, Damage = 10}}
 
 
 --/ Spawn Function
-function Santana_Mob.Pre_Spawn(mobData)
+function Fugo_Mob.Pre_Spawn(mobData)
 
     -- set mob to inactive so its brain doesnt run yet
     mobData.Active = false
@@ -58,7 +61,7 @@ function Santana_Mob.Pre_Spawn(mobData)
 end
 
 --/ Spawn Function
-function Santana_Mob.Post_Spawn(mobData)
+function Fugo_Mob.Post_Spawn(mobData)
     
     spawn(function()
 
@@ -86,7 +89,7 @@ function Santana_Mob.Post_Spawn(mobData)
 end
 
 --// Setup_Animations
-function Santana_Mob.Setup_Animations(mobData)
+function Fugo_Mob.Setup_Animations(mobData)
 
     -- add an animator
     mobData.Animations = {} -- setup a table
@@ -96,18 +99,18 @@ function Santana_Mob.Setup_Animations(mobData)
 
     -- idle animation
     local idleAnimation = Instance.new("Animation")
-    idleAnimation.AnimationId = Santana_Mob.Animations.Idle
+    idleAnimation.AnimationId = Fugo_Mob.Animations.Idle
     mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
     idleAnimation:Destroy()
 
     -- walk animation
     local walkAnimation = Instance.new("Animation")
-    walkAnimation.AnimationId = Santana_Mob.Animations.Walk
+    walkAnimation.AnimationId = Fugo_Mob.Animations.Walk
     mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
     walkAnimation:Destroy()
 
     -- attack animations
-    for index, animationId in pairs(Santana_Mob.Animations.Attack) do
+    for index, animationId in pairs(Fugo_Mob.Animations.Attack) do
         local newAnimation = Instance.new("Animation")
         newAnimation.AnimationId = animationId
         local newTrack = animator:LoadAnimation(newAnimation)
@@ -118,32 +121,39 @@ function Santana_Mob.Setup_Animations(mobData)
 end
 
 --// Setup_Attack
-function  Santana_Mob.Setup_Attack(mobData)
+function  Fugo_Mob.Setup_Attack(mobData)
     -- nothing here. yet ...
 end
 
 --// Attack
-function  Santana_Mob.Attack(mobData)
+function  Fugo_Mob.Attack(mobData)
 
     spawn(function()
+
         mobData.Model.Humanoid.WalkSpeed = 2
         local rand = math.random(1, #mobData.Animations.Attack)
         mobData.Animations.Attack[rand]:Play()
         wait(.25)
         mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
-
-        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
-    end)  
+        
+        local rand = math.random(1,100)
+        if rand <= 75 then
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, Fugo_Mob.Special_HitEffects)
+        else
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, Fugo_Mob.HitEffects)
+        end
+    
+    end) 
                                
 end
 
 --// Setup_Death
-function Santana_Mob.Setup_Death(mobData)
+function Fugo_Mob.Setup_Death(mobData)
     -- nothing here, yet ...
 end
 
 --// Death
-function Santana_Mob.Death(mobData)
+function Fugo_Mob.Death(mobData)
 
     spawn(function()
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
@@ -153,17 +163,17 @@ function Santana_Mob.Death(mobData)
 end
 
 --// Setup_Drop
-function Santana_Mob.Setup_Drop(mobData)
+function Fugo_Mob.Setup_Drop(mobData)
     -- nothing here, yet ...
 end
 
 --// Drop
-function Santana_Mob.Drop(player, mobData)
+function Fugo_Mob.Drop(player, mobData)
     
     local itemDropPercent = 10
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        Knit.Services.InventoryService:Give_Item(player, "MaskFragment", 1)
+        Knit.Services.InventoryService:Give_Item(player, "VirusBulb", 1)
     end
 
     local cashDropPercent = 50
@@ -176,4 +186,4 @@ end
 
 
 
-return Santana_Mob
+return Fugo_Mob

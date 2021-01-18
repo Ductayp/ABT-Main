@@ -237,6 +237,11 @@ function ManageStand.MoveStand(initPlayer,params)
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	local standWeld = targetStand:FindFirstChild("StandWeld", true)
 
+	-- if the stand or weld is gone, for example from death, just return
+	if not targetStand or not standWeld then
+		return
+	end
+
 	-- move it
 	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(.175),{C1 = anchors[params.AnchorName]})
 	spawnTween:Play()

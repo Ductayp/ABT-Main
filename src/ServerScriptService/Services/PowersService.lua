@@ -158,7 +158,11 @@ function PowersService:AwardXp(player, xpValue)
 
     -- check if player is standless, if they are return out of here
     if playerData.CurrentStand.Power == "Standless" then
-        print("you cant get any xp if you are standless!")
+
+        local notificationParams = {}
+        notificationParams.Icon = "XP"
+        notificationParams.Text = "You are STANDLESS:  ZERO XP gained"
+        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
         return
     end
 
@@ -168,6 +172,12 @@ function PowersService:AwardXp(player, xpValue)
 
     Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+    local notificationParams = {}
+    notificationParams.Icon = "XP"
+    notificationParams.Text = "You got: " .. tostring(xpValue) .. " XP Points"
+    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+    return
 
 end
 

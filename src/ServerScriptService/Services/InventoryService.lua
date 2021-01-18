@@ -56,8 +56,7 @@ function InventoryService:Give_Currency(player, key, value, source)
 
     local notificationParams = {}
     notificationParams.Icon = key
-    notificationParams.Text = "You got: x" .. tostring(value) .. " " .. key
-
+    notificationParams.Text = "You got: " .. tostring(value) .. " " .. key
     Knit.Services.GuiService:Update_Notifications(player, notificationParams)
 
 end
@@ -96,11 +95,42 @@ function InventoryService:Give_Arrow(player, key, rarity, quantity)
     -- update the gui
     Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
 
+    local notificationParams = {}
+    notificationParams.Icon = "Arrow"
+    notificationParams.Text = "You got: " .. thisArrow.Name
+    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+
 end
 
 --// Give_Item
-function InventoryService:Give_Item(player, params)
-    print("BOOP! Nothign here yet :)")
+function InventoryService:Give_Item(player, key, quantity)
+    
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- get the defs
+    local itemDefs = require(Knit.InventoryModules.ItemDefs)
+    local thisItemDef = itemDefs[key]
+
+    -- if the key is nil, make an entry in the table
+    if playerData.ItemInventory[key] == nil then
+        playerData.ItemInventory[key] = 0
+    end
+
+    -- increment the key
+    playerData.ItemInventory[key] += quantity
+
+    print(playerData.ItemInventory)
+
+    -- update the gui
+    --Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+
+    local notificationParams = {}
+    notificationParams.Icon = "Item"
+    notificationParams.Text = "You got: " .. tostring(quantity) .. " " .. thisItemDef.Name
+    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+
+
 end
 
 --// UseArrow
@@ -194,12 +224,16 @@ function InventoryService:StoreStand(player)
 
         -- insert the stand into storage
         table.insert(playerData.StandStorage.StoredStands, playerData.CurrentStand)
-        --playerData.StandStorage.StoredStands[playerData.CurrentStand.GUI] = playerData.CurrentStand
+
+        print("INventoryService",playerData.StandStorage.StoredStands)
         
         -- give the player the Standless power
         local newParams = {}
         newParams.Power = "Standless"
         Knit.Services.PowersService:SetCurrentPower(player, newParams)
+
+        -- update the GUI
+        --Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
     end
 end
@@ -297,12 +331,11 @@ function InventoryService:EquipStand(player, GUID)
     for index,stand in pairs(playerData.StandStorage.StoredStands) do
         if stand.GUID == GUID then
 
-            -- set the new stand
-            print(stand)
-            Knit.Services.PowersService:SetCurrentPower(player, stand)
-
             -- remove the old stand form storage
             table.remove(playerData.StandStorage.StoredStands, index)
+
+            -- set the new stand
+            Knit.Services.PowersService:SetCurrentPower(player, stand)
 
             -- store the tempStored stand
             if tempStoredStand.Power ~= "Standless" then
@@ -313,7 +346,7 @@ function InventoryService:EquipStand(player, GUID)
     end
 
     -- update the GUI
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    --Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
 end
 

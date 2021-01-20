@@ -22,6 +22,10 @@ local Cooldown = {}
 -- // SetCooldown - just sets it
 function Cooldown.SetCooldown(player,cooldownName,cooldownValue)
 
+    if cooldownName == "Mouse1" then
+        return
+    end
+
     -- get cooldown folder make it if it doesnt exist
     local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
     if not cooldownFolder then
@@ -33,20 +37,20 @@ function Cooldown.SetCooldown(player,cooldownName,cooldownValue)
     if not thisCooldown then
         thisCooldown = Instance.new("NumberValue")
         thisCooldown.Name = cooldownName
-        thisCooldown.Value = os.time() + cooldownValue
+        thisCooldown.Value = os.clock() + cooldownValue
         thisCooldown.Parent = cooldownFolder
     end
 
     -- set the value
-    thisCooldown.Value = os.time() + cooldownValue
+    thisCooldown.Value = os.clock() + cooldownValue
 
     -- send off the visual effects to update the GUI
     local cooldownParams = {}
-    cooldownParams.cooldownName = cooldownName
-    cooldownParams.cooldownValue = cooldownValue
-    cooldownParams.cooldownTime = thisCooldown.Value
-    Knit.Services.PowersService:RenderEffect_SinglePlayer(player,"Cooldown",cooldownParams)
-    --PowerService:RenderEffect_SinglePlayer(player,"Cooldown",cooldownParams)
+    cooldownParams.CooldownName = cooldownName
+    cooldownParams.CooldownValue = cooldownValue
+    cooldownParams.CooldownTime = thisCooldown.Value
+
+    Knit.Services.GuiService:Update_Cooldown(player, cooldownParams)
 
     return thisCooldown
 end
@@ -61,47 +65,11 @@ function Cooldown.GetCooldownValue(player, params)
 
     local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
     if not thisCooldown then
-        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.time() - 1, Parent = cooldownFolder})
+        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.clock() - 1, Parent = cooldownFolder})
     end
 
     return thisCooldown.Value
 end
-
---// Client_RenderEffect
-function Cooldown.Client_RenderEffect(params)
-
-        spawn(function()
-            
-            --[[
-            -- get the wait time so that the countdown reaches zero when the cooldown is actually over
-            local waitTime = (params.cooldownTime - os.time()) / params.cooldownValue
-
-			local mainGui = Players.LocalPlayer.PlayerGui:WaitForChild("MainGui")
-            local coolDownFrame = mainGui:FindFirstChild("PowerButtons",true)
-            
-            -- destroy the old counter
-            local oldCounter =  coolDownFrame:FindFirstChild(params.cooldownName .. "_counter")
-            if oldCounter then
-                oldCounter:Destroy()
-            end
-
-            -- make a new counter
-            local existingButton = coolDownFrame:FindFirstChild(params.cooldownName,true)
-			local newButton = existingButton:Clone()
-			newButton.Name = params.cooldownName .. "_counter"
-			newButton.Parent = existingButton.Parent
-			newButton.Text = params.cooldownValue
-
-			for count = 1, params.cooldownValue + 1 do
-				wait(waitTime)
-                newButton.Text = params.cooldownValue - count
-            end
-
-            newButton:Destroy()
-
-            ]]--
-		end)
-end 
 
 
 return Cooldown

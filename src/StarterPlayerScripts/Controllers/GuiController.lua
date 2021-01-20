@@ -18,16 +18,16 @@ local GamePassService = Knit.GetService("GamePassService")
 
 -- utility modules
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- gui modules
 GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
 GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
 GuiController.ArrowPanel = require(Knit.GuiModules.ArrowPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
---GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
+GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
 GuiController.Notifications = require(Knit.GuiModules.Notifications)
+GuiController.CurrencyBar = require(Knit.GuiModules.CurrencyBar)
 
 GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
 GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
@@ -60,7 +60,7 @@ function GuiController:KnitStart()
     GuiController.StoragePanel.Setup()
     GuiController.ArrowPanel.Setup()
     GuiController.StandReveal.Setup()
-    --GuiController.BottomGui.Setup()
+    GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
     GuiController.Notifications.Setup()
     
@@ -75,7 +75,7 @@ function GuiController:KnitStart()
     self:Request_GuiUpdate("Currency")
     self:Request_GuiUpdate("SoulOrb")
     --self:Request_GuiUpdate("StoragePanel") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
-    --self:Request_GuiUpdate("BottomGUI")
+    --self:Request_GuiUpdate("BottomGUI") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
 
 
     -- connect events
@@ -87,12 +87,13 @@ function GuiController:KnitStart()
         GuiController.ArrowPanel.Update(data)
     end)
 
-    GuiService.Event_Update_Currency:Connect(function(value)
-        GuiController.ShopWindow.Update_Currency(value)
+    GuiService.Event_Update_Currency:Connect(function(data)
+        GuiController.ShopWindow.Update_Currency(data)
+        GuiController.CurrencyBar.Update(data)
     end)
 
     GuiService.Event_Update_BottomGUI:Connect(function(data)
-        --GuiController.BottomGui.Update(data)
+        GuiController.BottomGui.Update(data)
     end)
 
     GuiService.Event_Update_StandReveal:Connect(function(data)
@@ -101,6 +102,10 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_StoragePanel:Connect(function(currentStand, storageData)
         GuiController.StoragePanel.Update(currentStand, storageData)
+    end)
+
+    GuiService.Event_Update_Cooldown:Connect(function(params)
+        GuiController.BottomGui.UpdateCooldown(params)
     end)
 
 end

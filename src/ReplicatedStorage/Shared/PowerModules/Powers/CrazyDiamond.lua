@@ -10,9 +10,9 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
 -- Effect modules
-local AbilityToggle = require(Knit.Effects.AbilityToggle)
-local Cooldown = require(Knit.Effects.Cooldown)
-local SoundPlayer = require(Knit.Effects.SoundPlayer)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
+local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
 
 
 -- Ability modules
@@ -42,22 +42,8 @@ CrazyDiamond.Defs = {
         Rare = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Rare,
         Legendary = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Legendary,
     },
-    Abilities = {
-        EquipStand = {
-            Name = "Equip Stand",
-            Cooldown = 1,
-            Override = false,
-        },
-        Barrage = {
-            Name = "Barrage",
-            AbilityId = "Barrage",
-            Duration = 5,
-            Cooldown = 10,
-            Override = true,
-            Damage = 5,
-            loopTime = .25
-        }
-    }
+
+    Abilities = {}
 }
 
 --// SETUP - run this once when the stand is equipped
@@ -76,7 +62,6 @@ function CrazyDiamond.Manager(initPlayer,params)
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
         local cooldown = Cooldown.GetCooldownValue(initPlayer, params)
-        print(os.time(), cooldown)
         if os.time() <= cooldown then
             params.CanRun = false
             return params
@@ -108,6 +93,13 @@ end
 --------------------------------------------------------------------------------------------------
 --// EQUIP STAND //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
+
+-- defs
+CrazyDiamond.Defs.Abilities.EquipStand = {
+    Name = "Equip Stand",
+    Cooldown = 1,
+    Override = false,
+}
 
 function CrazyDiamond.EquipStand(initPlayer,params)
     
@@ -157,7 +149,7 @@ function CrazyDiamond.EquipStand(initPlayer,params)
          -- EQUIP STAND/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
-                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon)
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.CrazyDiamond.Summon)
                 ManageStand.EquipStand(initPlayer,CrazyDiamond.Defs.StandModels[params.PowerRarity])
             else
                 -- weld sound here
@@ -175,6 +167,18 @@ end
 --------------------------------------------------------------------------------------------------
 --// BARRAGE //----------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
+
+-- defs
+CrazyDiamond.Defs.Abilities.Barrage = {
+        Name = "Barrage",
+        AbilityId = "Barrage",
+        Duration = 5,
+        Cooldown = 10,
+        Override = true,
+        Damage = 5,
+        loopTime = .25
+}
+
 
 function CrazyDiamond.Barrage(initPlayer,params)
 
@@ -210,7 +214,7 @@ function CrazyDiamond.Barrage(initPlayer,params)
             params.CanRun = true
         end
     end
-
+ 
     -- BARRAGE/ACTIVATE
     if params.SystemStage == "Activate" then
 
@@ -218,11 +222,12 @@ function CrazyDiamond.Barrage(initPlayer,params)
         if params.KeyState == "InputBegan" then
 
             -- only operate if toggle is off
-            if barrageToggle.Value == false then
-                barrageToggle.Value = true
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
                 params.CanRun = true
       
-                Barrage.Server_CreateHitbox(initPlayer, barrageParams)
+                params.Barrage = CrazyDiamond.Defs.Abilities.Barrage
+                Barrage.Activate(initPlayer, params)
 
                 -- spawn a function to kill the barrage if the duration expires
                 spawn(function()
@@ -231,21 +236,24 @@ function CrazyDiamond.Barrage(initPlayer,params)
                     Knit.Services.PowersService:ActivatePower(initPlayer,params)
                 end)
             end
+
         end
 
         -- BARRAGE/ACTIVATE/INPUT ENDED
         if params.KeyState == "InputEnded" then
 
             -- only operate if toggle is on
-            if barrageToggle.Value == true then
-                barrageToggle.Value = false
-                params.CanRun = true
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
 
                 -- set the cooldown
-                Cooldown.SetCooldown(initPlayer,params.InputId,CrazyDiamond.Defs.Abilities.EquipStand.Cooldown)
+                Cooldown.SetCooldown(initPlayer,params.InputId,CrazyDiamond.Defs.Abilities.Barrage.Cooldown)
+
+                -- set toggle
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+                params.CanRun = true
 
                 -- destroy hitbox
-                Barrage.Server_DestroyHitbox(initPlayer, barrageParams)
+                Barrage.DestroyHitbox(initPlayer, CrazyDiamond.Defs.Abilities.Barrage)
             end
         end
     end
@@ -255,21 +263,21 @@ function CrazyDiamond.Barrage(initPlayer,params)
 
         -- BARRAGE/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
-            if barrageToggle.Value == true then
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
                 Barrage.RunEffect(initPlayer,params)
-
                 local soundParams = {}
                 soundParams.SoundProperties = {}
                 soundParams.SoundProperties.Looped = false
-                -- weld sound here
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.CrazyDiamond.Barrage, soundParams)
             end
         end
 
         -- BARRAGE/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
-            if barrageToggle.Value == false then
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
+
                 Barrage.EndEffect(initPlayer,params)
-                -- weld sound here
+                SoundPlayer.StopWeldedSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.CrazyDiamond.Barrage.Name,.5)
             end 
         end
     end

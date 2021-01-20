@@ -13,7 +13,6 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 
 local BlockInput = {}

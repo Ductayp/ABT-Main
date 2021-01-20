@@ -11,8 +11,11 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
+
+-- Ability modules
 local ManageStand = require(Knit.Abilities.ManageStand)
+
+-- Effect modules
 local Damage = require(Knit.Effects.Damage)
 
 local KnifeThrow = {}

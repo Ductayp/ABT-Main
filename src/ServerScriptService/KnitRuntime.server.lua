@@ -7,11 +7,14 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
--- Expose Moudles to Knit
+-- Expose Modules to Knit
 Knit.Shared = ReplicatedStorage.GameFiles.Shared
+
 Knit.Powers = ReplicatedStorage.GameFiles.Shared.PowerModules.Powers
-Knit.Abilities = ReplicatedStorage.GameFiles.Shared.PowerModules.Abilities
 Knit.Effects = ReplicatedStorage.GameFiles.Shared.PowerModules.Effects
+Knit.Abilities = ReplicatedStorage.GameFiles.Shared.PowerModules.Abilities
+Knit.PowerUtils = ReplicatedStorage.GameFiles.Shared.PowerModules.PowerUtils 
+
 Knit.ItemSpawnTables = ServerScriptService.GameFiles.Modules.ItemSpawnModules
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 Knit.InventoryModules = ServerScriptService.GameFiles.Modules.InventoryModules

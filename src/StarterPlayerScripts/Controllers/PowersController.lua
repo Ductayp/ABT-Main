@@ -63,6 +63,9 @@ end
 
 --// RenderEffect -- render general effects
 function PowersController:RenderEffect(effect,params)
+
+    print("powercontroller: RENDER - ",params)
+
     local effectModule = require(Knit.Effects[effect])
     effectModule.Client_RenderEffect(params)
 end

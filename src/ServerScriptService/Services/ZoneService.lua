@@ -65,10 +65,12 @@ function ZoneService:PlayerAdded(player)
     storageZone.playerAdded:Connect(function(player) -- Fires when a player enters the zone
         print(player.Name.." entered: StandStorageZone")
         self:AddStorageState(player)
+        self:AddSafeState(player)
     end)
     storageZone.playerRemoving:Connect(function(player)  -- Fires when a player exits the zone
         print(player.Name.." left: StandStorageZone")
         self:RemoveStorageState(player)
+        self:RemoveSafeState(player)
     end)
 
 end

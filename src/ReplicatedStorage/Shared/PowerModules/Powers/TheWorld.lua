@@ -20,11 +20,14 @@ local KnifeThrow = require(Knit.Abilities.KnifeThrow)
 local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 local BulletKick = require(Knit.Abilities.BulletKick)
 local StandJump = require(Knit.Abilities.StandJump)
+local Punch = require(Knit.Abilities.Punch)
+
+
 
 -- Effect modules
-local AbilityToggle = require(Knit.Effects.AbilityToggle)
-local Cooldown = require(Knit.Effects.Cooldown)
-local SoundPlayer = require(Knit.Effects.SoundPlayer)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- variables
 local playerStandFolder -- defined up here so all functions can use it
@@ -54,11 +57,17 @@ TheWorld.Defs = {
         Legendary = ReplicatedStorage.EffectParts.StandModels.TheWorld_Legendary,
     },
 
+    HealthModifier = {
+        Common = 10,
+        Rare = 30,
+        Legendary = 70
+    },
+
     Abilities = {
 
         EquipStand = {
             Name = "Equip Stand",
-            Cooldown = 1
+            Cooldown = 3
         },
 
         Barrage = {
@@ -105,24 +114,27 @@ TheWorld.Defs = {
             Velocity_Y = 500
         },
 
-        Ability_8 = {
-            Name = "Ability 8",
+        Punch = {
+            Name = "Punch",
             Duration = 0,
-            Cooldown = 1,
+            Cooldown = 2,
         },
     }
 }
 
 --// SETUP - run this once when the stand is equipped
 function TheWorld.SetupPower(initPlayer,params)
+    print("setup", params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rarity], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function TheWorld.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "TheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "TheWorld_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "TheWorld_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -131,7 +143,8 @@ function TheWorld.Manager(initPlayer,params)
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
         local cooldown = Cooldown.GetCooldownValue(initPlayer, params)
-        if os.time() <= cooldown then
+        --print(os.clock(), cooldown)
+        if os.clock() <= cooldown then
             params.CanRun = false
             return params
         end
@@ -156,6 +169,8 @@ function TheWorld.Manager(initPlayer,params)
         TheWorld.BulletKick(initPlayer,params)
     elseif params.InputId == "Z" then
         TheWorld.StandJump(initPlayer,params)
+    elseif params.InputId == "Mouse1" then
+        TheWorld.Punch(initPlayer,params)
     end
 
     return params
@@ -778,6 +793,90 @@ function TheWorld.StandJump(initPlayer,params)
         end
 
         -- STAND JUMP/EXECUTE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            -- no action here
+        end
+    end
+end
+
+--------------------------------------------------------------------------------------------------
+--// PUNCH //------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
+function TheWorld.Punch(initPlayer,params)
+
+   
+
+    -- server actions
+    if RunService:IsServer() then
+
+        -- require toggles to be inactive, excluding "Q"
+        if AbilityToggle.RequireOff(initPlayer,{"E","R","T","F","Z","X"}) then
+            print(" all the toggles are off")
+        else
+            print("Cant fire ability, another ability is active")
+            params.CanRun = false
+            return params
+        end
+
+
+        
+    end
+    
+    -- PUNCH/INITIALIZE
+    if params.SystemStage == "Intialize" then
+
+        -- PUNCH/INITIALIZE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+
+        -- PUNCH/INITIALIZE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- PUNCH/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+        print("test 1")
+
+         -- PUNCH/ACTIVATE/INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+
+            Punch.Activate(initPlayer,params)
+
+            -- set cooldown
+            print(TheWorld.Defs.Abilities.Punch.Cooldown)
+            Cooldown.SetCooldown(initPlayer, params.InputId, TheWorld.Defs.Abilities.Punch.Cooldown)
+
+            -- set toggles
+            spawn(function()
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+                wait(1)
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+            end)
+
+            params.CanRun = true
+
+        end
+
+        -- PUNCH/ACTIVATE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            params.CanRun = false
+        end
+    end
+
+    -- PUNCH/EXECUTE
+    if params.SystemStage == "Execute" then
+
+         -- PUNCH/EXECUTE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            Punch.Execute(initPlayer,params)
+        end
+
+        -- PUNCH/EXECUTE/INPUT ENDED
         if params.KeyState == "InputEnded" then
             -- no action here
         end

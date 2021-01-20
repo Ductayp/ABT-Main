@@ -19,7 +19,6 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 --// Give_Currency
 function InventoryService:Give_Currency(player, key, value, source)

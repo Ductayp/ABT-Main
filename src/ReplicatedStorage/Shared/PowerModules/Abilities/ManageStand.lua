@@ -8,7 +8,6 @@ local TweenService = game:GetService("TweenService")
 -- Knits and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Default Stand Anchor Offsets
 local anchors = {}
@@ -176,6 +175,7 @@ function ManageStand.PlayAnimation(initPlayer,params,animationName)
 			local newTrack = animationController:LoadAnimation(thisAnimation)
 			newTrack:Play()
 		end
+		thisAnimation = nil
 	end
 end
 

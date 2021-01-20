@@ -14,7 +14,6 @@ local PowersService = Knit.GetService("PowersService")
 
 -- utils
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui

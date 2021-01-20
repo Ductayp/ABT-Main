@@ -13,8 +13,6 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
-
 
 local AbilityToggle = {}
 
@@ -76,7 +74,7 @@ function AbilityToggle.GetToggleObject(player,toggleName)
 
 end
 
---// RequireFalse
+--// RequireFalse - dont use this any more
 function AbilityToggle.RequireFalse(player,toggleNamesArray)
 
     local returnValue = true
@@ -96,10 +94,11 @@ function AbilityToggle.RequireFalse(player,toggleNamesArray)
         returnValue = false -- this happens if there is no toggles folder yet
     end
 
+    print (returnValue)
     return returnValue
 end
 
---// RequireTrue
+--// RequireTrue -- dont use this any more
 function AbilityToggle.RequireTrue(player,toggleNamesArray)
 
     local returnValue = true
@@ -120,6 +119,54 @@ function AbilityToggle.RequireTrue(player,toggleNamesArray)
     end
 
     return returnValue
+end
+
+--// RequireOn - this is the one to use
+function AbilityToggle.RequireOn(player,toggleNamesArray)
+
+    local allTogglesOn = true -- start with true, if any in the array fail, it returns false
+    toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    if toggleFolder then
+        for _,toggleName in pairs(toggleNamesArray) do
+            for _,toggleObject in pairs(toggleFolder:GetChildren()) do
+                if toggleName == toggleObject.Name then
+                    if toggleObject.Value == false then
+                        allTogglesOn = false
+                        return allTogglesOn
+                    end
+                end
+            end
+        end
+    else
+        allTogglesOn = false -- this happens if there is no toggles folder yet
+    end
+
+    return allTogglesOn
+
+end
+
+--// RequireOff - this is the one to use
+function AbilityToggle.RequireOff(player,toggleNamesArray)
+
+    local allTogglesOn = true -- start with true, if any toggles are on, we set it to false and return
+    toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    if toggleFolder then
+        for _,toggleName in pairs(toggleNamesArray) do
+            for _,toggleObject in pairs(toggleFolder:GetChildren()) do
+                if toggleName == toggleObject.Name then
+                    if toggleObject.Value == true then
+                        allTogglesOn = false
+                        return allTogglesOn
+                    end
+                end
+            end
+        end
+    else
+        returnValue = true -- this happens if there is no toggles folder yet
+    end
+
+    return allTogglesOn
+
 end
 
 return AbilityToggle

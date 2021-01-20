@@ -14,7 +14,6 @@ local GamePassService = Knit.GetService("GamePassService")
 
 -- utils
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui
@@ -119,7 +118,7 @@ function StandReveal.ActivateClose()
     end
 
     -- show the stand in BottomGui when we close this
-    require(Knit.GuiModules.BottomGui).ShowPower()
+    require(Knit.GuiModules.BottomGui).ShowStand()
 
 end
 
@@ -166,7 +165,7 @@ end
 function StandReveal.Update(data)
 
     -- hide the current stand text until after the reveal
-    require(Knit.GuiModules.BottomGui).HidePower()
+    require(Knit.GuiModules.BottomGui).HideStand()
     
     -- get the module for the stand that just got revealed, also the players CurrentStand, we need this to get the actual name
     local currentPowerModule = Knit.Powers:FindFirstChild(data.Power)

@@ -10,9 +10,9 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
 -- Effect modules
-local AbilityToggle = require(Knit.Effects.AbilityToggle)
-local Cooldown = require(Knit.Effects.Cooldown)
-local SoundPlayer = require(Knit.Effects.SoundPlayer)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
+local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
 
 
 -- Ability modules

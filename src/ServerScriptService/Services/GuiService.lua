@@ -22,8 +22,12 @@ GuiService.Client.Event_Update_Currency = RemoteEvent.new()
 GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
+GuiService.Client.Event_Update_Cooldown = RemoteEvent.new()
 
-
+--// Update_Cooldown
+function GuiService:Update_Cooldown(player, params)
+    self.Client.Event_Update_Cooldown:Fire(player, params)
+end
 
 --// Update_Notifications
 function GuiService:Update_Notifications(player, params)
@@ -44,7 +48,12 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "BottomGUI" then
-        self.Client.Event_Update_BottomGUI:Fire(player, playerData.CurrentStand)
+        local data = {}
+        data.CurrentStand = playerData.CurrentStand
+        data.XpData = Knit.Services.PowersService:GetXpData(playerData.CurrentStand.Xp, playerData.CurrentStand.Rarity)
+        data.CurrentHealth = player.Character.Humanoid.Health
+        data.MaxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
+        self.Client.Event_Update_BottomGUI:Fire(player, data)
     end
 
     if requestName == "StandReveal" then

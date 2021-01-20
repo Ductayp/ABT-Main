@@ -23,6 +23,9 @@ PowersService.XP_PER_LEVEL = {
     Legendary = 32400
 }
 
+-- variables
+PowersService.PlayerAnimations = {}
+
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
 PowersService.Client.RenderEffect = RemoteEvent.new()
@@ -60,7 +63,7 @@ function PowersService.Client:ClientActivatePower(player,params)
     self.Server:ActivatePower(player,params)
 end
 
---// Client:GetCuurentPower
+--// Client:GetCurrentPower
 function PowersService.Client:GetCurrentPower(player)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -99,6 +102,56 @@ function PowersService:GetLevelFromXp(standXp, standRarity)
     return adjustedLevel, percentageComplete, remainingXpToLevel
 end
 
+--// GetXpData
+function PowersService:GetXpData(standXp, standRarity)
+
+    -- be sure we start with at least 1 xp
+    if standXp == nil then
+		standXp = 1
+    end
+
+    -- if stand rarity is nil, its was probably a request that had standless
+    if standRarity == nil then
+        return
+    end
+    
+    local xpPerLevel = PowersService.XP_PER_LEVEL[standRarity]
+
+    local rawLevel = math.floor(standXp / xpPerLevel)
+    local adjustedLevel = rawLevel + 1
+
+    local completedXp = adjustedLevel * xpPerLevel
+    local adjustedXp = standXp + xpPerLevel
+
+    local remainingXpToLevel = xpPerLevel - (adjustedXp - completedXp)
+    local percentageComplete = 1 - (remainingXpToLevel / xpPerLevel)
+    percentageComplete *= 100
+    percentageComplete = math.floor(percentageComplete)
+    percentageComplete = percentageComplete / 100
+
+    if percentageComplete <= 0 then
+        percentageComplete = 0.01
+    elseif percentageComplete >= 1 then
+        percentageComplete = 1
+    end
+
+    -- build the data dictionary
+    local data = {
+        XpPerLevel = xpPerLevel, -- the static number of XP required for each level, depends on stand rarity
+        Level = adjustedLevel, -- the level of the stand
+        PercentageComplete = percentageComplete, -- a percetage of the xp completed for THIS LEVEL, used in Gui stuff
+        XpThisLevel = xpPerLevel - remainingXpToLevel -- a number the represents how much xp has been gain THIS LEVEL
+    }
+
+    return data
+
+end
+
+function PowersService.Client:GetXpData(standXp, standRarity)
+    local data = self:GetXpData(standXp, standRarity)
+    return data
+end
+
 --// Client:GetLevelFromXp
 function PowersService.Client:GetLevelFromXp(player, standXp, standRarity) -- player arg is not used but gets passed in by Knit. we just ignore it
     local actualLevel, percentageRemaining, remainingXpToLevel = self.Server:GetLevelFromXp(standXp, standRarity)
@@ -125,9 +178,10 @@ function PowersService:SetCurrentPower(player,params)
     -- run the new powers setup function
     if Knit.Powers:FindFirstChild(params.Power) then
         local setupPowerModule = require(Knit.Powers[params.Power])
-        local setupPowerParams = {} --right now this is nil, but we can add things later if we need to
+        local setupPowerParams = {} 
+        setupPowerParams.Rarity = params.Rarity
         if setupPowerModule.SetupPower then
-            setupPowerModule.SetupPower(player,setupPowerParams)
+            setupPowerModule.SetupPower(player, setupPowerParams)
         end
     end
 
@@ -184,7 +238,7 @@ end
 --// NPC_RegisterHit
 function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
     print("YOU GOT HIT HOMES!")
-    hitParams = {}
+    local hitParams = {}
     hitParams.DamageMultiplier = 1
     for effect,effectParams in pairs(hitEffects) do
         require(Knit.Effects[effect]).Server_ApplyEffect(nil, targetPlayer.Character, effectParams, hitParams)
@@ -282,8 +336,20 @@ end
 --// PlayerRefresh - fires when the player joins and after each death
 function PowersService:PlayerRefresh(player)
 
+    -- wait for the character
+    repeat wait() until player.Character
+
     -- cleanup before setup
     self:PlayerCleanup(player)
+
+
+    -- load the players animation table with tracks
+    PowersService.PlayerAnimations[player.UserId] = {}
+    local animator = player.Character.Humanoid:WaitForChild("Animator")
+    for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
+        PowersService.PlayerAnimations[player.UserId][animObject.Name] = animator:LoadAnimation(animObject)
+    end
+
     
     -- setup player folders
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
@@ -295,8 +361,12 @@ end
 
 --// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh
 function PowersService:PlayerCleanup(player)
-    local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
 
+    -- cleanup player animation table
+    PowersService.PlayerAnimations[player.UserId] = nil
+
+    -- cleanup folders
+    local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
     for _,location in pairs(cleanupLocations) do
         for _,object in pairs(location:GetChildren()) do
             if object.Name == tostring(player.UserId) then
@@ -330,8 +400,8 @@ function PowersService:PlayerJoined(player)
         self:SetCurrentPower(player, playerData.CurrentStand)
 
     end
-
 end
+
 
 --// KnitStart
 function PowersService:KnitStart()

@@ -11,10 +11,10 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local DamageEffect = require(Knit.Effects.Damage)
 local KnockBack = require(Knit.Effects.KnockBack)
+local SimpleHitbox = require(Knit.PowerUtils.SimpleHitbox)
 
 local BulletKick = {}
 
@@ -46,7 +46,7 @@ function BulletKick.Activate(initPlayer,params)
             params.BulletKick.HitEffects.KnockBack.LookVector = boxParams.CFrame.LookVector 
     
             -- make a new hitbox
-            local newHitbox = powerUtils.SimpleHitbox(initPlayer,boxParams)
+            local newHitbox = SimpleHitbox.NewHitBox(initPlayer,boxParams)
             Debris:AddItem(newHitbox, .5)
     
             newHitbox.ChildAdded:Connect(function(hit)

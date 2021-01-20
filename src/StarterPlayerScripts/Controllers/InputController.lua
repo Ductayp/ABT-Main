@@ -14,12 +14,27 @@ local InputController = Knit.CreateController { Name = "InputController" }
 
 -- Knit modules
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 --// SendToPowersService
 function InputController:SendToPowersService(params)
 
     Knit.Controllers.PowersController:InitializePower(params)
+
+end
+
+function InputController:MouseSetup()
+
+    UserInputService.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            InputController:SendToPowersService({InputId = "Mouse1", KeyState = "InputBegan"})
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            InputController:SendToPowersService({InputId = "Mouse1", KeyState = "InputEnded"})
+        end
+    end)
 
 end
 
@@ -71,7 +86,8 @@ function InputController:KeyboardSetup()
 end
 
 function InputController:KnitStart()
-    InputController.KeyboardSetup()
+    self:KeyboardSetup()
+    self:MouseSetup()
 end
 
 function InputController:KnitInit()

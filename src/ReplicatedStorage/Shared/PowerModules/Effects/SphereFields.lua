@@ -24,7 +24,6 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 local colors = {
     [1] = Color3.new(255/255, 0/255, 191/255), -- hot pink

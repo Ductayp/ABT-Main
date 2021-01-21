@@ -55,7 +55,7 @@ function Cooldown.SetCooldown(player,cooldownName,cooldownValue)
     return thisCooldown
 end
 
---// CheckCooldown - receives the power params and returns params.CanRun as true or false
+--// GetCooldownValue - receives the power params and returns params.CanRun as true or false
 function Cooldown.GetCooldownValue(player, params)
 
     local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
@@ -69,6 +69,18 @@ function Cooldown.GetCooldownValue(player, params)
     end
 
     return thisCooldown.Value
+end
+
+function Cooldown.IsCooled(player, params)
+
+    local isCooled = false
+    local cooldown = Cooldown.GetCooldownValue(player, params)
+    --print(os.clock(), cooldown)
+    if os.clock() >= cooldown then
+        isCooled = true
+    end
+
+    return isCooled
 end
 
 

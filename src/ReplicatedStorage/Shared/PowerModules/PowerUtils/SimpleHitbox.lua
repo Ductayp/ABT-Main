@@ -60,7 +60,7 @@ function SimpleHitBox.NewHitBox(initPlayer,boxParams)
 	hitBox.Touched:Connect(function(hit)
 
 		local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
-		if humanoid then
+		if humanoid and humanoid.Health ~= 0 then 
 
 			local canHit = true
 			for alreadyHit,_ in pairs(hitList) do

@@ -22,16 +22,11 @@ local BulletKick = require(Knit.Abilities.BulletKick)
 local StandJump = require(Knit.Abilities.StandJump)
 local Punch = require(Knit.Abilities.Punch)
 
-
-
 -- Effect modules
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 
--- variables
-local playerStandFolder -- defined up here so all functions can use it
-local thisStand -- defined up here so all functions can use it
 
 local TheWorld = {}
 
@@ -63,63 +58,7 @@ TheWorld.Defs = {
         Legendary = 70
     },
 
-    Abilities = {
-
-        EquipStand = {
-            Name = "Equip Stand",
-            Cooldown = 3
-        },
-
-        Barrage = {
-            Name = "Barrage",
-            Duration = 5,
-            Cooldown = 10,
-            loopTime = .25,
-            HitEffects = {Damage = {Damage = 5}}
-        },
-
-        TimeStop = {
-            Name = "Time Stop",
-            Duration = 8,
-            Cooldown = 20,
-            Range = 150,
-            HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
-        },
-
-       KnifeThrow = {
-            Name = "Knife Throw",
-            Cooldown = 8,
-            Range = 75,
-            Speed = 60,
-            HitEffects = {Damage = {Damage = 20}}
-        },
-
-        HeavyPunch = {
-            Name = "Heavy Punch",
-            Cooldown = 10,
-            HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 1.5}, PinCharacter = {Duration = 1.5}, BlockInput = {Name = "HeavyPunch", Duration = 1.5}, SphereFields = {Size = 7, Duration = 1.5,RandomColor = true, Repeat = 3}}
-        },
-
-        BulletKick = {
-            Name = "Bullet Kick",
-            Cooldown = 1,
-            HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
-        },
-
-        StandJump = {
-            Name = "Stand Jump",
-            Duration = .3,
-            Cooldown = 5,
-            Velocity_XZ = 2700,
-            Velocity_Y = 500
-        },
-
-        Punch = {
-            Name = "Punch",
-            Duration = 0,
-            Cooldown = 2,
-        },
-    }
+    Abilities = {} -- ability defs are inside each ability function area
 }
 
 --// SETUP - run this once when the stand is equipped
@@ -142,17 +81,13 @@ function TheWorld.Manager(initPlayer,params)
 
     -- check cooldowns but only on SystemStage "Activate"
     if params.SystemStage == "Activate" then
-        local cooldown = Cooldown.GetCooldownValue(initPlayer, params)
-        --print(os.clock(), cooldown)
-        if os.clock() <= cooldown then
+        if Cooldown.IsCooled(initPlayer, params) then
+            params.CanRun = true
+        else
             params.CanRun = false
             return params
         end
     end
-
-    -- get these here, they were decalred at the top but we set them here as the player enter the chain of functions
-    playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-    thisStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
     -- call the function
     if params.InputId == "Q" then
@@ -180,27 +115,23 @@ end
 --// EQUIP STAND //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.EquipStand = {
+    Name = "Equip Stand",
+    Cooldown = 5
+}
+
 function TheWorld.EquipStand(initPlayer,params)
 
- 
     -- EQUIP STAND/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- EQUIP STAND/INITIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- EQUIP STAND/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- EQUIP STAND/ACTIVATE
     if params.SystemStage == "Activate" then
-
-         -- EQUIP STAND/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
             -- set cooldown
@@ -212,21 +143,11 @@ function TheWorld.EquipStand(initPlayer,params)
             else
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
             end
-            
-            params.CanRun = true
-        end
-
-        -- EQUIP STAND/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- EQUIP STAND/EXECUTE
     if params.SystemStage == "Execute" then
-        print("The World - Equip Stand - Execute")
-
-         -- EQUIP STAND/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
                 SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon) -- specific stand sound
@@ -236,11 +157,6 @@ function TheWorld.EquipStand(initPlayer,params)
                 ManageStand.RemoveStand(initPlayer)            
             end
         end
-
-        -- EQUIP STAND/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
-        end
     end
 end
 
@@ -248,37 +164,28 @@ end
 --// BARRAGE //----------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.Barrage = {
+    Name = "Barrage",
+    Duration = 5,
+    Cooldown = 10,
+    --loopTime = .25,
+    HitEffects = {Damage = {Damage = 5}}
+}
+
 function TheWorld.Barrage(initPlayer,params)
 
-    -- server actions
-    if RunService:IsServer() then
-        -- requires Stand to be active via "Q" toggle
-        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
-            print("Stand not active, cannot run this ability")
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
-            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
-                print("Cant fire ability, another ability is active")
-                params.CanRun = false
-                return params
-            end
-        end
-    end
+    print("run barrage")
 
     -- BARRAGE/INIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- BARRAGE/INIALIZE/INPUT BEGAN
+    print("test 1")
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
+            print("test 2")
             params.CanRun = true
         end
-
-        -- BARRAGE/INIALIZE/INPUT ENDED
         if params.KeyState == "InputEnded" then
+            print("test 3")
             params.CanRun = true
         end
     end
@@ -288,6 +195,18 @@ function TheWorld.Barrage(initPlayer,params)
 
         -- BARRAGE/ACTIVATE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
+
+            -- require toggles to be active
+            if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+                params.CanRun = false
+                return params
+            end
+
+            -- require toggles to be inactive, excluding "Q"
+            if not AbilityToggle.RequireOff(initPlayer,{"C","R","T","F","Z","X"}) then
+                params.CanRun = false
+                return params
+            end
 
             -- only operate if toggle is off
             if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
@@ -301,19 +220,10 @@ function TheWorld.Barrage(initPlayer,params)
                 spawn(function()
                     wait(TheWorld.Defs.Abilities.Barrage.Duration)
                     params.KeyState = "InputEnded"
+                    params.CanRun = true
                     Knit.Services.PowersService:ActivatePower(initPlayer,params)
                 end)
             end
-            
-            --[[
-            -- this is for mobile toggles
-            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-                params.CanRun = true
-                params.KeyState = "InputEnded"
-                Knit.Services.PowersService:ActivatePower(initPlayer,params)
-            end
-            ]]--
         end
 
         -- BARRAGE/ACTIVATE/INPUT ENDED
@@ -364,96 +274,67 @@ end
 --// TIME STOP //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.TimeStop = {
+    Name = "Time Stop",
+    Duration = 8,
+    Cooldown = 20,
+    Range = 150,
+    HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
+}
+
 function TheWorld.TimeStop(initPlayer,params)
 
-    -- server actions
-    if RunService:IsServer() then
-        -- requires Stand to be active via "Q" toggle
-        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
-            print("Stand not active, cannot run this ability")
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
-            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
-                print("Cant fire ability, another ability is active")
-                params.CanRun = false
-                return params
-            end
-        end
-    end
-
     -- TIME STOP/INIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- TIME STOP/INIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- TIME STOP/INIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- TIME STOP/ACTIVATE
     if params.SystemStage == "Activate" then
 
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","R","T","E","Z","X"}) then
+            params.CanRun = false
+            return params
+        end
+
         -- TIME STOP/ACTIVATE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
 
-            -- set cooldown
-            Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.TimeStop.Cooldown)
-
-            -- set toggles
             spawn(function()
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(3)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-            end)
-
-            spawn(function()
+                Cooldown.SetCooldown(initPlayer, params.InputId, TheWorld.Defs.Abilities.TimeStop.Cooldown)
+                AbilityToggle.SetToggle(initPlayer, params.InputId, true)
                 wait(2) -- this waits for the animations and audio before firing
                 params.TimeStop = TheWorld.Defs.Abilities.TimeStop
                 TimeStop.Activate(initPlayer,params)
+                wait(1)
+                AbilityToggle.SetToggle(initPlayer, params.InputId, false)
             end)
-            
-            
+
             params.CanRun = true
 
-        end
-
-        -- TIME STOP/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- TIME STOP/EXECUTE
     if params.SystemStage == "Execute" then
-
-        -- TIME STOP/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
-            print("CLIENT - Time Stop - Execute = InputBegan")
 
             ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
             SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop)
-
-            -- wait here for the timestop audio
-            wait(2)
-
+            wait(2) -- wait here for the timestop audio
             local timeStopParams = TheWorld.Defs.Abilities.TimeStop
             TimeStop.Execute(initPlayer,timeStopParams)
         end
-
-        -- TIME STOP/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-
-        end
-
     end
 end
 
@@ -461,52 +342,44 @@ end
 --// KNIFE THROW //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.KnifeThrow = {
+    Name = "Knife Throw",
+    Cooldown = 1,
+    Range = 75,
+    Speed = 60,
+    HitEffects = {Damage = {Damage = 20}}
+}
+
 function TheWorld.KnifeThrow(initPlayer,params)
 
-    -- server actions
-    if RunService:IsServer() then
-        -- requires Stand to be active via "Q" toggle
-        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
-            print("Stand not active, cannot run this ability")
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
-            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
-                print("Cant fire ability, another ability is active")
-                params.CanRun = false
-                return params
-            end
-        end
-    end
-    
     -- KNIFE THROW/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- KNIFE THROW/INITIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- KNIFE THROW/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- KNIFE THROW/ACTIVATE
     if params.SystemStage == "Activate" then
 
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","R","F","E","Z","X"}) then
+            params.CanRun = false
+            return params
+        end
+
          -- KNIFE THROW/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
-            -- set cooldown
-            Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.KnifeThrow.Cooldown)
-
-            -- set toggles
             spawn(function()
+                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.KnifeThrow.Cooldown)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
                 wait(1)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,false)
@@ -514,27 +387,16 @@ function TheWorld.KnifeThrow(initPlayer,params)
 
             params.KnifeThrow = TheWorld.Defs.Abilities.KnifeThrow
             KnifeThrow.Server_Activate(initPlayer,params)
-            params.CanRun = true
-        end
 
-        -- KNIFE THROW/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
+            params.CanRun = true
         end
     end
 
     -- KNIFE THROW/EXECUTE
     if params.SystemStage == "Execute" then
-
-         -- KNIFE THROW/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
             KnifeThrow.Client_Execute(initPlayer,params)
-        end
-
-        -- KNIFE THROW/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
         end
     end
 end
@@ -543,52 +405,42 @@ end
 --// HEAVY PUNCH //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+--defs
+TheWorld.Defs.Abilities.HeavyPunch = {
+    Name = "Heavy Punch",
+    Cooldown = 10,
+    HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, BlockInput = {Name = "HeavyPunch", Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}}
+}
+
 function TheWorld.HeavyPunch(initPlayer,params)
 
-    -- server actions
-    if RunService:IsServer() then
-        -- requires Stand to be active via "Q" toggle
-        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
-            print("Stand not active, cannot run this ability")
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
-            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
-                print("Cant fire ability, another ability is active")
-                params.CanRun = false
-                return params
-            end
-        end
-    end
-    
     -- HEAVY PUNCH/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- HEAVY PUNCH/INITIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- HEAVY PUNCH/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- HEAVY PUNCH/ACTIVATE
     if params.SystemStage == "Activate" then
 
-         -- HEAVY PUNCH/ACTIVATE/INPUT BEGAN
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","X"}) then
+            params.CanRun = false
+            return params
+        end
+
          if params.KeyState == "InputBegan" then
            
-            -- set cooldown
-            Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.HeavyPunch.Cooldown)
-
-            -- set toggles
+            -- cooldowns and toggles
             spawn(function()
+                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.HeavyPunch.Cooldown)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
                 wait(2)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,false)
@@ -597,37 +449,21 @@ function TheWorld.HeavyPunch(initPlayer,params)
             -- activate ability
             params.HeavyPunch = TheWorld.Defs.Abilities.HeavyPunch
             HeavyPunch.Activate(initPlayer,params)
-            
-            
 
             params.CanRun = true
-        end
-
-        -- HEAVY PUNCH/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- HEAVY PUNCH/EXECUTE
     if params.SystemStage == "Execute" then
-
-         -- HEAVY PUNCH/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
-            spawn(function()
-                wait(.3)
-                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.HeavyPunch)
-            end)
-           
             local heavyPunchParams = TheWorld.Defs.Abilities.HeavyPunch
             HeavyPunch.Execute(initPlayer,heavyPunchParams)
+            wait(.3)
+            SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.HeavyPunch)
         end
 
-        -- HEAVY PUNCH/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
-        end
     end
 end
 
@@ -635,80 +471,60 @@ end
 --// BULLET KICK //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.BulletKick = {
+    Name = "Bullet Kick",
+    Cooldown = 1,
+    HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
+}
+
 function TheWorld.BulletKick(initPlayer,params)
 
-    -- server actions
-    if RunService:IsServer() then
-        -- requires Stand to be active via "Q" toggle
-        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
-            print("Stand not active, cannot run this ability")
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
-            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
-                print("Cant fire ability, another ability is active")
-                params.CanRun = false
-                return params
-            end
-        end
-    end
-    
     -- BULLET KICK/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- BULLET KICK/INITIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- BULLET KICK/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- BULLET KICK/ACTIVATE
     if params.SystemStage == "Activate" then
 
-         -- BULLET KICK/ACTIVATE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-
-             -- set cooldown
-             Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.BulletKick.Cooldown)
-
-             -- set toggles
-            spawn(function()
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(1)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-            end)
-
-            --bulletKickParams = TheWorld.Defs.Abilities.BulletKick
-            params.BulletKick = TheWorld.Defs.Abilities.BulletKick
-            BulletKick.Activate(initPlayer,params)
-            params.CanRun = true
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
         end
 
-        -- BULLET KICK/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","R"}) then
             params.CanRun = false
+            return params
+        end
+
+        if params.KeyState == "InputBegan" then
+
+            -- set cooldown
+            Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.BulletKick.Cooldown)
+
+            -- set toggles
+        spawn(function()
+            AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+            wait(1)
+            AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+        end)
+
+        --bulletKickParams = TheWorld.Defs.Abilities.BulletKick
+        params.BulletKick = TheWorld.Defs.Abilities.BulletKick
+        BulletKick.Activate(initPlayer,params)
+        -- params.CanRun = true
         end
     end
 
     -- BULLET KICK/EXECUTE
     if params.SystemStage == "Execute" then
-
-         -- BULLET KICK/EXECUTE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
             BulletKick.Execute(initPlayer,params)
-        end
-
-        -- BULLET KICK/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
         end
     end
 end
@@ -717,84 +533,65 @@ end
 --// STAND JUMP //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.StandJump = {
+    Name = "Stand Jump",
+    Duration = .3,
+    Cooldown = 5,
+    Velocity_XZ = 2700,
+    Velocity_Y = 500
+}
+
 function TheWorld.StandJump(initPlayer,params)
 
-    -- server actions
-    if RunService:IsServer() then
-        -- requires Stand to be active via "Q" toggle
-        if not AbilityToggle.RequireTrue(initPlayer,{"Q"}) then
-            print("Stand not active, cannot run this ability")
-            params.CanRun = false
-            return params
-        end
 
-        -- require toggles to be inactive, excluding "Q"
-        if params.KeyState == "InputBegan" then -- we had to do this on InputBegan ONLY because of the funny way Barrage toggles
-            if not AbilityToggle.RequireFalse(initPlayer,{"E","R","T","F","Z","X"}) then
-                print("Cant fire ability, another ability is active")
-                params.CanRun = false
-                return params
-            end
-        end
-    end
-    
     -- STAND JUMP/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- STAND JUMP/INITIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- STAND JUMP/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- STAND JUMP/ACTIVATE
     if params.SystemStage == "Activate" then
 
-         -- STAND JUMP/ACTIVATE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-
-            --bulletKickParams = TheWorld.Defs.Abilities.BulletKick
-            params.StandJump = TheWorld.Defs.Abilities.StandJump
-            StandJump.Activate(initPlayer,params)
-
-            -- if CanRun is true
-            if params.CanRun == true then
-
-                -- set cooldowns
-                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.StandJump.Cooldown)
-
-                -- set toggles
-                spawn(function()
-                    AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                    wait(1)
-                    AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-                end)
-
-            end
-        end
-
-        -- STAND JUMP/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
             params.CanRun = false
+            return params
         end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","R"}) then
+            params.CanRun = false
+            return params
+        end
+        
+        -- STAND JUMP/ACTIVATE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+
+        --bulletKickParams = TheWorld.Defs.Abilities.BulletKick
+        params.StandJump = TheWorld.Defs.Abilities.StandJump
+        
+            -- set toggles and cooldowns
+            spawn(function()
+                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.StandJump.Cooldown)
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+                wait(1)
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+            end)
+
+            StandJump.Activate(initPlayer,params)
+            params.CanRun = true
+
+        end
+
     end
 
     -- STAND JUMP/EXECUTE
     if params.SystemStage == "Execute" then
-
-         -- STAND JUMP/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
             StandJump.Execute(initPlayer,params)
-        end
-
-        -- STAND JUMP/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
         end
     end
 end
@@ -803,82 +600,54 @@ end
 --// PUNCH //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
+-- defs
+TheWorld.Defs.Abilities.Punch = {
+    Name = "Punch",
+    HitEffects = {Damage = {Damage = 5}}
+}
+
 function TheWorld.Punch(initPlayer,params)
 
-   
-
-    -- server actions
-    if RunService:IsServer() then
-
-        -- require toggles to be inactive, excluding "Q"
-        if AbilityToggle.RequireOff(initPlayer,{"E","R","T","F","Z","X"}) then
-            print(" all the toggles are off")
-        else
-            print("Cant fire ability, another ability is active")
-            params.CanRun = false
-            return params
-        end
-
-
-        
-    end
-    
     -- PUNCH/INITIALIZE
-    if params.SystemStage == "Intialize" then
-
-        -- PUNCH/INITIALIZE/INPUT BEGAN
+    if params.SystemStage == "Initialize" then
         if params.KeyState == "InputBegan" then
             params.CanRun = true
-        end
-
-        -- PUNCH/INITIALIZE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- PUNCH/ACTIVATE
     if params.SystemStage == "Activate" then
 
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","R","X","Mouse1"}) then
+            params.CanRun = false
+            return params
+        end
+
         print("test 1")
 
          -- PUNCH/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 
-            Punch.Activate(initPlayer,params)
-
-            -- set cooldown
-            print(TheWorld.Defs.Abilities.Punch.Cooldown)
-            Cooldown.SetCooldown(initPlayer, params.InputId, TheWorld.Defs.Abilities.Punch.Cooldown)
-
-            -- set toggles
+            -- set toggles and cooldown
             spawn(function()
+                --Cooldown.SetCooldown(initPlayer, params.InputId, TheWorld.Defs.Abilities.Punch.Cooldown)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(1)
+                wait(.75)
                 AbilityToggle.SetToggle(initPlayer,params.InputId,false)
             end)
 
+            params.Punch = TheWorld.Defs.Abilities.Punch
+            Punch.Activate(initPlayer, params)
             params.CanRun = true
 
-        end
-
-        -- PUNCH/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            params.CanRun = false
         end
     end
 
     -- PUNCH/EXECUTE
     if params.SystemStage == "Execute" then
-
-         -- PUNCH/EXECUTE/INPUT BEGAN
         if params.KeyState == "InputBegan" then
             Punch.Execute(initPlayer,params)
-        end
-
-        -- PUNCH/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            -- no action here
         end
     end
 end

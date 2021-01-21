@@ -63,7 +63,13 @@ end
 
 function BlockInput.IsBlocked(player)
 
+    -- default is false
     local isBlocked = false
+
+    -- if we cant find the players folder, then they havent bee blocked yet
+    if not ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId) then
+        return isBlocked
+    end
 
     local inputBlockFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("InputBlocks")
     if inputBlockFolder then

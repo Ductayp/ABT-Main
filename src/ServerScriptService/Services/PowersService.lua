@@ -51,6 +51,7 @@ function PowersService:ActivatePower(player,params)
     params.SystemStage = "Activate"
     params.CanRun = false
     params = powerModule.Manager(player,params) -- pass the params in and in parmas.CanRun comes back true then we can move on
+    --powerModule.Manager(player,params)
 
     -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun == true then
@@ -147,6 +148,7 @@ function PowersService:GetXpData(standXp, standRarity)
 
 end
 
+--// Client:GetXPData
 function PowersService.Client:GetXpData(standXp, standRarity)
     local data = self:GetXpData(standXp, standRarity)
     return data
@@ -342,14 +344,12 @@ function PowersService:PlayerRefresh(player)
     -- cleanup before setup
     self:PlayerCleanup(player)
 
-
     -- load the players animation table with tracks
     PowersService.PlayerAnimations[player.UserId] = {}
     local animator = player.Character.Humanoid:WaitForChild("Animator")
     for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
         PowersService.PlayerAnimations[player.UserId][animObject.Name] = animator:LoadAnimation(animObject)
     end
-
     
     -- setup player folders
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})

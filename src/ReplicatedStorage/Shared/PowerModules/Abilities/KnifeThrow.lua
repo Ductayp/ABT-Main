@@ -92,8 +92,12 @@ function KnifeThrow.Client_Execute(initPlayer,params)
     end
 
     -- run animation
-    ManageStand.PlayAnimation(initPlayer,params,"KnifeThrow")
-    ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+    spawn(function()
+        ManageStand.PlayAnimation(initPlayer,params,"KnifeThrow")
+        ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+        wait(.5)
+        ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
+    end)
     
     -- clone in all parts
     local mainPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Client:Clone()
@@ -101,46 +105,12 @@ function KnifeThrow.Client_Execute(initPlayer,params)
     mainPart.CFrame = params.OriginCFrame
     mainPart.Name = "MainPart" -- name it so its easy to find later 
 
-    local shock_1 = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.Shock1:Clone()
-    local shock_2 = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.Shock2:Clone()
-    shock_1.Parent = workspace.RenderedEffects
-    shock_2.Parent = workspace.RenderedEffects
-    shock_1.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
-    shock_2.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,0,-3.5))
-
-    -- spawn the stand move and shockwave aniamtions
-    spawn(function()
-        
-        -- create shock tween effects
-        local tweenInfo1 = TweenInfo.new(.7)
-        local shockSize_1 = TweenService:Create(shock_1.Shock,tweenInfo1,{Size = (shock_1.Size + Vector3.new(5,5,5))})
-        local shockSize_2 = TweenService:Create(shock_2.Shock,tweenInfo1,{Size = (shock_1.Size + Vector3.new(3,3,3))})
-        local shockTransparency_1 = TweenService:Create(shock_1.Shock,tweenInfo1,{Transparency = 1})
-        local shockTransparency_2 = TweenService:Create(shock_2.Shock,tweenInfo1,{Transparency = 1})
-
-        shockSize_1:Play()
-        shockSize_2:Play()
-        shockTransparency_1:Play()
-        shockTransparency_2:Play()
-
-        shockSize_1.Completed:Connect(function(playbackState)
-            if playbackState == Enum.PlaybackState.Completed then
-                shock_1:Destroy()
-                shock_2:Destroy()
-            end
-        end)
-
-        -- move the stand back
-        wait(.5)
-        ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
-    end)
-
     -- Tween the thrown parts
     local newSpeed = params.ArrivalTime - os.time()
     if newSpeed < 1 then
         newSpeed = 1
     end
-    local tweenInfo2 = TweenInfo.new(newSpeed)
+    local tweenInfo2 = TweenInfo.new(newSpeed, Enum.EasingStyle.Linear)
     local tweenMainPart = TweenService:Create(mainPart,tweenInfo2,{CFrame = params.DestinatonCFrame})
 
     -- CFrame the parts A SECOND TIME right before we launch them
@@ -150,9 +120,7 @@ function KnifeThrow.Client_Execute(initPlayer,params)
     -- destroy when tween is done
     tweenMainPart.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed then
-            local parts = {mainPart}
-            local endingCFrame = mainPart.CFrame
-            KnifeThrow.DestroyCosmetics(parts,endingCFrame)
+            mainPart:Destroy()
         end
     end)
 
@@ -161,38 +129,10 @@ function KnifeThrow.Client_Execute(initPlayer,params)
         local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
         if humanoid then
             if humanoid.Parent.Name ~= initPlayer.Name then
-                --wait(.5)
-                local parts = {mainPart}
-                local endingCFrame = hit.CFrame
-                KnifeThrow.DestroyCosmetics(parts,endingCFrame)
+                mainPart:Destroy()
             end
         end
     end)
-end
-
-
-function KnifeThrow.DestroyCosmetics(parts,endingCFrame)
-
-    -- run explosion effect only if the cosmetics parts are still in workspace.RenderedEffects
-    if parts[1].Parent == workspace.RenderedEffects then 
-        local swirlShock = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.SwirlShock:Clone()
-        swirlShock.CFrame = endingCFrame
-        swirlShock.Parent = workspace.RenderedEffects
-
-        local tweenInfo = TweenInfo.new(.5)
-        local swirlSize = TweenService:Create(swirlShock,tweenInfo,{Size = (swirlShock.Size + Vector3.new(5,5,5))})
-        swirlSize:Play()
-
-        swirlSize.Completed:Connect(function(playbackState)
-            if playbackState == Enum.PlaybackState.Completed then
-                swirlShock:Destroy()
-            end
-        end)
-    end
-
-    for i,v in pairs(parts) do 
-        v:Destroy()
-    end
 
 end
 

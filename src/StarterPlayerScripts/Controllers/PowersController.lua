@@ -22,6 +22,9 @@ local PowersController = Knit.CreateController { Name = "PowersController" }
 local PowersService = Knit.GetService("PowersService")
 local BlockInput = require(Knit.Effects.BlockInput)
 
+-- variables
+PowersController.PlayerAnimations = {}
+
 --// InitializePower
 function PowersController:InitializePower(params)
 
@@ -29,12 +32,11 @@ function PowersController:InitializePower(params)
         return
     end
 
-    params.SystemStage = "Intialize"
     local powerData = PowersService:GetCurrentPower(Players.LocalPlayer)
     params.PowerID = powerData.Power
     params.PowerRarity = powerData.Rarity
 
-    -- if we find the powerModule, then run its INITIALIZE stage
+    -- find the powerModule
     local powerModule
     local findModule = Knit.Powers:FindFirstChild(params.PowerID)
     if findModule then
@@ -43,9 +45,13 @@ function PowersController:InitializePower(params)
         print("power doesnt exist")
         return
     end
+
+    -- run its INITIALIZE stage
+    params.SystemStage = "Initialize"
+    params.CanRun = false
     local params = powerModule.Manager(Players.localPlayer,params)
 
-    -- if INITIALIZE stage return CanRun == true then we fire it off the the server
+    -- if INITIALIZE stage returns CanRun == true then we fire it off the the server
     if params.CanRun then
         PowersService:ClientActivatePower(params)
     else
@@ -55,7 +61,7 @@ end
 
 --// ExecutePower
 function PowersController:ExecutePower(initPlayer,params)
-    
+    print(params)
     params.SystemStage = "Execute"
     local powerModule = require((Knit.Powers[params.PowerID]))
     powerModule.Manager(initPlayer,params)
@@ -70,6 +76,28 @@ function PowersController:RenderEffect(effect,params)
     effectModule.Client_RenderEffect(params)
 end
 
+--[[
+function  PowersController:LoadAnimations()
+
+    print("load animations")
+
+    print("1", PowersController.PlayerAnimations)
+    -- start with a fresh table
+    PowersController.PlayerAnimations = {}
+
+    print("2", PowersController.PlayerAnimations)
+
+    -- load the players animation table with tracks
+    local animator = player.Character.Humanoid:WaitForChild("Animator")
+    for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
+    PoweresController.PlayerAnimations[animObject.Name] = animator:LoadAnimation(animObject)
+    end
+
+    print("3", PowersController.PlayerAnimations)
+
+end
+]]--
+
 --// RenderExistingStands
 function PowersController:RenderExistingAbility(targetPlayer,params)
     self:ExecutePower(targetPlayer,params)
@@ -77,6 +105,12 @@ end
 
 --// KnitStart
 function PowersController:KnitStart()
+
+    --[[
+    Players.LocalPlayer.CharacterAdded:Connect(function(character)
+        self:LoadAnimations()
+    end)
+    ]]--
 
     PowersService.ExecutePower:Connect(function(initPlayer,params)
         self:ExecutePower(initPlayer,params)

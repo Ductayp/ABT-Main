@@ -49,6 +49,16 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
             end
         end
 
+        local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
+        if hitPlayer then
+            local rand = math.random(1,2)
+            if rand == 1 then
+                Knit.Services.PowersService.PlayerAnimations[hitPlayer.UserId].Damage_1:Play()
+            else
+                Knit.Services.PowersService.PlayerAnimations[hitPlayer.UserId].Damage_2:Play()
+            end
+        end
+
         -- send the visual effects to all clients
         local renderParams = {}
         renderParams.Damage = actualDamage
@@ -60,6 +70,10 @@ end
 
 function Damage.Client_RenderEffect(params)
 
+
+    
+
+    -- damage number
     local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()
     billboardGui.Parent = params.HitCharacter
     billboardGui.TextLabel.Text = params.Damage
@@ -67,17 +81,30 @@ function Damage.Client_RenderEffect(params)
     local newRand = math.random(-100,100) / 100
     billboardGui.StudsOffset = billboardGui.StudsOffset + Vector3.new(newRand,0,0)
 
-    --local numberTween = TweenService:Create(textLabel,TweenInfo.new(1),{Position = (textLabel.Position + UDim2.new(0, 0, -4, 0))})
     local numberMove = TweenService:Create(billboardGui,TweenInfo.new(.5),{StudsOffset = (billboardGui.StudsOffset + Vector3.new(0,3,0))})
     numberMove:Play()
-
-    numberMove.Completed:Connect(function(playbackState)
-        if playbackState == Enum.PlaybackState.Completed then
-            billboardGui:Destroy()
-        end
+    
+    spawn(function()
+        wait(.4)
+        billboardGui:Destroy()
+        numberMove = nil
     end)
 
+    -- particles
+    local dots = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Dots_1")
+    if not dots then
+        dots = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Dots_1:Clone()
+        dots.Parent = params.HitCharacter.HumanoidRootPart
+    end
 
+    local lines = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Lines_1")
+    if not lines then
+        lines = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Lines_1:Clone()
+        lines.Parent = params.HitCharacter.HumanoidRootPart
+    end
+
+    dots:Emit(1)
+    lines:Emit(1)
 end
 
 

@@ -134,8 +134,7 @@ end
 
 function BottomGui.UpdateCooldown(params)
 
-    print("bottom gui", params)
-    local thisCooldown = BottomGui.Cooldowns:FindFirstChild(params.CooldownName)
+    local thisCooldown = BottomGui.Cooldowns[params.CooldownName] 
     if not thisCooldown then
         return
     end
@@ -143,7 +142,7 @@ function BottomGui.UpdateCooldown(params)
     thisCooldown.Size = FULL_COOLDOWN_SIZE
 
     -- get a length of time for the tween based on the actual 
-    local tweenTime = params.CooldownTime - os.clock()
+    local tweenTime = params.CooldownTime - (os.clock() + 1)
     local cooldownTween = TweenService:Create(thisCooldown,TweenInfo.new(tweenTime),{Size = EMPTY_COOLDOWN_SIZE})
     cooldownTween:Play()
     

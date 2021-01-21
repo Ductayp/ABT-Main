@@ -14,8 +14,6 @@ local Lighting = game:GetService("Lighting")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
-
 
 local ColorShift = {}
 

@@ -278,7 +278,7 @@ end
 TheWorld.Defs.Abilities.TimeStop = {
     Name = "Time Stop",
     Duration = 8,
-    Cooldown = 20,
+    Cooldown = 9,
     Range = 150,
     HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
 }
@@ -345,10 +345,10 @@ end
 -- defs
 TheWorld.Defs.Abilities.KnifeThrow = {
     Name = "Knife Throw",
-    Cooldown = 1,
+    Cooldown = 2,
     Range = 75,
-    Speed = 60,
-    HitEffects = {Damage = {Damage = 20}}
+    Speed = 90,
+    HitEffects = {Damage = {Damage = 20, HideEffects = true}}
 }
 
 function TheWorld.KnifeThrow(initPlayer,params)
@@ -474,7 +474,7 @@ end
 -- defs
 TheWorld.Defs.Abilities.BulletKick = {
     Name = "Bullet Kick",
-    Cooldown = 1,
+    Cooldown = 5,
     HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
 }
 

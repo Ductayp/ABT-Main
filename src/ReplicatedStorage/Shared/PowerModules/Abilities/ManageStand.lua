@@ -13,7 +13,7 @@ local utils = require(Knit.Shared.Utils)
 local anchors = {}
 anchors.Idle = CFrame.new(-2, -1.75, -3)
 anchors.Front = CFrame.new(0, 0, 4)
-anchors.StandJump = CFrame.new(0,1.2,2)
+anchors.StandJump = CFrame.new(0, -1.25, -3)
 
 local ManageStand = {}
 
@@ -165,8 +165,11 @@ end
 -- PlayAnimation
 function ManageStand.PlayAnimation(initPlayer,params,animationName)
 
+	local animationTime
+
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	
 	-- run the animation
 	local animationController = targetStand:FindFirstChild("AnimationController")
 	if animationController then
@@ -174,9 +177,12 @@ function ManageStand.PlayAnimation(initPlayer,params,animationName)
 		if thisAnimation then
 			local newTrack = animationController:LoadAnimation(thisAnimation)
 			newTrack:Play()
+			animationTime = newTrack.Length
 		end
 		thisAnimation = nil
 	end
+
+	return animationTime
 end
 
 -- StopAnimation
@@ -185,6 +191,9 @@ function ManageStand.StopAnimation(initPlayer,params)
 
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		return
+	end
 
 	local animationController = targetStand:FindFirstChild("AnimationController")
 	if animationController then
@@ -231,6 +240,11 @@ end
 -- required params: params.AnchorName
 function ManageStand.MoveStand(initPlayer,params)
 
+	local moveTime = .175
+	if params.MoveTime then
+		moveTime = params.MoveTime
+	end
+
 	-- some definitions
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
@@ -243,8 +257,10 @@ function ManageStand.MoveStand(initPlayer,params)
 	end
 
 	-- move it
-	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(.175),{C1 = anchors[params.AnchorName]})
+	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(moveTime),{C1 = anchors[params.AnchorName]})
 	spawnTween:Play()
+
+	return moveTime
 
 end
 

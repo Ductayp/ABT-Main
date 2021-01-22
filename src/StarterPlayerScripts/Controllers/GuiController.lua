@@ -55,6 +55,10 @@ end
 --// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
 
+    repeat wait() until Players.LocalPlayer.Character
+    repeat wait() until Players.LocalPlayer.PlayerGui
+    print("FOUND IT!!!!")
+
     -- do some setups
     GuiController.InventoryWindow.Setup()
     GuiController.StoragePanel.Setup()

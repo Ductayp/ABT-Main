@@ -65,7 +65,7 @@ function BottomGui.Setup()
         cooldown.Size = EMPTY_COOLDOWN_SIZE
     end
 
-    -- connect a halth changed eventy
+    -- connect a health changed eventy
     Players.LocalPlayer.Character.Humanoid.HealthChanged:Connect(function()
         BottomGui.UpdateHealth()
     end)
@@ -137,17 +137,25 @@ function BottomGui.UpdateCooldown(params)
     local thisCooldown = BottomGui.Cooldowns[params.CooldownName] 
     if not thisCooldown then
         return
+        print("BottomGui.UpdateCooldown: CANT FIND COOLDOWN", params)
     end
 
     thisCooldown.Size = FULL_COOLDOWN_SIZE
 
+    print("BottomGui.UpdateCooldown - params: ", params)
+    print("BottomGui.UpdateCooldown - thisCooldown: ", thisCooldown)
+    print("BottomGui.UpdateCooldown - params.CooldownTime: ", params.CooldownTime)
+
     -- get a length of time for the tween based on the actual 
-    local tweenTime = params.CooldownTime - (os.clock() + 1)
+    local tweenTime = params.CooldownTime - (os.time())
+
+    if tweenTime <= 1 then
+        tweenTime = 1
+    end
+    --local cooldownTween = TweenService:Create(thisCooldown,TweenInfo.new(tweenTime),{Size = EMPTY_COOLDOWN_SIZE})
     local cooldownTween = TweenService:Create(thisCooldown,TweenInfo.new(tweenTime),{Size = EMPTY_COOLDOWN_SIZE})
     cooldownTween:Play()
     
-
-
 end
 
 function BottomGui.HideStand()

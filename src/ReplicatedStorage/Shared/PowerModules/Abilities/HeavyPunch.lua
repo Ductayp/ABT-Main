@@ -31,7 +31,7 @@ function HeavyPunch.Activate(initPlayer,params)
         local boxParams = {}
         boxParams.Size = Vector3.new(4,3,12)
         boxParams.Transparency = 1
-        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
+        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-12))
         
         local hitParams = {}
         hitParams.Damage = params.HeavyPunch.Damage
@@ -65,13 +65,18 @@ function HeavyPunch.Execute(initPlayer,params)
     end
 
     --move the stand and do animations
+    local moveTime = ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
     ManageStand.PlayAnimation(initPlayer,params,"HeavyPunch")
-    wait(.2)
-    ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+    ManageStand.Aura_On(initPlayer)
     spawn(function()
         wait(1.5)
         ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
+        wait(.5)
+        ManageStand.Aura_Off(initPlayer)
     end)
+
+    -- wait the time it takes the stand to move
+    wait(moveTime + 0.25)
 
     -- animate things
     local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
@@ -88,11 +93,11 @@ function HeavyPunch.Execute(initPlayer,params)
     shock_1.Parent = workspace.RenderedEffects
 
     
-    fastBall.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-5))
-    ring_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
-    ring_2.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
-    ring_3.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-11))
-    shock_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-5))
+    fastBall.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-6))
+    ring_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4))
+    ring_2.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
+    ring_3.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-12))
+    shock_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-6))
 
 
     if params.Color then

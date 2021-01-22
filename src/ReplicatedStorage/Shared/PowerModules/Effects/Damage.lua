@@ -63,6 +63,7 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
         local renderParams = {}
         renderParams.Damage = actualDamage
         renderParams.HitCharacter = hitCharacter
+        renderParams.HideEffects = effectParams.HideEffects
         Knit.Services.PowersService:RenderEffect_AllPlayers("Damage", renderParams)
     end
 
@@ -70,41 +71,45 @@ end
 
 function Damage.Client_RenderEffect(params)
 
-
-    
+    print(params)
 
     -- damage number
-    local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()
-    billboardGui.Parent = params.HitCharacter
-    billboardGui.TextLabel.Text = params.Damage
+    if not params.HideNumbers then
+        local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()
+        billboardGui.Parent = params.HitCharacter
+        billboardGui.TextLabel.Text = params.Damage
 
-    local newRand = math.random(-100,100) / 100
-    billboardGui.StudsOffset = billboardGui.StudsOffset + Vector3.new(newRand,0,0)
+        local newRand = math.random(-100,100) / 100
+        billboardGui.StudsOffset = billboardGui.StudsOffset + Vector3.new(newRand,0,0)
 
-    local numberMove = TweenService:Create(billboardGui,TweenInfo.new(.5),{StudsOffset = (billboardGui.StudsOffset + Vector3.new(0,3,0))})
-    numberMove:Play()
-    
-    spawn(function()
-        wait(.4)
-        billboardGui:Destroy()
-        numberMove = nil
-    end)
+        local numberMove = TweenService:Create(billboardGui,TweenInfo.new(.5),{StudsOffset = (billboardGui.StudsOffset + Vector3.new(0,3,0))})
+        numberMove:Play()
+        
+        spawn(function()
+            wait(.4)
+            billboardGui:Destroy()
+            numberMove = nil
+        end)
+    end
 
     -- particles
-    local dots = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Dots_1")
-    if not dots then
-        dots = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Dots_1:Clone()
-        dots.Parent = params.HitCharacter.HumanoidRootPart
+    if not params.HideEffects then
+        local dots = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Dots_1")
+        if not dots then
+            dots = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Dots_1:Clone()
+            dots.Parent = params.HitCharacter.HumanoidRootPart
+        end
+    
+        local lines = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Lines_1")
+        if not lines then
+            lines = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Lines_1:Clone()
+            lines.Parent = params.HitCharacter.HumanoidRootPart
+        end
+    
+        dots:Emit(1)
+        lines:Emit(1)
     end
-
-    local lines = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Lines_1")
-    if not lines then
-        lines = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Lines_1:Clone()
-        lines.Parent = params.HitCharacter.HumanoidRootPart
-    end
-
-    dots:Emit(1)
-    lines:Emit(1)
+   
 end
 
 

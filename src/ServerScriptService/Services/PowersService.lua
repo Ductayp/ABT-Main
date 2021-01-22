@@ -223,8 +223,6 @@ function PowersService:AwardXp(player, xpValue)
     end
 
     playerData.CurrentStand.Xp += xpValue
-    print(player, " Just got Xp: ", xpValue)
-    print(playerData.CurrentStand.Xp)
 
     Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
@@ -251,6 +249,8 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
 
+    print("HITTTTT", initPlayer, characterHit, hitEffects)
+
     -- setup some variables
     local canHit = false
     local hitParams = {} -- additional params we need to pass into the effects
@@ -262,7 +262,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
         hitParams.DamageMultiplier = require(findPowerModule).Defs.DamageMultiplier[playerData.CurrentStand.Rarity]
     end
 
-    -- test if a palyer or a mob, then set variables
+    -- test if a player or a mob, then set variables
     local isPlayer = utils.GetPlayerFromCharacter(characterHit)
     if isPlayer then
 
@@ -503,20 +503,16 @@ function PowersService:KnitInit()
                         local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
                         if player then
 
-                            if player:IsInGroup(3486129) then                    
-                                print "Player is in the Group: Planet Milo" 
-                                local params = {}
-                                params.Power = v.Power.Value
-                                params.Rarity = v.Rarity.Value
-                                params.Xp = 7800
+                            local params = {}
+                            params.Power = v.Power.Value
+                            params.Rarity = v.Rarity.Value
+                            params.Xp = 7800
 
-                                local HttpService = game:GetService("HttpService")
-                                params.GUID = HttpService:GenerateGUID(false)
+                            local HttpService = game:GetService("HttpService")
+                            params.GUID = HttpService:GenerateGUID(false)
 
-                                print("button goes beep")
-                                self:SetCurrentPower(player,params)    
-                             end
-                            
+                            print("button goes beep")
+                            self:SetCurrentPower(player,params)    
                         end
                     end
                     wait(5)

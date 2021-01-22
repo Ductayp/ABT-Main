@@ -37,12 +37,12 @@ function Cooldown.SetCooldown(player,cooldownName,cooldownValue)
     if not thisCooldown then
         thisCooldown = Instance.new("NumberValue")
         thisCooldown.Name = cooldownName
-        thisCooldown.Value = os.clock() + cooldownValue
+        thisCooldown.Value = os.time() + cooldownValue
         thisCooldown.Parent = cooldownFolder
     end
 
     -- set the value
-    thisCooldown.Value = os.clock() + cooldownValue
+    thisCooldown.Value = os.time() + cooldownValue
 
     -- send off the visual effects to update the GUI
     local cooldownParams = {}
@@ -65,7 +65,7 @@ function Cooldown.GetCooldownValue(player, params)
 
     local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
     if not thisCooldown then
-        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.clock() - 1, Parent = cooldownFolder})
+        thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
     return thisCooldown.Value
@@ -75,8 +75,8 @@ function Cooldown.IsCooled(player, params)
 
     local isCooled = false
     local cooldown = Cooldown.GetCooldownValue(player, params)
-    --print(os.clock(), cooldown)
-    if os.clock() >= cooldown then
+    --print(os.time(), cooldown)
+    if os.time() >= cooldown then
         isCooled = true
     end
 

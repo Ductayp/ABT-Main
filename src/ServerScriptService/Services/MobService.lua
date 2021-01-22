@@ -28,7 +28,7 @@ local mobStorage = ReplicatedStorage.Mobs
 -- variables
 local serialNumber = 1 -- this starts at one and goes up for every mob spawned, used as a unique ID for each mob
 local allSpawners = {}
-local spawnedMobs = {} -- table of all spawned mobs
+MobService.SpawnedMobs = {} -- table of all spawned mobs
 
 --// MobBrain
 function MobService:MobBrain()
@@ -36,7 +36,7 @@ function MobService:MobBrain()
     while true do
        
         -- iterate through all spawned mobs on each loop
-        for index, mobData in pairs(spawnedMobs) do
+        for index, mobData in pairs(MobService.SpawnedMobs) do
 
             -- only run the mobs brain if it is active
             if mobData.Active then
@@ -46,11 +46,11 @@ function MobService:MobBrain()
                     mobData.LastUpdate = os.clock()
                     
                     -- test print
-                    if mobData.BrainState ~= "Wait" then
+                    --if mobData.BrainState ~= "Wait" then
                         --print(mobData.BrainState)
                         --print(mobData.Model.Name)
-                        --print(spawnedMobs)
-                    end
+                        --print(MobService.SpawnedMobs)
+                    --end
 
                     -- NOT DEAD: if this mob is NOT dead, do the brain!
                     if mobData.IsDead == false then
@@ -259,7 +259,7 @@ function MobService:MobBrain()
                     if mobData.IsDead == true then 
                         if os.clock() > mobData.DeadTime + 5 then
                             mobData.Model:Destroy()
-                            table.remove(spawnedMobs, index)
+                            table.remove(MobService.SpawnedMobs, index)
                         end
                     end
                 end
@@ -278,9 +278,9 @@ end
 --// DamageMob
 function MobService:DamageMob(player, mobId, damage)
 
-    -- get the mob form all spawnedMobs using the MobId
+    -- get the mob form all MobService.SpawnedMobs using the MobId
     local thisMob 
-    for _, mobData in pairs(spawnedMobs) do
+    for _, mobData in pairs(MobService.SpawnedMobs) do
         if mobData.MobId == mobId then
             thisMob = mobData
             break
@@ -319,6 +319,25 @@ function MobService:KillMob(mobData)
             mobData.Functions.Drop(player, mobData)
         end
     end
+end
+
+--// PauseAnimations
+function MobService:PauseAnimations(mobId, duration)
+
+    local thisMob 
+    for _, mobData in pairs(MobService.SpawnedMobs) do
+        if mobData.MobId == mobId then
+            thisMob = mobData
+            break
+        end
+    end
+
+    spawn(function()
+        local originalSpeed = thisMob.Animations.Walk.Speed
+        thisMob.Animations.Walk:AdjustSpeed(0)
+        wait(duration)
+        thisMob.Animations.Walk:AdjustSpeed(originalSpeed)
+    end)
 end
 
 
@@ -429,7 +448,7 @@ function MobService:SpawnLoop()
                     -- set the spawner this mob is owned by
                     mobData.Spawner = pickedSpawner
 
-                    -- assign serialNumber to mob model and also add the mobData table to spawnedMobs table
+                    -- assign serialNumber to mob model and also add the mobData table to MobService.SpawnedMobs table
                     utils.NewValueObject("MobId", serialNumber, mobData.Model)
                     mobData.MobId = serialNumber
                     serialNumber += 1
@@ -446,8 +465,8 @@ function MobService:SpawnLoop()
                         offsetX = 0
                     end
 
-                    -- insert the mob in the spawnedMobs table, will be actively running from here unless Pre_Spawn_Setup as has its Active value to false
-                    table.insert(spawnedMobs, mobData)
+                    -- insert the mob in the MobService.SpawnedMobs table, will be actively running from here unless Pre_Spawn_Setup as has its Active value to false
+                    table.insert(MobService.SpawnedMobs, mobData)
 
                     -- set the mobs SpawnCFrame to the spawner part CFrame (we can change this in the Pre_Spawn function before spawn)
                     mobData.SpawnCFrame = pickedSpawner.CFrame * CFrame.new(offsetX, spawnGroup.Defs.Spawn_Z_Offset, offsetZ)

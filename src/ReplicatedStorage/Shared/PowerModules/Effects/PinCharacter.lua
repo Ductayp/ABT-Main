@@ -16,44 +16,44 @@ local utils = require(Knit.Shared.Utils)
 
 local PinCharacter = {}
 
-function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, params)
+function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, hitParams)
 
     spawn(function()
-
         local storedAnchorState = hitCharacter.HumanoidRootPart.Anchored
-
         hitCharacter.HumanoidRootPart.Anchored = true
-
-        wait(params.Duration)
-
+        wait(effectParams.Duration)
         hitCharacter.HumanoidRootPart.Anchored = storedAnchorState
-
-        --[[ OLD CODE
-        -- anchor the hitCharacter
-        for _,part in pairs(hitCharacter:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.Anchored = true
-            end
-        end
-
-         -- wait and then restore the targetPlayer
-        wait(params.Duration)
-
-        -- un-anchor the targetPlayer
-        for _,part in pairs(hitCharacter:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.Anchored = storedAnchorState
-            end
-        end
-
-        ]]--
-
     end) 
+
+    -- if this is a mob, then stop its animation here
+    if hitParams.IsMob then
+        if hitCharacter.Humanoid then
+            Knit.Services.MobService:PauseAnimations(hitParams.MobId, effectParams.Duration)
+        end
+    end
+
+    local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
+    if hitPlayer then
+        print("hitPlayer", hitPlayer)
+        Knit.Services.PowersService:RenderEffect_SinglePlayer(hitPlayer, "PinCharacter", effectParams)
+    end
+
+    --effectParams.HitCharacter = hitCharacter
+    --Knit.Services.PowersService:RenderEffect_AllPlayers("PinCharacter", effectParams)
+
 end
 
 function PinCharacter.Client_RenderEffect(params)
-    -- nothign right now
-end
 
+    -- Stop all playing animations
+    for i, track in pairs (Players.LocalPlayer.Character.Humanoid.Animator:GetPlayingAnimationTracks()) do
+        local originalSpeed = track.Speed
+        track:AdjustSpeed(0)
+        spawn(function()
+            wait(params.Duration)
+            track:AdjustSpeed(originalSpeed)
+        end)
+    end
+end
 
 return PinCharacter

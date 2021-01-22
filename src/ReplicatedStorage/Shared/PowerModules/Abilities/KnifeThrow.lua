@@ -12,6 +12,9 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
+--local PingTimes = require(Knit.Shared.PingTime)
+
+
 -- Ability modules
 local ManageStand = require(Knit.Abilities.ManageStand)
 
@@ -21,10 +24,12 @@ local Damage = require(Knit.Effects.Damage)
 local KnifeThrow = {}
 
 function KnifeThrow.Server_Activate(initPlayer,params)
-    
+
+
     local hitPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Server:Clone()
     hitPart.Parent = workspace.RenderedEffects
-    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-3)) -- positions somewhere good near the stand
+    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6)) -- positions somewhere good near the stand
+    hitPart.Transparency = 1
     
     -- set network owner
     hitPart:SetNetworkOwner(nil)
@@ -51,7 +56,9 @@ function KnifeThrow.Server_Activate(initPlayer,params)
                     canHit = false
                     if charactersHit ~= nil then
                         for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above
+                            print("boop")
                             Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.KnifeThrow.HitEffects)
+                            print("boop")
                         end
                     end	
                 end)
@@ -71,7 +78,7 @@ function KnifeThrow.Server_Activate(initPlayer,params)
 
     -- Tween hitbox
     local tweenInfo = TweenInfo.new(
-            params.FlightTime
+            params.FlightTime - Knit.Services.PingService:GetPing(initPlayer)
         )
     local tween = TweenService:Create(hitPart,tweenInfo,{CFrame = params.DestinatonCFrame})
     tween:Play()
@@ -92,13 +99,13 @@ function KnifeThrow.Client_Execute(initPlayer,params)
     end
 
     -- run animation
+    ManageStand.PlayAnimation(initPlayer,params,"KnifeThrow")
+    local moveTime = ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
     spawn(function()
-        ManageStand.PlayAnimation(initPlayer,params,"KnifeThrow")
-        ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
         wait(.5)
         ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
     end)
-    
+
     -- clone in all parts
     local mainPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Client:Clone()
     mainPart.Parent = workspace.RenderedEffects
@@ -106,11 +113,10 @@ function KnifeThrow.Client_Execute(initPlayer,params)
     mainPart.Name = "MainPart" -- name it so its easy to find later 
 
     -- Tween the thrown parts
-    local newSpeed = params.ArrivalTime - os.time()
-    if newSpeed < 1 then
-        newSpeed = 1
-    end
+    local ping = Knit.Controllers.PingController:GetPing()
+    local newSpeed = params.FlightTime - ping
     local tweenInfo2 = TweenInfo.new(newSpeed, Enum.EasingStyle.Linear)
+    --local tweenInfo2 = TweenInfo.new(params.FlightTime, Enum.EasingStyle.Linear)
     local tweenMainPart = TweenService:Create(mainPart,tweenInfo2,{CFrame = params.DestinatonCFrame})
 
     -- CFrame the parts A SECOND TIME right before we launch them
@@ -126,13 +132,25 @@ function KnifeThrow.Client_Execute(initPlayer,params)
 
     -- setup destroying cosmetic parts, destroy when it hits a humanoid
     mainPart.Touched:Connect(function(hit)
+        local hitToggle = true
         local humanoid = hit.Parent:FindFirstChildWhichIsA("Humanoid")
         if humanoid then
             if humanoid.Parent.Name ~= initPlayer.Name then
+
+                if hitToggle == true then
+                    hitToggle = false
+                    local effectParams = {
+                        HideNumbers = true,
+                        HitCharacter = humanoid.Parent
+                    }
+                    require(Knit.Effects.Damage).Client_RenderEffect(effectParams)
+                end
+
+                wait(.25)
                 mainPart:Destroy()
             end
         end
-    end)
+    end) 
 
 end
 

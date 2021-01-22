@@ -12,7 +12,6 @@ local Players = game:GetService('Players')
 -- Knits and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
---local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- Effect modules
 --local PinCharacter = require(Knit.Effects.PinCharacter)
@@ -29,41 +28,54 @@ function TimeStop.Activate(initPlayer,params)
         wait(params.TimeStop.Delay)
     end
 
-    -- hit players
-    -- put all player within range inside a table, including the initPlayer
+    -- hit players: put all player within range inside a table, including the initPlayer
     local affectedPlayers = {}
     for _, targetPlayer in pairs(game.Players:GetPlayers()) do
-        if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) < params.TimeStop.Range then
-            affectedPlayers[targetPlayer] = true
+        if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) <= params.TimeStop.Range then
+            table.insert(affectedPlayers, targetPlayer)
         end
     end
+    print("affectdPlayers", affectedPlayers)
 
-    -- play effects for all player within range, this happens before immunities
-    for player,_ in pairs(affectedPlayers) do
-        require(Knit.Effects["ColorShift"]).Server_ApplyEffect(player.Character,params.TimeStop.HitEffects.ColorShift)
+    -- play ColorShift effect for all player within range, this happens before immunities
+    for _,player in pairs(affectedPlayers) do
+        print("this player is:", player)
+        Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, {ColorShift = params.TimeStop.HitEffects.ColorShift})
     end
 
     -- remove any player that is immune to timestop
-    for player,_ in pairs(affectedPlayers) do
-
+    for index,player in pairs(affectedPlayers) do
         local isImmune = require(Knit.StateModules.Immunity).Has_Immunity(player,"TimeStop")
         if isImmune then
-            affectedPlayers[player] = nil -- commnet this out to run it immune players (for testing only)
+            table.remove(affectedPlayers, index)
         end
     end
-    
---[[
-    -- run effects on players still in the affectedPlayers table
-    for player,_ in pairs(affectedPlayers) do
 
-        for effect,thisParams in pairs(params.TimeStop.HitEffects) do
-            if effect ~= "ColorShift" then -- we already did colorshift for everyone in range
-                local characterHit = player.Character
-                Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,thisParams)
-            end
+
+    -- remove ColorShift
+    local newHitEffects = {}
+    for i,v in pairs(params.TimeStop.HitEffects) do
+        if i ~= "ColorShift" then
+            newHitEffects[i] = v
         end
     end
-]]--
+
+    print(newHitEffects)
+
+
+    -- play remainign effects on all players
+    for _,player in pairs(affectedPlayers) do
+        Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, newHitEffects)
+    end
+
+    -- hit all Mobs in range
+    for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
+        if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= params.TimeStop.Range then
+            Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, newHitEffects)
+        end
+    end
+
+ 
 
 end
 

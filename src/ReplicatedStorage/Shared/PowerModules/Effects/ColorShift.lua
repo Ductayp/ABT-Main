@@ -17,35 +17,40 @@ local utils = require(Knit.Shared.Utils)
 
 local ColorShift = {}
 
-function ColorShift.Server_ApplyEffect(initPlayer,hitCharacter, params)
-    
+function ColorShift.Server_ApplyEffect(initPlayer, hitCharacter, params)
+
+    print("do it YUP! 1")
+
     -- only apply this effect to players
     local player = utils.GetPlayerFromCharacter(hitCharacter)
     if player then
-        Knit.Services.PowersService:RenderEffect_SinglePlayer(player,"ColorShift",params)
+        Knit.Services.PowersService:RenderEffect_SinglePlayer(player, "ColorShift", params)
     end
 end
 
 function ColorShift.Client_RenderEffect(params)
 
+    print("do it YUP! 2")
+
     spawn(function()
-        local originalColorCorrection = Lighting:FindFirstChild("ColorCorrection")
-        local newColorCorrection = originalColorCorrection:Clone()
-        newColorCorrection.Name = "newColorCorrection"
-        newColorCorrection.Parent = Lighting
+        local colorCorrection = Lighting:FindFirstChild("ColorCorrection")
+        local originalContrast = colorCorrection.Contrast
+        --local newColorCorrection = originalColorCorrection:Clone()
+        --newColorCorrection.Name = "newColorCorrection"
+        --newColorCorrection.Parent = Lighting
 
-
-        local colorTween1 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = -3})
+        local colorTween1 = TweenService:Create(colorCorrection,TweenInfo.new(.5),{Contrast = -3})
         colorTween1:Play()
 
-        originalColorCorrection.Enabled = false
+        --originalColorCorrection.Enabled = false
 
         wait(params.Duration)
-        local colorTween2 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = originalColorCorrection.Contrast})
+
+        local colorTween2 = TweenService:Create(colorCorrection,TweenInfo.new(.5),{Contrast = originalContrast})
         colorTween2:Play()
-        wait(params.Duration)
-        originalColorCorrection.Enabled = true
-        newColorCorrection:Destroy()
+        --wait(params.Duration)
+        --originalColorCorrection.Enabled = true
+        --newColorCorrection:Destroy()
     end)
 end
 

@@ -61,7 +61,6 @@ end
 
 --// ExecutePower
 function PowersController:ExecutePower(initPlayer,params)
-    print(params)
     params.SystemStage = "Execute"
     local powerModule = require((Knit.Powers[params.PowerID]))
     powerModule.Manager(initPlayer,params)
@@ -70,33 +69,10 @@ end
 --// RenderEffect -- render general effects
 function PowersController:RenderEffect(effect,params)
 
-    print("powercontroller: RENDER - ",params)
-
     local effectModule = require(Knit.Effects[effect])
     effectModule.Client_RenderEffect(params)
 end
 
---[[
-function  PowersController:LoadAnimations()
-
-    print("load animations")
-
-    print("1", PowersController.PlayerAnimations)
-    -- start with a fresh table
-    PowersController.PlayerAnimations = {}
-
-    print("2", PowersController.PlayerAnimations)
-
-    -- load the players animation table with tracks
-    local animator = player.Character.Humanoid:WaitForChild("Animator")
-    for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
-    PoweresController.PlayerAnimations[animObject.Name] = animator:LoadAnimation(animObject)
-    end
-
-    print("3", PowersController.PlayerAnimations)
-
-end
-]]--
 
 --// RenderExistingStands
 function PowersController:RenderExistingAbility(targetPlayer,params)

@@ -34,10 +34,12 @@ function Immunity.Has_Immunity(player,immunityName)
     local immunityFolder = playerFolder:FindFirstChild("Immunity")
 
     local isImmune = false
-    for _,stateEntry in pairs(immunityFolder:GetChildren()) do
-        if stateEntry.Name == immunityName then
-            isImmune = true
-            break
+    for _,stateSource in pairs(immunityFolder:GetChildren()) do
+        for _,stateEntry in pairs(stateSource:GetChildren()) do
+            if stateEntry.Name == immunityName then
+                isImmune = true
+                break
+            end
         end
     end
 

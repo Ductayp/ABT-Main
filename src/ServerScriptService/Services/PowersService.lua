@@ -249,8 +249,6 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
 
-    print("HITTTTT", initPlayer, characterHit, hitEffects)
-
     -- setup some variables
     local canHit = false
     local hitParams = {} -- additional params we need to pass into the effects

@@ -13,41 +13,35 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
 -- Ability modules
-
 local BulletKick = require(Knit.Abilities.BulletKick)
 local StandJump = require(Knit.Abilities.StandJump)
 local Punch = require(Knit.Abilities.Punch)
+local BasicGrenade = require(Knit.Abilities.BasicGrenade)
 
 -- Effect modules
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 
-
 local KillerQueen = {}
 
 KillerQueen.Defs = {
-
-    -- just some general defs here
     PowerName = "Killer Queen",
     SacrificeValue = {
         Common = 10,
         Rare = 20,
         Legendary = 40,
     },
-
     DamageMultiplier = {
         Common = 1,
         Rare = 2,
         Legendary = 3,
     },
-    
     HealthModifier = {
         Common = 10,
         Rare = 30,
         Legendary = 70
     },
-
     Abilities = {} -- ability defs are inside each ability function area
 }
 
@@ -271,8 +265,8 @@ local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 --defs
 KillerQueen.Defs.Abilities.HeavyPunch = {
     Name = "Bomb Punch",
-    Cooldown = 10,
-    HitEffects = {Damage = {Damage = 10}}
+    Cooldown = 1,
+    HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}}
 }
 
 function KillerQueen.BombPunch(initPlayer,params)
@@ -338,14 +332,69 @@ end
 local BasicGrenade = require(Knit.Abilities.BasicGrenade)
 
 -- defs
-KillerQueen.Defs.Abilities.BasicProjectile = {
+KillerQueen.Defs.Abilities.ExplosiveCoin = {
     Name = "Explosive Coin",
-    Cooldown = 1,
-    HitEffects = {}
+    Cooldown = 2,
+    AbilityMod = Knit.AbilityMods.BasicGrenade_ExplosiveCoin,
+    --HitEffects = {} -- we are aplpyign hit effects through to abilitymod module
 }
 
 function KillerQueen.ExplosiveCoin(initPlayer,params)
-    print("KILLER QUEEN: Bites The Dust")
+
+    -- EXPLOSIVE COIN/INITIALIZE
+    if params.SystemStage == "Initialize" then
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+    end
+
+    -- EXPLOSIVE COIN/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","R","F","E","Z","X"}) then
+            params.CanRun = false
+            return params
+        end
+
+        if params.KeyState == "InputBegan" then
+
+            -- cooldowns and toggles
+            spawn(function()
+                Cooldown.SetCooldown(initPlayer,params.InputId,KillerQueen.Defs.Abilities.ExplosiveCoin.Cooldown)
+                AbilityToggle.SetToggle(initPlayer,params.InputId, true)
+                wait(2)
+                AbilityToggle.SetToggle(initPlayer,params.InputId, false)
+            end)
+
+            -- activate ability
+            params.BasicGrenade = KillerQueen.Defs.Abilities.ExplosiveCoin
+            BasicGrenade.Server_Activate(initPlayer,params)
+
+            params.CanRun = true
+
+        end
+
+    end
+
+    
+    -- EXPLOSIVE COIN/EXECUTE
+    if params.SystemStage == "Execute" then
+        if params.KeyState == "InputBegan" then
+
+            BasicGrenade.Client_Execute(initPlayer,params)
+
+       end
+
+   end
+
+
 end
 
 

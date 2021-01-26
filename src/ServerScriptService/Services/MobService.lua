@@ -305,6 +305,9 @@ end
 --// KillMob
 function MobService:KillMob(mobData)
 
+    -- break the joints, YEET
+    mobData.Model:BreakJoints()
+
     -- run the models death function
     mobData.Functions.Death(mobData)
 

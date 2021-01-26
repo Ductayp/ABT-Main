@@ -42,9 +42,6 @@ function BulletKick.Activate(initPlayer,params)
 
             boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4.5))
         
-            -- set the look vector for the KnockBack effect
-            params.BulletKick.HitEffects.KnockBack.LookVector = boxParams.CFrame.LookVector 
-    
             -- make a new hitbox
             local newHitbox = SimpleHitbox.NewHitBox(initPlayer,boxParams)
             Debris:AddItem(newHitbox, .5)

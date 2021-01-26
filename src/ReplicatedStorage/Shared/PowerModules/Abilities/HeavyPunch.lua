@@ -31,7 +31,7 @@ function HeavyPunch.Activate(initPlayer,params)
         local boxParams = {}
         boxParams.Size = Vector3.new(4,3,12)
         boxParams.Transparency = 1
-        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-12))
+        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
         
         local hitParams = {}
         hitParams.Damage = params.HeavyPunch.Damage

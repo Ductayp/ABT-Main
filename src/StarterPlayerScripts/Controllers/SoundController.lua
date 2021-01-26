@@ -60,7 +60,7 @@ end
 
 --// KnitStart ------------------------------------------------------------
 function SoundController:KnitStart()
-
+--[[
     -- main loop
     while true do
         if SoundController.MusicOn == true then
@@ -71,6 +71,7 @@ function SoundController:KnitStart()
 
         wait(1)
     end
+    ]]--
 
 end
 

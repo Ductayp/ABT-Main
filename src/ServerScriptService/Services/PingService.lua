@@ -31,6 +31,7 @@ function PingService:UpdatePingLoop()
         while true do
             for _,player in pairs(Players:GetPlayers()) do
                 ReplicatedStorage.PlayerPings[player.UserId].Value = pingTime[player]
+                --print("PING: ",player.Name, pingTime[player])
             end
             wait(pingUpdateTime)
         end

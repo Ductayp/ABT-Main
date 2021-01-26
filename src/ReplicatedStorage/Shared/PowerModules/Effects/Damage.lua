@@ -71,8 +71,6 @@ end
 
 function Damage.Client_RenderEffect(params)
 
-    print(params)
-
     -- damage number
     if not params.HideNumbers then
         local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()

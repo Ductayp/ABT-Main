@@ -87,8 +87,8 @@ function Barrage.ShootArm(initPlayer, params)
 	Debris:AddItem(newArm, armDebrisTime)
 
 	-- set up random position and set the goals
-	local posX = math.random(-2,2)
-	local posY = 0.5 * math.random(-2.5, 3.5)
+	local posX = math.random(-2.5,2.5)
+	local posY = 0.5 * math.random(-1.5, 3.5)
 	newArm.CFrame = initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(posX, posY, -3)
 	local armGoal =  initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(posX, posY, -6) --newArm.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
 

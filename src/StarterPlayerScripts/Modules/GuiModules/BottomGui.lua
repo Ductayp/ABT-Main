@@ -136,15 +136,15 @@ function BottomGui.UpdateCooldown(params)
 
     local thisCooldown = BottomGui.Cooldowns[params.CooldownName] 
     if not thisCooldown then
-        return
         print("BottomGui.UpdateCooldown: CANT FIND COOLDOWN", params)
+        return
     end
 
     thisCooldown.Size = FULL_COOLDOWN_SIZE
 
-    print("BottomGui.UpdateCooldown - params: ", params)
-    print("BottomGui.UpdateCooldown - thisCooldown: ", thisCooldown)
-    print("BottomGui.UpdateCooldown - params.CooldownTime: ", params.CooldownTime)
+    --print("BottomGui.UpdateCooldown - params: ", params)
+    --print("BottomGui.UpdateCooldown - thisCooldown: ", thisCooldown)
+    --print("BottomGui.UpdateCooldown - params.CooldownTime: ", params.CooldownTime)
 
     -- get a length of time for the tween based on the actual 
     local tweenTime = params.CooldownTime - (os.time())

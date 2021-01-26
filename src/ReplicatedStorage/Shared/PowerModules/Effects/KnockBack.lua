@@ -16,15 +16,29 @@ local utils = require(Knit.Shared.Utils)
 
 local KnockBack = {}
 
-function KnockBack.Server_ApplyEffect(initPlayer,hitCharacter, params)
+function KnockBack.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
         -- body mover settings
-        local velocityX = params.LookVector.X * params.Force
-        local velocityZ = params.LookVector.Z * params.Force
-        local velocityY = 5
+        local velocityX
+        local velocityZ
+        local velocityY
+        if params.LookVector then
+            velocityX = params.LookVector.X * params.Force
+            velocityZ = params.LookVector.Z * params.Force
+        else
+            local baseCFrame = initPlayer.Character.HumanoidRootPart.CFrame
+            velocityX = baseCFrame.LookVector.X * params.Force
+            velocityZ = baseCFrame.LookVector.Z * params.Force
+
+        end
+        if params.ForceY then
+            velocityY = params.ForceY
+        else
+            velocityY = 20
+        end
 
         -- add the body mover
         local newBodyVelocity = Instance.new("BodyVelocity")
@@ -32,7 +46,13 @@ function KnockBack.Server_ApplyEffect(initPlayer,hitCharacter, params)
         newBodyVelocity.P = 1000000
         newBodyVelocity.Velocity =  Vector3.new(velocityX,velocityY,velocityZ)
         newBodyVelocity.Parent = hitCharacter.HumanoidRootPart
-        Debris:AddItem(newBodyVelocity,params.Duration)
+
+        if params.Duration then
+            Debris:AddItem(newBodyVelocity,params.Duration)
+        else
+            Debris:AddItem(newBodyVelocity, 0.2)
+        end
+        
         
         -- send the visual effects to all clients
         params.HitCharacter = hitCharacter

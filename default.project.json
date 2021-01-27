@@ -21,6 +21,15 @@
       }
     },
 
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+  
+      "GameFiles": {
+        "$className": "Folder",
+        "$path": "src/ReplicatedFirst"
+      }
+    },
+
     "StarterPlayer": {
       "$className": "StarterPlayer",
 			"StarterPlayerScripts": {

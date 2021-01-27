@@ -21,6 +21,7 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 local BottomGui = {}
 
 BottomGui.Frame_Main = mainGui.BottomGui:FindFirstChild("Frame_BottomGui", true)
+BottomGui.Text_Ping = BottomGui.Frame_Main:FindFirstChild("Text_Ping", true)
 
 BottomGui.Frame_Stand = BottomGui.Frame_Main:FindFirstChild("Frame_Stand", true)
 BottomGui.Text_StandLevel = BottomGui.Frame_Main:FindFirstChild("Text_StandLevel", true)
@@ -60,26 +61,43 @@ local FULL_COOLDOWN_SIZE = UDim2.new(1,0,1,0)
 --// Setup ------------------------------------------------------------
 function BottomGui.Setup()
 
+    -- update the health bar when the player joins
+    BottomGui.UpdateHealth()
+
     -- setup all the cooldowns
     for _,cooldown in pairs(BottomGui.Cooldowns) do
         cooldown.Size = EMPTY_COOLDOWN_SIZE
     end
 
-    -- connect a health changed eventy
+    -- connect a health changed event
     Players.LocalPlayer.Character.Humanoid.HealthChanged:Connect(function()
         BottomGui.UpdateHealth()
     end)
 
+    Players.LocalPlayer.CharacterAdded:Connect(function()
+        repeat wait() until Players.LocalPlayer.Character.Humanoid
+        BottomGui.UpdateHealth()
+        Players.LocalPlayer.Character.Humanoid.HealthChanged:Connect(function()
+            BottomGui.UpdateHealth()
+        end)
+    end)
+    
+
     -- connect buttons to InputController
     for buttonName,buttonInstance in pairs(BottomGui.Buttons) do
+        buttonInstance.Active = true
         buttonInstance.Activated:Connect(function()
-            print(buttonInstance.Name)
             Knit.Controllers.InputController:SendToPowersService({InputId = buttonName, KeyState = "InputBegan"})
         end)
     end
-    
-    -- update the health bar when the player joins
-    BottomGui.UpdateHealth()
+
+    -- connect the ping
+    local pingValue = ReplicatedStorage.PlayerPings:WaitForChild(Players.LocalPlayer.UserId)
+    pingValue.Changed:Connect(function()
+        local roundedNumber = tonumber(string.format("%." .. (3 or 0) .. "f", pingValue.Value))
+        --print(roundedNumber)
+        BottomGui.Text_Ping.Text = tostring(roundedNumber)
+    end)
 
 end
 

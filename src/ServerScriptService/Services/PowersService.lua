@@ -24,12 +24,12 @@ PowersService.XP_PER_LEVEL = {
 }
 
 -- variables
-PowersService.PlayerAnimations = {}
+--PowersService.PlayerAnimations = {}
 
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
 PowersService.Client.RenderEffect = RemoteEvent.new()
-PowersService.Client.RenderExistingStands = RemoteEvent.new()
+--PowersService.Client.RenderExistingStands = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
@@ -160,44 +160,7 @@ function PowersService.Client:GetLevelFromXp(player, standXp, standRarity) -- pl
     return actualLevel, percentageRemaining, remainingXpToLevel
 end
 
---// SetPower -- sets the players current power
-function PowersService:SetCurrentPower(player,params)
 
-    -- get the players current power and run the remove function if it exists
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
-    if currentPowerModule then
-        local removePowerModule = require(currentPowerModule)
-        local removePowerParams = {} --right now this is nil, but we can add things later if we need to
-        if removePowerModule.RemovePower then
-            removePowerModule.RemovePower(player,removePowerParams)
-        end
-    else
-        print("no power exists with that name, cant run the REMOVE POWER function")
-        --return
-    end
-
-    -- run the new powers setup function
-    if Knit.Powers:FindFirstChild(params.Power) then
-        local setupPowerModule = require(Knit.Powers[params.Power])
-        local setupPowerParams = {} 
-        setupPowerParams.Rarity = params.Rarity
-        if setupPowerModule.SetupPower then
-            setupPowerModule.SetupPower(player, setupPowerParams)
-        end
-    end
-
-    -- give the stand t the playerData
-    playerData.CurrentStand = params
-
-    -- update the gui
-    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-
-    -- run the player setup so we can start fresh
-    self:PlayerRefresh(player)
-
-end
 
 --// AwardXpForKill
 function PowersService:AwardXp(player, xpValue)
@@ -299,7 +262,7 @@ function PowersService:RenderEffect_SinglePlayer(player,effect,params)
     self.Client.RenderEffect:Fire(player,effect,params)
 end
 
-
+--[[
 -- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game
 function PowersService:RenderExistingStands(player)
 
@@ -333,6 +296,49 @@ function PowersService:RenderExistingStands(player)
     end)
 end
 
+]]--
+
+--// SetPower -- sets the players current power
+function PowersService:SetCurrentPower(player,params)
+
+    print("PowersService:SetCurrentPower(player,params)", player,params)
+
+    -- get the players current power and run the remove function if it exists
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
+    if currentPowerModule then
+        local removePowerModule = require(currentPowerModule)
+        local removePowerParams = {} --right now this is nil, but we can add things later if we need to
+        if removePowerModule.RemovePower then
+            removePowerModule.RemovePower(player,removePowerParams)
+        end
+    else
+        print("no power exists with that name, cant run the REMOVE POWER function")
+        --return
+    end
+
+    -- run the new powers setup function
+    if Knit.Powers:FindFirstChild(params.Power) then
+        local setupPowerModule = require(Knit.Powers[params.Power])
+        local setupPowerParams = {} 
+        setupPowerParams.Rarity = params.Rarity
+        if setupPowerModule.SetupPower then
+            setupPowerModule.SetupPower(player, setupPowerParams)
+        end
+    end
+
+    -- give the stand t the playerData
+    playerData.CurrentStand = params
+
+    -- update the gui
+    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+    -- run the player setup so we can start fresh
+    self:PlayerRefresh(player)
+
+end
+
 --// PlayerRefresh - fires when the player joins and after each death
 function PowersService:PlayerRefresh(player)
 
@@ -342,13 +348,6 @@ function PowersService:PlayerRefresh(player)
     -- cleanup before setup
     self:PlayerCleanup(player)
 
-    -- load the players animation table with tracks
-    PowersService.PlayerAnimations[player.UserId] = {}
-    local animator = player.Character.Humanoid:WaitForChild("Animator")
-    for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
-        PowersService.PlayerAnimations[player.UserId][animObject.Name] = animator:LoadAnimation(animObject)
-    end
-    
     -- setup player folders
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
@@ -359,9 +358,6 @@ end
 
 --// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh
 function PowersService:PlayerCleanup(player)
-
-    -- cleanup player animation table
-    PowersService.PlayerAnimations[player.UserId] = nil
 
     -- cleanup folders
     local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
@@ -375,7 +371,7 @@ function PowersService:PlayerCleanup(player)
 end
 
 --// PlayerAdded - run once when the player joins the game
-function PowersService:PlayerJoined(player)
+function PowersService:PlayerAdded(player)
 
     -- make sure the players data is loaded
     local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
@@ -386,17 +382,25 @@ function PowersService:PlayerJoined(player)
     self:PlayerRefresh(player)
 
     -- render existing stands
-    self:RenderExistingStands(player)
+    --self:RenderExistingStands(player)
 
+    -- setup the current powers
     local character = player.Character or player.CharacterAdded:Wait()
     if character then
-
-        -- get the players current power
         local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-
-        -- now just set it
         self:SetCurrentPower(player, playerData.CurrentStand)
+    end
 
+end
+
+--// CharacterAdded - run once when the player joins the game
+function PowersService:CharacterAdded(player)
+
+    -- setup the current powers
+    local character = player.Character or player.CharacterAdded:Wait()
+    if character then
+        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+        self:SetCurrentPower(player, playerData.CurrentStand)
     end
 end
 
@@ -406,10 +410,10 @@ function PowersService:KnitStart()
 
         -- Player Added event
         Players.PlayerAdded:Connect(function(player)
-            self:PlayerJoined(player)
+            self:PlayerAdded(player)
     
             player.CharacterAdded:Connect(function(character)
-                self:PlayerRefresh(player)
+                self:CharacterAdded(player)
         
                 character:WaitForChild("Humanoid").Died:Connect(function()
                     -- empty for now
@@ -419,10 +423,10 @@ function PowersService:KnitStart()
 
         -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
         for _, player in ipairs(Players:GetPlayers()) do
-            self:PlayerJoined(player)
+            self:PlayerAdded(player)
             
             player.CharacterAdded:Connect(function(character)
-                self:PlayerRefresh(player)
+                self:CharacterAdded(player)
         
                 character:WaitForChild("Humanoid").Died:Connect(function()
                     -- empty for now
@@ -441,9 +445,6 @@ function PowersService:KnitInit()
     local serverHitboxes = utils.EasyInstance("Folder",{Name = "ServerHitboxes",Parent = workspace})
     local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
-
-
-
 
 
     -- Player Removing event

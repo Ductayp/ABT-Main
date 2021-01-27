@@ -22,8 +22,6 @@ local Punch = {}
 
 function Punch.Activate(initPlayer,params)
 
-    print(params)
-
     --[[
 
     -- drop the walkspeed
@@ -63,10 +61,10 @@ function Punch.Activate(initPlayer,params)
 
     -- animations
     if lastPunch == "Punch_1" then
-        Knit.Services.PowersService.PlayerAnimations[initPlayer.UserId].Punch_2:Play()
+        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_2:Play()
         lastPunch = "Punch_2"
     else
-        Knit.Services.PowersService.PlayerAnimations[initPlayer.UserId].Punch_1:Play()
+        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_1:Play()
         lastPunch = "Punch_1"
     end
 

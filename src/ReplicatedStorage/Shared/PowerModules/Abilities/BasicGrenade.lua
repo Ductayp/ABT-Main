@@ -52,7 +52,6 @@ function BasicGrenade.Server_Activate(initPlayer,params)
 
         -- add all Mobs in range
         for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-            print(mob)
             local distance = (mob.Model.HumanoidRootPart.Position - newGrenade.MainPart.Position).magnitude
             if distance <= newGrenade.HitRadius then
                 table.insert(newGrenade.HitCharacters, mob.Model)
@@ -61,8 +60,6 @@ function BasicGrenade.Server_Activate(initPlayer,params)
 
         -- run the Server_Explode function
         abilityMod.Server_Explode(initPlayer, newGrenade)
-        
-        print("hitCharacters", newGrenade.HitCharacters)
         
         -- hit all the characters
         for _,hitCharacter in pairs(newGrenade.HitCharacters) do
@@ -94,7 +91,7 @@ function BasicGrenade.Client_Execute(initPlayer,params)
     abilityMod.Client_Launch(initPlayer, params.Grenade)
 
     -- get the local palyers ping
-    local ping = Knit.Controllers.PingController:GetPing()
+    local ping = Knit.Controllers.PlayerUtilityController:GetPing()
 
     -- wait for detonation
     spawn(function()

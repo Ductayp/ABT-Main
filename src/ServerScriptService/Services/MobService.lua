@@ -76,6 +76,7 @@ function MobService:MobBrain()
                                 mobData.Functions.Attack(mobData)
                          
                                 -- brain settings
+                                mobData.AttackTarget = nil
                                 mobData.LastAttack = os.clock()
                                 mobData.BrainState = "Post_Attack"
                                 mobData.StateTime = os.clock()

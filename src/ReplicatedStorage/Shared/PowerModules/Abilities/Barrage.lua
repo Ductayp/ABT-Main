@@ -83,7 +83,7 @@ function Barrage.ShootArm(initPlayer, params)
 
 	-- clone a single arm and parent it, add it to the Debris
 	local newArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]:Clone()
-	newArm.Parent = Workspace
+	newArm.Parent = Workspace.RenderedEffects
 	Debris:AddItem(newArm, armDebrisTime)
 
 	-- set up random position and set the goals

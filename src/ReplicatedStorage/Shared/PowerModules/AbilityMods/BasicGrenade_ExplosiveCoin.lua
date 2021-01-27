@@ -48,13 +48,13 @@ function ExplosiveCoin.GetHitEffects(initPlayer, hitCharacter, grenade)
 
     local newLookVector = (hitCharacter.HumanoidRootPart.Position - grenade.MainPart.Position).unit
 
-    newHitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
+    local newHitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
 
     return newHitEffects
 end
 
 function ExplosiveCoin.PlayAnimation(initPlayer)
-    Knit.Services.PowersService.PlayerAnimations[initPlayer.UserId].CoinFlip:Play()
+    Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].CoinFlip:Play()
 end
 
 function ExplosiveCoin.Server_Launch(initPlayer, grenade)

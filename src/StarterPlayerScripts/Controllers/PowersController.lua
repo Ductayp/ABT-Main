@@ -22,9 +22,6 @@ local PowersController = Knit.CreateController { Name = "PowersController" }
 local PowersService = Knit.GetService("PowersService")
 local BlockInput = require(Knit.Effects.BlockInput)
 
--- variables
-PowersController.PlayerAnimations = {}
-
 --// InitializePower
 function PowersController:InitializePower(params)
 
@@ -73,20 +70,27 @@ function PowersController:RenderEffect(effect,params)
     effectModule.Client_RenderEffect(params)
 end
 
-
+--[[
 --// RenderExistingStands
 function PowersController:RenderExistingAbility(targetPlayer,params)
     self:ExecutePower(targetPlayer,params)
+end 
+]]--
+
+--// RenderExistingStands
+function PowersController:RenderExistingStands()
+    for _, player in pairs(Players:GetPlayers()) do
+        local thisPlayersPower = PowersService.GetCurrentPower(player)
+        --for _,toggle in pairs() do
+            --print(thisPlayersPower)
+        --end
+    end
 end 
 
 --// KnitStart
 function PowersController:KnitStart()
 
-    --[[
-    Players.LocalPlayer.CharacterAdded:Connect(function(character)
-        self:LoadAnimations()
-    end)
-    ]]--
+    self:RenderExistingStands()
 
     PowersService.ExecutePower:Connect(function(initPlayer,params)
         self:ExecutePower(initPlayer,params)
@@ -96,10 +100,12 @@ function PowersController:KnitStart()
         self:RenderEffect(effect,params)
     end)
 
+    --[[
     PowersService.RenderExistingStands:Connect(function(targetPlayer,params)
         local standFolder = workspace:waitForChild("PlayerStands") -- this wait is here just to be sure the workspace folder has fullyloaded for the new player
         self:RenderExistingAbility(targetPlayer,params)
     end)
+    ]]--
 
 end
 

@@ -4,6 +4,7 @@
 
 -- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local PlayerGui = Players.LocalPlayer.PlayerGui
 
@@ -52,12 +53,33 @@ function GuiController:Request_GuiUpdate(requestName)
     GuiService:Request_GuiUpdate(requestName)
 end
 
+--// HandleAction - ContextActionService
+GuiController.ButtonHover = false
+function GuiController:HandleHover(bool)
+    GuiController.ButtonHover = bool
+end
+
+
 --// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
 
     repeat wait() until Players.LocalPlayer.Character
     repeat wait() until Players.LocalPlayer.PlayerGui
     print("FOUND IT!!!!")
+
+    -- setup Hover handling for Gui buttons
+    for _, instance in pairs(Players.LocalPlayer.PlayerGui:GetDescendants()) do
+        if instance:IsA("TextButton") or instance:IsA("ImageButton") then
+
+            instance.MouseEnter:Connect(function()
+                self:HandleHover(true)
+            end)
+            
+            instance.MouseLeave:Connect(function()
+                self:HandleHover(false)
+            end)
+        end
+    end
 
     -- do some setups
     GuiController.InventoryWindow.Setup()

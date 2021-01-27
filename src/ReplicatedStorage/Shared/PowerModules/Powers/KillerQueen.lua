@@ -524,8 +524,6 @@ function KillerQueen.Punch(initPlayer,params)
             return params
         end
 
-        print("test 1")
-
          -- PUNCH/ACTIVATE/INPUT BEGAN
          if params.KeyState == "InputBegan" then
 

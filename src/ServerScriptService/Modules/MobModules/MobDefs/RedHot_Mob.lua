@@ -108,6 +108,8 @@ end
 --// Attack
 function  RedHot_Mob.Attack(mobData)
 
+    print("RHCP ATTACK - mobData: ", mobData)
+
     spawn(function()
 
         -- play attack animation
@@ -125,13 +127,22 @@ function  RedHot_Mob.Attack(mobData)
 
         local expireTime = os.clock() + 5
 
-        -- destroy the shockBall if the targetplayer dies
-        local diedConnection = mobData.AttackTarget.Character.Humanoid.Died:Connect(function()
-            shockBall:Destroy()
-            diedConnection = nil
-        end)
-
         while true do
+
+            if not mobData.AttackTarget then
+                shockBall:Destroy()
+                break
+            end
+
+            if not mobData.AttackTarget.Character then
+                shockBall:Destroy()
+                break
+            end
+            
+            if not mobData.AttackTarget.Character.Humanoid then
+                shockBall:Destroy()
+                break
+            end
 
             -- expire the shockball if its too old
             if os.clock() > expireTime then
@@ -139,17 +150,22 @@ function  RedHot_Mob.Attack(mobData)
                 break
             end
 
-            -- destroy shockBall if the player is already dead
-            if mobData.AttackTarget.Character.Humanoid.Health == 0 then
-                shockBall:Destroy()
-                break
-            end
-
             -- check for hits
             local magnitude = (shockBall.Position - mobData.AttackTarget.Character.HumanoidRootPart.Position).Magnitude
             if magnitude < .5 then
-                shockBall:Destroy()
-                Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
+                if mobData.AttackTarget.Character.Humanoid then
+                    if mobData.AttackTarget.Character.Humanoid.Health <= 0 then
+                        shockBall:Destroy()
+                        break
+                    else
+                        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
+                        shockBall:Destroy()
+                        break
+                    end
+                else
+                    shockBall:Destroy()
+                    break
+                end
                 break
             end
 

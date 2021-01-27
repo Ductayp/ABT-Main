@@ -60,7 +60,7 @@ function Blast.Client_RenderEffect(params)
             },
             
             Size = {
-                Defs = {thisInfo = TweenInfo.new(.3), thisParams = {Size = Vector3.new(10,10,10)}},
+                Defs = {thisInfo = TweenInfo.new(.3), thisParams = {Size = Vector3.new(7,7,7)}},
                 Delay = 0
             }
         }
@@ -76,7 +76,7 @@ function Blast.Client_RenderEffect(params)
             },
             
             Size = {
-                Defs = {thisInfo = TweenInfo.new(.5), thisParams = {Size = Vector3.new(17,17,17)}},
+                Defs = {thisInfo = TweenInfo.new(.5), thisParams = {Size = Vector3.new(12,12,12)}},
                 Delay = 0
             }
         }
@@ -92,7 +92,7 @@ function Blast.Client_RenderEffect(params)
             },
             
             Size = {
-                Defs = {thisInfo = TweenInfo.new(.3), thisParams = {Size = Vector3.new(13,13,13)}},
+                Defs = {thisInfo = TweenInfo.new(.3), thisParams = {Size = Vector3.new(8,8,8)}},
                 Delay = 0
             }
         }
@@ -109,7 +109,7 @@ function Blast.Client_RenderEffect(params)
             },
             
             Size = {
-                Defs = {thisInfo = TweenInfo.new(3), thisParams = {Size = Vector3.new(12,12,12)}},
+                Defs = {thisInfo = TweenInfo.new(3), thisParams = {Size = Vector3.new(10,10,10)}},
                 Delay = .5
             }
         }
@@ -126,6 +126,7 @@ function Blast.Client_RenderEffect(params)
         thisPart.Parent = Workspace.RenderedEffects
         thisPart.Anchored = false
         utils.EasyWeld(params.HitCharacter.HumanoidRootPart, thisPart, thisPart)
+        Debris:AddItem(thisPart, 7)
 
         -- control
         thisPart.Smoke_Particle.Enabled = true
@@ -143,6 +144,7 @@ function Blast.Client_RenderEffect(params)
         local thisPart = ReplicatedStorage.EffectParts.Effects.Blast.Blast_Particles:Clone()
         thisPart.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
         thisPart.Parent = Workspace.RenderedEffects
+        Debris:AddItem(thisPart, 7)
 
         -- control
         thisPart.Smoke_Particle.Enabled = true

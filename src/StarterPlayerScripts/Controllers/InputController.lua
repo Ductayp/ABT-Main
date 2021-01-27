@@ -26,13 +26,17 @@ function InputController:MouseSetup()
 
     UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            InputController:SendToPowersService({InputId = "Mouse1", KeyState = "InputBegan"})
+            if not Knit.Controllers.GuiController.ButtonHover then
+                InputController:SendToPowersService({InputId = "Mouse1", KeyState = "InputBegan"})
+            end
         end
     end)
 
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            InputController:SendToPowersService({InputId = "Mouse1", KeyState = "InputEnded"})
+            if not Knit.Controllers.GuiController.ButtonHover then
+                InputController:SendToPowersService({InputId = "Mouse1", KeyState = "InputEnded"})
+            end
         end
     end)
 

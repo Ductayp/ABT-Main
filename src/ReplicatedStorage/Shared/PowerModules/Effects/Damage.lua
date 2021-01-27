@@ -53,9 +53,9 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
         if hitPlayer then
             local rand = math.random(1,2)
             if rand == 1 then
-                Knit.Services.PowersService.PlayerAnimations[hitPlayer.UserId].Damage_1:Play()
+                Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_1:Play()
             else
-                Knit.Services.PowersService.PlayerAnimations[hitPlayer.UserId].Damage_2:Play()
+                Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_2:Play()
             end
         end
 

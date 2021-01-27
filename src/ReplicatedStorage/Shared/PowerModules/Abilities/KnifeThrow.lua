@@ -78,7 +78,7 @@ function KnifeThrow.Server_Activate(initPlayer,params)
 
     -- Tween hitbox
     local tweenInfo = TweenInfo.new(
-            params.FlightTime - Knit.Services.PingService:GetPing(initPlayer)
+            params.FlightTime - Knit.Services.PlayerUtilityService:GetPing(initPlayer)
         )
     local tween = TweenService:Create(hitPart,tweenInfo,{CFrame = params.DestinatonCFrame})
     tween:Play()
@@ -113,7 +113,7 @@ function KnifeThrow.Client_Execute(initPlayer,params)
     mainPart.Name = "MainPart" -- name it so its easy to find later 
 
     -- Tween the thrown parts
-    local ping = Knit.Controllers.PingController:GetPing()
+    local ping = Knit.Controllers.PlayerUtilityController:GetPing()
     local newSpeed = params.FlightTime - ping
     local tweenInfo2 = TweenInfo.new(newSpeed, Enum.EasingStyle.Linear)
     --local tweenInfo2 = TweenInfo.new(params.FlightTime, Enum.EasingStyle.Linear)

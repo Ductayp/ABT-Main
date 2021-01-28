@@ -24,6 +24,7 @@ local TimeStop = {}
 function TimeStop.Activate(initPlayer,params)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
         params.CanRun = false
         return params
@@ -33,6 +34,10 @@ function TimeStop.Activate(initPlayer,params)
     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
         params.CanRun = false
         return params
+=======
+    -- run delay, this makes room for the animation
+    if params.TimeStop.Delay ~= nil then
+        wait(params.TimeStop.Delay)
 =======
     -- run delay, this makes room for the animation
     if params.TimeStop.Delay ~= nil then
@@ -49,6 +54,19 @@ function TimeStop.Activate(initPlayer,params)
     end
     print("affectdPlayers", affectedPlayers)
 
+<<<<<<< HEAD
+    -- hit players: put all player within range inside a table, including the initPlayer
+    local affectedPlayers = {}
+    for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+        if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) <= params.TimeStop.Range then
+            table.insert(affectedPlayers, targetPlayer)
+        end
+>>>>>>> parent of 63c32ff... do eeeeet
+    end
+    print("affectdPlayers", affectedPlayers)
+
+=======
+>>>>>>> parent of 63c32ff... do eeeeet
     -- play ColorShift effect for all player within range, this happens before immunities
     for _,player in pairs(affectedPlayers) do
         print("this player is:", player)

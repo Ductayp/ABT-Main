@@ -18,6 +18,7 @@ anchors.StandJump = CFrame.new(0, -1.25, -3)
 local ManageStand = {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 --// --------------------------------------------------------------------
 --// Handler Functions
 --// --------------------------------------------------------------------
@@ -111,6 +112,8 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
+=======
+>>>>>>> parent of 63c32ff... do eeeeet
 =======
 >>>>>>> parent of 63c32ff... do eeeeet
 --// equips a stand for the target player

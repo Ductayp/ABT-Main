@@ -50,6 +50,7 @@ function PowersController:InitializePower(params)
     --local params = powerModule.Manager(Players.localPlayer,params)
     local params = powerModule.Manager(params)
 
+    print("PowersController parans", params)
     -- if INITIALIZE stage returns CanRun == true then we fire it off the the server
     if params.CanRun then
         PowersService:ClientActivatePower(params)

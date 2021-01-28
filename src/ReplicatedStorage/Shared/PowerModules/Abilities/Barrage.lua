@@ -27,7 +27,6 @@ local Barrage = {}
 --// Initialize
 function Barrage.Initialize(params, abilityDefs)
 	
-
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
 
@@ -37,13 +36,13 @@ function Barrage.Initialize(params, abilityDefs)
 			return
 		end
 
-		if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
+		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
 			params.CanRun = false
 			return params
 		end
 
 		-- require toggles to be inactive, excluding "Q"
-		if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","F","Z","X"}) then
+		if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
 			params.CanRun = false
 			return params
 		end
@@ -63,7 +62,7 @@ function Barrage.Initialize(params, abilityDefs)
 			end)
 		end
 
-		params.CanRun = true
+		--params.CanRun = true
 	end
 
 	-- InputEnded
@@ -74,10 +73,11 @@ function Barrage.Initialize(params, abilityDefs)
 			Barrage.EndEffect(params)
 		end
 
-		params.CanRun = true
+		--params.CanRun = true
 	end
 
-
+	params.CanRun = true
+	return params
 end
 
 --// Activate
@@ -92,13 +92,13 @@ function Barrage.Activate(params, abilityDefs)
 			return
 		end
 
-		if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
+		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
 			params.CanRun = false
 			return params
 		end
 
 		-- require toggles to be inactive, excluding "Q"
-		if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","F","Z","X"}) then
+		if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
 			params.CanRun = false
 			return params
 		end
@@ -131,6 +131,7 @@ function Barrage.Activate(params, abilityDefs)
 	end
 
 	params.CanRun = true
+	return params
 	
 end
 
@@ -243,7 +244,7 @@ end
 --// Run Effect
 function Barrage.RunEffect(params)
 
-	print(params)
+	--print(params)
 
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
@@ -278,7 +279,7 @@ end
 --// End Effect
 function Barrage.EndEffect(params)
 
-	print("END EFFECT")
+	--print("END EFFECT")
 
 	-- stop animation and move stand to Idle
 	ManageStand.StopAnimation(params, "Barrage")

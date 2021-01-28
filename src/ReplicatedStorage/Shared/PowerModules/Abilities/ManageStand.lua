@@ -51,6 +51,8 @@ function ManageStand.Initialize(params, abilityDefs)
 		ManageStand.EquipStand(params)
 	end
 
+	return params
+
 end
 
 --// Activate
@@ -83,6 +85,8 @@ function ManageStand.Activate(params, abilityDefs)
 
 	-- define the stand (do it again to prevent exploits)
 	params.StandModel = abilityDefs.StandModels[params.PowerRarity]
+
+	return params
 
 end
 

@@ -129,8 +129,11 @@ end
 -- defs
 TheWorld.Defs.Abilities.Barrage = {
     Name = "Barrage",
+    Id = "Barrage",
     Duration = 5,
     Cooldown = 10,
+    RequireToggle_On = {"Q"},
+    RequireToggle_Off = {"C","R","T","F","Z","X"},
     HitEffects = {Damage = {Damage = 5}},
     Sounds = {
         --Sound = sound here,
@@ -141,8 +144,8 @@ TheWorld.Defs.Abilities.Barrage = {
 function TheWorld.Barrage(params)
 
     params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
-end
 
+end
 --------------------------------------------------------------------------------------------------
 --// TIME STOP //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
@@ -153,6 +156,8 @@ TheWorld.Defs.Abilities.TimeStop = {
     Duration = 8,
     Cooldown = 9,
     Range = 150,
+    RequireToggle_On = {"Q"},
+    RequireToggle_Off = {"C","R","T","E","Z","X"},
     HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
 }
 
@@ -169,14 +174,24 @@ end
 -- defs
 TheWorld.Defs.Abilities.KnifeThrow = {
     Name = "Knife Throw",
+    Id = "KnifeThrow",
     Cooldown = 2,
     Range = 75,
     Speed = 90,
-    HitEffects = {Damage = {Damage = 20, HideEffects = true}}
+    Projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Projectile,
+    HitBox = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Hitbox,
+    RequireToggle_On = {"Q"},
+    RequireToggle_Off = {"C","R","F","E","Z","X"},
+    HitEffects = {Damage = {Damage = 20, HideEffects = true}},
+    Sounds = {
+        --Sound = sound here,
+        --Sound2 = sound here
+    }
 }
 
-function TheWorld.KnifeThrow(initPlayer,params)
+function TheWorld.KnifeThrow(params)
 
+    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheWorld.Defs.Abilities.KnifeThrow)
 end
 
 --------------------------------------------------------------------------------------------------

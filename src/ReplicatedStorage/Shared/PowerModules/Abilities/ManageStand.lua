@@ -65,8 +65,7 @@ function ManageStand.Activate(params, abilityDefs)
 	end
 
 	-- check cooldown
-	if not Cooldown.Server_IsCooled(params) then
-		print("not cooled down")
+	if not Cooldown.Client_IsCooled(params) then
 		params.CanRun = false
 		return
 	end

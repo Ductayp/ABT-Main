@@ -37,13 +37,13 @@ function Barrage.Initialize(params, abilityDefs)
 			return
 		end
 
-		if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
+		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
 			params.CanRun = false
 			return params
 		end
 
 		-- require toggles to be inactive, excluding "Q"
-		if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","F","Z","X"}) then
+		if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
 			params.CanRun = false
 			return params
 		end
@@ -77,7 +77,6 @@ function Barrage.Initialize(params, abilityDefs)
 		params.CanRun = true
 	end
 
-
 end
 
 --// Activate
@@ -92,13 +91,13 @@ function Barrage.Activate(params, abilityDefs)
 			return
 		end
 
-		if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
+		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
 			params.CanRun = false
 			return params
 		end
 
 		-- require toggles to be inactive, excluding "Q"
-		if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","F","Z","X"}) then
+		if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
 			params.CanRun = false
 			return params
 		end

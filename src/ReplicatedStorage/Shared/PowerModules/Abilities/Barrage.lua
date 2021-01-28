@@ -20,7 +20,6 @@ local damageLoopTime = 0.25
 local Barrage = {}
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 --// --------------------------------------------------------------------
 --// Handler Functions
 --// --------------------------------------------------------------------
@@ -159,8 +158,6 @@ end
 
 =======
 >>>>>>> parent of 63c32ff... do eeeeet
-=======
->>>>>>> parent of 63c32ff... do eeeeet
 --// Server Create Hitbox -- we have a unique hitbox for Barrage
 function Barrage.Activate(initPlayer,params)
 
@@ -243,13 +240,9 @@ end
 
 --// Run Effect
 <<<<<<< HEAD
-<<<<<<< HEAD
 function Barrage.RunEffect(params)
 
 	--print(params)
-=======
-function Barrage.RunEffect(initPlayer,params)
->>>>>>> parent of 63c32ff... do eeeeet
 =======
 function Barrage.RunEffect(initPlayer,params)
 >>>>>>> parent of 63c32ff... do eeeeet
@@ -278,13 +271,9 @@ end
 
 --// End Effect
 <<<<<<< HEAD
-<<<<<<< HEAD
 function Barrage.EndEffect(params)
 
 	--print("END EFFECT")
-=======
-function Barrage.EndEffect(initPlayer,params)
->>>>>>> parent of 63c32ff... do eeeeet
 =======
 function Barrage.EndEffect(initPlayer,params)
 >>>>>>> parent of 63c32ff... do eeeeet

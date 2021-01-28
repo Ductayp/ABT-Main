@@ -46,9 +46,7 @@ function PowersController:InitializePower(params)
     -- run its INITIALIZE stage
     params.SystemStage = "Initialize"
     params.CanRun = false
-    params.InitUserId = Players.localPlayer.UserId
-    --local params = powerModule.Manager(Players.localPlayer,params)
-    local params = powerModule.Manager(params)
+    local params = powerModule.Manager(Players.localPlayer,params)
 
     print("PowersController parans", params)
     -- if INITIALIZE stage returns CanRun == true then we fire it off the the server
@@ -60,10 +58,10 @@ function PowersController:InitializePower(params)
 end
 
 --// ExecutePower
-function PowersController:ExecutePower(params)
+function PowersController:ExecutePower(initPlayer,params)
     params.SystemStage = "Execute"
     local powerModule = require((Knit.Powers[params.PowerID]))
-    powerModule.Manager(params)
+    powerModule.Manager(initPlayer,params)
 end
 
 --// RenderEffect -- render general effects

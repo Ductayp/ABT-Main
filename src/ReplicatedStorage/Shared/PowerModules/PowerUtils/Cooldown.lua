@@ -20,16 +20,16 @@ local utils = require(Knit.Shared.Utils)
 local Cooldown = {}
 
 -- // SetCooldown - just sets it
-function Cooldown.SetCooldown(userId, cooldownName, cooldownValue)
+function Cooldown.SetCooldown(player,cooldownName,cooldownValue)
 
     if cooldownName == "Mouse1" then
         return
     end
 
     -- get cooldown folder make it if it doesnt exist
-    local cooldownFolder =  ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Cooldowns")
+    local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
     if not cooldownFolder then
-        cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[userId]})
+        cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
 
     --get  this cooldown, if its not theres make it
@@ -50,18 +50,17 @@ function Cooldown.SetCooldown(userId, cooldownName, cooldownValue)
     cooldownParams.CooldownValue = cooldownValue
     cooldownParams.CooldownTime = thisCooldown.Value
 
-    local player = utils.GetPlayerByUserId(userId)
     Knit.Services.GuiService:Update_Cooldown(player, cooldownParams)
 
     return thisCooldown
 end
 
 --// GetCooldownValue - receives the power params and returns params.CanRun as true or false
-function Cooldown.GetCooldownValue(params)
+function Cooldown.GetCooldownValue(player, params)
 
-    local cooldownFolder =  ReplicatedStorage.PowerStatus[params.InitUserId]:FindFirstChild("Cooldowns")
+    local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
     if not cooldownFolder then
-        cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[params.InitUserId]})
+        cooldownFolder = utils.EasyInstance("Folder", {Name = "Cooldowns", Parent = ReplicatedStorage.PowerStatus[player.userId]})
     end
 
     local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
@@ -72,36 +71,13 @@ function Cooldown.GetCooldownValue(params)
     return thisCooldown.Value
 end
 
---// Server_IsCooled: will create a new cooldown if one does not exist
-function Cooldown.Server_IsCooled(params)
+function Cooldown.IsCooled(player, params)
 
     local isCooled = false
-    local cooldown = Cooldown.GetCooldownValue(params)
+    local cooldown = Cooldown.GetCooldownValue(player, params)
     --print(os.time(), cooldown)
     if os.time() >= cooldown then
         isCooled = true
-    end
-
-    return isCooled
-end
-
-
---// Client_IsCooled: will return true if the cooldown does not exist
-function Cooldown.Client_IsCooled(params)
-
-    local isCooled = true
-    local cooldownFolder =  ReplicatedStorage.PowerStatus[params.InitUserId]:FindFirstChild("Cooldowns")
-    if not cooldownFolder then
-        return isCooled
-    else
-        local thisCooldown = cooldownFolder:FindFirstChild(params.InputId)
-        if not thisCooldown then
-            return isCooled
-        else
-            if os.time() <= thisCooldown.Value then
-                isCooled = false
-            end
-        end
     end
 
     return isCooled

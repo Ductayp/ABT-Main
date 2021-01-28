@@ -2,7 +2,6 @@
 
 -- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local Workspace = game:GetService("Workspace")
 
@@ -10,8 +9,8 @@ local Workspace = game:GetService("Workspace")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local ManageStand = require(Knit.Abilities.ManageStand)
+local DamageEffect = require(Knit.Effects.Damage)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
-local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- local variables
 local armSpawnRate = .05
@@ -20,6 +19,7 @@ local damageLoopTime = 0.25
 
 local Barrage = {}
 
+<<<<<<< HEAD
 --// --------------------------------------------------------------------
 --// Handler Functions
 --// --------------------------------------------------------------------
@@ -156,21 +156,20 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
+=======
+>>>>>>> parent of 63c32ff... do eeeeet
 --// Server Create Hitbox -- we have a unique hitbox for Barrage
-function Barrage.CreateHitbox(params, abilityDefs)
-
-	-- get initPlayer
-	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+function Barrage.Activate(initPlayer,params)
 
 	-- basic part setup
 	local newHitBox = Instance.new("Part")
-	newHitBox.Size = Vector3.new(4,5,7.5)
+	newHitBox.Size = Vector3.new(4,5,5.5)
 	newHitBox.Massless = true
-    newHitBox.Transparency = .5
+    newHitBox.Transparency = 1
 	newHitBox.CanCollide = false
-	newHitBox.Parent = Workspace.ServerHitboxes[params.InitUserId]
+	newHitBox.Parent = workspace.ServerHitboxes[initPlayer.UserId]
 	newHitBox.Name = "Barrage"
-	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-6))
+	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4))
 	
 	-- weld it
 	local hitboxWeld = utils.EasyWeld(newHitBox,initPlayer.Character.HumanoidRootPart,newHitBox)
@@ -193,7 +192,7 @@ function Barrage.CreateHitbox(params, abilityDefs)
 
 			if charactersHit ~= nil then
 				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above-- setup DamageEffect params
-					Knit.Services.PowersService:RegisterHit(initPlayer, abilityDefs.HitEffects)
+					Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.Barrage.HitEffects)
 				end
 			end	
 
@@ -214,17 +213,15 @@ function Barrage.CreateHitbox(params, abilityDefs)
 end
 
 --// Server Destroy Hitbox
-function Barrage.DestroyHitbox(params)
-	local destroyHitbox = workspace.ServerHitboxes[params.InitUserId]:ClearAllChildren()
+function Barrage.DestroyHitbox(initPlayer, params)
+	local destroyHitbox = workspace.ServerHitboxes[initPlayer.UserId]:ClearAllChildren()
 end
 
 --// Shoot Arm 
-function Barrage.ShootArm(initPlayer, effectArm)
-
-	print("shoot")
+function Barrage.ShootArm(initPlayer, params)
 
 	-- clone a single arm and parent it, add it to the Debris
-	local newArm = effectArm:Clone()
+	local newArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]:Clone()
 	newArm.Parent = Workspace.RenderedEffects
 	Debris:AddItem(newArm, armDebrisTime)
 
@@ -242,48 +239,48 @@ function Barrage.ShootArm(initPlayer, effectArm)
 end
 
 --// Run Effect
+<<<<<<< HEAD
 function Barrage.RunEffect(params)
 
 	--print(params)
+=======
+function Barrage.RunEffect(initPlayer,params)
+>>>>>>> parent of 63c32ff... do eeeeet
 
 	-- setup the stand, if its not there then dont run return
-	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
 		return
 	end
 
 	-- move stand and play Barrage animation
-	ManageStand.PlayAnimation(params, "Barrage")
-	ManageStand.MoveStand(params, "Front")
+	ManageStand.PlayAnimation(initPlayer,params,"Barrage")
+	ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+
+	-- setup coroutine and run it while the toggle is on
+	local thisToggle = AbilityToggle.GetToggleObject(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
 
 	-- spawn the arms shooter
-	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]
-
-	local thisToggle
-	if params.SystemStage == "Initialize" then
-		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Local_BarrageToggle")
-	else
-		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, params.InputId)
-	end
-
 	spawn(function()
 		while thisToggle.Value == true  do
-			Barrage.ShootArm(initPlayer, effectArm)
+			Barrage.ShootArm(initPlayer, params)
 			wait(armSpawnRate)
 		end
 	end)
-
 end
 
 --// End Effect
+<<<<<<< HEAD
 function Barrage.EndEffect(params)
 
 	--print("END EFFECT")
+=======
+function Barrage.EndEffect(initPlayer,params)
+>>>>>>> parent of 63c32ff... do eeeeet
 
 	-- stop animation and move stand to Idle
-	ManageStand.StopAnimation(params, "Barrage")
-	ManageStand.MoveStand(params, "Idle")
+	ManageStand.StopAnimation(initPlayer,{AnimationName = "Barrage"})
+	ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
 end
 
 

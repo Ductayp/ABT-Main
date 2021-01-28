@@ -155,5 +155,3 @@ function KnifeThrow.Client_Execute(initPlayer,params)
 end
 
 return KnifeThrow
-
-

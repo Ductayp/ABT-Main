@@ -12,16 +12,50 @@ local Players = game:GetService('Players')
 -- Knits and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local ManageStand = require(Knit.Abilities.ManageStand)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
 
--- Effect modules
---local PinCharacter = require(Knit.Effects.PinCharacter)
---local ColorShift = require(Knit.Effects.ColorShift)
---local BlockInput = require(Knit.Effects.BlockInput)
 
 local TimeStop = {}
 
---// ACTIVATE ----------------------------------
-function TimeStop.Activate(initPlayer,params)
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
+
+--// Initialize
+function TimeStop.Initialize(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+	end
+
+	-- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+
+
+    --TimeStop.RenderEffects(params, abilityDefs)
+
+end
+
+--// Activate
+function TimeStop.Activate(params, abilityDefs)
+
+    -- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+	end
 
     if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
         params.CanRun = false
@@ -34,64 +68,115 @@ function TimeStop.Activate(initPlayer,params)
         return params
     end
 
-    -- run delay, this makes room for the animation
-    if params.TimeStop.Delay ~= nil then
-        wait(params.TimeStop.Delay)
-    end
+	-- check cooldown
+	if not Cooldown.Server_IsCooled(params) then
+		print("not cooled down")
+		params.CanRun = false
+		return
+	end
 
-    -- hit players: put all player within range inside a table, including the initPlayer
-    local affectedPlayers = {}
-    for _, targetPlayer in pairs(game.Players:GetPlayers()) do
-        if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) <= params.TimeStop.Range then
-            table.insert(affectedPlayers, targetPlayer)
-        end
-    end
-    print("affectdPlayers", affectedPlayers)
+	-- set cooldown
+    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- play ColorShift effect for all player within range, this happens before immunities
-    for _,player in pairs(affectedPlayers) do
-        print("this player is:", player)
-        Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, {ColorShift = params.TimeStop.HitEffects.ColorShift})
-    end
+    -- set toggle
+    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
 
-    -- remove any player that is immune to timestop
-    for index,player in pairs(affectedPlayers) do
-        local isImmune = require(Knit.StateModules.Immunity).Has_Immunity(player,"TimeStop")
-        if isImmune then
-            table.remove(affectedPlayers, index)
-        end
-    end
-
-
-    -- remove ColorShift
-    local newHitEffects = {}
-    for i,v in pairs(params.TimeStop.HitEffects) do
-        if i ~= "ColorShift" then
-            newHitEffects[i] = v
-        end
-    end
-
-    print(newHitEffects)
-
-
-    -- play remainign effects on all players
-    for _,player in pairs(affectedPlayers) do
-        Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, newHitEffects)
-    end
-
-    -- hit all Mobs in range
-    for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-        if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= params.TimeStop.Range then
-            Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, newHitEffects)
-        end
-    end
-
- 
+    -- setup the hit
+    TimeStop.CreateHitRadius(params, abilityDefs)
 
 end
 
---// EXECUTE ----------------------------------
-function TimeStop.Execute(initPlayer,params)
+--// Execute
+function TimeStop.Execute(params, abilityDefs)
+	print(params)
+
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		--return
+    end
+    
+    TimeStop.RenderEffects(params, abilityDefs)
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
+--// ACTIVATE ----------------------------------
+function TimeStop.CreateHitRadius(params, abilityDefs)
+
+    spawn(function()
+
+        wait(1)
+
+        -- get initPlayer
+        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    
+        -- hit players: put all player within range inside a table, including the initPlayer
+        local affectedPlayers = {}
+        for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+            if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
+                table.insert(affectedPlayers, targetPlayer)
+            end
+        end
+        print("affectdPlayers", affectedPlayers)
+
+        -- play ColorShift effect for all player within range, this happens before immunities
+        for _,player in pairs(affectedPlayers) do
+            print("this player is:", player)
+            Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, {ColorShift = abilityDefs.HitEffects.ColorShift})
+        end
+
+        -- remove any player that is immune to timestop
+        for index,player in pairs(affectedPlayers) do
+            local isImmune = require(Knit.StateModules.Immunity).Has_Immunity(player,"TimeStop")
+            if isImmune then
+                --table.remove(affectedPlayers, index)
+            end
+        end
+
+
+        -- remove ColorShift
+        local newHitEffects = {}
+        for i,v in pairs(abilityDefs.HitEffects) do
+            if i ~= "ColorShift" then
+                newHitEffects[i] = v
+            end
+        end
+
+        print(newHitEffects)
+
+
+        -- play remainign effects on all players
+        for _,player in pairs(affectedPlayers) do
+            Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, newHitEffects)
+        end
+
+        -- hit all Mobs in range
+        for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
+            if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityDefs.Range then
+                Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, newHitEffects)
+            end
+        end
+    
+    end)
+    
+end
+
+
+--// Main Effects
+function TimeStop.RenderEffects(params, abilityDefs)
+
+    -- get initPlayer
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+
+    -- play animations
+    ManageStand.PlayAnimation(params, "TimeStop")
+
+    -- wait for animation
+    wait(1)
 
     -- animate spehres
     local sphereParams = {}
@@ -113,12 +198,12 @@ function TimeStop.Execute(initPlayer,params)
     sphere2.Color = Color3.new(2, 243, 255)
     sphere3.Color = Color3.new(255, 255, 2)
     
-    Debris:AddItem(sphere1,params.Duration)
-    Debris:AddItem(sphere2,params.Duration)
-    Debris:AddItem(sphere3,params.Duration)
+    Debris:AddItem(sphere1,abilityDefs.Duration)
+    Debris:AddItem(sphere2,abilityDefs.Duration)
+    Debris:AddItem(sphere3,abilityDefs.Duration)
 
     spawn(function()
-        local size = params.Range * 2
+        local size = abilityDefs.Range * 2
 
         local tweenInfo = TweenInfo.new(
             1, -- Time

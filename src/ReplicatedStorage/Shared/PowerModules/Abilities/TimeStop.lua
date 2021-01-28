@@ -23,17 +23,17 @@ local TimeStop = {}
 --// ACTIVATE ----------------------------------
 function TimeStop.Activate(initPlayer,params)
 
-<<<<<<< HEAD
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+    if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
         params.CanRun = false
         return params
     end
 
     -- require toggles to be inactive, excluding "Q"
-    if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
+    if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","E","Z","X"}) then
         params.CanRun = false
         return params
-=======
+    end
+
     -- run delay, this makes room for the animation
     if params.TimeStop.Delay ~= nil then
         wait(params.TimeStop.Delay)
@@ -45,7 +45,6 @@ function TimeStop.Activate(initPlayer,params)
         if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) <= params.TimeStop.Range then
             table.insert(affectedPlayers, targetPlayer)
         end
->>>>>>> parent of 63c32ff... do eeeeet
     end
     print("affectdPlayers", affectedPlayers)
 

@@ -12,7 +12,6 @@ local RunService = game:GetService("RunService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
---[[
 -- Ability modules
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Barrage = require(Knit.Abilities.Barrage)
@@ -22,7 +21,6 @@ local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 local BulletKick = require(Knit.Abilities.BulletKick)
 local StandJump = require(Knit.Abilities.StandJump)
 local Punch = require(Knit.Abilities.Punch)
-]]--
 
 -- Effect modules
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
@@ -47,6 +45,13 @@ TheWorld.Defs = {
         Rare = 2,
         Legendary = 3,
     },
+    --[[
+    StandModels = {
+        Common = ReplicatedStorage.EffectParts.StandModels.TheWorld_Common,
+        Rare = ReplicatedStorage.EffectParts.StandModels.TheWorld_Rare,
+        Legendary = ReplicatedStorage.EffectParts.StandModels.TheWorld_Legendary,
+    },
+    ]]--
 
     HealthModifier = {
         Common = 10,
@@ -73,25 +78,35 @@ function TheWorld.RemovePower(initPlayer,params)
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
-function TheWorld.Manager(params)
+function TheWorld.Manager(initPlayer,params)
+
+    -- check cooldowns but only on SystemStage "Activate"
+    if params.SystemStage == "Activate" then
+        if Cooldown.IsCooled(initPlayer, params) then
+            params.CanRun = true
+        else
+            params.CanRun = false
+            return params
+        end
+    end
 
     -- call the function
     if params.InputId == "Q" then
-        TheWorld.EquipStand(params)
+        TheWorld.EquipStand(initPlayer,params)
     elseif params.InputId == "E" then
-        TheWorld.Barrage(params)
+        TheWorld.Barrage(initPlayer,params)
     elseif params.InputId == "F" then
-        TheWorld.TimeStop(params)
+        TheWorld.TimeStop(initPlayer,params)
     elseif params.InputId == "T" then
-        TheWorld.KnifeThrow(params)
+        TheWorld.KnifeThrow(initPlayer,params)
     elseif params.InputId == "R" then
-        TheWorld.HeavyPunch(params)
+        TheWorld.HeavyPunch(initPlayer,params)
     elseif params.InputId == "X" then
-        TheWorld.BulletKick(params)
+        TheWorld.BulletKick(initPlayer,params)
     elseif params.InputId == "Z" then
-        TheWorld.StandJump(params)
+        TheWorld.StandJump(initPlayer,params)
     elseif params.InputId == "Mouse1" then
-        TheWorld.Punch(params)
+        TheWorld.Punch(initPlayer,params)
     end
 
     return params
@@ -110,16 +125,45 @@ TheWorld.Defs.Abilities.EquipStand = {
         Rare = ReplicatedStorage.EffectParts.StandModels.TheWorld_Rare,
         Legendary = ReplicatedStorage.EffectParts.StandModels.TheWorld_Legendary,
     },
-    Sounds = {
-        --Equip = sound here,
-        --Remove = sound here
-    }
 }
 
-function TheWorld.EquipStand(params)
+function TheWorld.EquipStand(initPlayer,params)
 
-    --params.AbilityDefs = TheWorld.Defs.Abilities.EquipStand
-    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, TheWorld.Defs.Abilities.EquipStand)
+    -- EQUIP STAND/INITIALIZE
+    if params.SystemStage == "Initialize" then
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+    end
+
+    -- EQUIP STAND/ACTIVATE
+    if params.SystemStage == "Activate" then
+         if params.KeyState == "InputBegan" then
+
+            -- set cooldown
+            Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.EquipStand.Cooldown)
+
+            -- toggle the stand, effect runs off of this toggle
+            if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+            else
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+            end
+        end
+    end
+
+    -- EQUIP STAND/EXECUTE
+    if params.SystemStage == "Execute" then
+         if params.KeyState == "InputBegan" then
+            if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Summon) -- specific stand sound
+                ManageStand.EquipStand(initPlayer,TheWorld.Defs.StandModels[params.PowerRarity])
+            else
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon) -- specific stand sound
+                ManageStand.RemoveStand(initPlayer)            
+            end
+        end
+    end
 end
 
 --------------------------------------------------------------------------------------------------
@@ -131,16 +175,105 @@ TheWorld.Defs.Abilities.Barrage = {
     Name = "Barrage",
     Duration = 5,
     Cooldown = 10,
-    HitEffects = {Damage = {Damage = 5}},
-    Sounds = {
-        --Sound = sound here,
-        --Sound2 = sound here
-    }
+    --loopTime = .25,
+    HitEffects = {Damage = {Damage = 5}}
 }
 
-function TheWorld.Barrage(params)
+function TheWorld.Barrage(initPlayer,params)
 
-    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
+    print("run barrage")
+
+    -- BARRAGE/INIALIZE
+    print("test 1")
+    if params.SystemStage == "Initialize" then
+        if params.KeyState == "InputBegan" then
+            print("test 2")
+            params.CanRun = true
+        end
+        if params.KeyState == "InputEnded" then
+            print("test 3")
+            params.CanRun = true
+        end
+    end
+
+    -- BARRAGE/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+        -- BARRAGE/ACTIVATE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+
+            -- require toggles to be active
+            if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+                params.CanRun = false
+                return params
+            end
+
+            -- require toggles to be inactive, excluding "Q"
+            if not AbilityToggle.RequireOff(initPlayer,{"C","R","T","F","Z","X"}) then
+                params.CanRun = false
+                return params
+            end
+
+            -- only operate if toggle is off
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+                params.CanRun = true
+      
+                params.Barrage = TheWorld.Defs.Abilities.Barrage
+                Barrage.Activate(initPlayer, params)
+
+                -- spawn a function to kill the barrage if the duration expires
+                spawn(function()
+                    wait(TheWorld.Defs.Abilities.Barrage.Duration)
+                    params.KeyState = "InputEnded"
+                    params.CanRun = true
+                    Knit.Services.PowersService:ActivatePower(initPlayer,params)
+                end)
+            end
+        end
+
+        -- BARRAGE/ACTIVATE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+
+            -- only operate if toggle is on
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
+
+                -- set the cooldown
+                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.Barrage.Cooldown)
+
+                -- set toggle
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+                params.CanRun = true
+
+                -- destroy hitbox
+                Barrage.DestroyHitbox(initPlayer, TheWorld.Defs.Abilities.Barrage)
+            end
+        end
+    end
+
+    -- BARRAGE/EXECUTE
+    if params.SystemStage == "Execute" then
+
+        -- BARRAGE/EXECUTE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
+                Barrage.RunEffect(initPlayer,params)
+
+                local soundParams = {}
+                soundParams.SoundProperties = {}
+                soundParams.SoundProperties.Looped = false
+                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage, soundParams)
+            end
+        end
+
+        -- BARRAGE/EXECUTE/INPUT ENDED
+        if params.KeyState == "InputEnded" then
+            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
+                Barrage.EndEffect(initPlayer,params)
+                SoundPlayer.StopWeldedSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.Barrage.Name,.5)
+            end 
+        end
+    end
 end
 
 --------------------------------------------------------------------------------------------------
@@ -156,10 +289,59 @@ TheWorld.Defs.Abilities.TimeStop = {
     HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
 }
 
-function TheWorld.TimeStop(params)
+function TheWorld.TimeStop(initPlayer,params)
 
-    params = require(Knit.Abilities.TimeStop)[params.SystemStage](params, TheWorld.Defs.Abilities.TimeStop)
+    -- TIME STOP/INIALIZE
+    if params.SystemStage == "Initialize" then
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+    end
 
+    -- TIME STOP/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","R","T","E","Z","X"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- TIME STOP/ACTIVATE/INPUT BEGAN
+        if params.KeyState == "InputBegan" then
+
+            spawn(function()
+                Cooldown.SetCooldown(initPlayer, params.InputId, TheWorld.Defs.Abilities.TimeStop.Cooldown)
+                AbilityToggle.SetToggle(initPlayer, params.InputId, true)
+                wait(2) -- this waits for the animations and audio before firing
+                params.TimeStop = TheWorld.Defs.Abilities.TimeStop
+                TimeStop.Activate(initPlayer,params)
+                wait(1)
+                AbilityToggle.SetToggle(initPlayer, params.InputId, false)
+            end)
+
+            params.CanRun = true
+
+        end
+    end
+
+    -- TIME STOP/EXECUTE
+    if params.SystemStage == "Execute" then
+        if params.KeyState == "InputBegan" then
+
+            ManageStand.PlayAnimation(initPlayer,params,"TimeStop")
+            SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.TheWorld.TimeStop)
+            wait(2) -- wait here for the timestop audio
+            local timeStopParams = TheWorld.Defs.Abilities.TimeStop
+            TimeStop.Execute(initPlayer,timeStopParams)
+        end
+    end
 end
 
 --------------------------------------------------------------------------------------------------
@@ -177,6 +359,52 @@ TheWorld.Defs.Abilities.KnifeThrow = {
 
 function TheWorld.KnifeThrow(initPlayer,params)
 
+    -- KNIFE THROW/INITIALIZE
+    if params.SystemStage == "Initialize" then
+        if params.KeyState == "InputBegan" then
+            params.CanRun = true
+        end
+    end
+
+    -- KNIFE THROW/ACTIVATE
+    if params.SystemStage == "Activate" then
+
+        -- require toggles to be active
+        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
+            params.CanRun = false
+            return params
+        end
+
+        -- require toggles to be inactive, excluding "Q"
+        if not AbilityToggle.RequireOff(initPlayer,{"C","R","F","E","Z","X"}) then
+            params.CanRun = false
+            return params
+        end
+
+         -- KNIFE THROW/ACTIVATE/INPUT BEGAN
+         if params.KeyState == "InputBegan" then
+
+            spawn(function()
+                Cooldown.SetCooldown(initPlayer,params.InputId,TheWorld.Defs.Abilities.KnifeThrow.Cooldown)
+                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
+                wait(1)
+                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
+            end)
+
+            params.KnifeThrow = TheWorld.Defs.Abilities.KnifeThrow
+            KnifeThrow.Server_Activate(initPlayer,params)
+
+            params.CanRun = true
+        end
+    end
+
+    -- KNIFE THROW/EXECUTE
+    if params.SystemStage == "Execute" then
+         if params.KeyState == "InputBegan" then
+            SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.GeneralStandSounds.GenericKnifeThrow)
+            KnifeThrow.Client_Execute(initPlayer,params)
+        end
+    end
 end
 
 --------------------------------------------------------------------------------------------------

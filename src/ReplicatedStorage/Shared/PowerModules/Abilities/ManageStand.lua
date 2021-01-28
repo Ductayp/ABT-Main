@@ -2,12 +2,15 @@
 
 --Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
 
 -- Knits and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- Default Stand Anchor Offsets
 local anchors = {}
@@ -17,10 +20,100 @@ anchors.StandJump = CFrame.new(0, -1.25, -3)
 
 local ManageStand = {}
 
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
+
+--// Initialize
+function ManageStand.Initialize(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+	end
+
+	-- define the stand
+	params.StandModel = abilityDefs.StandModels[params.PowerRarity]
+
+	-- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+	end
+
+	-- check the stands toggle and render effects
+	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+		ManageStand.RemoveStand(params)
+	else
+		ManageStand.EquipStand(params)
+	end
+
+end
+
+--// Activate
+function ManageStand.Activate(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+	end
+
+	-- check cooldown
+	if not Cooldown.Server_IsCooled(params) then
+		print("not cooled down")
+		params.CanRun = false
+		return
+	end
+
+	-- set the toggles
+	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+	else
+		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+	end
+
+	-- set cooldown
+	Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+	-- define the stand (do it again to prevent exploits)
+	params.StandModel = abilityDefs.StandModels[params.PowerRarity]
+
+end
+
+--// Execute
+function ManageStand.Execute(params, abilityDefs)
+	print(params)
+
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		return
+	end
+
+	-- check the stands toggle and render effects
+	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+		ManageStand.EquipStand(params)
+	else
+		ManageStand.RemoveStand(params)
+	end
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
 --// equips a stand for the target player
-function ManageStand.EquipStand(initPlayer,standModel)
-	
+function ManageStand.EquipStand(params)
+
 	-- some setup and definitions
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	
 	-- define then clear the players stand folder, just in case :)
@@ -28,7 +121,7 @@ function ManageStand.EquipStand(initPlayer,standModel)
 	playerStandFolder:ClearAllChildren()
 
 	-- clone the stand
-	local newStand = utils.EasyClone(standModel,{Parent = playerStandFolder})
+	local newStand = utils.EasyClone(params.StandModel,{Parent = playerStandFolder})
 
 	-- make it all invisible
 	for i,v in pairs (newStand:GetDescendants()) do 
@@ -48,11 +141,11 @@ function ManageStand.EquipStand(initPlayer,standModel)
 	newWeld.Parent = newStand.HumanoidRootPart
 
 	-- do the auras
-	ManageStand.Aura_On(initPlayer)
+	ManageStand.Aura_On(params)
 	wait(.5)
 	spawn(function()
 		wait(5)
-		ManageStand.Aura_Off(initPlayer)
+		ManageStand.Aura_Off(params)
 	end)
 
 	local spawnTween = TweenService:Create(newWeld,TweenInfo.new(.5),{C1 = anchors.Idle})
@@ -102,17 +195,19 @@ function ManageStand.EquipStand(initPlayer,standModel)
 end
 
 --// removes the stand for the target player
-function ManageStand.RemoveStand(initPlayer,params)
+function ManageStand.RemoveStand(params)
+
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
 	-- do the auras
-	ManageStand.Aura_On(initPlayer,params)
+	ManageStand.Aura_On(params)
 	wait(.2)
 	spawn(function()
 		wait(1)
-		ManageStand.Aura_Off(initPlayer,params)
+		ManageStand.Aura_Off(params)
 	end)
 
 	-- if theres a stand, get rid of it
@@ -163,11 +258,11 @@ end
 
 
 -- PlayAnimation
-function ManageStand.PlayAnimation(initPlayer,params,animationName)
+function ManageStand.PlayAnimation(params, animationName)
 
 	local animationTime
 
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	
 	-- run the animation
@@ -186,10 +281,9 @@ function ManageStand.PlayAnimation(initPlayer,params,animationName)
 end
 
 -- StopAnimation
--- required params: params.AnimationName
-function ManageStand.StopAnimation(initPlayer,params)
+function ManageStand.StopAnimation(params, animationName)
 
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	if not targetStand then
 		return
@@ -199,7 +293,7 @@ function ManageStand.StopAnimation(initPlayer,params)
 	if animationController then
 		local tracks = animationController:GetPlayingAnimationTracks()
 		for i,v in pairs (tracks) do
-			if v.Name == params.AnimationName then
+			if v.Name == animationName then
 				v:Stop()
 			end
 		end
@@ -207,9 +301,9 @@ function ManageStand.StopAnimation(initPlayer,params)
 end
 
 --// Aura_On
-function ManageStand.Aura_On(initPlayer,params)
+function ManageStand.Aura_On(params)
 
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
 	if targetStand then
@@ -222,9 +316,9 @@ function ManageStand.Aura_On(initPlayer,params)
 end
 
 --// Aura_Off
-function ManageStand.Aura_Off(initPlayer,params)
+function ManageStand.Aura_Off(params)
 
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 
 	if targetStand then
@@ -237,8 +331,7 @@ function ManageStand.Aura_Off(initPlayer,params)
 end
 
 -- Move Stand
--- required params: params.AnchorName
-function ManageStand.MoveStand(initPlayer,params)
+function ManageStand.MoveStand(params, anchorName)
 
 	local moveTime = .175
 	if params.MoveTime then
@@ -246,7 +339,8 @@ function ManageStand.MoveStand(initPlayer,params)
 	end
 
 	-- some definitions
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	local standWeld = targetStand:FindFirstChild("StandWeld", true)
@@ -257,7 +351,7 @@ function ManageStand.MoveStand(initPlayer,params)
 	end
 
 	-- move it
-	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(moveTime),{C1 = anchors[params.AnchorName]})
+	local spawnTween = TweenService:Create(standWeld,TweenInfo.new(moveTime),{C1 = anchors[anchorName]})
 	spawnTween:Play()
 
 	return moveTime

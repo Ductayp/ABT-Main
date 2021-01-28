@@ -16,13 +16,41 @@ local utils = require(Knit.Shared.Utils)
 
 local AbilityToggle = {}
 
---// SetToggle
-function AbilityToggle.SetToggle(player,toggleName,toggleValue)
+--// QuickToggle this sets the toggle for a brief time, then it puts it back to original value
+function AbilityToggle.QuickToggle(userId, toggleName, toggleValue)
 
     -- get the Toggle folder inside the players PowerStatus folder, make it if it doesnt exist
-    local toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    local toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
     if not toggleFolder then
-        toggleFolder = utils.EasyInstance("Folder", {Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[player.userId]})
+        toggleFolder = utils.EasyInstance("Folder", {Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[userId]})
+    end
+
+    -- find if a BoolValue already exists, make it if not
+    thisToggle = toggleFolder:FindFirstChild(toggleName)
+    if not thisToggle then
+        thisToggle = Instance.new("BoolValue")
+        thisToggle.Name = toggleName
+        thisToggle.Parent = toggleFolder
+    end
+
+    spawn(function()
+        local originalValue = thisToggle.Value
+        thisToggle.Value = toggleValue
+    
+        wait(2) -- the standard quick toggle wait
+    
+        thisToggle.Value = originalValue
+    end)
+    
+end
+
+--// SetToggle
+function AbilityToggle.SetToggle(userId, toggleName, toggleValue)
+
+    -- get the Toggle folder inside the players PowerStatus folder, make it if it doesnt exist
+    local toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
+    if not toggleFolder then
+        toggleFolder = utils.EasyInstance("Folder", {Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[userId]})
     end
 
     -- find if a BoolValue already exists, make it if not
@@ -35,15 +63,17 @@ function AbilityToggle.SetToggle(player,toggleName,toggleValue)
 
     thisToggle.Value = toggleValue
 
+    return thisToggle
+
 end
 
 --// GetToggleValue
 --// check if a toggle exists. Only returns true if it exists and is true, otherwise returns false.
-function AbilityToggle.GetToggleValue(player,toggleName)
+function AbilityToggle.GetToggleValue(userId, toggleName)
 
     local returnValue = false
 
-    local toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    local toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
     if toggleFolder then
         thisToggle = toggleFolder:FindFirstChild(toggleName)
         if thisToggle then
@@ -56,11 +86,11 @@ function AbilityToggle.GetToggleValue(player,toggleName)
 end
 
 --// GetToggleObject -- gets the toggle object, crates it if it doesnt exists and sets to false, then returns it
-function AbilityToggle.GetToggleObject(player,toggleName)
+function AbilityToggle.GetToggleObject(userId, toggleName)
 
-    toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
     if not toggleFolder then
-        toggleFolder = utils.EasyInstance("Folder", {Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[player.userId]})
+        toggleFolder = utils.EasyInstance("Folder", {Name = "Toggles", Parent = ReplicatedStorage.PowerStatus[userId]})
     end
 
     local thisToggle = toggleFolder:FindFirstChild(toggleName)
@@ -70,10 +100,12 @@ function AbilityToggle.GetToggleObject(player,toggleName)
         thisToggle.Value = false
         thisToggle.Parent = toggleFolder
     end
+
     return thisToggle
 
 end
 
+--[[
 --// RequireFalse - dont use this any more
 function AbilityToggle.RequireFalse(player,toggleNamesArray)
 
@@ -120,12 +152,13 @@ function AbilityToggle.RequireTrue(player,toggleNamesArray)
 
     return returnValue
 end
+]]--
 
 --// RequireOn - this is the one to use
-function AbilityToggle.RequireOn(player,toggleNamesArray)
+function AbilityToggle.RequireOn(userId, toggleNamesArray)
 
     local allTogglesOn = true -- start with true, if any in the array fail, it returns false
-    toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
     if toggleFolder then
         for _,toggleName in pairs(toggleNamesArray) do
             for _,toggleObject in pairs(toggleFolder:GetChildren()) do
@@ -146,10 +179,10 @@ function AbilityToggle.RequireOn(player,toggleNamesArray)
 end
 
 --// RequireOff - this is the one to use
-function AbilityToggle.RequireOff(player,toggleNamesArray)
+function AbilityToggle.RequireOff(userId,toggleNamesArray)
 
     local allTogglesOn = true -- start with true, if any toggles are on, we set it to false and return
-    toggleFolder = ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Toggles")
+    toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
     if toggleFolder then
         for _,toggleName in pairs(toggleNamesArray) do
             for _,toggleObject in pairs(toggleFolder:GetChildren()) do

@@ -50,12 +50,12 @@ function PowersService:ActivatePower(player,params)
     local powerModule = require(Knit.Powers[params.PowerID])
     params.SystemStage = "Activate"
     params.CanRun = false
-    params = powerModule.Manager(player,params) -- pass the params in and in parmas.CanRun comes back true then we can move on
-    --powerModule.Manager(player,params)
+    params.InitUserId = player.UserId -- reset this to the player who sent the remote
+    params = powerModule.Manager(params) -- pass the params in and in parmas.CanRun comes back true then we can move on
 
     -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun == true then
-        self.Client.ExecutePower:FireAll(player,params)
+        self.Client.ExecutePower:FireAll(params)
     end
 end
 
@@ -452,42 +452,6 @@ function PowersService:KnitInit()
         self:PlayerCleanup(player)
     end)
     
-    -- Buttons setup - this is for testing, delete it later
-    local standButtons = Workspace:FindFirstChild("StandButtons", true)
-    for i,v in pairs (standButtons:GetChildren()) do
-        if v:IsA("BasePart") then
-            local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
-            v.Touched:Connect(function(hit)
-
-                if dbValue.Value == false then
-                    dbValue.Value = true
-                    local humanoid = hit.Parent:FindFirstChild("Humanoid")
-                    if humanoid then
-                        local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
-                        if player then
-
-                            if player:IsInGroup(3486129) then                    
-                                print "Player is in the Group: Planet Milo" 
-                                local params = {}
-                                params.Power = v.Name
-                                params.Rarity = "Common"
-                                params.Xp = 7800
-
-                                local HttpService = game:GetService("HttpService")
-                                params.GUID = HttpService:GenerateGUID(false)
-
-                                print("button goes beep")
-                                self:SetCurrentPower(player,params)    
-                             end
-                            
-                        end
-                    end
-                    wait(5)
-                    dbValue.Value = false
-                end
-            end)
-        end
-    end
 
     local standButtons2 = Workspace:FindFirstChild("StandButtons2", true)
     for i,v in pairs (standButtons2:GetChildren()) do

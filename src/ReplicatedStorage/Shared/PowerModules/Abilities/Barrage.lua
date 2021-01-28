@@ -2,6 +2,7 @@
 
 -- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local Workspace = game:GetService("Workspace")
 
@@ -9,8 +10,8 @@ local Workspace = game:GetService("Workspace")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local ManageStand = require(Knit.Abilities.ManageStand)
-local DamageEffect = require(Knit.Effects.Damage)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- local variables
 local armSpawnRate = .05
@@ -19,18 +20,156 @@ local damageLoopTime = 0.25
 
 local Barrage = {}
 
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
+
+--// Initialize
+function Barrage.Initialize(params, abilityDefs)
+	
+
+	-- InputBegan
+	if params.KeyState == "InputBegan" then
+
+		-- check cooldown
+		if not Cooldown.Client_IsCooled(params) then
+			params.CanRun = false
+			return
+		end
+
+		if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
+			params.CanRun = false
+			return params
+		end
+
+		-- require toggles to be inactive, excluding "Q"
+		if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","F","Z","X"}) then
+			params.CanRun = false
+			return params
+		end
+
+		-- only operate if toggle is off
+		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
+
+			--params.Local_BarrageToggle = AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", true)
+			AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", true)
+			Barrage.RunEffect(params)
+
+			-- spawn a function to kill the barrage if the duration expires
+			spawn(function()
+				wait(abilityDefs.Duration)
+				AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", false)
+				Barrage.EndEffect(params)
+			end)
+		end
+
+		params.CanRun = true
+	end
+
+	-- InputEnded
+	if params.KeyState == "InputEnded" then
+
+		if AbilityToggle.GetToggleValue(params.InitUserId, "Local_BarrageToggle") == true then
+			AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", false)
+			Barrage.EndEffect(params)
+		end
+
+		params.CanRun = true
+	end
+
+
+end
+
+--// Activate
+function Barrage.Activate(params, abilityDefs)
+
+	-- InputBegan
+	if params.KeyState == "InputBegan" then
+
+		-- check cooldown
+		if not Cooldown.Server_IsCooled(params) then
+			params.CanRun = false
+			return
+		end
+
+		if not AbilityToggle.RequireOn(params.InitUserId, {"Q"}) then
+			params.CanRun = false
+			return params
+		end
+
+		-- require toggles to be inactive, excluding "Q"
+		if not AbilityToggle.RequireOff(params.InitUserId, {"C","R","T","F","Z","X"}) then
+			params.CanRun = false
+			return params
+		end
+
+		-- only operate if toggle is off
+		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
+
+			AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+			Barrage.CreateHitbox(params, abilityDefs)
+
+			-- set cooldown
+			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+			-- spawn a function to kill the barrage if the duration expires
+			spawn(function()
+				wait(abilityDefs.Duration)
+				AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+				Barrage.DestroyHitbox(params, abilityDefs)
+			end)
+		end
+	end
+
+	-- InputEnded
+	if params.KeyState == "InputEnded" then
+
+		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+			Barrage.DestroyHitbox(params)
+		end
+	end
+
+	params.CanRun = true
+	
+end
+
+--// Execute
+function Barrage.Execute(params, abilityDefs)
+
+	-- do not render for initPlayer
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		return
+	end
+
+	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+		Barrage.RunEffect(params)
+	else
+		Barrage.EndEffect(params)
+	end
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
 --// Server Create Hitbox -- we have a unique hitbox for Barrage
-function Barrage.Activate(initPlayer,params)
+function Barrage.CreateHitbox(params, abilityDefs)
+
+	-- get initPlayer
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
 	-- basic part setup
 	local newHitBox = Instance.new("Part")
-	newHitBox.Size = Vector3.new(4,5,5.5)
+	newHitBox.Size = Vector3.new(4,5,7.5)
 	newHitBox.Massless = true
-    newHitBox.Transparency = 1
+    newHitBox.Transparency = .5
 	newHitBox.CanCollide = false
-	newHitBox.Parent = workspace.ServerHitboxes[initPlayer.UserId]
+	newHitBox.Parent = Workspace.ServerHitboxes[params.InitUserId]
 	newHitBox.Name = "Barrage"
-	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4))
+	newHitBox.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-6))
 	
 	-- weld it
 	local hitboxWeld = utils.EasyWeld(newHitBox,initPlayer.Character.HumanoidRootPart,newHitBox)
@@ -53,7 +192,7 @@ function Barrage.Activate(initPlayer,params)
 
 			if charactersHit ~= nil then
 				for characterHit,boolean in pairs (charactersHit) do -- we stored the character hit in the InputId above-- setup DamageEffect params
-					Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.Barrage.HitEffects)
+					Knit.Services.PowersService:RegisterHit(initPlayer, abilityDefs.HitEffects)
 				end
 			end	
 
@@ -74,15 +213,17 @@ function Barrage.Activate(initPlayer,params)
 end
 
 --// Server Destroy Hitbox
-function Barrage.DestroyHitbox(initPlayer, params)
-	local destroyHitbox = workspace.ServerHitboxes[initPlayer.UserId]:ClearAllChildren()
+function Barrage.DestroyHitbox(params)
+	local destroyHitbox = workspace.ServerHitboxes[params.InitUserId]:ClearAllChildren()
 end
 
 --// Shoot Arm 
-function Barrage.ShootArm(initPlayer, params)
+function Barrage.ShootArm(initPlayer, effectArm)
+
+	print("shoot")
 
 	-- clone a single arm and parent it, add it to the Debris
-	local newArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]:Clone()
+	local newArm = effectArm:Clone()
 	newArm.Parent = Workspace.RenderedEffects
 	Debris:AddItem(newArm, armDebrisTime)
 
@@ -100,36 +241,48 @@ function Barrage.ShootArm(initPlayer, params)
 end
 
 --// Run Effect
-function Barrage.RunEffect(initPlayer,params)
+function Barrage.RunEffect(params)
+
+	print(params)
 
 	-- setup the stand, if its not there then dont run return
-	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
 		return
 	end
 
 	-- move stand and play Barrage animation
-	ManageStand.PlayAnimation(initPlayer,params,"Barrage")
-	ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
-
-	-- setup coroutine and run it while the toggle is on
-	local thisToggle = AbilityToggle.GetToggleObject(initPlayer,params.InputId) -- we need the toggle to know when to shut off the spawner
+	ManageStand.PlayAnimation(params, "Barrage")
+	ManageStand.MoveStand(params, "Front")
 
 	-- spawn the arms shooter
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]
+
+	local thisToggle
+	if params.SystemStage == "Initialize" then
+		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Local_BarrageToggle")
+	else
+		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, params.InputId)
+	end
+
 	spawn(function()
 		while thisToggle.Value == true  do
-			Barrage.ShootArm(initPlayer, params)
+			Barrage.ShootArm(initPlayer, effectArm)
 			wait(armSpawnRate)
 		end
 	end)
+
 end
 
 --// End Effect
-function Barrage.EndEffect(initPlayer,params)
+function Barrage.EndEffect(params)
+
+	print("END EFFECT")
 
 	-- stop animation and move stand to Idle
-	ManageStand.StopAnimation(initPlayer,{AnimationName = "Barrage"})
-	ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
+	ManageStand.StopAnimation(params, "Barrage")
+	ManageStand.MoveStand(params, "Idle")
 end
 
 

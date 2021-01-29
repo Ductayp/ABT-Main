@@ -242,12 +242,10 @@ end
 --// Run Effect
 function Barrage.RunEffect(params)
 
-	print(params)
-
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
-		return
+		ManageStand.QuickRender(params)
 	end
 
 	-- move stand and play Barrage animation

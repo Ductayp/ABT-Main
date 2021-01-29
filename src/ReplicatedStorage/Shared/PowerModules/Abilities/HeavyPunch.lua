@@ -3,6 +3,7 @@
 -- 12-1-2020
 
 --Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
@@ -11,72 +12,174 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
-local DamageEffect = require(Knit.Effects.Damage)
-local SimpleHitbox = require(Knit.PowerUtils.SimpleHitbox)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
+local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
+
+local HITBOX_DELAY = 0.3
 
 local HeavyPunch = {}
 
-function HeavyPunch.Activate(initPlayer,params)
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
+
+--// Initialize
+function HeavyPunch.Initialize(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
     
-    -- save the original walkspeed and slow the player down
-    --local originalWalkSpeed = initPlayer.Character.Humanoid.WalkSpeed
-    initPlayer.Character.Humanoid.WalkSpeed = 0
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+    -- tween effects
+    spawn(function()
+        HeavyPunch.Run_Effects(params, abilityDefs)
+    end)
+	
+end
+
+--// Activate
+function HeavyPunch.Activate(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+
+     -- require toggles to be inactive, excluding "Q"
+     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
+        params.CanRun = false
+        return params
+    end
+
+	-- set cooldown
+    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+    -- set toggle
+    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+
+    -- tween hitbox
+    HeavyPunch.Run_HitBox(params, abilityDefs)
+
+end
+
+--// Execute
+function HeavyPunch.Execute(params, abilityDefs)
+
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		return
+	end
+
+    -- tween effects
+	HeavyPunch.Run_Effects(params, abilityDefs)
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
+function HeavyPunch.Run_HitBox(params, abilityDefs)
+
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    
+    -- handle walkspeed
+    spawn(function()
+        initPlayer.Character.Humanoid.WalkSpeed = 0
+        wait(1)
+        initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+    end)
+
 
     -- spawn function for hitbox with a delay
     spawn(function()
-        wait(.5)
+        wait(HITBOX_DELAY)
 
-        -- make a new hitbox, it stays in place
-        local boxParams = {}
-        boxParams.Size = Vector3.new(4,3,12)
-        boxParams.Transparency = 1
-        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
-        
-        local hitParams = {}
-        hitParams.Damage = params.HeavyPunch.Damage
+        -- clone out a new hitpart
+        local hitPart = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.HitBox:Clone()
+        hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
+        hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
+        Debris:AddItem(hitPart, .6)
 
-        local newHitbox = SimpleHitbox.NewHitBox(initPlayer,boxParams,hitParams)
-        Debris:AddItem(newHitbox, .5)
+        -- make a new hitbox
+        local newHitbox = RaycastHitbox:Initialize(hitPart)
+        newHitbox:HitStart()
+        --newHitbox:DebugMode(true)
 
-        newHitbox.ChildAdded:Connect(function(hit)
-            if hit.Name == "CharacterHit" then
-                if hit.Value ~= initPlayer.Character then
-                    local characterHit = hit.Value
-                    Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.HeavyPunch.HitEffects)
-                end
-            end
+        -- Makes a new event listener for raycast hits
+        newHitbox.OnHit:Connect(function(hit, humanoid)
+            print(hit)
+            --humanoid:TakeDamage(50)
+            print("HIT HUMANOID")
+            Knit.Services.PowersService:RegisterHit(initPlayer, humanoid.Parent, abilityDefs.HitEffects)
         end)
 
-        -- pause the restore the players WalkSpeed
-        wait(1)
-        local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
-        initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
-        
+        -- tween the hitbox a tiny bit to register hits
+        local tweenInfo = TweenInfo.new(.7)
+        local tween = TweenService:Create(hitPart, tweenInfo, {CFrame = hitPart.CFrame * CFrame.new(0,0,-3)})
+        tween:Play()
+
     end)
 end
 
-function HeavyPunch.Execute(initPlayer,params)
+function HeavyPunch.Run_Effects(params, abilityDefs)
+
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
     -- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
-		return
+		targetStand = ManageStand.QuickRender(params)
     end
 
     --move the stand and do animations
-    local moveTime = ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
-    ManageStand.PlayAnimation(initPlayer,params,"HeavyPunch")
-    ManageStand.Aura_On(initPlayer)
     spawn(function()
+        local moveTime = ManageStand.MoveStand(params, "Front")
+        ManageStand.PlayAnimation(params, "HeavyPunch")
+        ManageStand.Aura_On(params)
         wait(1.5)
-        ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
+        ManageStand.MoveStand(params, "Idle")
         wait(.5)
-        ManageStand.Aura_Off(initPlayer)
+        ManageStand.Aura_Off(params)
     end)
 
-    -- wait the time it takes the stand to move
-    wait(moveTime + 0.25)
+    --local ping = Knit.Controllers.PlayerUtilityController:GetPing()
+    --if params.SystemStage == "Initialize" then
+        --newFlightTime = flightTime + ping -- this is the initPlayer, add their ping to flight time so it syncs with hitbox
+    --else
+       -- newFlightTime = flightTime - ping-- this is the all other players, subtract their ping to flight time so it syncs with hitbox
+    --end
+    wait(.2)
 
     -- animate things
     local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
@@ -157,11 +260,6 @@ function HeavyPunch.Execute(initPlayer,params)
     wait(0.05)
     ring_3_FadeIn:Play()
     ring_3_Move:Play()
-    
-    
-
-
-
 
 end
 

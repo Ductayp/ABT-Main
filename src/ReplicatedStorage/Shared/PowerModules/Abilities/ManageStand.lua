@@ -193,6 +193,46 @@ function ManageStand.EquipStand(params)
 
 end
 
+--// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. I also returns the stand
+function ManageStand.QuickRender(params)
+
+	-- some setup and definitions
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
+
+	-- define then clear the players stand folder, just in case :)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
+	playerStandFolder:ClearAllChildren()
+
+	-- clone the stand
+	local newStand = utils.EasyClone(params.StandModel,{Parent = playerStandFolder})
+
+	-- cframe and weld
+	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame --initPlayerRoot.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
+
+	local newWeld = Instance.new("Weld")
+	newWeld.Name = "StandWeld"
+	newWeld.C1 =  anchors.Idle
+	newWeld.Part0 = initPlayerRoot
+	newWeld.Part1 = newStand.HumanoidRootPart
+	newWeld.Parent = newStand.HumanoidRootPart
+
+	-- run the idle animation
+	local animationController = newStand:FindFirstChild("AnimationController")
+	if animationController then
+		local idleAnimation = animationController:FindFirstChild("Idle")
+		if idleAnimation then
+			local newTrack = animationController:LoadAnimation(idleAnimation)
+			newTrack:Play()
+		else
+			print("cant find animation")
+		end
+	end
+
+	return newStand
+
+end
+
 --// removes the stand for the target player
 function ManageStand.RemoveStand(params)
 
@@ -332,8 +372,10 @@ end
 -- Move Stand
 function ManageStand.MoveStand(params, anchorName)
 
+	print("ManageStand.MoveStand",params, anchorName)
+
 	local moveTime = .175
-	if params.MoveTime then
+	if params.MoveTime ~= nil then
 		moveTime = params.MoveTime
 	end
 

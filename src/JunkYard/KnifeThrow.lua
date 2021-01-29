@@ -11,19 +11,97 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-
---local PingTimes = require(Knit.Shared.PingTime)
-
-
--- Ability modules
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
-
--- Effect modules
-local Damage = require(Knit.Effects.Damage)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 local KnifeThrow = {}
 
-function KnifeThrow.Server_Activate(initPlayer,params)
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
+
+--// Initialize
+function KnifeThrow.Initialize(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+    -- tween effects
+	KnifeThrow.Tween_Effects(params, abilityDefs)
+
+end
+
+--// Activate
+function KnifeThrow.Activate(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+
+     -- require toggles to be inactive, excluding "Q"
+     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
+        params.CanRun = false
+        return params
+    end
+
+	-- set cooldown
+    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+    -- set toggle
+    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+
+    -- tween hitbox
+    --KnifeThrow.Tween_HitBox(params, abilityDefs)
+
+end
+
+--// Execute
+function KnifeThrow.Execute(params, abilityDefs)
+
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		return
+	end
+
+    -- tween effects
+	KnifeThrow.Tween_Effects(params, abilityDefs)
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
+function KnifeThrow.Tween_HitBox(params, abilityDefs)
 
 
     local hitPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Server:Clone()
@@ -90,36 +168,39 @@ function KnifeThrow.Server_Activate(initPlayer,params)
     end)
 end
 
-function KnifeThrow.Client_Execute(initPlayer,params)
+function KnifeThrow.Tween_Effects(params, abilityDefs)
+
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
     -- setup the stand, if its not there then dont run return
-	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
-		return
+		ManageStand.QuickRender(params)
     end
 
     -- run animation
-    ManageStand.PlayAnimation(initPlayer,params,"KnifeThrow")
-    local moveTime = ManageStand.MoveStand(initPlayer,{AnchorName = "Front"})
+    ManageStand.PlayAnimation(params, "KnifeThrow")
+    ManageStand.MoveStand(params, {AnchorName = "Front"})
     spawn(function()
         wait(.5)
-        ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
+        ManageStand.MoveStand(params, {AnchorName = "Idle"})
     end)
 
     -- clone in all parts
     local mainPart = ReplicatedStorage.EffectParts.Abilities.KnifeThrow.KnifeThrow_Client:Clone()
+    --mainPart.Name = "MainPart" -- name it so its easy to find later 
     mainPart.Parent = workspace.RenderedEffects
-    mainPart.CFrame = params.OriginCFrame
-    mainPart.Name = "MainPart" -- name it so its easy to find later 
+    --mainPart.CFrame = params.OriginCFrame
+    
 
     -- Tween the thrown parts
     local ping = Knit.Controllers.PlayerUtilityController:GetPing()
     local newSpeed = params.FlightTime - ping
     local tweenInfo2 = TweenInfo.new(newSpeed, Enum.EasingStyle.Linear)
-    --local tweenInfo2 = TweenInfo.new(params.FlightTime, Enum.EasingStyle.Linear)
     local tweenMainPart = TweenService:Create(mainPart,tweenInfo2,{CFrame = params.DestinatonCFrame})
 
-    -- CFrame the parts A SECOND TIME right before we launch them
+    -- CFrame the parts right before we launch them
     mainPart.CFrame = params.OriginCFrame
     tweenMainPart:Play()
 

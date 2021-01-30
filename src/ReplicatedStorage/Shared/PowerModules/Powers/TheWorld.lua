@@ -59,7 +59,6 @@ TheWorld.Defs = {
 
 --// SETUP - run this once when the stand is equipped
 function TheWorld.SetupPower(initPlayer,params)
-    print("setup", params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rarity], nil)
@@ -104,6 +103,7 @@ end
 -- defs
 TheWorld.Defs.Abilities.EquipStand = {
     Name = "Equip Stand",
+    Id = "EquipStand",
     Cooldown = 5,
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.TheWorld_Common,
@@ -118,7 +118,6 @@ TheWorld.Defs.Abilities.EquipStand = {
 
 function TheWorld.EquipStand(params)
 
-    --params.AbilityDefs = TheWorld.Defs.Abilities.EquipStand
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, TheWorld.Defs.Abilities.EquipStand)
 end
 
@@ -144,7 +143,6 @@ TheWorld.Defs.Abilities.Barrage = {
 function TheWorld.Barrage(params)
 
     params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
-
 end
 --------------------------------------------------------------------------------------------------
 --// TIME STOP //---------------------------------------------------------------------------------
@@ -153,6 +151,7 @@ end
 -- defs
 TheWorld.Defs.Abilities.TimeStop = {
     Name = "Time Stop",
+    Id = "TimeStop",
     Duration = 8,
     Cooldown = 9,
     Range = 150,
@@ -164,7 +163,6 @@ TheWorld.Defs.Abilities.TimeStop = {
 function TheWorld.TimeStop(params)
 
     params = require(Knit.Abilities.TimeStop)[params.SystemStage](params, TheWorld.Defs.Abilities.TimeStop)
-
 end
 
 --------------------------------------------------------------------------------------------------
@@ -206,6 +204,7 @@ end
 --defs
 TheWorld.Defs.Abilities.HeavyPunch = {
     Name = "Heavy Punch",
+    Id = "HeavyPunch",
     Cooldown = 3,
     RequireToggle_On = {"Q"},
     RequireToggle_Off = {"C","T","F","E","Z","X"},
@@ -224,12 +223,17 @@ end
 -- defs
 TheWorld.Defs.Abilities.BulletKick = {
     Name = "Bullet Kick",
+    Id = "BulletKick",
     Cooldown = 5,
-    HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
+    RequireToggle_On = {"Q"},
+    RequireToggle_Off = {"C","T","F","E","Z","R"},
+    AbilityMod = Knit.AbilityMods.TripleKick_BulletKick,
+    --HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
 }
 
 function TheWorld.BulletKick(params)
 
+    params = require(Knit.Abilities.TripleKick)[params.SystemStage](params, TheWorld.Defs.Abilities.BulletKick)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -239,6 +243,7 @@ end
 -- defs
 TheWorld.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
+    Id = "StandJump",
     Duration = .3,
     Cooldown = 5,
     Velocity_XZ = 2700,
@@ -257,6 +262,7 @@ end
 -- defs
 TheWorld.Defs.Abilities.Punch = {
     Name = "Punch",
+    Id = "Punch",
     HitEffects = {Damage = {Damage = 5}}
 }
 

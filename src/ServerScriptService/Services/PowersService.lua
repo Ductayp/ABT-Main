@@ -161,7 +161,6 @@ function PowersService.Client:GetLevelFromXp(player, standXp, standRarity) -- pl
 end
 
 
-
 --// AwardXpForKill
 function PowersService:AwardXp(player, xpValue)
 
@@ -210,7 +209,7 @@ end
 
 
 --// RegisterHit
-function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
+function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
     -- setup some variables
     local canHit = false
@@ -245,7 +244,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, hitEffects)
    
     -- do hitEffects if canHit is true
     if canHit == true then
-        for effect,effectParams in pairs(hitEffects) do
+        for effect,effectParams in pairs(abilityDefs.HitEffects) do
             require(Knit.Effects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
         end
     end
@@ -261,42 +260,6 @@ end
 function PowersService:RenderEffect_SinglePlayer(player,effect,params)
     self.Client.RenderEffect:Fire(player,effect,params)
 end
-
---[[
--- RenderExistingStands  -- fired when the player first joins, will render any existing stands in the game
-function PowersService:RenderExistingStands(player)
-
-    spawn(function()
-		for _,targetPlayer in pairs(Players:GetPlayers()) do
-			if player ~= targetPlayer then
-
-				print("player loading in: ",player)
-				print("player to check for render:",targetPlayer)
-  
-                local targetPlayerData = Knit.Services.PlayerDataService:GetPlayerData(targetPlayer)
-                local params = {}
-                params.PowerID = targetPlayerData.Character.CurrentPower
-                params.KeyState = "InputBegan"
-                params.InputId = "Q" -- "Q" is always EqupiStand toggle
-                params.CanRun = true
-
-                local abilityToggleFolder = ReplicatedStorage.PowerStatus[targetPlayer.UserId]:FindFirstChild("Toggles")
-                if not abilityToggleFolder then
-                    return
-                end
-				local standToggle = abilityToggleFolder:FindFirstChild("Q")
-
-				if standToggle then
-                    if standToggle.Value == true then
-						self.Client.RenderExistingStands:Fire(player,targetPlayer,params)
-					end
-                end
-			end
-		end
-    end)
-end
-
-]]--
 
 --// SetPower -- sets the players current power
 function PowersService:SetCurrentPower(player,params)
@@ -381,9 +344,6 @@ function PowersService:PlayerAdded(player)
     -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
     self:PlayerRefresh(player)
 
-    -- render existing stands
-    --self:RenderExistingStands(player)
-
     -- setup the current powers
     local character = player.Character or player.CharacterAdded:Wait()
     if character then
@@ -445,7 +405,6 @@ function PowersService:KnitInit()
     local serverHitboxes = utils.EasyInstance("Folder",{Name = "ServerHitboxes",Parent = workspace})
     local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
-
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)

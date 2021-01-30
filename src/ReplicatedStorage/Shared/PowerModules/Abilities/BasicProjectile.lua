@@ -15,7 +15,7 @@ local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
-local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
+local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 
 
 local BasicProjectile = {}
@@ -113,17 +113,11 @@ function BasicProjectile.Tween_HitBox(params, abilityDefs)
     local hitPart = abilityDefs.HitBox:Clone()
     hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
     hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6))
-    hitPart:SetNetworkOwner(nil)
 
     -- make a new hitbox
-    local newHitbox = RaycastHitbox:Initialize(hitPart)
+    local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart)
     newHitbox:HitStart()
     --newHitbox:DebugMode(true)
-
-    -- Makes a new event listener for raycast hits
-    newHitbox.OnHit:Connect(function(hit, humanoid)
-        Knit.Services.PowersService:RegisterHit(initPlayer, humanoid.Parent, abilityDefs.HitEffects)
-    end)
 
     -- calculate flight data
     local destinatonCFrame = hitPart.CFrame:ToWorldSpace(CFrame.new( 0, 0, - abilityDefs.Range))

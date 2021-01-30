@@ -13,6 +13,7 @@
 ]]--
 
 -- services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
@@ -21,6 +22,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersController = Knit.CreateController { Name = "PowersController" }
 local PowersService = Knit.GetService("PowersService")
 local BlockInput = require(Knit.Effects.BlockInput)
+local utils = require(Knit.Shared.Utils)
 
 --// InitializePower
 function PowersController:InitializePower(params)
@@ -47,7 +49,6 @@ function PowersController:InitializePower(params)
     params.SystemStage = "Initialize"
     params.CanRun = false
     params.InitUserId = Players.localPlayer.UserId
-    --local params = powerModule.Manager(Players.localPlayer,params)
     local params = powerModule.Manager(params)
 
     -- if INITIALIZE stage returns CanRun == true then we fire it off the the server
@@ -60,10 +61,12 @@ end
 
 --// ExecutePower
 function PowersController:ExecutePower(params)
-    params.SystemStage = "Execute"
     local powerModule = require((Knit.Powers[params.PowerID]))
+    params.SystemStage = "Execute"
     powerModule.Manager(params)
 end
+
+
 
 --// RenderEffect -- render general effects
 function PowersController:RenderEffect(effect,params)
@@ -72,28 +75,68 @@ function PowersController:RenderEffect(effect,params)
     effectModule.Client_RenderEffect(params)
 end
 
---[[
---// RenderExistingStands
-function PowersController:RenderExistingAbility(targetPlayer,params)
-    self:ExecutePower(targetPlayer,params)
-end 
-]]--
+--// QuickRenderStands
+function PowersController:QuickRenderStand(params)
+
+    print(params)
+
+    --check for initplayers stand tracker
+    local standTracker = Workspace.PlayerStands.StandTracker:FindFirstChild(params.InitUserId)
+
+    -- if the standTracker exists, there should be a stand, lets try to find it
+    local doRender = true -- start with true and prove it. Set to false if we find the stand
+    if standTracker then
+        playerStandFolder =  Workspace.PlayerStands:FindFirstChild(params.InitUserId)
+        if playerStandFolder then
+            local playerStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+            if playerStand then
+                doRender = false
+            end
+        end
+    end
+
+    -- if doRedner is still true, QuickRender the stand
+    if doRender then
+        require(Knit.Abilities.ManageStand).QuickRender(params)
+    end
+
+end
 
 --// RenderExistingStands
 function PowersController:RenderExistingStands()
-    for _, player in pairs(Players:GetPlayers()) do
-        local thisPlayersPower = PowersService.GetCurrentPower(player)
-        --for _,toggle in pairs() do
-            --print(thisPlayersPower)
-        --end
+    
+    for _, folder in pairs(Workspace.PlayerStands:GetChildren()) do
+
+        -- only run this on other players
+        if folder.Name ~= Players.LocalPlayer.UserId then
+
+            local equippedStand = folder:FindFirstChild("EquippedStand")
+            if equippedStand then
+                local thisStand = folder:FindFirstChildWhichIsA("Model")
+                if not thisStand then
+                    print("WE NEED TO RENDER A STAND!!!!")
+                    params = {}
+                    params.InitUserId = folder.Name
+                    params.StandModel = equippedStand.Value
+                    require(Knit.Abilities.ManageStand).QuickRender(params)
+                end
+            end
+        end
     end
 end 
 
 --// KnitStart
 function PowersController:KnitStart()
 
-    self:RenderExistingStands()
-
+    -- redner existing stands on join
+    spawn(function()
+        self:RenderExistingStands()
+        wait(10)
+        self:RenderExistingStands()
+        wait(60)
+        self:RenderExistingStands()
+    end)
+    
     PowersService.ExecutePower:Connect(function(initPlayer,params)
         self:ExecutePower(initPlayer,params)
     end)
@@ -101,13 +144,6 @@ function PowersController:KnitStart()
     PowersService.RenderEffect:Connect(function(effect,params)
         self:RenderEffect(effect,params)
     end)
-
-    --[[
-    PowersService.RenderExistingStands:Connect(function(targetPlayer,params)
-        local standFolder = workspace:waitForChild("PlayerStands") -- this wait is here just to be sure the workspace folder has fullyloaded for the new player
-        self:RenderExistingAbility(targetPlayer,params)
-    end)
-    ]]--
 
 end
 

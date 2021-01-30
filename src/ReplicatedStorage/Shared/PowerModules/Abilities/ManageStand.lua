@@ -35,9 +35,6 @@ function ManageStand.Initialize(params, abilityDefs)
 		return
 	end
 
-	-- define the stand
-	params.StandModel = abilityDefs.StandModels[params.PowerRarity]
-
 	-- check cooldown
 	if not Cooldown.Client_IsCooled(params) then
 		params.CanRun = false
@@ -46,9 +43,13 @@ function ManageStand.Initialize(params, abilityDefs)
 
 	-- check the stands toggle and render effects
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
-		ManageStand.RemoveStand(params)
+		spawn(function()
+			ManageStand.RemoveStand(params, abilityDefs)
+		end)
 	else
-		ManageStand.EquipStand(params)
+		spawn(function()
+			ManageStand.EquipStand(params, abilityDefs)
+		end)
 	end
 
 end
@@ -70,18 +71,27 @@ function ManageStand.Activate(params, abilityDefs)
 		return
 	end
 
-	-- set the toggles
+	-- set the toggles and StandTracker
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	local equippedStand = playerStandFolder:FindFirstChild("EquippedStand")
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+
+		if equippedStand then
+			equippedStand:Destroy()
+		end
 	else
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+
+		if not equippedStand then
+			local thisStand = abilityDefs.StandModels[params.PowerRarity]
+			equippedStand = utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = playerStandFolder, Value = thisStand})
+		end
 	end
 
 	-- set cooldown
 	Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-
-	-- define the stand (do it again to prevent exploits)
-	params.StandModel = abilityDefs.StandModels[params.PowerRarity]
 
 end
 
@@ -96,9 +106,13 @@ function ManageStand.Execute(params, abilityDefs)
 
 	-- check the stands toggle and render effects
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
-		ManageStand.EquipStand(params)
+		spawn(function()
+			ManageStand.EquipStand(params, abilityDefs)
+		end)
 	else
-		ManageStand.RemoveStand(params)
+		spawn(function()
+			ManageStand.RemoveStand(params, abilityDefs)
+		end)
 	end
 
 end
@@ -109,7 +123,7 @@ end
 --// --------------------------------------------------------------------
 
 --// equips a stand for the target player
-function ManageStand.EquipStand(params)
+function ManageStand.EquipStand(params, abilityDefs)
 
 	-- some setup and definitions
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -120,7 +134,9 @@ function ManageStand.EquipStand(params)
 	playerStandFolder:ClearAllChildren()
 
 	-- clone the stand
-	local newStand = utils.EasyClone(params.StandModel,{Parent = playerStandFolder})
+	local thisStand = abilityDefs.StandModels[params.PowerRarity]
+	local newStand = utils.EasyClone(thisStand, {Parent = playerStandFolder})
+	--local newStand = utils.EasyClone(params.StandModel, {Parent = playerStandFolder})
 
 	-- make it all invisible
 	for i,v in pairs (newStand:GetDescendants()) do 
@@ -193,53 +209,16 @@ function ManageStand.EquipStand(params)
 
 end
 
---// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. I also returns the stand
-function ManageStand.QuickRender(params)
-
-	-- some setup and definitions
-	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
-
-	-- define then clear the players stand folder, just in case :)
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-	playerStandFolder:ClearAllChildren()
-
-	-- clone the stand
-	local newStand = utils.EasyClone(params.StandModel,{Parent = playerStandFolder})
-
-	-- cframe and weld
-	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame --initPlayerRoot.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
-
-	local newWeld = Instance.new("Weld")
-	newWeld.Name = "StandWeld"
-	newWeld.C1 =  anchors.Idle
-	newWeld.Part0 = initPlayerRoot
-	newWeld.Part1 = newStand.HumanoidRootPart
-	newWeld.Parent = newStand.HumanoidRootPart
-
-	-- run the idle animation
-	local animationController = newStand:FindFirstChild("AnimationController")
-	if animationController then
-		local idleAnimation = animationController:FindFirstChild("Idle")
-		if idleAnimation then
-			local newTrack = animationController:LoadAnimation(idleAnimation)
-			newTrack:Play()
-		else
-			print("cant find animation")
-		end
-	end
-
-	return newStand
-
-end
-
 --// removes the stand for the target player
-function ManageStand.RemoveStand(params)
+function ManageStand.RemoveStand(params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		return
+	end
 
 	-- do the auras
 	ManageStand.Aura_On(params)
@@ -295,6 +274,58 @@ function ManageStand.RemoveStand(params)
 	end
 end
 
+--// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. I also returns the stand
+function ManageStand.QuickRender(params)
+
+	-- some setup and definitions
+	local initPlayer = utils.GetPlayerByUserId(tonumber(params.InitUserId))
+	print("initPlayer", initPlayer)
+	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
+
+	-- define then clear the players stand folder, just in case :)
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	playerStandFolder:ClearAllChildren()
+
+	-- clone the stand
+	local thisStand = nil
+	if params.StandModel then
+		thisStand = params.StandModel
+	else
+		thisStand = ReplicatedStorage.EffectParts.StandModels:FindFirstChild(params.PowerID .. "_" .. params.PowerRarity)
+	end
+
+	print("thisStand", thisStand)
+
+	local newStand = utils.EasyClone(thisStand, {Parent = playerStandFolder})
+	newStand.Parent = playerStandFolder
+
+	-- cframe and weld
+	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame --initPlayerRoot.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
+
+	local newWeld = Instance.new("Weld")
+	newWeld.Name = "StandWeld"
+	newWeld.C1 =  anchors.Idle
+	newWeld.Part0 = initPlayerRoot
+	newWeld.Part1 = newStand.HumanoidRootPart
+	newWeld.Parent = newStand.HumanoidRootPart
+
+	-- run the idle animation
+	local animationController = newStand:FindFirstChild("AnimationController")
+	if animationController then
+		local idleAnimation = animationController:FindFirstChild("Idle")
+		if idleAnimation then
+			local newTrack = animationController:LoadAnimation(idleAnimation)
+			newTrack:Play()
+		else
+			print("cant find animation")
+		end
+	end
+
+	ManageStand.Aura_Off(params)
+
+	return newStand
+
+end
 
 -- PlayAnimation
 function ManageStand.PlayAnimation(params, animationName)

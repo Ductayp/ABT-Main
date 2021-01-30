@@ -15,9 +15,11 @@ local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
-local RaycastHitbox = require(Knit.Shared.RaycastHitboxV3)
+local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 
-local HITBOX_DELAY = 0.3
+
+local HITBOX_DELAY = 0.4
+local ANIMATION_DELAY = 0.4
 
 local HeavyPunch = {}
 
@@ -131,21 +133,13 @@ function HeavyPunch.Run_HitBox(params, abilityDefs)
         Debris:AddItem(hitPart, .6)
 
         -- make a new hitbox
-        local newHitbox = RaycastHitbox:Initialize(hitPart)
+        local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart)
         newHitbox:HitStart()
         --newHitbox:DebugMode(true)
 
-        -- Makes a new event listener for raycast hits
-        newHitbox.OnHit:Connect(function(hit, humanoid)
-            print(hit)
-            --humanoid:TakeDamage(50)
-            print("HIT HUMANOID")
-            Knit.Services.PowersService:RegisterHit(initPlayer, humanoid.Parent, abilityDefs.HitEffects)
-        end)
-
         -- tween the hitbox a tiny bit to register hits
         local tweenInfo = TweenInfo.new(.7)
-        local tween = TweenService:Create(hitPart, tweenInfo, {CFrame = hitPart.CFrame * CFrame.new(0,0,-3)})
+        local tween = TweenService:Create(hitPart, tweenInfo, {CFrame = hitPart.CFrame * CFrame.new(0,0,-5)})
         tween:Play()
 
     end)
@@ -173,13 +167,7 @@ function HeavyPunch.Run_Effects(params, abilityDefs)
         ManageStand.Aura_Off(params)
     end)
 
-    --local ping = Knit.Controllers.PlayerUtilityController:GetPing()
-    --if params.SystemStage == "Initialize" then
-        --newFlightTime = flightTime + ping -- this is the initPlayer, add their ping to flight time so it syncs with hitbox
-    --else
-       -- newFlightTime = flightTime - ping-- this is the all other players, subtract their ping to flight time so it syncs with hitbox
-    --end
-    wait(.2)
+    wait(ANIMATION_DELAY)
 
     -- animate things
     local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
@@ -212,9 +200,9 @@ function HeavyPunch.Run_Effects(params, abilityDefs)
     local fastBall_Move = TweenService:Create(fastBall,TweenInfo.new(.6),{CFrame = fastBallDestination})
     local fastBall_FadeOut = TweenService:Create(fastBall.Fireball,TweenInfo.new(.6, Enum.EasingStyle.Quart),{Transparency = 1})
 
-    local ring_1_FadeIn = TweenService:Create(ring_1.ShockRing,TweenInfo.new(.1),{Transparency = .6})
-    local ring_2_FadeIn = TweenService:Create(ring_2.ShockRing,TweenInfo.new(.1),{Transparency = .7})
-    local ring_3_FadeIn = TweenService:Create(ring_3.ShockRing,TweenInfo.new(.1),{Transparency = .8})
+    local ring_1_FadeIn = TweenService:Create(ring_1.ShockRing,TweenInfo.new(.1),{Transparency = .9})
+    local ring_2_FadeIn = TweenService:Create(ring_2.ShockRing,TweenInfo.new(.1),{Transparency = .9})
+    local ring_3_FadeIn = TweenService:Create(ring_3.ShockRing,TweenInfo.new(.1),{Transparency = .9})
     local ring_1_FadeOut = TweenService:Create(ring_1.ShockRing,TweenInfo.new(2),{Transparency = 1})
     local ring_2_FadeOut = TweenService:Create(ring_2.ShockRing,TweenInfo.new(1.5),{Transparency = 1})
     local ring_3_FadeOut = TweenService:Create(ring_3.ShockRing,TweenInfo.new(1),{Transparency = 1})

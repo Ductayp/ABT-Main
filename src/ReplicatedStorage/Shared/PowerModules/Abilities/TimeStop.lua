@@ -170,7 +170,13 @@ end
 function TimeStop.RenderEffects(params, abilityDefs)
 
     -- get initPlayer
-	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    
+    -- setup the stand, if its not there then quick render it
+	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		targetStand = ManageStand.QuickRender(params)
+    end
 
     -- play animations
     ManageStand.PlayAnimation(params, "TimeStop")

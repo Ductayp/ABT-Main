@@ -3,6 +3,7 @@
 -- 12-1-2020
 
 --Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
@@ -119,17 +120,12 @@ function TripleKick.Run_HitBox(params, abilityDefs)
         initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
     end)
 
-    -- create a secondary abiliftyDefs with only damage as a HitEffect
-    local 
-    
-
     -- spawn function for hitbox with a delay
     spawn(function()
 
         -- clone out a new hitpart
         local hitPart = ReplicatedStorage.EffectParts.Abilities.TripleKick.HitBox:Clone()
         hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
-        Debris:AddItem(hitPart, 2)
 
         -- weld it
         local newWeld = Instance.new("Weld")
@@ -138,77 +134,35 @@ function TripleKick.Run_HitBox(params, abilityDefs)
         newWeld.Part1 = hitPart
         newWeld.Parent = hitPart
 
-        
-        
-        
-
         -- small delay here for animations
         wait(.3) 
 
+        -- hit counter for triple kick
         for count = 1, 3 do
 
-            -- make a new hitbox
-            if count == 3 then
-                local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart)
-            else
-                local newHitbox = RayHitbox.New(initPlayer, modifiedAbilityDefs, hitPart)
-            end
+            -- set the HitEffects based on the hit counter
+            abilityDefs.HitEffects = require(abilityDefs.AbilityMod).HitEffects[count]
+
+            -- create a new hitbox and pass is the abilitDef.HItEffect based on the hit ounter
+            local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
             newHitbox:HitStart()
-            newHitbox:DebugMode(true)
+            --newHitbox:DebugMode(true)
 
-            -- move and pause
+            -- move it to make rays happen
             newWeld.C1 =  CFrame.new(0, 0, 5)
-            wait(.3) -- the pause between hitboxes so it matches with animations
+            wait() 
             newWeld.C1 =  CFrame.new(0, 0, 6.5)
-            newHitbox:HitStop()
 
-        end
-
-        --[[
-        for count = 1, 3 do
-            newHitbox:HitStart()
-            newWeld.C1 =  CFrame.new(0, 0, 5)
-            wait(.3) -- the pause between hitboxes so it matches with animations
-            newWeld.C1 =  CFrame.new(0, 0, 6.5)
+            wait(.3)-- the pause between hitboxes so it matches with animations
             newHitbox:HitStop()
             wait()
+
+            -- cleanup at the end
+            if count == 3 then
+                hitPart:Destroy()
+            end
+
         end
-        ]]--
-
-
-        --[[
-        -- make a new hitbox, it stays in place
-        local boxParams = {}
-        boxParams.Size = Vector3.new(4,3,6.5)
-        boxParams.Transparency = 1
-    
-        for count = 1, 3 do
-
-            boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-4.5))
-        
-            -- make a new hitbox
-            local newHitbox = SimpleHitbox.NewHitBox(initPlayer,boxParams)
-            Debris:AddItem(newHitbox, .5)
-    
-            newHitbox.ChildAdded:Connect(function(hit)
-                if hit.Name == "CharacterHit" then
-                    if hit.Value ~= initPlayer.Character then
-
-                        if count == 3 then
-                            local characterHit = hit.Value
-                            Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,params.TripleKick.HitEffects)
-                        else
-                            local characterHit = hit.Value
-                            Knit.Services.PowersService:RegisterHit(initPlayer,characterHit,{Damage = params.TripleKick.HitEffects.Damage})
-                        end
-                        
-                    end
-                end
-            end)
-
-            wait(.3) -- the pause between hitboxes so it matches with animations
-        end
-        ]]--
 
     end)
 end

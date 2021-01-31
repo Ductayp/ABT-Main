@@ -15,6 +15,11 @@ local utils = require(Knit.Shared.Utils)
 
 local BulletKick = {}
 
+BulletKick.HitEffects = {
+    [1] = {Damage = {Damage = 10}},
+    [2] = {Damage = {Damage = 10}},
+    [3] = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
+}
 
 
 return BulletKick

@@ -10,54 +10,110 @@ local Debris = game:GetService("Debris")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-
--- modules
 local utils = require(Knit.Shared.Utils)
-local SimpleHitbox = require(Knit.PowerUtils.SimpleHitbox)
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
+local ManageStand = require(Knit.Abilities.ManageStand)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
+local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 
 -- variables
 local lastPunch = "Punch_2"
 
 local Punch = {}
 
-function Punch.Activate(initPlayer,params)
 
-    --[[
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
 
-    -- drop the walkspeed
+--// Initialize
+function StandJump.Initialize(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+    -- tween effects
     spawn(function()
-        initPlayer.Character.Humanoid.WalkSpeed = 5
-        wait(.5)
-        initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+        StandJump.Run_Effects(params, abilityDefs)
     end)
+	
+end
 
-    ]]--
+--// Activate
+function StandJump.Activate(params, abilityDefs)
 
-    -- hotbox
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+
+     -- require toggles to be inactive, excluding "Q"
+     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
+        params.CanRun = false
+        return params
+    end
+
+	-- set cooldown
+    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+    -- set toggle
+    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+
+    -- tween hitbox
     spawn(function()
-        wait(.2) -- delay for animations
-
-        -- make a new hitbox, it stays in place
-        local boxParams = {}
-        boxParams.Size = Vector3.new(4,3,4)
-        boxParams.Transparency = 1
-        boxParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
-        
-        
-        local newHitbox = SimpleHitbox.NewHitBox(initPlayer,boxParams)
-        newHitbox.Anchored = false
-        utils.EasyWeld(initPlayer.Character.HumanoidRootPart, newHitbox, newHitbox)
-        Debris:AddItem(newHitbox, .25)
-
-        newHitbox.ChildAdded:Connect(function(hit)
-            if hit.Name == "CharacterHit" then
-                if hit.Value ~= initPlayer.Character then
-                    local characterHit = hit.Value
-                    Knit.Services.PowersService:RegisterHit(initPlayer, characterHit, params.Punch.HitEffects)
-                end
-            end
-        end)
+        StandJump.Run_Server(params, abilityDefs)
     end)
+    
+end
+
+--// Execute
+function StandJump.Execute(params, abilityDefs)
+
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		return
+	end
+
+    -- tween effects
+	StandJump.Run_Effects(params, abilityDefs)
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
+function Punch.Run_Server(params, abilityDefs)
+
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
     -- animations
     if lastPunch == "Punch_1" then
@@ -68,9 +124,22 @@ function Punch.Activate(initPlayer,params)
         lastPunch = "Punch_1"
     end
 
+    -- clone out a new hitpart
+    local hitPart = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.HitBox:Clone()
+    hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
+    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
+    Debris:AddItem(hitPart, .6)
+
+    -- make a new hitbox
+    local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
+    newHitbox:HitStart()
+    
+
+    
+
 end
 
-function Punch.Execute(initPlayer,params)
+function Punch.Run_Effects(params, abilityDefs)
     -- nothing here yet
 end
 

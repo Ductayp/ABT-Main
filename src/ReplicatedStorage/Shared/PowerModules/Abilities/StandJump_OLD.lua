@@ -20,6 +20,7 @@ local defaultVelocityX = 7000
 local defaultVelocityZ = 7000 
 local defaultVelocityY = 1800 
 local defaultDuration = 0.3
+local forceDelay = .2
 
 local StandJump = {}
 
@@ -140,17 +141,14 @@ function StandJump.Run_Server(params, abilityDefs)
 
     spawn(function()
 
-        -- handle walkspeed and animations
         spawn(function()
-            Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Play()
             initPlayer.Character.Humanoid.WalkSpeed = 0
             wait(1)
-            Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Stop()
-            --local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
-            initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+            local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+            initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
         end)
 
-        wait(.2) -- a short delay to make time for animations
+        wait(forceDelay) -- a short delay to make time for animations
         
         initPlayer.Character.Humanoid.Jump = true
        
@@ -160,7 +158,6 @@ function StandJump.Run_Server(params, abilityDefs)
         Debris:AddItem(positiveBodyForce,duration)
 
         wait(.3)
-
         local negativeBodyForce = Instance.new("BodyForce")
         negativeBodyForce.Force =  Vector3.new(-velocityX,0,-velocityZ)
         negativeBodyForce.Parent = initPlayer.Character.HumanoidRootPart
@@ -180,6 +177,8 @@ function StandJump.Run_Effects(params, abilityDefs)
 		targetStand = ManageStand.QuickRender(params)
     end
 
+    wait(animationDelay) -- a small delay to wait for animations
+
     -- apply depth of field effect for the initPlayer
     if initPlayer == Players.LocalPlayer then
 
@@ -193,6 +192,12 @@ function StandJump.Run_Effects(params, abilityDefs)
     --move the stand and do animations
     spawn(function()
 
+        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_2:Play()
+
+        -- player jump animation
+        --local anim = initPlayer.Character.Humanoid:LoadAnimation(ReplicatedStorage.Animations.PlayerJump)
+        --anim:Play()
+
         ManageStand.PlayAnimation(params, "StandJump")
         ManageStand.MoveStand(params, "StandJump")
 
@@ -200,6 +205,8 @@ function StandJump.Run_Effects(params, abilityDefs)
 
         ManageStand.StopAnimation(params, "StandJump")
         ManageStand.MoveStand(params, "Idle")
+        --anim:Stop()
+        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_2:Stop()
 
     end)
 

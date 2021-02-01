@@ -27,7 +27,7 @@ local Punch = {}
 --// --------------------------------------------------------------------
 
 --// Initialize
-function StandJump.Initialize(params, abilityDefs)
+function Punch.Initialize(params, abilityDefs)
 
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
@@ -45,13 +45,13 @@ function StandJump.Initialize(params, abilityDefs)
     
     -- tween effects
     spawn(function()
-        StandJump.Run_Effects(params, abilityDefs)
+        Punch.Run_Effects(params, abilityDefs)
     end)
 	
 end
 
 --// Activate
-function StandJump.Activate(params, abilityDefs)
+function Punch.Activate(params, abilityDefs)
 
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
@@ -87,13 +87,13 @@ function StandJump.Activate(params, abilityDefs)
 
     -- tween hitbox
     spawn(function()
-        StandJump.Run_Server(params, abilityDefs)
+        Punch.Run_Server(params, abilityDefs)
     end)
     
 end
 
 --// Execute
-function StandJump.Execute(params, abilityDefs)
+function Punch.Execute(params, abilityDefs)
 
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
@@ -101,7 +101,7 @@ function StandJump.Execute(params, abilityDefs)
 	end
 
     -- tween effects
-	StandJump.Run_Effects(params, abilityDefs)
+	Punch.Run_Effects(params, abilityDefs)
 
 end
 
@@ -111,6 +111,7 @@ end
 --// --------------------------------------------------------------------
 
 function Punch.Run_Server(params, abilityDefs)
+    print("boop")
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)

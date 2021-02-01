@@ -133,7 +133,7 @@ function HeavyPunch.Run_HitBox(params, abilityDefs)
         Debris:AddItem(hitPart, .6)
 
         -- make a new hitbox
-        local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart)
+        local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
         newHitbox:HitStart()
         --newHitbox:DebugMode(true)
 

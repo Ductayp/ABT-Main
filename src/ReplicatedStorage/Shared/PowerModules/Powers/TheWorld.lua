@@ -144,7 +144,6 @@ function TheWorld.Barrage(params)
 
     params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
 end
-
 --------------------------------------------------------------------------------------------------
 --// TIME STOP //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
@@ -247,13 +246,13 @@ TheWorld.Defs.Abilities.StandJump = {
     Id = "StandJump",
     Duration = .3,
     Cooldown = 5,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","T","F","E","X","R"},
+    Velocity_XZ = 2700,
+    Velocity_Y = 500
 }
 
 function TheWorld.StandJump(params)
 
-    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, TheWorld.Defs.Abilities.StandJump)
+
 end
 
 --------------------------------------------------------------------------------------------------
@@ -264,14 +263,12 @@ end
 TheWorld.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 5}},
-    RequireToggle_On = {},
-    RequireToggle_Off = {},
+    HitEffects = {Damage = {Damage = 5}}
 }
 
 function TheWorld.Punch(params)
 
-    params = require(Knit.Abilities.Punch)[params.SystemStage](params, TheWorld.Defs.Abilities.Punch)
+
 end
 
 return TheWorld

@@ -11,111 +11,20 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
-local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- default values
 local defaultVelocityX = 7000 
 local defaultVelocityZ = 7000 
 local defaultVelocityY = 1800 
 local defaultDuration = 0.3
+local forceDelay = .2
+local animationDelay = 0
+
 
 local StandJump = {}
 
-
---// --------------------------------------------------------------------
---// Handler Functions
---// --------------------------------------------------------------------
-
---// Initialize
-function StandJump.Initialize(params, abilityDefs)
-
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-    -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-    end
-    
-    -- tween effects
-    spawn(function()
-        StandJump.Run_Effects(params, abilityDefs)
-    end)
-	
-end
-
---// Activate
-function StandJump.Activate(params, abilityDefs)
-
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-    -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-    end
-    
-
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
-    end
-
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
-	-- set cooldown
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
-
-    -- tween hitbox
-    spawn(function()
-        StandJump.Run_Server(params, abilityDefs)
-    end)
-    
-end
-
---// Execute
-function StandJump.Execute(params, abilityDefs)
-
-	if Players.LocalPlayer.UserId == params.InitUserId then
-		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
-		return
-	end
-
-    -- tween effects
-	StandJump.Run_Effects(params, abilityDefs)
-
-end
-
-
---// --------------------------------------------------------------------
---// Ability Functions
---// --------------------------------------------------------------------
-
-function StandJump.Run_Server(params, abilityDefs)
-
-    -- get initPlayer
-    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+function StandJump.Activate(initPlayer,params)
 
     -- be sure the player cant use this ability if they are in freefall
     if initPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall then
@@ -133,24 +42,42 @@ function StandJump.Run_Server(params, abilityDefs)
 
     -- grab the LookVector before we do anything else
     local lookVector = initPlayer.Character.HumanoidRootPart.CFrame.LookVector
-    velocityX = lookVector.X * defaultVelocityX 
-    velocityZ = lookVector.Z * defaultVelocityZ 
-    velocityY = defaultVelocityY 
+    velocityX = lookVector.X * defaultVelocityX --params.StandJump.Velocity_XZ
+    velocityZ = lookVector.Z * defaultVelocityZ --params.StandJump.Velocity_XZ
+    velocityY = defaultVelocityY --params.StandJump.Velocity_Y
     duration = defaultDuration
+
+    --[[
+    -- body mover settings, set if params exist, otherwise use defaults
+    if params.StandJump.Velocity_XZ then
+        velocityX = lookVector.X * params.StandJump.Velocity_XZ
+        velocityZ = lookVector.Z * params.StandJump.Velocity_XZ
+    else
+        velocityX = lookVector.X * defaultVelocityX
+        velocityZ = lookVector.Z * defaultVelocityZ
+    end
+    if params.StandJump.Velocity_Y then
+        velocityY = params.StandJump.Velocity_Y
+    else
+        velocityY = lookVector.Y * defaultVelocityY
+    end
+    if params.StandJump.Duration then
+        duration = params.StandJump.Duration
+    else
+        duration = defaultDuration
+    end
+    ]]--
 
     spawn(function()
 
-        -- handle walkspeed and animations
         spawn(function()
-            Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Play()
             initPlayer.Character.Humanoid.WalkSpeed = 0
             wait(1)
-            Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Stop()
-            --local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
-            initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+            local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+            initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
         end)
 
-        wait(.2) -- a short delay to make time for animations
+        wait(forceDelay) -- a short delay to make time for animations
         
         initPlayer.Character.Humanoid.Jump = true
        
@@ -160,7 +87,6 @@ function StandJump.Run_Server(params, abilityDefs)
         Debris:AddItem(positiveBodyForce,duration)
 
         wait(.3)
-
         local negativeBodyForce = Instance.new("BodyForce")
         negativeBodyForce.Force =  Vector3.new(-velocityX,0,-velocityZ)
         negativeBodyForce.Parent = initPlayer.Character.HumanoidRootPart
@@ -169,16 +95,15 @@ function StandJump.Run_Server(params, abilityDefs)
     end)
 end
 
-function StandJump.Run_Effects(params, abilityDefs)
-
-    -- get initPlayer
-    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+function StandJump.Execute(initPlayer,params)
 
     -- setup the stand, if its not there then dont run return
-	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
-		targetStand = ManageStand.QuickRender(params)
+		return
     end
+
+    wait(animationDelay) -- a small delay to wait for animations
 
     -- apply depth of field effect for the initPlayer
     if initPlayer == Players.LocalPlayer then
@@ -193,13 +118,18 @@ function StandJump.Run_Effects(params, abilityDefs)
     --move the stand and do animations
     spawn(function()
 
-        ManageStand.PlayAnimation(params, "StandJump")
-        ManageStand.MoveStand(params, "StandJump")
+        -- player jump animation
+        local anim = initPlayer.Character.Humanoid:LoadAnimation(ReplicatedStorage.Animations.PlayerJump)
+        anim:Play()
+
+        ManageStand.PlayAnimation(initPlayer,params,"StandJump")
+        ManageStand.MoveStand(initPlayer,{AnchorName = "StandJump"})
 
         wait(.7)
 
-        ManageStand.StopAnimation(params, "StandJump")
-        ManageStand.MoveStand(params, "Idle")
+        ManageStand.StopAnimation(initPlayer,{AnimationName = "StandJump"})
+        ManageStand.MoveStand(initPlayer,{AnchorName = "Idle"})
+        anim:Stop()
 
     end)
 

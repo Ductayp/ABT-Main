@@ -179,7 +179,7 @@ function Barrage.CreateHitbox(params, abilityDefs)
 
 	-- make a new hitbox
 	--local newHitbox = RaycastHitbox:Initialize(hitPart)
-	local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
+	local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart)
 	newHitbox:DebugMode(true)
 
 	--[[

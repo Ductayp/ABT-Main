@@ -115,7 +115,7 @@ function BasicProjectile.Tween_HitBox(params, abilityDefs)
     hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,1,-6))
 
     -- make a new hitbox
-    local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
+    local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart)
     newHitbox:HitStart()
     --newHitbox:DebugMode(true)
 

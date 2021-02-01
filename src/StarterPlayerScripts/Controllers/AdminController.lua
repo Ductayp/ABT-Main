@@ -11,7 +11,7 @@ local Workspace = game:GetService("Workspace")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local AdminController = Knit.CreateController { Name = "AdminController" }
 local utils = require(Knit.Shared.Utils)
---local Cmdr = require(ReplicatedStorage:WaitForChild("CmdrClient"))
+local Cmdr = require(ReplicatedStorage:WaitForChild("CmdrClient"))
 
 --// PlayerAdded
 function AdminController:PlayerAdded(player)
@@ -26,7 +26,7 @@ end
 --// KnitStart
 function AdminController:KnitStart()
 
-    --Cmdr:SetActivationKeys({ Enum.KeyCode.F2 })
+    Cmdr:SetActivationKeys({ Enum.KeyCode.F2 })
 
 end
 

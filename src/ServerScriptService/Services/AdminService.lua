@@ -12,7 +12,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local AdminService = Knit.CreateService { Name = "AdminService", Client = {}}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local utils = require(Knit.Shared.Utils)
-local Cmdr = require(script.Cmdr)
+local Cmdr = require(Knit.Modules.Cmdr)
 
 --// PlayerAdded
 function AdminService:PlayerAdded(player)
@@ -33,9 +33,10 @@ end
 --// KnitStart
 function AdminService:KnitStart()
 
-    --Cmdr:RegisterDefaultCommands()
+    Cmdr:RegisterDefaultCommands()
+    Cmdr:RegisterHooksIn(Knit.Modules.Cmdr_Modules.Hooks)
 
-    --print(Cmdr)
+    print("test admin --------------------------------------------------------")
 
 end
 

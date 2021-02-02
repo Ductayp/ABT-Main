@@ -17,7 +17,7 @@ Knit.AbilityMods = ReplicatedStorage.GameFiles.Shared.PowerModules.AbilityMods
 Knit.Effects = ReplicatedStorage.GameFiles.Shared.PowerModules.Effects
 Knit.PowerUtils = ReplicatedStorage.GameFiles.Shared.PowerModules.PowerUtils
 
-Knit.Modules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules
+Knit.ClientModules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules
 
 Knit.GuiModules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules.GuiModules
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules

@@ -61,7 +61,7 @@ function PlayerDataService:Connect(player)
         end)
 
         -- This makes sure the player is in the game (like maybe a bad network connection and they left)
-        if player:IsDescendantOf(players) == true then
+        if player:IsDescendantOf(Players) == true then
 
             -- This assignes the loaded profile into the user/profile table
             profiles[player] = profile
@@ -79,7 +79,7 @@ function PlayerDataService:Connect(player)
         player:Kick()
     end
 
-return db
+    return db
 
 end
 

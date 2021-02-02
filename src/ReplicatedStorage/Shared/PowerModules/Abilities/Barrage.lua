@@ -180,16 +180,7 @@ function Barrage.CreateHitbox(params, abilityDefs)
 	-- make a new hitbox
 	--local newHitbox = RaycastHitbox:Initialize(hitPart)
 	local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
-	newHitbox:DebugMode(true)
-
-	--[[
-	-- Makes a new event listener for raycast hits
-	newHitbox.OnHit:Connect(function(hit, humanoid)
-		if humanoid.Parent ~= initPlayer.Character then
-			Knit.Services.PowersService:RegisterHit(initPlayer, humanoid.Parent, abilityDefs.HitEffects)
-		end
-	end)
-	]]--
+	--newHitbox:DebugMode(true)
 
 	-- cycle the hitbox
 	spawn(function()

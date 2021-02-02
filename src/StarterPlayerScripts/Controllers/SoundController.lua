@@ -62,7 +62,7 @@ end
 function SoundController:KnitStart()
 --[[
     -- main loop
-    while true do
+    while game:GetService("RunService").Heartbeat:Wait() do
         if SoundController.MusicOn == true then
             SoundController:PlayTrack()
         else

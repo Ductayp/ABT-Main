@@ -73,7 +73,8 @@ function ManageStand.Activate(params, abilityDefs)
 
 	-- set the toggles and StandTracker
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
-	local equippedStand = playerStandFolder:FindFirstChild("EquippedStand")
+	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
+	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand")
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
@@ -84,10 +85,11 @@ function ManageStand.Activate(params, abilityDefs)
 	else
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
 
-		if not equippedStand then
+		--if not equippedStand then
+
 			local thisStand = abilityDefs.StandModels[params.PowerRarity]
-			equippedStand = utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = playerStandFolder, Value = thisStand})
-		end
+			equippedStand = utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = powerStatusFolder, Value = thisStand})
+		--end
 	end
 
 	-- set cooldown
@@ -277,6 +279,13 @@ end
 --// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. I also returns the stand
 function ManageStand.QuickRender(params)
 
+	-- be sure the player has an equipped stand, if not then just return
+	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
+	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand")
+	if not equippedStand then
+		return
+	end
+
 	-- some setup and definitions
 	local initPlayer = utils.GetPlayerByUserId(tonumber(params.InitUserId))
 	print("initPlayer", initPlayer)
@@ -338,7 +347,7 @@ function ManageStand.PlayAnimation(params, animationName)
 	-- run the animation
 	local animationController = targetStand:FindFirstChild("AnimationController")
 	if animationController then
-		local thisAnimation = ReplicatedStorage.Animations:FindFirstChild(animationName)
+		local thisAnimation = ReplicatedStorage.StandAnimations:FindFirstChild(animationName)
 		if thisAnimation then
 			local newTrack = animationController:LoadAnimation(thisAnimation)
 			newTrack:Play()

@@ -82,7 +82,7 @@ function Notifications.Setup()
     spawn(function()
 
          -- main loop, checks the NotifyList table and will display notifications as needed
-        while true do
+         while game:GetService("RunService").Heartbeat:Wait() do
             if #Notifications.NotifyList > 0 and Notifications.LastUpdate < os.clock() - Notifications.DelayTime then
                 Notifications.ShowNotification(Notifications.NotifyList[1])
                 Notifications.LastUpdate = os.clock()

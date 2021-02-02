@@ -33,7 +33,7 @@ MobService.SpawnedMobs = {} -- table of all spawned mobs
 --// MobBrain
 function MobService:MobBrain()
 
-    while true do
+    while game:GetService("RunService").Heartbeat:Wait() do
        
         -- iterate through all spawned mobs on each loop
         for index, mobData in pairs(MobService.SpawnedMobs) do

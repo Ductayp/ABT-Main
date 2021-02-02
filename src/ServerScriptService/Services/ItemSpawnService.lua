@@ -162,7 +162,7 @@ function ItemSpawnService:KnitStart()
         wait(INITIAL_WAIT)
         ItemSpawnService.CanSpawn = true
 
-        while true do
+        while game:GetService("RunService").Heartbeat:Wait() do
             wait(SPAWN_LOOP_TIME)
             if ItemSpawnService.CanSpawn == true then
                 self:DoSpawns()

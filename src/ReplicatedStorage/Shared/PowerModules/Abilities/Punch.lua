@@ -5,7 +5,7 @@
 --Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Debris = game:GetService("Debris")
---local Players = game:GetService("Players")
+local Players = game:GetService("Players")
 --local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
@@ -67,11 +67,12 @@ function Punch.Activate(params, abilityDefs)
 		return
     end
     
-
+    --[[
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
         params.CanRun = false
         return params
     end
+    ]]--
 
      -- require toggles to be inactive, excluding "Q"
      if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
@@ -83,7 +84,11 @@ function Punch.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    spawn(function()
+        AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+        wait(0.5)
+        AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+    end)
 
     -- tween hitbox
     spawn(function()
@@ -111,7 +116,6 @@ end
 --// --------------------------------------------------------------------
 
 function Punch.Run_Server(params, abilityDefs)
-    print("boop")
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -126,16 +130,30 @@ function Punch.Run_Server(params, abilityDefs)
     end
 
     -- clone out a new hitpart
-    local hitPart = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.HitBox:Clone()
+    local hitPart = ReplicatedStorage.EffectParts.Abilities.Punch.HitBox:Clone()
     hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
-    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-7))
+    --hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,2))
     Debris:AddItem(hitPart, .6)
+
+    -- weld it
+    local newWeld = Instance.new("Weld")
+    newWeld.C1 =  CFrame.new(0, 0, 2)
+    newWeld.Part0 = initPlayer.Character.HumanoidRootPart
+    newWeld.Part1 = hitPart
+    newWeld.Parent = hitPart
 
     -- make a new hitbox
     local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
     newHitbox:HitStart()
-    
+    newHitbox:DebugMode(true)
 
+    -- move it
+    spawn(function()
+        newWeld.C1 =  CFrame.new(0, 3, 2)
+        wait(.2)
+        newWeld.C1 =  CFrame.new(0, 0, 2)
+    end)
+    
     
 
 end

@@ -32,7 +32,7 @@ end
 function PlayerUtilityService:UpdatePingLoop()
 
     spawn(function()
-        while true do
+        while game:GetService("RunService").Heartbeat:Wait() do
             for _,player in pairs(Players:GetPlayers()) do
                 if ReplicatedStorage.PlayerPings:FindFirstChild(player.UserId) then
                     ReplicatedStorage.PlayerPings[player.UserId].Value = pingTime[player]

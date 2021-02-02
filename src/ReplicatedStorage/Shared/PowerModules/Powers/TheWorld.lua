@@ -266,7 +266,7 @@ TheWorld.Defs.Abilities.Punch = {
     Id = "Punch",
     HitEffects = {Damage = {Damage = 5}},
     RequireToggle_On = {},
-    RequireToggle_Off = {},
+    RequireToggle_Off = {"Mouse1"},
 }
 
 function TheWorld.Punch(params)

@@ -127,7 +127,7 @@ function  RedHot_Mob.Attack(mobData)
 
         local expireTime = os.clock() + 5
 
-        while true do
+        while game:GetService("RunService").Heartbeat:Wait() do
 
             if not mobData.AttackTarget then
                 shockBall:Destroy()

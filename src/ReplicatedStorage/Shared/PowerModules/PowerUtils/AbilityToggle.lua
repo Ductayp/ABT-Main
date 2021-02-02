@@ -37,7 +37,7 @@ function AbilityToggle.QuickToggle(userId, toggleName, toggleValue)
         local originalValue = thisToggle.Value
         thisToggle.Value = toggleValue
     
-        wait(2) -- the standard quick toggle wait
+        wait(1) -- the standard quick toggle wait
     
         thisToggle.Value = originalValue
     end)

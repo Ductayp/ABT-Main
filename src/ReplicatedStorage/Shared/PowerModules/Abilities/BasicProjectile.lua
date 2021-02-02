@@ -40,6 +40,17 @@ function BasicProjectile.Initialize(params, abilityDefs)
 		params.CanRun = false
 		return
     end
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+
+     -- require toggles to be inactive, excluding "Q"
+     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
+        params.CanRun = false
+        return params
+    end
     
     -- tween effects
 	BasicProjectile.Tween_Effects(params, abilityDefs)

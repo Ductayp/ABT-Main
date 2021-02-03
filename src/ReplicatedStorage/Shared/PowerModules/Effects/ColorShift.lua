@@ -35,22 +35,22 @@ function ColorShift.Client_RenderEffect(params)
     spawn(function()
         local colorCorrection = Lighting:FindFirstChild("ColorCorrection")
         local originalContrast = colorCorrection.Contrast
-        --local newColorCorrection = originalColorCorrection:Clone()
-        --newColorCorrection.Name = "newColorCorrection"
-        --newColorCorrection.Parent = Lighting
+        local newColorCorrection = originalColorCorrection:Clone()
+        newColorCorrection.Name = "newColorCorrection"
+        newColorCorrection.Parent = Lighting
 
-        local colorTween1 = TweenService:Create(colorCorrection,TweenInfo.new(.5),{Contrast = -3})
+        local colorTween1 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = -3})
         colorTween1:Play()
 
-        --originalColorCorrection.Enabled = false
+        originalColorCorrection.Enabled = false
 
         wait(params.Duration)
 
-        local colorTween2 = TweenService:Create(colorCorrection,TweenInfo.new(.5),{Contrast = originalContrast})
+        local colorTween2 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = originalContrast})
         colorTween2:Play()
-        --wait(params.Duration)
-        --originalColorCorrection.Enabled = true
-        --newColorCorrection:Destroy()
+        wait(params.Duration)
+        originalColorCorrection.Enabled = true
+        newColorCorrection:Destroy()
     end)
 end
 

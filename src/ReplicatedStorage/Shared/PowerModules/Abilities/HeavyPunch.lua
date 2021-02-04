@@ -31,6 +31,8 @@ local HeavyPunch = {}
 --// Initialize
 function HeavyPunch.Initialize(params, abilityDefs)
 
+    print("HeavyPunch.Initialize(params, abilityDefs)", params, abilityDefs)
+
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
 		params.CanRun = true
@@ -40,18 +42,21 @@ function HeavyPunch.Initialize(params, abilityDefs)
     end
     
     -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
+    if not Cooldown.Client_IsCooled(params) then
+        print("not cooled down", params)
 		params.CanRun = false
 		return
     end
 
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        print("stand wasnt on")
         params.CanRun = false
         return params
     end
 
      -- require toggles to be inactive, excluding "Q"
      if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
+        print("another ability was on", params)
         params.CanRun = false
         return params
     end

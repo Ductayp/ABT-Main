@@ -35,7 +35,7 @@ SoundController.MusicTracks = {
 }
 
 -- track control variables
-SoundController.MusicOn = false -- this variable determines if we shoould be playing music or not
+SoundController.MusicOn = true -- this variable determines if we shoould be playing music or not
 SoundController.IsPlaying = false -- this gets set to true while a track is playing
 SoundController.TrackCounter = math.random(1, #SoundController.MusicTracks)
 SoundController.CurrentTrack = nil
@@ -49,6 +49,7 @@ function SoundController:NewSoundObject(soundId, parent, soundGroup)
     newSound.Parent = parent
     newSound.Name = MarketPlaceService:GetProductInfo(soundId).Name
     newSound.SoundGroup = soundGroup
+    newSound.Volume = 0.5
 
     return newSound
 end

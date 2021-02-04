@@ -12,31 +12,25 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 --local utils = require(Knit.Shared.Utils)
 
-
 local TheWorld = {}
 
 TheWorld.Defs = {
-
-    -- just some general defs here
     PowerName = "The World",
     SacrificeValue = {
         Common = 10,
         Rare = 20,
         Legendary = 40,
     },
-
     DamageMultiplier = {
         Common = 1,
         Rare = 2,
         Legendary = 3,
     },
-
     HealthModifier = {
         Common = 10,
         Rare = 30,
         Legendary = 70
     },
-
     Abilities = {} -- ability defs are inside each ability function area
 }
 
@@ -56,6 +50,8 @@ end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
 function TheWorld.Manager(params)
+
+    print("TheWorld.Manager(params)", params)
 
     -- call the function
     if params.InputId == "Q" then
@@ -100,9 +96,6 @@ TheWorld.Defs.Abilities.EquipStand = {
 }
 
 function TheWorld.EquipStand(params)
-
-    print(Knit)
-    print(params)
 
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, TheWorld.Defs.Abilities.EquipStand)
 end

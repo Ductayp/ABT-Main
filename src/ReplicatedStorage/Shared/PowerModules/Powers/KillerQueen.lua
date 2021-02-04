@@ -5,8 +5,8 @@
 Handles all thing related to the power and is triggered by BOTH PowersController AND PowerService
 ]]
 
+-- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -36,7 +36,6 @@ KillerQueen.Defs = {
 
 --// SETUP - run this once when the stand is equipped
 function KillerQueen.SetupPower(initPlayer,params)
-    print("setup", params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "KillerQueen_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "KillerQueen_Setup", KillerQueen.Defs.HealthModifier[params.Rarity], nil)
 end
@@ -94,10 +93,7 @@ KillerQueen.Defs.Abilities.EquipStand = {
 
 function KillerQueen.EquipStand(params)
 
-    print(Knit)
-    print(params)
-
-    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, KillerQueen.Defs.Defs.Abilities.EquipStand)
+    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, KillerQueen.Defs.Abilities.EquipStand)
 end
 
 --------------------------------------------------------------------------------------------------

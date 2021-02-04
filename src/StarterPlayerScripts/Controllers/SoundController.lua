@@ -35,7 +35,7 @@ SoundController.MusicTracks = {
 }
 
 -- track control variables
-SoundController.MusicOn = true -- this variable determines if we shoould be playing music or not
+SoundController.MusicOn = false -- this variable determines if we shoould be playing music or not
 SoundController.IsPlaying = false -- this gets set to true while a track is playing
 SoundController.TrackCounter = math.random(1, #SoundController.MusicTracks)
 SoundController.CurrentTrack = nil

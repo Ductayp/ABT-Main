@@ -155,7 +155,7 @@ end
 TheWorld.Defs.Abilities.KnifeThrow = {
     Name = "Knife Throw",
     Id = "KnifeThrow",
-    Cooldown = 2,
+    Cooldown = 5,
     Range = 75,
     Speed = 90,
     Projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Projectile,
@@ -186,7 +186,7 @@ end
 TheWorld.Defs.Abilities.HeavyPunch = {
     Name = "Heavy Punch",
     Id = "HeavyPunch",
-    Cooldown = 3,
+    Cooldown = 5,
     RequireToggle_On = {"Q"},
     RequireToggle_Off = {"C","T","F","E","Z","X"},
     HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, BlockInput = {Name = "HeavyPunch", Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}},
@@ -246,6 +246,7 @@ end
 TheWorld.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
+    Cooldown = 0.5,
     HitEffects = {Damage = {Damage = 5}},
     RequireToggle_On = {},
     RequireToggle_Off = {"Mouse1"},

@@ -14,7 +14,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
-local BlockInput = require(Knit.Effects.BlockInput)
+local BlockInput = require(Knit.HitEffects.BlockInput)
 
 -- constants
 PowersService.XP_PER_LEVEL = {
@@ -203,7 +203,7 @@ function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
     local hitParams = {}
     hitParams.DamageMultiplier = 1
     for effect,effectParams in pairs(hitEffects) do
-        require(Knit.Effects[effect]).Server_ApplyEffect(nil, targetPlayer.Character, effectParams, hitParams)
+        require(Knit.HitEffects[effect]).Server_ApplyEffect(nil, targetPlayer.Character, effectParams, hitParams)
     end
 end
 
@@ -245,7 +245,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     -- do hitEffects if canHit is true
     if canHit == true then
         for effect,effectParams in pairs(abilityDefs.HitEffects) do
-            require(Knit.Effects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
+            require(Knit.HitEffects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
         end
     end
 

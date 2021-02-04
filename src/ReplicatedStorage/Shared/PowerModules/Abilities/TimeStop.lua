@@ -15,7 +15,7 @@ local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
-
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local TimeStop = {}
 
@@ -180,6 +180,9 @@ function TimeStop.RenderEffects(params, abilityDefs)
 
     -- play animations
     ManageStand.PlayAnimation(params, "TimeStop")
+
+    -- play the sound
+	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.TimeStop)
 
     -- wait for animation
     wait(1)

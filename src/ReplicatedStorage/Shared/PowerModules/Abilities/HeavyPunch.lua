@@ -16,6 +16,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 
 local HITBOX_DELAY = 0.4
@@ -243,6 +244,9 @@ function HeavyPunch.Run_Effects(params, abilityDefs)
             
         end
     end)
+
+    -- play the sound
+	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Punch)
 
     -- play the initial tweens
     fastBall_Move:Play()

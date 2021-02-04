@@ -6,8 +6,8 @@
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
---local Debris = game:GetService("Debris")
---local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
+
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -20,7 +20,6 @@ BulletKick.HitEffects = {
     [2] = {Damage = {Damage = 10}},
     [3] = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
 }
-
 
 return BulletKick
 

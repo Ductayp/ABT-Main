@@ -51,7 +51,6 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
         -- run the states module if it exist 
         local stateModule = Knit.StateModules:FindFirstChild(stateName) --[stateName]) --script:FindFirstChild(stateName) -- state modules can do a lot of thingsm its cusomt for each value we might modify
         if stateModule then
-            print(stateModule)
             local requiredModule = require(stateModule)
             results = requiredModule.Entry_Added(player,thisEntry,params) -- if we have a module to run, we will overwite the above results with that module
         else

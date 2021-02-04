@@ -107,9 +107,6 @@ end
 
 --// Attack
 function  RedHot_Mob.Attack(mobData)
-
-    print("RHCP ATTACK - mobData: ", mobData)
-
     spawn(function()
 
         -- play attack animation

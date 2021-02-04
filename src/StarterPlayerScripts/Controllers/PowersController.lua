@@ -21,7 +21,7 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersController = Knit.CreateController { Name = "PowersController" }
 local PowersService = Knit.GetService("PowersService")
-local BlockInput = require(Knit.Effects.BlockInput)
+local BlockInput = require(Knit.HitEffects.BlockInput)
 local utils = require(Knit.Shared.Utils)
 
 --// InitializePower
@@ -66,15 +66,14 @@ function PowersController:ExecutePower(params)
     powerModule.Manager(params)
 end
 
-
-
 --// RenderEffect -- render general effects
 function PowersController:RenderEffect(effect,params)
 
-    local effectModule = require(Knit.Effects[effect])
+    local effectModule = require(Knit.HitEffects[effect])
     effectModule.Client_RenderEffect(params)
 end
 
+--[[
 --// QuickRenderStands
 function PowersController:QuickRenderStand(params)
 
@@ -101,18 +100,19 @@ function PowersController:QuickRenderStand(params)
     end
 
 end
+]]--
 
 --// RenderExistingStands
 function PowersController:RenderExistingStands()
     
-    for _, folder in pairs(Workspace.PlayerStands:GetChildren()) do
+    for _, folder in pairs(ReplicatedStorage.PowerStatus:GetChildren()) do
 
         -- only run this on other players
         if folder.Name ~= Players.LocalPlayer.UserId then
 
             local equippedStand = folder:FindFirstChild("EquippedStand")
             if equippedStand then
-                local thisStand = folder:FindFirstChildWhichIsA("Model")
+                local thisStand = Workspace.PlayerStands[folder.Name]:FindFirstChildWhichIsA("Model")
                 if not thisStand then
                     print("WE NEED TO RENDER A STAND!!!!")
                     params = {}

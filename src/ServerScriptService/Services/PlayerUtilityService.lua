@@ -98,7 +98,6 @@ function PlayerUtilityService:LoadAnimations(player)
         PlayerUtilityService.PlayerAnimations[player.UserId][animObject.Name] = animator:LoadAnimation(animObject)
     end
 
-    print("ANIMATION TABLE!: ",PlayerUtilityService.PlayerAnimations)
 end
 
 

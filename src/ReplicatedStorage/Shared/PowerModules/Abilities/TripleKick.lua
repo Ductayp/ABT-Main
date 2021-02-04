@@ -16,6 +16,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local TripleKick = {}
 
@@ -197,6 +198,11 @@ function TripleKick.Run_Effects(params, abilityDefs)
         ManageStand.MoveStand(params, "Idle")
     end)
 
+        -- run animation
+    if abilityDefs.StandAnimation then
+        ManageStand.PlayAnimation(params, abilityDefs.StandAnimation)
+    end
+
     local pop_1 = ReplicatedStorage.EffectParts.Abilities.TripleKick.TripleKickPop:Clone()
     local pop_2 = ReplicatedStorage.EffectParts.Abilities.TripleKick.TripleKickPop:Clone()
     local pop_3 = ReplicatedStorage.EffectParts.Abilities.TripleKick.TripleKickPop:Clone()
@@ -225,16 +231,21 @@ function TripleKick.Run_Effects(params, abilityDefs)
     pop_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(-.2,-.2,-4.5))
     pop_1_Size:Play()
     pop_1_Fade:Play()
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.GenericWhoosh_Fast)
+    
     wait(.4)
     pop_2.Parent = workspace.RenderedEffects
     pop_2.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(-.4,-.6,-3.5))
     pop_2_Size:Play()
     pop_2_Fade:Play()
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.GenericWhoosh_Fast)
+
     wait(.5)
     pop_3.Parent = workspace.RenderedEffects
     pop_3.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,.5,-5.5))
     pop_3_Size:Play()
     pop_3_Fade:Play()
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.GenericWhoosh_Slow)
 
 end
 

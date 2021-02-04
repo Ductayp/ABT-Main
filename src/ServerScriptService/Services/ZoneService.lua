@@ -53,11 +53,10 @@ function ZoneService:PlayerAdded(player)
 
     -- safeZone events
     safeZone.playerAdded:Connect(function(player) -- Fires when a player enters the zone
-        print(player.Name.." entered: SafeZone")
         self:AddSafeState(player)
     end)
+    
     safeZone.playerRemoving:Connect(function(player)  -- Fires when a player exits the zone
-        print(player.Name.." left: SafeZone")
         self:RemoveSafeState(player)
     end)
 

@@ -1,49 +1,51 @@
--- SoundPlayer
+-- WeldedSound
 -- PDab
 -- 12-8-2020
-
--- applies both pracitcal effects and visual effects if needed
 
 --Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
-
 --modules
 local utils = require(Knit.Shared.Utils)
 
-local SoundPlayer = {}
+local WeldedSound = {}
 
-function SoundPlayer.WeldSound(parent, sound, params)
+function WeldedSound.NewSound(parent, sound, params)
+
+	print("weldedsound", parent, sound, params)
 
     -- options params
     --params.fadeTime
     --params.DebrisTime
 
-    -- find a speaker part, if not exists create it, name it the same as sound
-    local thisSpeaker = Instance.new("Part")
+    -- clone new part
+	local thisSpeaker = SoundService.WeldedSoundPart:Clone()
     thisSpeaker.Name = sound.Name
-    thisSpeaker.CFrame =parent.CFrame
-    thisSpeaker.Size = Vector3.new(1,1,1)
-    thisSpeaker.Anchored = false
-    thisSpeaker.Massless = true
-    thisSpeaker.CanCollide = false
-    thisSpeaker.Transparency = 1
+    thisSpeaker.CFrame = parent.CFrame
     thisSpeaker.Parent = parent
-    utils.EasyWeld(thisSpeaker,target,thisSpeaker)
-
+    utils.EasyWeld(thisSpeaker, parent, thisSpeaker)
 
     -- clone the sound
     local thisSound = sound:Clone()
-    thisSound.Parent = thisSpeaker
-
+	thisSound.Parent = thisSpeaker
+	thisSound.SoundGroup = SoundService.SFX
 
 	if params then
+
+		-- set speaker part properties
+		if params.SpeakerProperties ~= nil then
+			for propertyName,propertyValue in pairs(params.SpeakerProperties) do 
+				thisSpeaker[propertyName] = propertyValue
+			end
+		end
+
 		-- set properties for sound
 		if params.SoundProperties ~= nil then
 			for propertyName,propertyValue in pairs(params.SoundProperties) do 
@@ -64,12 +66,14 @@ function SoundPlayer.WeldSound(parent, sound, params)
 	spawn(function()
 		thisSound.Ended:Wait()
 		thisSpeaker:Destroy()
-    end)
+	end)
+	
+	return thisSpeaker
     
 end
 
 --// StopSpeakerSound - stops a sound by name by destroying its speaker, can also optionally fade
-function SoundPlayer.StopWeldedSound(parent, name, fadeTime)
+function WeldedSound.StopSound(parent, name, fadeTime)
 	local thisSpeaker = parent:FindFirstChild(name)
 	
 	if thisSpeaker then
@@ -82,7 +86,7 @@ function SoundPlayer.StopWeldedSound(parent, name, fadeTime)
 					tween.Completed:Connect(function(State)
 						if State == Enum.PlaybackState.Completed then
 							sound:Destroy()
-							tween:Destroy()
+							tween = nil
 							thisSpeaker:Destroy()
 						end
 					end)
@@ -94,11 +98,4 @@ function SoundPlayer.StopWeldedSound(parent, name, fadeTime)
 	end 
 end
 
---// Client_RenderEffect
-function SoundPlayer.Client_RenderEffect(params)
-
-
-end 
-
-
-return SoundPlayer
+return WeldedSound

@@ -16,6 +16,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 
 local BasicProjectile = {}
@@ -53,7 +54,7 @@ function BasicProjectile.Initialize(params, abilityDefs)
     end
     
     -- tween effects
-	BasicProjectile.Tween_Effects(params, abilityDefs)
+	BasicProjectile.Run_Effects(params, abilityDefs)
 
 end
 
@@ -106,7 +107,7 @@ function BasicProjectile.Execute(params, abilityDefs)
 	end
 
     -- tween effects
-	BasicProjectile.Tween_Effects(params, abilityDefs)
+	BasicProjectile.Run_Effects(params, abilityDefs)
 
 end
 
@@ -150,7 +151,7 @@ function BasicProjectile.Tween_HitBox(params, abilityDefs)
 
 end
 
-function BasicProjectile.Tween_Effects(params, abilityDefs)
+function BasicProjectile.Run_Effects(params, abilityDefs)
 
 
     -- get initPlayer
@@ -166,6 +167,9 @@ function BasicProjectile.Tween_Effects(params, abilityDefs)
     if abilityDefs.StandAnimation then
         ManageStand.PlayAnimation(params, abilityDefs.StandAnimation)
     end
+
+    -- play the sound
+	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Shoot)
     
     if abilityDefs.StandMove then
         ManageStand.MoveStand(params, abilityDefs.StandMove.PositionName)

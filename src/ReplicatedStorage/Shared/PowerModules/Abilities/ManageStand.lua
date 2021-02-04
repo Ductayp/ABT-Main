@@ -11,6 +11,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 -- Default Stand Anchor Offsets
 local anchors = {}
@@ -138,7 +139,6 @@ function ManageStand.EquipStand(params, abilityDefs)
 	-- clone the stand
 	local thisStand = abilityDefs.StandModels[params.PowerRarity]
 	local newStand = utils.EasyClone(thisStand, {Parent = playerStandFolder})
-	--local newStand = utils.EasyClone(params.StandModel, {Parent = playerStandFolder})
 
 	-- make it all invisible
 	for i,v in pairs (newStand:GetDescendants()) do 
@@ -165,8 +165,12 @@ function ManageStand.EquipStand(params, abilityDefs)
 		ManageStand.Aura_Off(params)
 	end)
 
+	-- tween the move
 	local spawnTween = TweenService:Create(newWeld,TweenInfo.new(.5),{C1 = anchors.Idle})
 	spawnTween:Play()
+
+	-- play the sound
+	WeldedSound.NewSound(newStand.HumanoidRootPart, abilityDefs.Sounds.Equip)
 
 	-- tween character transparency
 	for i, v in pairs (newStand:GetChildren()) do
@@ -239,6 +243,9 @@ function ManageStand.RemoveStand(params, abilityDefs)
 				v:Destroy()
 			end
 		end
+
+		-- play the sound
+		WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Remove)
 
 		-- weld tween
 		local thisWeld = targetStand:FindFirstChild("StandWeld", true)

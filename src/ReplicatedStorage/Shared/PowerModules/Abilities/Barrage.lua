@@ -13,6 +13,7 @@ local ManageStand = require(Knit.Abilities.ManageStand)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 -- local variables
 local armSpawnRate = .05
@@ -54,13 +55,13 @@ function Barrage.Initialize(params, abilityDefs)
 
 			--params.Local_BarrageToggle = AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", true)
 			AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", true)
-			Barrage.RunEffect(params)
+			Barrage.RunEffect(params, abilityDefs)
 
 			-- spawn a function to kill the barrage if the duration expires
 			spawn(function()
 				wait(abilityDefs.Duration)
 				AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", false)
-				Barrage.EndEffect(params)
+				Barrage.EndEffect(params, abilityDefs)
 			end)
 		end
 
@@ -144,9 +145,9 @@ function Barrage.Execute(params, abilityDefs)
 	end
 
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
-		Barrage.RunEffect(params)
+		Barrage.RunEffect(params, abilityDefs)
 	else
-		Barrage.EndEffect(params)
+		Barrage.EndEffect(params, abilityDefs)
 	end
 
 end
@@ -235,7 +236,9 @@ function Barrage.ShootArm(initPlayer, effectArm)
 end
 
 --// Run Effect
-function Barrage.RunEffect(params)
+function Barrage.RunEffect(params, abilityDefs)
+
+	print("run barrage",params, abilityDefs)
 
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
@@ -246,6 +249,9 @@ function Barrage.RunEffect(params)
 	-- move stand and play Barrage animation
 	ManageStand.PlayAnimation(params, "Barrage")
 	ManageStand.MoveStand(params, "Front")
+
+	-- play the sound
+	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Barrage, {SpeakerProperties = {Name = "Barrage"}, SoundProperties = {Looped = true}})
 
 	-- spawn the arms shooter
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -268,11 +274,19 @@ function Barrage.RunEffect(params)
 end
 
 --// End Effect
-function Barrage.EndEffect(params)
+function Barrage.EndEffect(params, abilityDefs)
+
+	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		return
+	end
 
 	-- stop animation and move stand to Idle
 	ManageStand.StopAnimation(params, "Barrage")
 	ManageStand.MoveStand(params, "Idle")
+
+	-- stop the sound
+	WeldedSound.StopSound(targetStand.HumanoidRootPart, "Barrage", 1)
 end
 
 

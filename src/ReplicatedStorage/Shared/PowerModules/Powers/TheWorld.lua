@@ -5,29 +5,12 @@
 Handles all thing related to the power and is triggered by BOTH PowersController AND PowerService
 ]]
 
+-- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-local utils = require(Knit.Shared.Utils)
-
---[[
--- Ability modules
-local ManageStand = require(Knit.Abilities.ManageStand)
-local Barrage = require(Knit.Abilities.Barrage)
-local TimeStop = require(Knit.Abilities.TimeStop)
-local KnifeThrow = require(Knit.Abilities.KnifeThrow)
-local HeavyPunch = require(Knit.Abilities.HeavyPunch)
-local BulletKick = require(Knit.Abilities.BulletKick)
-local StandJump = require(Knit.Abilities.StandJump)
-local Punch = require(Knit.Abilities.Punch)
-]]--
-
--- Effect modules
-local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
-local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
-local Cooldown = require(Knit.PowerUtils.Cooldown)
+--local utils = require(Knit.Shared.Utils)
 
 
 local TheWorld = {}
@@ -111,12 +94,15 @@ TheWorld.Defs.Abilities.EquipStand = {
         Legendary = ReplicatedStorage.EffectParts.StandModels.TheWorld_Legendary,
     },
     Sounds = {
-        --Equip = sound here,
-        --Remove = sound here
+        Equip = ReplicatedStorage.Audio.StandSpecific.TheWorld.Summon,
+        Remove =  ReplicatedStorage.Audio.Abilities.StandSummon,
     }
 }
 
 function TheWorld.EquipStand(params)
+
+    print(Knit)
+    print(params)
 
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, TheWorld.Defs.Abilities.EquipStand)
 end
@@ -135,8 +121,7 @@ TheWorld.Defs.Abilities.Barrage = {
     RequireToggle_Off = {"C","R","T","F","Z","X"},
     HitEffects = {Damage = {Damage = 5}},
     Sounds = {
-        --Sound = sound here,
-        --Sound2 = sound here
+        Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
     }
 }
 
@@ -158,7 +143,10 @@ TheWorld.Defs.Abilities.TimeStop = {
     Range = 150,
     RequireToggle_On = {"Q"},
     RequireToggle_Off = {"C","R","T","E","Z","X"},
-    HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}}
+    HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}},
+    Sounds = {
+        TimeStop = ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop,
+    }
 }
 
 function TheWorld.TimeStop(params)
@@ -188,8 +176,7 @@ TheWorld.Defs.Abilities.KnifeThrow = {
     RequireToggle_Off = {"C","R","F","E","Z","X"},
     HitEffects = {Damage = {Damage = 20}},
     Sounds = {
-        --Sound = sound here,
-        --Sound2 = sound here
+        Shoot = ReplicatedStorage.Audio.Abilities.GenericWhoosh_Slow
     }
 }
 
@@ -209,7 +196,10 @@ TheWorld.Defs.Abilities.HeavyPunch = {
     Cooldown = 3,
     RequireToggle_On = {"Q"},
     RequireToggle_Off = {"C","T","F","E","Z","X"},
-    HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, BlockInput = {Name = "HeavyPunch", Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}}
+    HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, BlockInput = {Name = "HeavyPunch", Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}},
+    Sounds = {
+        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
+    }
 }
 
 function TheWorld.HeavyPunch(params)
@@ -229,7 +219,6 @@ TheWorld.Defs.Abilities.BulletKick = {
     RequireToggle_On = {"Q"},
     RequireToggle_Off = {"C","T","F","E","Z","R"},
     AbilityMod = Knit.AbilityMods.TripleKick_BulletKick,
-    --HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 100, Duration = 0.2}}
 }
 
 function TheWorld.BulletKick(params)

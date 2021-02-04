@@ -10,18 +10,7 @@ local RunService = game:GetService("RunService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-local utils = require(Knit.Shared.Utils)
-
--- Ability modules
-local BulletKick = require(Knit.Abilities.BulletKick)
-local StandJump = require(Knit.Abilities.StandJump)
-local Punch = require(Knit.Abilities.Punch)
-local BasicGrenade = require(Knit.Abilities.BasicGrenade)
-
--- Effect modules
-local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
-local SoundPlayer = require(Knit.PowerUtils.SoundPlayer)
-local Cooldown = require(Knit.PowerUtils.Cooldown)
+--local utils = require(Knit.Shared.Utils)
 
 local KillerQueen = {}
 
@@ -59,277 +48,104 @@ function KillerQueen.RemovePower(initPlayer,params)
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
-function KillerQueen.Manager(initPlayer,params)
-
-    -- check cooldowns but only on SystemStage "Activate"
-    if params.SystemStage == "Activate" then
-        if Cooldown.IsCooled(initPlayer, params) then
-            params.CanRun = true
-        else
-            params.CanRun = false
-            return params
-        end
-    end
+function KillerQueen.Manager(params)
 
     -- call the function
     if params.InputId == "Q" then
-        KillerQueen.EquipStand(initPlayer,params)
+        KillerQueen.EquipStand(params)
     elseif params.InputId == "E" then
-        KillerQueen.Barrage(initPlayer,params)
+        KillerQueen.Barrage(params)
     elseif params.InputId == "R" then
-        KillerQueen.BombPunch(initPlayer,params)
+        KillerQueen.BombPunch(params)
     elseif params.InputId == "T" then
-        KillerQueen.ExplosiveCoin(initPlayer,params)
+        KillerQueen.ExplosiveCoin(params)
     elseif params.InputId == "F" then
-        KillerQueen.BitesTheDust(initPlayer,params)
+        KillerQueen.BitesTheDust(params)
     elseif params.InputId == "X" then
-        KillerQueen.SheerHeartAttack(initPlayer,params)
+        KillerQueen.SheerHeartAttack(params)
     elseif params.InputId == "Z" then
-        KillerQueen.StandJump(initPlayer,params)
+        KillerQueen.StandJump(params)
     elseif params.InputId == "Mouse1" then
-        KillerQueen.Punch(initPlayer,params)
+        KillerQueen.Punch(params)
     end
 
     return params
 end
 
 --------------------------------------------------------------------------------------------------
---// EQUIP STAND //-------------------------------------------------------------------------------
+--// EQUIP STAND - Q //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
-
--- ability module
-local ManageStand = require(Knit.Abilities.ManageStand)
 
 -- defs
 KillerQueen.Defs.Abilities.EquipStand = {
     Name = "Equip Stand",
+    Id = "EquipStand",
     Cooldown = 5,
     StandModels = {
         Common = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Common,
         Rare = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Rare,
         Legendary = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Legendary,
     },
+    Sounds = {
+        Equip = ReplicatedStorage.Audio.StandSpecific.TheWorld.Summon,
+        Remove =  ReplicatedStorage.Audio.Abilities.StandSummon,
+    }
 }
 
-function KillerQueen.EquipStand(initPlayer,params)
+function KillerQueen.EquipStand(params)
 
-    -- EQUIP STAND/INITIALIZE
-    if params.SystemStage == "Initialize" then
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-    end
+    print(Knit)
+    print(params)
 
-    -- EQUIP STAND/ACTIVATE
-    if params.SystemStage == "Activate" then
-         if params.KeyState == "InputBegan" then
-
-            -- set cooldown
-            Cooldown.SetCooldown(initPlayer, params.InputId, KillerQueen.Defs.Abilities.EquipStand.Cooldown)
-
-            -- toggle the stand, effect runs off of this toggle
-            if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-            else
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-            end
-        end
-    end
-
-    -- EQUIP STAND/EXECUTE
-    if params.SystemStage == "Execute" then
-         if params.KeyState == "InputBegan" then
-            if AbilityToggle.GetToggleObject(initPlayer,params.InputId).Value == true then
-                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.KillerQueen.Summon) -- specific stand sound
-                ManageStand.EquipStand(initPlayer, KillerQueen.Defs.Abilities.EquipStand.StandModels[params.PowerRarity])
-            else
-                SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.GeneralStandSounds.StandSummon) -- specific stand sound
-                ManageStand.RemoveStand(initPlayer)            
-            end
-        end
-    end
+    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, KillerQueen.Defs.Defs.Abilities.EquipStand)
 end
 
 --------------------------------------------------------------------------------------------------
---// BARRAGE //----------------------------------------------------------------------------------
+--// BARRAGE - E //----------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
-
--- ability module
-local Barrage = require(Knit.Abilities.Barrage)
 
 -- defs
 KillerQueen.Defs.Abilities.Barrage = {
     Name = "Barrage",
     Duration = 4,
     Cooldown = 7,
-    HitEffects = {Damage = {Damage = 3}}
+    RequireToggle_On = {"Q"},
+    RequireToggle_Off = {"C","R","T","F","Z","X"},
+    HitEffects = {Damage = {Damage = 3}},
+    Sounds = {
+        Barrage = ReplicatedStorage.Audio.StandSpecific.KillerQueen.Barrage,
+    }
 }
 
-function KillerQueen.Barrage(initPlayer,params)
+function KillerQueen.Barrage(params)
 
-    -- BARRAGE/INIALIZE
-    if params.SystemStage == "Initialize" then
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-        if params.KeyState == "InputEnded" then
-            params.CanRun = true
-        end
-    end
-
-    -- BARRAGE/ACTIVATE
-    if params.SystemStage == "Activate" then
-        if params.KeyState == "InputBegan" then
-
-            -- require toggles to be active
-            if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
-                params.CanRun = false
-                return params
-            end
-
-            -- require toggles to be inactive, excluding "Q"
-            if not AbilityToggle.RequireOff(initPlayer,{"C","R","T","F","Z","X"}) then
-                params.CanRun = false
-                return params
-            end
-
-            -- only operate if toggle is off
-            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                params.CanRun = true
-      
-                params.Barrage = KillerQueen.Defs.Abilities.Barrage
-                Barrage.Activate(initPlayer, params)
-
-                -- spawn a function to kill the barrage if the duration expires
-                spawn(function()
-                    wait(KillerQueen.Defs.Abilities.Barrage.Duration)
-                    params.KeyState = "InputEnded"
-                    params.CanRun = true
-                    Knit.Services.PowersService:ActivatePower(initPlayer,params)
-                end)
-            end
-        end
-
-        -- BARRAGE/ACTIVATE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-
-            -- only operate if toggle is on
-            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
-
-                -- set the cooldown
-                Cooldown.SetCooldown(initPlayer,params.InputId,KillerQueen.Defs.Abilities.Barrage.Cooldown)
-
-                -- set toggle
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-                params.CanRun = true
-
-                -- destroy hitbox
-                Barrage.DestroyHitbox(initPlayer, KillerQueen.Defs.Abilities.Barrage)
-            end
-        end
-    end
-
-    -- BARRAGE/EXECUTE
-    if params.SystemStage == "Execute" then
-
-        -- BARRAGE/EXECUTE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == true then
-                Barrage.RunEffect(initPlayer,params)
-
-                --local soundParams = {}
-                --soundParams.SoundProperties = {}
-                --soundParams.SoundProperties.Looped = false
-                --SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.KillerQueen.Barrage, soundParams)
-            end
-        end
-
-        -- BARRAGE/EXECUTE/INPUT ENDED
-        if params.KeyState == "InputEnded" then
-            if AbilityToggle.GetToggleValue(initPlayer,params.InputId) == false then
-                Barrage.EndEffect(initPlayer,params)
-                --SoundPlayer.StopWeldedSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.KillerQueen.Barrage.Name,.5)
-            end 
-        end
-    end
+    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
 end
 
 --------------------------------------------------------------------------------------------------
---// BOMB PUNCH //------------------------------------------------------------------------------
+--// BOMB PUNCH - R//------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
-
--- ability module
-local HeavyPunch = require(Knit.Abilities.HeavyPunch)
 
 --defs
-KillerQueen.Defs.Abilities.HeavyPunch = {
+KillerQueen.Defs.Abilities.BombPunch = {
     Name = "Bomb Punch",
     Cooldown = 1,
-    HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}}
+    RequireToggle_On = {"Q"},
+    RequireToggle_Off = {"C","F","T","E","Z","X"},
+    HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
+    Sounds = {
+        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
+    }
 }
 
-function KillerQueen.BombPunch(initPlayer,params)
+function KillerQueen.BombPunch(params)
 
-    -- HEAVY PUNCH/INITIALIZE
-    if params.SystemStage == "Initialize" then
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-    end
-
-    -- HEAVY PUNCH/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-        -- require toggles to be active
-        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","X"}) then
-            params.CanRun = false
-            return params
-        end
-
-         if params.KeyState == "InputBegan" then
-           
-            -- cooldowns and toggles
-            spawn(function()
-                Cooldown.SetCooldown(initPlayer,params.InputId,KillerQueen.Defs.Abilities.HeavyPunch.Cooldown)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(2)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-            end)
-
-            -- activate ability
-            params.HeavyPunch = KillerQueen.Defs.Abilities.HeavyPunch
-            HeavyPunch.Activate(initPlayer,params)
-
-            params.CanRun = true
-        end
-    end
-
-    -- HEAVY PUNCH/EXECUTE
-    if params.SystemStage == "Execute" then
-         if params.KeyState == "InputBegan" then
-
-            local heavyPunchParams = KillerQueen.Defs.Abilities.HeavyPunch
-            HeavyPunch.Execute(initPlayer,heavyPunchParams)
-            --wait(.3)
-            --SoundPlayer.WeldSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.SFX.StandSounds.KillerQueen.HeavyPunch)
-        end
-
-    end
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
 end
 
 --------------------------------------------------------------------------------------------------
---// EXPLOSIVE COIN //-------------------------------------------------------------------------------
+--// EXPLOSIVE COIN - T //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
-
--- ability module
-local BasicGrenade = require(Knit.Abilities.BasicGrenade)
 
 -- defs
 KillerQueen.Defs.Abilities.ExplosiveCoin = {
@@ -339,67 +155,14 @@ KillerQueen.Defs.Abilities.ExplosiveCoin = {
     --HitEffects = {} -- we are aplpyign hit effects through to abilitymod module
 }
 
-function KillerQueen.ExplosiveCoin(initPlayer,params)
+function KillerQueen.ExplosiveCoin(params)
 
-    -- EXPLOSIVE COIN/INITIALIZE
-    if params.SystemStage == "Initialize" then
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-    end
-
-    -- EXPLOSIVE COIN/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-        -- require toggles to be active
-        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if not AbilityToggle.RequireOff(initPlayer,{"C","R","F","E","Z","X"}) then
-            params.CanRun = false
-            return params
-        end
-
-        if params.KeyState == "InputBegan" then
-
-            -- cooldowns and toggles
-            spawn(function()
-                Cooldown.SetCooldown(initPlayer,params.InputId,KillerQueen.Defs.Abilities.ExplosiveCoin.Cooldown)
-                AbilityToggle.SetToggle(initPlayer,params.InputId, true)
-                wait(2)
-                AbilityToggle.SetToggle(initPlayer,params.InputId, false)
-            end)
-
-            -- activate ability
-            params.BasicGrenade = KillerQueen.Defs.Abilities.ExplosiveCoin
-            BasicGrenade.Server_Activate(initPlayer,params)
-
-            params.CanRun = true
-
-        end
-
-    end
-
-    
-    -- EXPLOSIVE COIN/EXECUTE
-    if params.SystemStage == "Execute" then
-        if params.KeyState == "InputBegan" then
-
-            BasicGrenade.Client_Execute(initPlayer,params)
-
-       end
-
-   end
-
-
+    params = require(Knit.Abilities.BasicGrenade)[params.SystemStage](params, KillerQueen.Defs.Abilities.ExplosiveCoin)
 end
 
 
 --------------------------------------------------------------------------------------------------
---// BITES THE DUST //---------------------------------------------------------------------------------
+--// BITES THE DUST - F //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -409,13 +172,13 @@ KillerQueen.Defs.Abilities.BitesTheDust = {
     HitEffects = {}
 }
 
-function KillerQueen.BitesTheDust(initPlayer,params)
+function KillerQueen.BitesTheDust(params)
     print("KILLER QUEEN: Bites The Dust")
 end
 
 
 --------------------------------------------------------------------------------------------------
---// SHEER HEART ATTACK //------------------------------------------------------------------------------
+--// SHEER HEART ATTACK - X //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -425,12 +188,12 @@ KillerQueen.Defs.Abilities.SheerHeartAttack = {
     HitEffects = {}
 }
 
-function KillerQueen.SheerHeartAttack(initPlayer,params)
+function KillerQueen.SheerHeartAttack(params)
     print("KILLER QUEEN: Sheer Heart Attack")
 end
 
 --------------------------------------------------------------------------------------------------
---// STAND JUMP //------------------------------------------------------------------------------
+--// STAND JUMP - Z //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -442,62 +205,13 @@ KillerQueen.Defs.Abilities.StandJump = {
     Velocity_Y = 500
 }
 
-function KillerQueen.StandJump(initPlayer,params)
+function KillerQueen.StandJump(params)
 
-
-    -- STAND JUMP/INITIALIZE
-    if params.SystemStage == "Initialize" then
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-    end
-
-    -- STAND JUMP/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-        -- require toggles to be active
-        if not AbilityToggle.RequireOn(initPlayer,{"Q"}) then
-            params.CanRun = false
-            return params
-        end
-
-        -- require toggles to be inactive, excluding "Q"
-        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","R"}) then
-            params.CanRun = false
-            return params
-        end
-        
-        -- STAND JUMP/ACTIVATE/INPUT BEGAN
-        if params.KeyState == "InputBegan" then
-
-        --bulletKickParams = KillerQueen.Defs.Abilities.BulletKick
-        params.StandJump = KillerQueen.Defs.Abilities.StandJump
-        
-            -- set toggles and cooldowns
-            spawn(function()
-                Cooldown.SetCooldown(initPlayer,params.InputId,KillerQueen.Defs.Abilities.StandJump.Cooldown)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(1)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-            end)
-
-            StandJump.Activate(initPlayer,params)
-            params.CanRun = true
-
-        end
-
-    end
-
-    -- STAND JUMP/EXECUTE
-    if params.SystemStage == "Execute" then
-        if params.KeyState == "InputBegan" then
-            StandJump.Execute(initPlayer,params)
-        end
-    end
+    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, KillerQueen.Defs.Abilities.StandJump)
 end
 
 --------------------------------------------------------------------------------------------------
---// PUNCH //------------------------------------------------------------------------------
+--// PUNCH - Mouse1 //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -506,48 +220,9 @@ KillerQueen.Defs.Abilities.Punch = {
     HitEffects = {Damage = {Damage = 5}}
 }
 
-function KillerQueen.Punch(initPlayer,params)
+function KillerQueen.Punch(params)
 
-    -- PUNCH/INITIALIZE
-    if params.SystemStage == "Initialize" then
-        if params.KeyState == "InputBegan" then
-            params.CanRun = true
-        end
-    end
-
-    -- PUNCH/ACTIVATE
-    if params.SystemStage == "Activate" then
-
-        -- require toggles to be inactive, excluding "Q"
-        if not AbilityToggle.RequireOff(initPlayer,{"C","T","F","E","Z","R","X","Mouse1"}) then
-            params.CanRun = false
-            return params
-        end
-
-         -- PUNCH/ACTIVATE/INPUT BEGAN
-         if params.KeyState == "InputBegan" then
-
-            -- set toggles and cooldown
-            spawn(function()
-                --Cooldown.SetCooldown(initPlayer, params.InputId, KillerQueen.Defs.Abilities.Punch.Cooldown)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,true)
-                wait(.75)
-                AbilityToggle.SetToggle(initPlayer,params.InputId,false)
-            end)
-
-            params.Punch = KillerQueen.Defs.Abilities.Punch
-            Punch.Activate(initPlayer, params)
-            params.CanRun = true
-
-        end
-    end
-
-    -- PUNCH/EXECUTE
-    if params.SystemStage == "Execute" then
-        if params.KeyState == "InputBegan" then
-            Punch.Execute(initPlayer,params)
-        end
-    end
+    params = require(Knit.Abilities.Punch)[params.SystemStage](params, KillerQueen.Defs.Abilities.Punch)
 end
 
 return KillerQueen

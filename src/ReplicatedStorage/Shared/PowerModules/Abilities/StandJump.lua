@@ -14,6 +14,7 @@ local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 -- default values
 local defaultVelocityX = 7000 
@@ -40,12 +41,6 @@ function StandJump.Initialize(params, abilityDefs)
     end
 
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
-    end
-
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
         params.CanRun = false
         return params
     end
@@ -86,17 +81,11 @@ function StandJump.Activate(params, abilityDefs)
         return params
     end
 
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "StandJump", 2)
 
     -- tween hitbox
     spawn(function()
@@ -162,6 +151,9 @@ function StandJump.Run_Server(params, abilityDefs)
         end)
 
         wait(.2) -- a short delay to make time for animations
+
+        -- play the sound
+	    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.StandLeap)
         
         initPlayer.Character.Humanoid.Jump = true
        
@@ -193,12 +185,11 @@ function StandJump.Run_Effects(params, abilityDefs)
 
     -- apply depth of field effect for the initPlayer
     if initPlayer == Players.LocalPlayer then
-
         -- depth of field effect
         local newDepthOfField = ReplicatedStorage.EffectParts.Effects.DepthOfField.Default:Clone()
         newDepthOfField.Name = "newDepthOfField"
         newDepthOfField.Parent = game:GetService("Lighting")
-        Debris:AddItem(newDepthOfField,1)
+        Debris:AddItem(newDepthOfField, 1)
     end
 
     --move the stand and do animations

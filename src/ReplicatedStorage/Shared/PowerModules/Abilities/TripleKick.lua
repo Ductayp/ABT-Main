@@ -45,12 +45,6 @@ function TripleKick.Initialize(params, abilityDefs)
         params.CanRun = false
         return params
     end
-
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
     
     -- tween effects
     spawn(function()
@@ -82,17 +76,11 @@ function TripleKick.Activate(params, abilityDefs)
         return params
     end
 
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "TripleKick", 2)
 
     -- tween hitbox
     spawn(function()
@@ -231,21 +219,21 @@ function TripleKick.Run_Effects(params, abilityDefs)
     pop_1.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(-.2,-.2,-4.5))
     pop_1_Size:Play()
     pop_1_Fade:Play()
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.GenericWhoosh_Fast)
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
     
     wait(.4)
     pop_2.Parent = workspace.RenderedEffects
     pop_2.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(-.4,-.6,-3.5))
     pop_2_Size:Play()
     pop_2_Fade:Play()
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.GenericWhoosh_Fast)
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
 
     wait(.5)
     pop_3.Parent = workspace.RenderedEffects
     pop_3.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,.5,-5.5))
     pop_3_Size:Play()
     pop_3_Fade:Play()
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.GenericWhoosh_Slow)
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Slow)
 
 end
 

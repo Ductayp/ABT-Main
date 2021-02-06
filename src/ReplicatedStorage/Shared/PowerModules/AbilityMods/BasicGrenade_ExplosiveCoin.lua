@@ -12,6 +12,7 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local ExplosiveCoin = {}
 
@@ -72,12 +73,12 @@ function ExplosiveCoin.Server_Launch(initPlayer, grenade)
     Debris:AddItem(grenade.BodyAngularVelocity, .2)
 
     grenade.MainPart.Parent = Workspace.RenderedEffects
-    --grenade.MainPart:SetNetworkOwner(nil)
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.Coin)
 
 end
 
 function ExplosiveCoin.Server_Explode(initPlayer, grenade)
-    -- nothign now
+    -- nothing right now
 end
 
 function ExplosiveCoin.Client_Launch(initPlayer, grenade)
@@ -169,9 +170,8 @@ function ExplosiveCoin.Client_Explode(initPlayer, grenade)
 
     }
 
- 
-
-
+    WeldedSound.NewSound(grenade.MainPart, ReplicatedStorage.Audio.General.Explosion_1)
+    
     -- setup the parts
     for _,partTable in pairs(effectParts) do
 

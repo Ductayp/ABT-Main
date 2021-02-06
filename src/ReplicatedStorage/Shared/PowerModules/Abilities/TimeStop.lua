@@ -62,12 +62,6 @@ function TimeStop.Activate(params, abilityDefs)
         return params
     end
 
-    -- require toggles to be inactive, excluding "Q"
-    if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
 	-- check cooldown
 	if not Cooldown.Server_IsCooled(params) then
 		print("not cooled down")
@@ -78,8 +72,8 @@ function TimeStop.Activate(params, abilityDefs)
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "TimeStop", 6)
 
     -- setup the hit
     TimeStop.CreateHitRadius(params, abilityDefs)

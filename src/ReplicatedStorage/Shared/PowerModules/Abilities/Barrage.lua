@@ -14,6 +14,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 -- local variables
 local armSpawnRate = .05
@@ -44,23 +45,17 @@ function Barrage.Initialize(params, abilityDefs)
 			return params
 		end
 
-		-- require toggles to be inactive, excluding "Q"
-		if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-			params.CanRun = false
-			return params
-		end
-
 		-- only operate if toggle is off
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
 
-			--params.Local_BarrageToggle = AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", true)
-			AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", true)
+			--params.Local_BarrageToggle = AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", true)
+			AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", true)
 			Barrage.RunEffect(params, abilityDefs)
 
 			-- spawn a function to kill the barrage if the duration expires
 			spawn(function()
 				wait(abilityDefs.Duration)
-				AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", false)
+				AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", false)
 				Barrage.EndEffect(params, abilityDefs)
 			end)
 		end
@@ -71,8 +66,8 @@ function Barrage.Initialize(params, abilityDefs)
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
 
-		if AbilityToggle.GetToggleValue(params.InitUserId, "Local_BarrageToggle") == true then
-			AbilityToggle.SetToggle(params.InitUserId, "Local_BarrageToggle", false)
+		if AbilityToggle.GetToggleValue(params.InitUserId, "Client_Barrage") == true then
+			AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", false)
 			Barrage.EndEffect(params)
 		end
 
@@ -98,26 +93,24 @@ function Barrage.Activate(params, abilityDefs)
 			return params
 		end
 
-		-- require toggles to be inactive, excluding "Q"
-		if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-			params.CanRun = false
-			return params
-		end
-
 		-- only operate if toggle is off
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
 
-			AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+			AbilityToggle.SetToggle(params.InitUserId, "Server_Barrage", true)
 			Barrage.CreateHitbox(params, abilityDefs)
 
-			
+			 -- block input for the duration of the barrage
+			 BlockInput.AddBlock(params.InitUserId, "Barrage", abilityDefs.Duration)
 
+			
 			-- spawn a function to kill the barrage if the duration expires
 			spawn(function()
 				wait(abilityDefs.Duration)
-				AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+				AbilityToggle.SetToggle(params.InitUserId, "Server_Barrage", false)
 				Barrage.DestroyHitbox(params, abilityDefs)
 				Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+				BlockInput.RemoveBlock(params.InitUserId, "Barrage")
 			end)
 		end
 	end
@@ -125,10 +118,12 @@ function Barrage.Activate(params, abilityDefs)
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
 
-		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
-			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+		if AbilityToggle.GetToggleValue(params.InitUserId, "Server_Barrage") == true then
+			AbilityToggle.SetToggle(params.InitUserId, "Server_Barrage", false)
 			Barrage.DestroyHitbox(params)
 			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+			BlockInput.RemoveBlock(params.InitUserId, "Barrage")
 		end
 	end
 
@@ -259,7 +254,7 @@ function Barrage.RunEffect(params, abilityDefs)
 
 	local thisToggle
 	if params.SystemStage == "Initialize" then
-		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Local_BarrageToggle")
+		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Client_Barrage")
 	else
 		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, params.InputId)
 	end

@@ -21,14 +21,16 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PowersController = Knit.CreateController { Name = "PowersController" }
 local PowersService = Knit.GetService("PowersService")
-local BlockInput = require(Knit.HitEffects.BlockInput)
+local BlockInput = require(Knit.PowerUtils.BlockInput)
 local utils = require(Knit.Shared.Utils)
 
 --// InitializePower
 function PowersController:InitializePower(params)
 
-    if BlockInput.IsBlocked(Players.LocalPlayer) then
-        return
+    if BlockInput.IsBlocked(Players.LocalPlayer.UserId) then
+        if params.KeyState == "InputBegan" then
+            return
+        end
     end
 
     local powerData = PowersService:GetCurrentPower(Players.LocalPlayer)
@@ -72,35 +74,6 @@ function PowersController:RenderEffect(effect,params)
     local effectModule = require(Knit.HitEffects[effect])
     effectModule.Client_RenderEffect(params)
 end
-
---[[
---// QuickRenderStands
-function PowersController:QuickRenderStand(params)
-
-    print(params)
-
-    --check for initplayers stand tracker
-    local standTracker = Workspace.PlayerStands.StandTracker:FindFirstChild(params.InitUserId)
-
-    -- if the standTracker exists, there should be a stand, lets try to find it
-    local doRender = true -- start with true and prove it. Set to false if we find the stand
-    if standTracker then
-        playerStandFolder =  Workspace.PlayerStands:FindFirstChild(params.InitUserId)
-        if playerStandFolder then
-            local playerStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-            if playerStand then
-                doRender = false
-            end
-        end
-    end
-
-    -- if doRedner is still true, QuickRender the stand
-    if doRender then
-        require(Knit.Abilities.ManageStand).QuickRender(params)
-    end
-
-end
-]]--
 
 --// RenderExistingStands
 function PowersController:RenderExistingStands()

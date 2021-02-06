@@ -44,7 +44,7 @@ function ManageStand.Initialize(params, abilityDefs)
 	end
 
 	-- check the stands toggle and render effects
-	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
 		spawn(function()
 			ManageStand.RemoveStand(params, abilityDefs)
 		end)
@@ -77,15 +77,15 @@ function ManageStand.Activate(params, abilityDefs)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
 	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand")
-	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
 
-		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
 
 		if equippedStand then
 			equippedStand:Destroy()
 		end
 	else
-		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", true)
 
 		--if not equippedStand then
 
@@ -109,7 +109,7 @@ function ManageStand.Execute(params, abilityDefs)
 	end
 
 	-- check the stands toggle and render effects
-	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
 		spawn(function()
 			ManageStand.EquipStand(params, abilityDefs)
 		end)
@@ -419,8 +419,6 @@ end
 
 -- Move Stand
 function ManageStand.MoveStand(params, anchorName)
-
-	print("ManageStand.MoveStand",params, anchorName)
 
 	local moveTime = .175
 	if params.MoveTime ~= nil then

@@ -86,13 +86,13 @@ KillerQueen.Defs.Abilities.EquipStand = {
         Legendary = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Legendary,
     },
     Sounds = {
-        Equip = ReplicatedStorage.Audio.StandSpecific.TheWorld.Summon,
+        Equip = ReplicatedStorage.Audio.StandSpecific.KillerQueen.Summon,
         Remove =  ReplicatedStorage.Audio.Abilities.StandSummon,
     }
 }
 
 function KillerQueen.EquipStand(params)
-
+    params.AbilityId = KillerQueen.Defs.Abilities.EquipStand.Id
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, KillerQueen.Defs.Abilities.EquipStand)
 end
 
@@ -103,10 +103,10 @@ end
 -- defs
 KillerQueen.Defs.Abilities.Barrage = {
     Name = "Barrage",
+    Id = "Barrage",
     Duration = 4,
     Cooldown = 7,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","R","T","F","Z","X"},
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 3}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.KillerQueen.Barrage,
@@ -114,8 +114,8 @@ KillerQueen.Defs.Abilities.Barrage = {
 }
 
 function KillerQueen.Barrage(params)
-
-    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
+    params.AbilityId = KillerQueen.Defs.Abilities.Barrage.Id
+    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, KillerQueen.Defs.Abilities.Barrage)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -125,9 +125,9 @@ end
 --defs
 KillerQueen.Defs.Abilities.BombPunch = {
     Name = "Bomb Punch",
+    Id = "BombPunch",
     Cooldown = 1,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","F","T","E","Z","X"},
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
@@ -135,7 +135,7 @@ KillerQueen.Defs.Abilities.BombPunch = {
 }
 
 function KillerQueen.BombPunch(params)
-
+    params.AbilityId = KillerQueen.Defs.Abilities.BombPunch.Id
     params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
 end
 
@@ -146,13 +146,14 @@ end
 -- defs
 KillerQueen.Defs.Abilities.ExplosiveCoin = {
     Name = "Explosive Coin",
+    Id = "ExplosiveCoin",
     Cooldown = 2,
+    RequireToggle_On = {"StandEquipped"},
     AbilityMod = Knit.AbilityMods.BasicGrenade_ExplosiveCoin,
-    --HitEffects = {} -- we are aplpyign hit effects through to abilitymod module
 }
 
 function KillerQueen.ExplosiveCoin(params)
-
+    params.AbilityId = KillerQueen.Defs.Abilities.ExplosiveCoin.Id
     params = require(Knit.Abilities.BasicGrenade)[params.SystemStage](params, KillerQueen.Defs.Abilities.ExplosiveCoin)
 end
 
@@ -164,7 +165,9 @@ end
 -- defs
 KillerQueen.Defs.Abilities.BitesTheDust = {
     Name = "Bites The Dust",
+    Id = "BitesTheDust",
     Cooldown = 1,
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {}
 }
 
@@ -180,7 +183,9 @@ end
 -- defs
 KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Name = "Sheer Heart Attack",
+    Id = "SheerHeartAttack",
     Cooldown = 1,
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {}
 }
 
@@ -195,14 +200,13 @@ end
 -- defs
 KillerQueen.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
-    Duration = .3,
+    Id = "StandJump",
     Cooldown = 5,
-    Velocity_XZ = 2700,
-    Velocity_Y = 500
+    RequireToggle_On = {"StandEquipped"},
 }
 
 function KillerQueen.StandJump(params)
-
+    params.AbilityId = KillerQueen.Defs.Abilities.StandJump.Id
     params = require(Knit.Abilities.StandJump)[params.SystemStage](params, KillerQueen.Defs.Abilities.StandJump)
 end
 
@@ -213,11 +217,12 @@ end
 -- defs
 KillerQueen.Defs.Abilities.Punch = {
     Name = "Punch",
+    Id = "Punch",
     HitEffects = {Damage = {Damage = 5}}
 }
 
 function KillerQueen.Punch(params)
-
+    params.AbilityId = KillerQueen.Defs.Abilities.Punch.Id
     params = require(Knit.Abilities.Punch)[params.SystemStage](params, KillerQueen.Defs.Abilities.Punch)
 end
 

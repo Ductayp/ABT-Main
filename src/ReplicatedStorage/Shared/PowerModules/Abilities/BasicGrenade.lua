@@ -13,20 +13,97 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-
--- Ability modules
+local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
-
--- Effect modules
-local Damage = require(Knit.Effects.Damage)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
+local RayHitbox = require(Knit.PowerUtils.RayHitbox)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local BasicGrenade = {}
 
+--// --------------------------------------------------------------------
+--// Handler Functions
+--// --------------------------------------------------------------------
 
-function BasicGrenade.Server_Activate(initPlayer,params)
+--// Initialize
+function BasicGrenade.Initialize(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+    
+end
+
+--// Activate
+function BasicGrenade.Activate(params, abilityDefs)
+
+	-- check KeyState
+	if params.KeyState == "InputBegan" then
+		params.CanRun = true
+	else
+		params.CanRun = false
+		return
+    end
+    
+    -- check cooldown
+	if not Cooldown.Client_IsCooled(params) then
+		params.CanRun = false
+		return
+    end
+    
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+
+	-- set cooldown
+    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicGrenade", 1.5)
+
+    -- tween hitbox
+    BasicGrenade.Run_Server(params, abilityDefs)
+
+end
+
+--// Execute
+function BasicGrenade.Execute(params, abilityDefs)
+
+    -- tween effects
+	BasicGrenade.Run_Effects(params, abilityDefs)
+
+end
+
+
+--// --------------------------------------------------------------------
+--// Ability Functions
+--// --------------------------------------------------------------------
+
+function BasicGrenade.Run_Server(params, abilityDefs)
     print("boopies",params)
 
-    local abilityMod = require(params.BasicGrenade.AbilityMod)
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+
+    -- get the abilitymod
+    local abilityMod = require(abilityDefs.AbilityMod)
 
     --- make a new grenade
     local newGrenade = abilityMod.new(initPlayer)
@@ -65,10 +142,10 @@ function BasicGrenade.Server_Activate(initPlayer,params)
         for _,hitCharacter in pairs(newGrenade.HitCharacters) do
 
             -- get the most up-to-date hiteffects
-            local hitEffects = abilityMod.GetHitEffects(initPlayer, hitCharacter, newGrenade)
+            abilityDefs.HitEffects = abilityMod.GetHitEffects(initPlayer, hitCharacter, newGrenade)
  
             -- apply the hit effects
-            Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, hitEffects)
+            Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
         end
 
         -- cleanup
@@ -82,12 +159,15 @@ function BasicGrenade.Server_Activate(initPlayer,params)
         
 end
 
-function BasicGrenade.Client_Execute(initPlayer,params)
+function BasicGrenade.Run_Effects(params, abilityDefs)
 
     print("EXECUTE", params)
 
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+
     -- launch it
-    local abilityMod = require(params.BasicGrenade.AbilityMod)
+    local abilityMod = require(abilityDefs.AbilityMod)
     abilityMod.Client_Launch(initPlayer, params.Grenade)
 
     -- get the local palyers ping

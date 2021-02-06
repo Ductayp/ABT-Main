@@ -18,7 +18,6 @@ local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
-
 local HITBOX_DELAY = 0.4
 local ANIMATION_DELAY = 0.4
 
@@ -30,8 +29,6 @@ local HeavyPunch = {}
 
 --// Initialize
 function HeavyPunch.Initialize(params, abilityDefs)
-
-    print("HeavyPunch.Initialize(params, abilityDefs)", params, abilityDefs)
 
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
@@ -54,13 +51,6 @@ function HeavyPunch.Initialize(params, abilityDefs)
         return params
     end
 
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        print("another ability was on", params)
-        params.CanRun = false
-        return params
-    end
-    
     -- tween effects
     spawn(function()
         HeavyPunch.Run_Effects(params, abilityDefs)
@@ -91,17 +81,11 @@ function HeavyPunch.Activate(params, abilityDefs)
         return params
     end
 
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "HeavyPunch", 2)
 
     -- tween hitbox
     HeavyPunch.Run_HitBox(params, abilityDefs)

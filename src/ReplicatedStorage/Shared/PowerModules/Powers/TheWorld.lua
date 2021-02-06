@@ -51,7 +51,7 @@ end
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
 function TheWorld.Manager(params)
 
-    print("TheWorld.Manager(params)", params)
+    --print("TheWorld.Manager(params)", params)
 
     -- call the function
     if params.InputId == "Q" then
@@ -110,8 +110,7 @@ TheWorld.Defs.Abilities.Barrage = {
     Id = "Barrage",
     Duration = 5,
     Cooldown = 10,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","R","T","F","Z","X"},
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 5}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
@@ -134,8 +133,7 @@ TheWorld.Defs.Abilities.TimeStop = {
     Duration = 8,
     Cooldown = 9,
     Range = 150,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","R","T","E","Z","X"},
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}},
     Sounds = {
         TimeStop = ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop,
@@ -165,11 +163,10 @@ TheWorld.Defs.Abilities.KnifeThrow = {
         PositionName = "Front",
         ReturnDelay = 0.5,
     },
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","R","F","E","Z","X"},
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 20}},
     Sounds = {
-        Shoot = ReplicatedStorage.Audio.Abilities.GenericWhoosh_Slow
+        Shoot = ReplicatedStorage.Audio.General.GenericWhoosh_Slow
     }
 }
 
@@ -187,8 +184,7 @@ TheWorld.Defs.Abilities.HeavyPunch = {
     Name = "Heavy Punch",
     Id = "HeavyPunch",
     Cooldown = 5,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","T","F","E","Z","X"},
+    RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, BlockInput = {Name = "HeavyPunch", Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
@@ -209,8 +205,7 @@ TheWorld.Defs.Abilities.BulletKick = {
     Name = "Bullet Kick",
     Id = "BulletKick",
     Cooldown = 5,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","T","F","E","Z","R"},
+    RequireToggle_On = {"StandEquipped"},
     AbilityMod = Knit.AbilityMods.TripleKick_BulletKick,
 }
 
@@ -227,10 +222,8 @@ end
 TheWorld.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
-    Duration = .3,
     Cooldown = 5,
-    RequireToggle_On = {"Q"},
-    RequireToggle_Off = {"C","T","F","E","X","R"},
+    RequireToggle_On = {"StandEquipped"},
 }
 
 function TheWorld.StandJump(params)
@@ -248,8 +241,8 @@ TheWorld.Defs.Abilities.Punch = {
     Id = "Punch",
     Cooldown = 0.5,
     HitEffects = {Damage = {Damage = 5}},
-    RequireToggle_On = {},
-    RequireToggle_Off = {"Mouse1"},
+    --RequireToggle_On = {},
+    --RequireToggle_Off = {"Mouse1"},
 }
 
 function TheWorld.Punch(params)

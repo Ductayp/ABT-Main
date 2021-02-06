@@ -14,7 +14,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
-local BlockInput = require(Knit.HitEffects.BlockInput)
+local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 -- constants
 PowersService.XP_PER_LEVEL = {
@@ -23,20 +23,18 @@ PowersService.XP_PER_LEVEL = {
     Legendary = 32400
 }
 
--- variables
---PowersService.PlayerAnimations = {}
-
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
 PowersService.Client.RenderEffect = RemoteEvent.new()
---PowersService.Client.RenderExistingStands = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
 
     -- check if the players input is block
-    if BlockInput.IsBlocked(player) then
-        return
+    if BlockInput.IsBlocked(player.UserId) then
+        if params.KeyState == "InputBegan" then
+            return
+        end
     end
 
     -- sanity check

@@ -15,6 +15,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 -- variables
 local lastPunch = "Punch_2"
@@ -66,29 +67,12 @@ function Punch.Activate(params, abilityDefs)
 		params.CanRun = false
 		return
     end
-    
-    --[[
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
-    end
-    ]]--
-
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
 
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    spawn(function()
-        AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
-        wait(0.5)
-        AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-    end)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "Punch", 0.5)
 
     -- tween hitbox
     spawn(function()
@@ -120,12 +104,14 @@ function Punch.Run_Server(params, abilityDefs)
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
-    -- animations
+    -- play animations and sounds
     if lastPunch == "Punch_1" then
         Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_2:Play()
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Slow, {SoundProperties = {PlaybackSpeed = 1.7}})
         lastPunch = "Punch_2"
     else
         Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_1:Play()
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
         lastPunch = "Punch_1"
     end
 
@@ -145,7 +131,7 @@ function Punch.Run_Server(params, abilityDefs)
     -- make a new hitbox
     local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
     newHitbox:HitStart()
-    newHitbox:DebugMode(true)
+    --newHitbox:DebugMode(true)
 
     -- move it
     spawn(function()

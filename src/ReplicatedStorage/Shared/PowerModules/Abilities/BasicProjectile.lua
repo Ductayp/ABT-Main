@@ -46,12 +46,6 @@ function BasicProjectile.Initialize(params, abilityDefs)
         params.CanRun = false
         return params
     end
-
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
     
     -- tween effects
 	BasicProjectile.Run_Effects(params, abilityDefs)
@@ -81,17 +75,11 @@ function BasicProjectile.Activate(params, abilityDefs)
         return params
     end
 
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", 1.5)
 
     -- tween hitbox
     BasicProjectile.Tween_HitBox(params, abilityDefs)

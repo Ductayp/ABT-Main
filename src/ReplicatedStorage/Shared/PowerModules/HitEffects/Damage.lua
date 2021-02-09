@@ -13,6 +13,7 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local Damage = {}
 
@@ -106,6 +107,15 @@ function Damage.Client_RenderEffect(params)
     
         dots:Emit(1)
         lines:Emit(1)
+    end
+
+    if not params.DisableSound then
+        local rand = math.random(1,2)
+        if rand == 1 then
+            WeldedSound.NewSound(params.HitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.HitEffects.Damage.Damage_1)
+        else
+            WeldedSound.NewSound(params.HitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.HitEffects.Damage.Damage_2)
+        end
     end
    
 end

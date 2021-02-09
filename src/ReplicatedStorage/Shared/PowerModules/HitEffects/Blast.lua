@@ -14,6 +14,7 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local Blast = {}
 
@@ -161,6 +162,8 @@ function Blast.Client_RenderEffect(params)
         table.Part.Parent = Workspace.RenderedEffects
         Debris:AddItem(table.Part, 10)
     end
+
+    WeldedSound.NewSound(params.HitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.General.Explosion_2, {PlaybackSpeed = 2})
 
     -- run the Tweens
     for name, table in pairs(effectParts) do

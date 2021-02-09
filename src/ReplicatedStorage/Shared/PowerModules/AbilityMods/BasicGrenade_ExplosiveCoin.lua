@@ -170,7 +170,7 @@ function ExplosiveCoin.Client_Explode(initPlayer, grenade)
 
     }
 
-    WeldedSound.NewSound(grenade.MainPart, ReplicatedStorage.Audio.General.Explosion_1)
+    WeldedSound.NewSound(effectParts.Ball.Part, ReplicatedStorage.Audio.General.Explosion_1)
     
     -- setup the parts
     for _,partTable in pairs(effectParts) do

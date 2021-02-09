@@ -186,11 +186,12 @@ KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Id = "SheerHeartAttack",
     Cooldown = 1,
     RequireToggle_On = {"StandEquipped"},
-    HitEffects = {}
+    AbilityMod = Knit.AbilityMods.BasicSeeker_SheerHeartAttack,
 }
 
 function KillerQueen.SheerHeartAttack(params)
-    print("KILLER QUEEN: Sheer Heart Attack")
+    params.AbilityId = KillerQueen.Defs.Abilities.SheerHeartAttack.Id
+    params = require(Knit.Abilities.BasicSeeker)[params.SystemStage](params, KillerQueen.Defs.Abilities.SheerHeartAttack)
 end
 
 --------------------------------------------------------------------------------------------------

@@ -97,7 +97,6 @@ end
 --// --------------------------------------------------------------------
 
 function BasicGrenade.Run_Server(params, abilityDefs)
-    print("boopies",params)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)

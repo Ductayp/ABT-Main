@@ -113,7 +113,7 @@ function  RedHot_Mob.Attack(mobData)
         local rand = math.random(1, #mobData.Animations.Attack)
         mobData.Animations.Attack[rand]:Play()
 
-        local shockBall = ReplicatedStorage.EffectParts.Projectiles.ShockBall:Clone()
+        local shockBall = ReplicatedStorage.EffectParts.MobEffects.RHCP.ShockBall:Clone()
         shockBall.CFrame = mobData.Model.HumanoidRootPart.CFrame
         shockBall.Parent = Workspace
         shockBall.Anchored = false

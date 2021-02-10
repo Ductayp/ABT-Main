@@ -43,9 +43,11 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
                 end
 
                 spawn(function()
-                        hitCharacter.Humanoid.WalkSpeed = 8
-                        wait(1.5)
+                    hitCharacter.Humanoid.WalkSpeed = 8
+                    wait(1.5)
+                    if hitCharacter:FindFirstChild("Humanoid") then
                         hitCharacter.Humanoid.WalkSpeed = defaultWalkspeed.Value
+                    end
                 end)
             end
         end

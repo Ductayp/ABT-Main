@@ -1,7 +1,9 @@
--- BasicSeeker
--- this module requires a refernce to an AbilityMod script, it does not work alone
+-- BitesTheDust
+-- PDab
+-- 12-1-2020
 
 --Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
@@ -14,16 +16,18 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
---local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
-local BasicSeeker = {}
+local abilityDuration = 5
+
+local BitesTheDust = {}
 
 --// --------------------------------------------------------------------
 --// Handler Functions
 --// --------------------------------------------------------------------
 
 --// Initialize
-function BasicSeeker.Initialize(params, abilityDefs)
+function BitesTheDust.Initialize(params, abilityDefs)
 
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
@@ -34,20 +38,27 @@ function BasicSeeker.Initialize(params, abilityDefs)
     end
     
     -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
+    if not Cooldown.Client_IsCooled(params) then
+        print("not cooled down", params)
 		params.CanRun = false
 		return
     end
 
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        print("stand wasnt on")
         params.CanRun = false
         return params
     end
-    
+
+    -- tween effects
+    spawn(function()
+        BitesTheDust.Run_Client(params, abilityDefs)
+    end)
+	
 end
 
 --// Activate
-function BasicSeeker.Activate(params, abilityDefs)
+function BitesTheDust.Activate(params, abilityDefs)
 
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
@@ -73,21 +84,23 @@ function BasicSeeker.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicSeeker", 1.5)
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BitesTheDust", 2)
 
     -- tween hitbox
-    spawn(function()
-        BasicSeeker.Run_Server(params, abilityDefs)
-    end)
-    
+    BitesTheDust.Run_Server(params, abilityDefs)
 
 end
 
 --// Execute
-function BasicSeeker.Execute(params, abilityDefs)
+function BitesTheDust.Execute(params, abilityDefs)
+
+	if Players.LocalPlayer.UserId == params.InitUserId then
+		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		return
+	end
 
     -- tween effects
-	BasicSeeker.Run_Effects(params, abilityDefs)
+	BitesTheDust.Run_Client(params, abilityDefs)
 
 end
 
@@ -96,52 +109,29 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
-function BasicSeeker.Run_Server(params, abilityDefs)
+function BitesTheDust.Run_Server(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
-    -- get the abilitymod
-    local abilityMod = require(abilityDefs.AbilityMod)
+    -- clone out a new hitpart
+    local hitPart = ReplicatedStorage.EffectParts.Abilities.BitesTheDust  .HitBox:Clone()
+    hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
+    hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame
+    --Debris:AddItem(hitPart, abilityDuration + 1)
+    utils.EasyWeld(initPlayer.Character.HumanoidRootPart, hitPart, hitPart)
 
-    -- make a new grenade
-    local newSeeker = abilityMod.new(initPlayer)
-
-    -- setup the hitbox
-    local newHitbox = RayHitbox.New(initPlayer, abilityDefs, newSeeker.HitBox, false)
-    newHitbox.OnHit:Connect(function(hit, humanoid)
-        if humanoid.Parent ~= initPlayer.Character then
-            abilityMod.Server_Hit(initPlayer, newSeeker, humanoid.Parent, abilityDefs)
-            abilityMod.DestroySeeker(initPlayer, newSeeker, abilityDefs, humanoid.Parent)
-        end
-    end)
+    -- make a new hitbox
+    local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, false)
     newHitbox:HitStart()
-    --newHitbox:DebugMode(true)
+    newHitbox:DebugMode(true)
 
-    -- get target
-    abilityMod.AquireTarget(initPlayer, newSeeker, abilityDefs)
-
-    -- launch it
-    abilityMod.Server_Launch(initPlayer, newSeeker, abilityDefs)
-
-    -- play the animation
-    abilityMod.PlayAnimations(initPlayer, newSeeker, abilityDefs)
-
-    -- handle lifetime of seeker
-    spawn(function()
-        wait(newSeeker.LifeSpan)
-        if newSeeker.Destroyed == false then
-            abilityMod.DestroySeeker(initPlayer, newSeeker, abilityDefs)
-        end
-    end)
-
-end 
-
-function BasicSeeker.Run_Effects(params, abilityDefs)
-
- 
 end
 
-return BasicSeeker
+function BitesTheDust.Run_Client(params, abilityDefs)
+
+end
+
+return BitesTheDust
 
 

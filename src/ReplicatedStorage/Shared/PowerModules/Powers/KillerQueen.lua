@@ -172,7 +172,8 @@ KillerQueen.Defs.Abilities.BitesTheDust = {
 }
 
 function KillerQueen.BitesTheDust(params)
-    print("KILLER QUEEN: Bites The Dust")
+    params.AbilityId = KillerQueen.Defs.Abilities.BitesTheDust.Id
+    params = require(Knit.Abilities.BitesTheDust)[params.SystemStage](params, KillerQueen.Defs.Abilities.BitesTheDust)
 end
 
 
@@ -185,7 +186,7 @@ KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Name = "Sheer Heart Attack",
     Id = "SheerHeartAttack",
     Cooldown = 1,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {},
     AbilityMod = Knit.AbilityMods.BasicSeeker_SheerHeartAttack,
 }
 

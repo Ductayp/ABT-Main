@@ -96,7 +96,7 @@ TheWorld.Defs.Abilities.EquipStand = {
 }
 
 function TheWorld.EquipStand(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.EquipStand.Id
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, TheWorld.Defs.Abilities.EquipStand)
 end
 
@@ -118,7 +118,7 @@ TheWorld.Defs.Abilities.Barrage = {
 }
 
 function TheWorld.Barrage(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.Barrage.Id
     params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheWorld.Defs.Abilities.Barrage)
 end
 
@@ -134,14 +134,14 @@ TheWorld.Defs.Abilities.TimeStop = {
     Cooldown = 9,
     Range = 150,
     RequireToggle_On = {"StandEquipped"},
-    HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}, BlockInput = {Name = "TimeStop", Duration = 8}},
+    HitEffects = {PinCharacter = {Duration = 8}}, 
     Sounds = {
         TimeStop = ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop,
     }
 }
 
 function TheWorld.TimeStop(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.TimeStop.Id
     params = require(Knit.Abilities.TimeStop)[params.SystemStage](params, TheWorld.Defs.Abilities.TimeStop)
 end
 
@@ -171,7 +171,7 @@ TheWorld.Defs.Abilities.KnifeThrow = {
 }
 
 function TheWorld.KnifeThrow(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.KnifeThrow.Id
     params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheWorld.Defs.Abilities.KnifeThrow)
 end
 
@@ -192,7 +192,7 @@ TheWorld.Defs.Abilities.HeavyPunch = {
 }
 
 function TheWorld.HeavyPunch(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.HeavyPunch.Id
     params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, TheWorld.Defs.Abilities.HeavyPunch)
 end
 
@@ -210,7 +210,7 @@ TheWorld.Defs.Abilities.BulletKick = {
 }
 
 function TheWorld.BulletKick(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.BulletKick.Id
     params = require(Knit.Abilities.TripleKick)[params.SystemStage](params, TheWorld.Defs.Abilities.BulletKick)
 end
 
@@ -227,7 +227,7 @@ TheWorld.Defs.Abilities.StandJump = {
 }
 
 function TheWorld.StandJump(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.StandJump.Id
     params = require(Knit.Abilities.StandJump)[params.SystemStage](params, TheWorld.Defs.Abilities.StandJump)
 end
 
@@ -246,7 +246,7 @@ TheWorld.Defs.Abilities.Punch = {
 }
 
 function TheWorld.Punch(params)
-
+    params.AbilityId = TheWorld.Defs.Abilities.Punch.Id
     params = require(Knit.Abilities.Punch)[params.SystemStage](params, TheWorld.Defs.Abilities.Punch)
 end
 

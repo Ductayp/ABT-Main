@@ -388,7 +388,7 @@ function ManageStand.StopAnimation(params, animationName)
 end
 
 --// Aura_On
-function ManageStand.Aura_On(params)
+function ManageStand.Aura_On(params, duration)
 
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
@@ -397,6 +397,12 @@ function ManageStand.Aura_On(params)
 		for _,emitter in pairs(targetStand.Aura:GetDescendants()) do
 			if emitter:IsA("ParticleEmitter") then
 				emitter.Enabled = true
+				if duration then
+					spawn(function()
+						wait(duration)
+						emitter.Enabled = false
+					end)
+				end
 			end
 		end
 	end

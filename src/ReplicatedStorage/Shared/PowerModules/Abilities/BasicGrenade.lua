@@ -42,9 +42,11 @@ function BasicGrenade.Initialize(params, abilityDefs)
 		return
     end
 
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
     
 end
@@ -67,9 +69,11 @@ function BasicGrenade.Activate(params, abilityDefs)
     end
     
 
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
 
 	-- set cooldown

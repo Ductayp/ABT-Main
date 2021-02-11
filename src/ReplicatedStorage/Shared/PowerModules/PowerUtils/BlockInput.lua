@@ -37,15 +37,12 @@ end
 
 function BlockInput.RemoveBlock(userId, name)
 
-    print("BlockInput.RemoveBlock(userId, name)", userId, name)
+    --print("BlockInput.RemoveBlock(userId, name)", userId, name)
 
     local inputBlockFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("InputBlocks")
-    print("inputBlockFolder", inputBlockFolder)
     if inputBlockFolder then
         local inputBlockedBool = inputBlockFolder:FindFirstChild(name, true)
-        print("inputBlockedBool", inputBlockedBool)
         if inputBlockedBool then
-            print("Destroy it!")
             inputBlockedBool:Destroy()
         end
     end

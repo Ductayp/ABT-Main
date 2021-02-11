@@ -18,7 +18,7 @@ local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local Blast = {}
 
-function Blast.Server_ApplyEffect(initPlayer,hitCharacter, params)
+function Blast.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then

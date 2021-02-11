@@ -19,6 +19,8 @@ local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local abilityDuration = 5
+local countdownLength = 5
+local blastRange = 10
 
 local BitesTheDust = {}
 
@@ -44,11 +46,14 @@ function BitesTheDust.Initialize(params, abilityDefs)
 		return
     end
 
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        print("stand wasnt on")
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            print("stand wasnt on")
+            params.CanRun = false
+            return params
+        end
     end
+    
 
     -- tween effects
     spawn(function()
@@ -74,10 +79,11 @@ function BitesTheDust.Activate(params, abilityDefs)
 		return
     end
     
-
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
 
 	-- set cooldown
@@ -118,17 +124,105 @@ function BitesTheDust.Run_Server(params, abilityDefs)
     local hitPart = ReplicatedStorage.EffectParts.Abilities.BitesTheDust  .HitBox:Clone()
     hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
     hitPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame
-    --Debris:AddItem(hitPart, abilityDuration + 1)
+    Debris:AddItem(hitPart, abilityDuration)
     utils.EasyWeld(initPlayer.Character.HumanoidRootPart, hitPart, hitPart)
 
     -- make a new hitbox
     local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, false)
+    newHitbox.OnHit:Connect(function(hit, humanoid)
+        if humanoid.Parent ~= initPlayer.Character then
+            print("hit 1")
+            BitesTheDust.HitCharacter(initPlayer, humanoid.Parent, abilityDefs)
+        end
+    end)
     newHitbox:HitStart()
-    newHitbox:DebugMode(true)
+    --newHitbox:DebugMode(true)
 
 end
 
 function BitesTheDust.Run_Client(params, abilityDefs)
+
+    -- get initPlayer
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+
+    local aura_1 = ReplicatedStorage.EffectParts.Abilities.BitesTheDust.Aura_1:Clone()
+    local aura_2 = ReplicatedStorage.EffectParts.Abilities.BitesTheDust.Aura_2:Clone()
+    aura_1.Parent = initPlayer.Character.HumanoidRootPart
+    aura_2.Parent = initPlayer.Character.HumanoidRootPart
+    Debris:AddItem(aura_1, abilityDuration)
+    Debris:AddItem(aura_2, abilityDuration)
+
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.KillerQueen.KiraBiteTheDust)
+
+end
+
+function BitesTheDust.HitCharacter(initPlayer, hitCharacter, abilityDefs)
+
+    local aura_1 = ReplicatedStorage.EffectParts.Abilities.BitesTheDust.Aura_1:Clone()
+    local aura_2 = ReplicatedStorage.EffectParts.Abilities.BitesTheDust.Aura_2:Clone()
+    local newCountdown = ReplicatedStorage.EffectParts.Abilities.BitesTheDust.Countdown:Clone()
+    aura_1.Parent = hitCharacter.HumanoidRootPart
+    aura_2.Parent = hitCharacter.HumanoidRootPart
+    newCountdown.Parent = hitCharacter
+
+    WeldedSound.NewSound(hitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.KillerQueen.BombClick)
+
+    spawn(function()
+
+        for count = 1, countdownLength do
+            newCountdown.TextLabel.Text = (countdownLength - count) + 1
+            if count ~= 1 then
+                WeldedSound.NewSound(hitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.KillerQueen.BombClick, {SoundProperties = {Volume = 0.25}})
+            end
+           
+            if count == countdownLength then
+                
+                wait(.5)
+                aura_1:Destroy()
+                aura_2:Destroy()
+                newCountdown:Destroy()
+        
+                -- apply hiteffects to the originally it character
+                abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = hitCharacter.HumanoidRootPart.CFrame.UpVector}}
+                Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+        
+                local targetTable = {}
+        
+                -- put all mobs in targetTable
+                for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
+                    if mob.Model:FindFirstChild("Humanoid") then
+                        if mob.Model.Humanoid.Health > 0 then
+                            if (hitCharacter.HumanoidRootPart.Position - mob.Model.HumanoidRootPart.Position).Magnitude < blastRange then
+                                table.insert(targetTable, mob.Model)
+                            end
+                        end
+                    end
+                end
+        
+                -- put all players in targetTable
+                for _, player in pairs(game.Players:GetPlayers()) do
+                    if (hitCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude < blastRange then
+                        table.insert(targetTable, player.Character)
+                    end
+                end
+        
+                -- setup HitEffects for the secondary targets
+                for _,character in pairs(targetTable) do
+                    local newLookVector = (hitCharacter.HumanoidRootPart.Position - character.HumanoidRootPart.Position).unit
+                    abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
+                    Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+                end
+            end
+
+            wait(1)
+        end
+        
+        
+        
+
+    end)
+
+        
 
 end
 

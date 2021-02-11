@@ -19,8 +19,6 @@ local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local TimeStop = {}
 
-local effectDelay = 2
-
 --// --------------------------------------------------------------------
 --// Handler Functions
 --// --------------------------------------------------------------------
@@ -42,10 +40,9 @@ function TimeStop.Initialize(params, abilityDefs)
 		return
     end
     
-    -- run client
-    spawn(function()
-        TimeStop.Run_Client(params, abilityDefs)
-    end)
+
+
+    --TimeStop.RenderEffects(params, abilityDefs)
 
 end
 
@@ -78,11 +75,9 @@ function TimeStop.Activate(params, abilityDefs)
     -- block input
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "TimeStop", 6)
 
-    -- run server
-    spawn(function()
-        TimeStop.Run_Server(params, abilityDefs)
-    end)
-    
+    -- setup the hit
+    TimeStop.CreateHitRadius(params, abilityDefs)
+
 end
 
 --// Execute
@@ -91,100 +86,102 @@ function TimeStop.Execute(params, abilityDefs)
 
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
-		return
+		--return
     end
     
-    -- run client
-    spawn(function()
-        TimeStop.Run_Client(params, abilityDefs)
-    end)
+    TimeStop.RenderEffects(params, abilityDefs)
 
 end
+
 
 --// --------------------------------------------------------------------
 --// Ability Functions
 --// --------------------------------------------------------------------
 
 --// ACTIVATE ----------------------------------
-function TimeStop.Run_Server(params, abilityDefs)
+function TimeStop.CreateHitRadius(params, abilityDefs)
 
-    wait(effectDelay)
+    spawn(function()
 
-    -- get initPlayer
-    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+        wait(1)
 
-    -- hit all players in range, subject to immunity
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
-            --if player ~= initPlayer then
-                Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, abilityDefs)
-            --end
+        -- get initPlayer
+        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    
+        -- hit players: put all player within range inside a table, including the initPlayer
+        local affectedPlayers = {}
+        for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+            if targetPlayer:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
+                table.insert(affectedPlayers, targetPlayer)
+            end
         end
-    end
+        print("affectdPlayers", affectedPlayers)
 
-    -- hit all Mobs in range
-    for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-        if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityDefs.Range then
-            Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, abilityDefs)
+        -- play ColorShift effect for all player within range, this happens before immunities
+        for _,player in pairs(affectedPlayers) do
+            print("this player is:", player)
+            Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, {ColorShift = abilityDefs.HitEffects.ColorShift})
         end
-    end
 
+        -- remove any player that is immune to timestop
+        for index,player in pairs(affectedPlayers) do
+            local isImmune = require(Knit.StateModules.Immunity).Has_Immunity(player,"TimeStop")
+            if isImmune then
+                --table.remove(affectedPlayers, index)
+            end
+        end
+
+
+        -- remove ColorShift
+        local newHitEffects = {}
+        for i,v in pairs(abilityDefs.HitEffects) do
+            if i ~= "ColorShift" then
+                newHitEffects[i] = v
+            end
+        end
+
+        print(newHitEffects)
+
+
+        -- play remainign effects on all players
+        for _,player in pairs(affectedPlayers) do
+            Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, newHitEffects)
+        end
+
+        -- hit all Mobs in range
+        for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
+            if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityDefs.Range then
+                Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, newHitEffects)
+            end
+        end
+    
+    end)
+    
 end
 
 
 --// Main Effects
-function TimeStop.Run_Client(params, abilityDefs)
+function TimeStop.RenderEffects(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    
+    -- setup the stand, if its not there then quick render it
+	local targetStand = workspace.PlayerStands[initPlayer.UserId]:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		targetStand = ManageStand.QuickRender(params)
+    end
 
     -- play animations
     ManageStand.PlayAnimation(params, "TimeStop")
-    ManageStand.Aura_On(params, 6)
 
     -- play the sound
-    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityDefs.Sounds.TimeStop)
+	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.TimeStop)
 
-    -- get Localplayer ping
-    local ping = Knit.Controllers.PlayerUtilityController:GetPing()
+    -- wait for animation
+    wait(1)
 
-    --wait for animation and audio
-    if params.SystemStage == "Initialize" then
-        wait(effectDelay + ping)
-    else
-        wait(effectDelay - ping)
-    end
-
-    -- color shift effect for all players in range
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
-            spawn(function()
-                local colorCorrection = Lighting:FindFirstChild("ColorCorrection")
-                local originalContrast = colorCorrection.Contrast
-                local newColorCorrection = colorCorrection:Clone()
-                newColorCorrection.Name = "newColorCorrection"
-                newColorCorrection.Parent = Lighting
-        
-                local colorTween1 = TweenService:Create(newColorCorrection, TweenInfo.new(.5), {Contrast = -3})
-                colorTween1:Play()
-        
-                colorCorrection.Enabled = false
-        
-                wait(abilityDefs.Duration)
-        
-                local colorTween2 = TweenService:Create(newColorCorrection, TweenInfo.new(.5), {Contrast = originalContrast})
-                colorTween2:Play()
-
-                wait(.5)
-
-                newColorCorrection:Destroy()
-                colorCorrection.Enabled = true
-                
-            end)
-        end
-    end
-
-    -- animate spheres
+    -- animate spehres
     local sphereParams = {}
     sphereParams.CFrame = initPlayer.Character.HumanoidRootPart.CFrame
     sphereParams.Size = Vector3.new(1,1,1)
@@ -204,9 +201,9 @@ function TimeStop.Run_Client(params, abilityDefs)
     sphere2.Color = Color3.new(2, 243, 255)
     sphere3.Color = Color3.new(255, 255, 2)
     
-    Debris:AddItem(sphere1, abilityDefs.Duration)
-    Debris:AddItem(sphere2, abilityDefs.Duration)
-    Debris:AddItem(sphere3, abilityDefs.Duration)
+    Debris:AddItem(sphere1,abilityDefs.Duration)
+    Debris:AddItem(sphere2,abilityDefs.Duration)
+    Debris:AddItem(sphere3,abilityDefs.Duration)
 
     spawn(function()
         local size = abilityDefs.Range * 2
@@ -253,9 +250,6 @@ function TimeStop.Run_Client(params, abilityDefs)
         wait(.005)
         sphereTween6:Play()
     end)
-
-
-
 end
 
 

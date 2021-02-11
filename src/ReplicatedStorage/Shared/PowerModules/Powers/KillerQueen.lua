@@ -148,7 +148,7 @@ KillerQueen.Defs.Abilities.ExplosiveCoin = {
     Name = "Explosive Coin",
     Id = "ExplosiveCoin",
     Cooldown = 2,
-    RequireToggle_On = {"StandEquipped"},
+    --RequireToggle_On = {"StandEquipped"},
     AbilityMod = Knit.AbilityMods.BasicGrenade_ExplosiveCoin,
 }
 
@@ -168,7 +168,6 @@ KillerQueen.Defs.Abilities.BitesTheDust = {
     Id = "BitesTheDust",
     Cooldown = 1,
     RequireToggle_On = {"StandEquipped"},
-    HitEffects = {}
 }
 
 function KillerQueen.BitesTheDust(params)
@@ -186,7 +185,7 @@ KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Name = "Sheer Heart Attack",
     Id = "SheerHeartAttack",
     Cooldown = 1,
-    RequireToggle_On = {},
+    --RequireToggle_On = {"StandEquipped"},
     AbilityMod = Knit.AbilityMods.BasicSeeker_SheerHeartAttack,
 }
 

@@ -92,7 +92,6 @@ KillerQueen.Defs.Abilities.EquipStand = {
 }
 
 function KillerQueen.EquipStand(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.EquipStand.Id
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, KillerQueen.Defs.Abilities.EquipStand)
 end
 
@@ -114,7 +113,6 @@ KillerQueen.Defs.Abilities.Barrage = {
 }
 
 function KillerQueen.Barrage(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.Barrage.Id
     params = require(Knit.Abilities.Barrage)[params.SystemStage](params, KillerQueen.Defs.Abilities.Barrage)
 end
 
@@ -126,7 +124,7 @@ end
 KillerQueen.Defs.Abilities.BombPunch = {
     Name = "Bomb Punch",
     Id = "BombPunch",
-    Cooldown = 1,
+    Cooldown = 5,
     RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
     Sounds = {
@@ -135,7 +133,6 @@ KillerQueen.Defs.Abilities.BombPunch = {
 }
 
 function KillerQueen.BombPunch(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.BombPunch.Id
     params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
 end
 
@@ -147,13 +144,12 @@ end
 KillerQueen.Defs.Abilities.ExplosiveCoin = {
     Name = "Explosive Coin",
     Id = "ExplosiveCoin",
-    Cooldown = 2,
+    Cooldown = 8,
     --RequireToggle_On = {"StandEquipped"},
     AbilityMod = Knit.AbilityMods.BasicGrenade_ExplosiveCoin,
 }
 
 function KillerQueen.ExplosiveCoin(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.ExplosiveCoin.Id
     params = require(Knit.Abilities.BasicGrenade)[params.SystemStage](params, KillerQueen.Defs.Abilities.ExplosiveCoin)
 end
 
@@ -166,12 +162,11 @@ end
 KillerQueen.Defs.Abilities.BitesTheDust = {
     Name = "Bites The Dust",
     Id = "BitesTheDust",
-    Cooldown = 1,
+    Cooldown = 20,
     RequireToggle_On = {"StandEquipped"},
 }
 
 function KillerQueen.BitesTheDust(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.BitesTheDust.Id
     params = require(Knit.Abilities.BitesTheDust)[params.SystemStage](params, KillerQueen.Defs.Abilities.BitesTheDust)
 end
 
@@ -184,13 +179,12 @@ end
 KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Name = "Sheer Heart Attack",
     Id = "SheerHeartAttack",
-    Cooldown = 1,
+    Cooldown = 15,
     --RequireToggle_On = {"StandEquipped"},
     AbilityMod = Knit.AbilityMods.BasicSeeker_SheerHeartAttack,
 }
 
 function KillerQueen.SheerHeartAttack(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.SheerHeartAttack.Id
     params = require(Knit.Abilities.BasicSeeker)[params.SystemStage](params, KillerQueen.Defs.Abilities.SheerHeartAttack)
 end
 
@@ -207,7 +201,6 @@ KillerQueen.Defs.Abilities.StandJump = {
 }
 
 function KillerQueen.StandJump(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.StandJump.Id
     params = require(Knit.Abilities.StandJump)[params.SystemStage](params, KillerQueen.Defs.Abilities.StandJump)
 end
 
@@ -223,7 +216,6 @@ KillerQueen.Defs.Abilities.Punch = {
 }
 
 function KillerQueen.Punch(params)
-    params.AbilityId = KillerQueen.Defs.Abilities.Punch.Id
     params = require(Knit.Abilities.Punch)[params.SystemStage](params, KillerQueen.Defs.Abilities.Punch)
 end
 

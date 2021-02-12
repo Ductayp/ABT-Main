@@ -65,9 +65,19 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 end
 
---// Client.Request_GuiUpdate
+--// Client:Request_GuiUpdate
 function GuiService.Client:Request_GuiUpdate(player, requestName)
     self.Server:Update_Gui(player, requestName) 
+end
+
+--// Client:GetSettings
+function GuiService.Client:GetSettings(player)
+
+end
+
+--// Client:GetSettings
+function GuiService.Client:SaveSettings(player)
+
 end
 
 --// PlayerAdded

@@ -22,7 +22,7 @@ LeftGui.Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true)
 LeftGui.Inventory_Button = mainGui.LeftGui:FindFirstChild("A_Inventory_Button", true)
 LeftGui.Codes_Button = mainGui.LeftGui:FindFirstChild("D_Codes_Button", true)
 LeftGui.Shop_Button = mainGui.LeftGui:FindFirstChild("B_Shop_Button", true)
-LeftGui.Settings_Button = mainGui.LeftGui:FindFirstChild("C_Shop_Button", true)
+LeftGui.Settings_Button = mainGui.LeftGui:FindFirstChild("C_Settings_Button", true)
 
 
 --// Setup_LeftGui() ------------------------------------------------------------
@@ -36,7 +36,11 @@ function LeftGui.Setup()
 
     LeftGui.Codes_Button.Activated:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
-        
+    end)
+
+    LeftGui.Settings_Button.Activated:Connect(function()
+        Knit.Controllers.GuiController:CloseAllWindows()
+        Knit.Controllers.GuiController.SettingsWindow.Open()
     end)
 
     LeftGui.Shop_Button.Activated:Connect(function()

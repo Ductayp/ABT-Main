@@ -9,14 +9,13 @@ local SoundService = game:GetService("SoundService")
 local MarketPlaceService = game:GetService("MarketplaceService")
 --local PlayerGui = Players.LocalPlayer.PlayerGui
 
-
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local SoundController = Knit.CreateController { Name = "SoundController" }
 local utils = require(Knit.Shared.Utils)
 
 local ambientMusicGroup = SoundService:WaitForChild("AmbientMusic")
-local sFXGroup = SoundService:WaitForChild("SFX")
+local SFXGroup = SoundService:WaitForChild("SFX")
 
 -- Music Tracks
 SoundController.MusicTracks = {
@@ -35,7 +34,7 @@ SoundController.MusicTracks = {
 }
 
 -- track control variables
-SoundController.MusicOn = false -- this variable determines if we shoould be playing music or not
+SoundController.MusicOn = true -- this variable determines if we shoould be playing music or not
 SoundController.IsPlaying = false -- this gets set to true while a track is playing
 SoundController.TrackCounter = math.random(1, #SoundController.MusicTracks)
 SoundController.CurrentTrack = nil
@@ -56,9 +55,9 @@ end
 
 function SoundController:PlayMusic()
 
-    if SoundController.MusicOn then
-        while game:GetService("RunService").Heartbeat:Wait() do
-
+    while game:GetService("RunService").Heartbeat:Wait() do
+        
+        if SoundController.MusicOn then
             -- load sound from NextTrack to CurrentTrack
             if SoundController.CurrentTrack == nil then
                 if SoundController.NextTrack ~= nil then
@@ -89,12 +88,61 @@ function SoundController:PlayMusic()
                     end)
                 end
             end
-
-            wait(1)
         end
+
+        wait(1)
+        print(SoundController.MusicOn)
     end
 end
 
+--// SoundController:ToggleMusic
+function SoundController:ToggleMusic(boolean)
+
+    if boolean == true then
+        SoundController.MusicOn = true
+    else
+        if SoundController.IsPlaying then
+            SoundController.MusicOn = false
+            SoundController.CurrentTrack:Stop()
+            SoundController.IsPlaying = false
+        end
+    end
+    
+end
+
+--// SoundController:ToggleSFX
+function SoundController:ToggleSFX(boolean)
+
+    if boolean == true then
+        SoundService.SFX.Volume = .5
+    else
+        SoundService.SFX.Volume = 0
+    end
+    
+end
+
+--// SoundController:AdjustGroupVolume
+function SoundController:IncrementGroupVolume(groupName, value)
+
+    local thisGroup = SoundService:FindFirstChild(groupName)
+    if thisGroup then
+
+
+        local newVolume = thisGroup.Volume + value
+
+        if newVolume <= 0.1 then
+            newVolume = 0.1
+        end
+
+        if newVolume >= 1 then
+            newVolume = 1
+        end
+        
+        thisGroup.Volume = newVolume
+    end
+
+    return scaledVolume
+end
 
 --// KnitStart ------------------------------------------------------------
 function SoundController:KnitStart()

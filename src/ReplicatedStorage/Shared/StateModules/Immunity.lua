@@ -28,7 +28,7 @@ function Immunity.Entry_Removed(player, thisState, params)
 end
 
 --// Has-Immunity - returns true if the player has an true entry equal to the name passed
-function Immunity.Has_Immunity(player,immunityName)
+function Immunity.Has_Immunity(player, immunityName)
 
     local playerFolder = statesFolder:FindFirstChild(player.UserId)
     local immunityFolder = playerFolder:FindFirstChild("Immunity")

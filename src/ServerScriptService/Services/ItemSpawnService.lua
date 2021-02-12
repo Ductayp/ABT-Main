@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local Debris = game:GetService("Debris")
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -17,7 +18,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- constants
 local INITIAL_WAIT = 5
-local SPAWN_LOOP_TIME = 1 --20 -- is set at 1 for testing, but we should probbaly be much slower like 10 or more later on
+local SPAWN_LOOP_TIME = 20 
 
 -- variables & stuff :)
 ItemSpawnService.CanSpawn = false
@@ -115,11 +116,41 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
             local player = utils.GetPlayerFromCharacter(hit.Parent)
             if player then
                 self:GiveItem(player, itemDefs.Params)
+                self:DestroyItem(item)
                 spawner.ItemPointer.Value = nil
-                item:Destroy()
+                
             end
         end
     end)
+end
+
+function ItemSpawnService:DestroyItem(item)
+
+    item:FindFirstChild("TouchInterest"):Destroy()
+
+    item.Transparency = 1
+    for _,v in pairs(item:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Transparency = 1
+        end
+
+        if v:IsA("ParticleEmitter") then
+            v.Enabled = false
+        end
+
+        if v.Name == "Destroy_Particle" then
+            spawn(function()
+                v.Enabled = true
+                wait(1)
+                v.Enabled = false
+            end)
+        end
+    end
+
+    require(Knit.PowerUtils.WeldedSound).NewSound(item, ReplicatedStorage.Audio.ItemSpawnService.ItemPickup)
+
+    Debris:AddItem(item, 10)
+
 end
 
 function ItemSpawnService:GiveItem(player, itemParams)

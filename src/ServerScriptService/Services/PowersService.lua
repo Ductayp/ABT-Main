@@ -233,6 +233,12 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
             hitParams.IsMob = false
         end
 
+        -- check if the player is Immune to this ability
+        if require(Knit.StateModules.Immunity).Has_Immunity(isPlayer, abilityDefs.Id) then
+            print(isPlayer, " is immune to: ", abilityDefs.Id)
+            return
+        end
+
     else
         local mobIdObject = characterHit:FindFirstChild("MobId")
         if mobIdObject then

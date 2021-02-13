@@ -29,7 +29,9 @@ local module = {
 	
 	ClientSettings = {},
 
-	DeveloperProductPurchases = {}
+	DeveloperProductPurchases = {},
+
+	RedeemedCodes = {}
 }
 
 return module

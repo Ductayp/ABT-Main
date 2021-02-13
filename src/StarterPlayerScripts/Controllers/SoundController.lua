@@ -91,7 +91,6 @@ function SoundController:PlayMusic()
         end
 
         wait(1)
-        print(SoundController.MusicOn)
     end
 end
 

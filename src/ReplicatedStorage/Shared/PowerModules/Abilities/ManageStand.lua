@@ -59,6 +59,20 @@ end
 --// Activate
 function ManageStand.Activate(params, abilityDefs)
 
+	-- definitions
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
+	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand") -- this is a pointer to the un-cloned model in Replicated
+
+	if params.ForceRemoveStand then
+		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
+		if equippedStand then
+			equippedStand:Destroy()
+		end
+		params.CanRun = true
+		return
+	end
+
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
 		params.CanRun = true
@@ -74,24 +88,15 @@ function ManageStand.Activate(params, abilityDefs)
 	end
 
 	-- set the toggles and StandTracker
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
-	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
-	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand")
 	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
-
 		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
-
 		if equippedStand then
 			equippedStand:Destroy()
 		end
 	else
 		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", true)
-
-		--if not equippedStand then
-
-			local thisStand = abilityDefs.StandModels[params.PowerRarity]
-			equippedStand = utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = powerStatusFolder, Value = thisStand})
-		--end
+		local thisStand = abilityDefs.StandModels[params.PowerRarity]
+		utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = powerStatusFolder, Value = thisStand}) -- this is a pointer to the un-cloned model in Replicated
 	end
 
 	-- set cooldown
@@ -101,7 +106,13 @@ end
 
 --// Execute
 function ManageStand.Execute(params, abilityDefs)
-	print(params)
+
+	if params.ForceRemoveStand then
+		spawn(function()
+			ManageStand.RemoveStand(params, abilityDefs)
+		end)
+		return
+	end
 
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")

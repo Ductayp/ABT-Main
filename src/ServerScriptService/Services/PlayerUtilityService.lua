@@ -18,6 +18,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- public variables
 PlayerUtilityService.PlayerAnimations = {}
+PlayerUtilityService.PlayerSwimStates = {}
 
 -- local variables
 local pingUpdateTime = 1
@@ -44,6 +45,93 @@ function PlayerUtilityService:UpdatePingLoop()
     end) 
 end
 
+--// LoadAnimations
+function PlayerUtilityService:LoadAnimations(player)
+
+    -- clear the players animation table so its fresh
+    PlayerUtilityService.PlayerAnimations[player.UserId] = {}
+
+    -- load the players animation table with tracks
+    local animator = player.Character.Humanoid:WaitForChild("Animator")
+    for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
+        PlayerUtilityService.PlayerAnimations[player.UserId][animObject.Name] = animator:LoadAnimation(animObject)
+    end
+
+end
+
+--// DetectWaterLoop
+function PlayerUtilityService:HumanoidStateEvents(player)
+
+    local humanoid = player.Character.Humanoid
+
+    humanoid.Climbing:Connect(function(speed)
+        --print("Climbing speed: ", speed)
+    end)
+     
+    humanoid.FallingDown:Connect(function(isActive)
+        --print("Falling down: ", isActive)
+    end)
+     
+    humanoid.GettingUp:Connect(function(isActive)
+        --print("Getting up: ", isActive)
+    end)
+     
+    humanoid.Jumping:Connect(function(isActive)
+        --print("Jumping: ", isActive)
+    end)
+     
+    humanoid.PlatformStanding:Connect(function(isActive)
+        --print("PlatformStanding: ", isActive)
+    end)
+     
+    humanoid.Ragdoll:Connect(function(isActive)
+        --print("Ragdoll: ", isActive)
+    end)
+     
+    humanoid.Running:Connect(function(speed)
+        --print("Running speed: ", speed)
+        self:SwimToggle(player, false)
+    end)
+     
+    humanoid.Strafing:Connect(function(isActive)
+        --print("Strafing: ", isActive)
+    end)
+     
+    humanoid.Swimming:Connect(function(speed)
+        --print("Swimming speed: ", speed)
+        self:SwimToggle(player, true)
+    end)
+
+end
+
+--// swim check
+function PlayerUtilityService:SwimToggle(player, boolean)
+
+    --print("START SWIM CHECKING!")
+
+    if PlayerUtilityService.PlayerSwimStates[player.userId] == true then
+        if boolean == false then
+            PlayerUtilityService.PlayerSwimStates[player.userId] = false
+        end
+    end
+
+    if PlayerUtilityService.PlayerSwimStates[player.userId] == false then
+        if boolean == true then
+            PlayerUtilityService.PlayerSwimStates[player.userId] = true
+            
+            spawn(function()
+                while PlayerUtilityService.PlayerSwimStates[player.UserId] == true do
+                    require(Knit.PowerUtils.BlockInput).AddBlock(player.UserId, "Swimming", 2)
+                    player.Character.Humanoid:TakeDamage(5)
+                    wait(1)
+                end
+            end)
+            Knit.Services.PowersService:ForceRemoveStand(player)
+        end
+    end
+end
+    
+
 
 --// PlayerAdded
 function PlayerUtilityService:PlayerAdded(player)
@@ -66,6 +154,12 @@ function PlayerUtilityService:PlayerAdded(player)
     -- load animations
     self:LoadAnimations(player)
 
+    -- run humanoid state detectors
+    self:HumanoidStateEvents(player)
+
+    -- add player to PlayerSwimStates table
+    PlayerUtilityService.PlayerSwimStates[player.userId] = false
+
 end
 
 --// PlayerRemoved
@@ -73,6 +167,7 @@ function PlayerUtilityService:PlayerRemoved(player)
 
     ReplicatedStorage.PlayerPings[player.UserId]:Destroy()
     PlayerUtilityService.PlayerAnimations[player.UserId] = nil
+    PlayerUtilityService.PlayerSwimStates[player.userId] = nil
 end
 
 --// CharacterAdded
@@ -86,20 +181,6 @@ function PlayerUtilityService:CharacterAdded(player)
     self:LoadAnimations(player)
 
 end
-
-function PlayerUtilityService:LoadAnimations(player)
-
-    -- clear the players animation table so its fresh
-    PlayerUtilityService.PlayerAnimations[player.UserId] = {}
-
-    -- load the players animation table with tracks
-    local animator = player.Character.Humanoid:WaitForChild("Animator")
-    for _,animObject in pairs(ReplicatedStorage.PlayerAnimations:GetChildren()) do
-        PlayerUtilityService.PlayerAnimations[player.UserId][animObject.Name] = animator:LoadAnimation(animObject)
-    end
-
-end
-
 
 
 --// KnitStart

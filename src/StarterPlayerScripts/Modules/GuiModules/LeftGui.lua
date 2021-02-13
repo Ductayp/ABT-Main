@@ -36,6 +36,7 @@ function LeftGui.Setup()
 
     LeftGui.Codes_Button.Activated:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
+        Knit.Controllers.GuiController.CodesWindow.Open()
     end)
 
     LeftGui.Settings_Button.Activated:Connect(function()

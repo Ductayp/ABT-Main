@@ -30,6 +30,8 @@ PowersService.Client.RenderEffect = RemoteEvent.new()
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
 
+    print(params)
+
     -- check if the players input is block
     if BlockInput.IsBlocked(player.UserId) then
         if params.KeyState == "InputBegan" then
@@ -55,6 +57,26 @@ function PowersService:ActivatePower(player,params)
     if params.CanRun == true then
         self.Client.ExecutePower:FireAll(params)
     end
+end
+
+--// ForceRemoveStand 
+function PowersService:ForceRemoveStand(player)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    local params = {
+        CanRun = true,
+        InitUserId = player.UserId,
+        InputId = "Q",
+        KeyState = "InputBegan",
+        PowerID = playerData.CurrentStand.Power,
+        PowerRarity = playerData.CurrentStand.Rarity,
+        SystemStage = "Initialize",
+        ForceRemoveStand = true,
+    }
+
+    self:ActivatePower(player,params)
+
 end
 
 --// Client:ActivatePower -- fired by client to activate apower

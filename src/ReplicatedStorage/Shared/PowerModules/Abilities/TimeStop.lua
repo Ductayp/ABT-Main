@@ -76,7 +76,7 @@ function TimeStop.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "TimeStop", 6)
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "TimeStop", 3)
 
     -- run server
     spawn(function()

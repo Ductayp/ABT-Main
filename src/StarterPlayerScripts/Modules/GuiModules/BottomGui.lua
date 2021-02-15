@@ -82,11 +82,11 @@ function BottomGui.Setup()
         end)
     end)
     
-
     -- connect buttons to InputController
     for buttonName,buttonInstance in pairs(BottomGui.Buttons) do
         buttonInstance.Active = true
-        buttonInstance.Activated:Connect(function()
+        buttonInstance.MouseButton1Down:Connect(function()
+            print("MobileClicked", buttonInstance.Name)
             Knit.Controllers.InputController:SendToPowersService({InputId = buttonName, KeyState = "InputBegan"})
         end)
     end

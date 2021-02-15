@@ -8,11 +8,11 @@ local ArrowDefs = {}
 ArrowDefs.UniversalArrow = {
     Name = "Universal Arrow",
     Stands = {
-        GoldExperience = 1,
+        --GoldExperience = 1,
         TheWorld = 1,
-        WhiteSnake = 1,
-        CrazyDiamond = 1,
-        TheHand = 1,
+        --WhiteSnake = 1,
+        --CrazyDiamond = 1,
+        --TheHand = 1,
         KillerQueen = 1,
     }
 }

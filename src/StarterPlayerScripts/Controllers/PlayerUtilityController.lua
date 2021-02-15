@@ -24,7 +24,7 @@ end
 
 
 function PlayerUtilityController:KnitStart()
-    
+    Players.LocalPlayer.CameraMaxZoomDistance = 30
 end
 
 function PlayerUtilityController:KnitInit()

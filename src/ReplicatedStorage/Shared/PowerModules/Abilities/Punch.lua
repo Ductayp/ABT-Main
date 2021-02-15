@@ -85,7 +85,7 @@ end
 function Punch.Execute(params, abilityDefs)
 
 	if Players.LocalPlayer.UserId == params.InitUserId then
-		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
+		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
 	end
 

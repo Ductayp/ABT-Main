@@ -129,8 +129,8 @@ TheWorld.Defs.Abilities.TimeStop = {
     Name = "Time Stop",
     Id = "TimeStop",
     Duration = 8,
-    Cooldown = 9,
-    Range = 150,
+    Cooldown = 30,
+    Range = 80,
     RequireToggle_On = {"StandEquipped"},
     HitEffects = {PinCharacter = {Duration = 8}}, 
     Sounds = {

@@ -29,22 +29,22 @@ LeftGui.Settings_Button = mainGui.LeftGui:FindFirstChild("C_Settings_Button", tr
 function LeftGui.Setup()
 
     -- connect the clickies
-    LeftGui.Inventory_Button.Activated:Connect(function()
+    LeftGui.Inventory_Button.MouseButton1Down:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
         Knit.Controllers.GuiController.InventoryWindow.Open()
     end)
 
-    LeftGui.Codes_Button.Activated:Connect(function()
+    LeftGui.Codes_Button.MouseButton1Down:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
         Knit.Controllers.GuiController.CodesWindow.Open()
     end)
 
-    LeftGui.Settings_Button.Activated:Connect(function()
+    LeftGui.Settings_Button.MouseButton1Down:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
         Knit.Controllers.GuiController.SettingsWindow.Open()
     end)
 
-    LeftGui.Shop_Button.Activated:Connect(function()
+    LeftGui.Shop_Button.MouseButton1Down:Connect(function()
         Knit.Controllers.GuiController:CloseAllWindows()
         Knit.Controllers.GuiController.ShopWindow.Open()
     end)

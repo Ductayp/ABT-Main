@@ -71,7 +71,7 @@ function GuiController:KnitStart()
 
     -- setup Hover handling for Gui buttons
     for _, instance in pairs(Players.LocalPlayer.PlayerGui:GetDescendants()) do
-        if instance:IsA("TextButton") or instance:IsA("ImageButton") then
+        if instance:IsA("TextButton") or instance:IsA("ImageButton") or instance:IsA("Frame") then
 
             instance.MouseEnter:Connect(function()
                 self:HandleHover(true)

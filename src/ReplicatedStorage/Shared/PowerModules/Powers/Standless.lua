@@ -18,14 +18,61 @@ local Standless = {}
 Standless.Defs = {
     PowerName = "Standless",
     BaseSacrificeValue = 0,
+    Abilities = {} -- ability defs are inside each ability function area
 }
 
---// MANAGER - this is the single point of entry from PowerService.
-function Standless.Manager(initPlayer,params)
-    print("You are Standless")
-    params.CanRun = false
+--// SETUP - run this once when the stand is equipped
+function Standless.SetupPower(initPlayer,params)
 
-    return params
+end
+
+--// REMOVE - run this once when the stand is un-equipped
+function Standless.RemovePower(initPlayer,params)
+
+end
+
+
+--// MANAGER - this is the single point of entry from PowerService.
+function Standless.Manager(params)
+
+    -- call the function
+        if params.InputId == "Q" then
+            --Standless.EquipStand(params)
+        elseif params.InputId == "E" then
+            --Standless.Barrage(params)
+        elseif params.InputId == "F" then
+            --Standless.TimeStop(params)
+        elseif params.InputId == "T" then
+            --Standless.KnifeThrow(params)
+        elseif params.InputId == "R" then
+            --Standless.HeavyPunch(params)
+        elseif params.InputId == "X" then
+            --Standless.BulletKick(params)
+        elseif params.InputId == "Z" then
+            --Standless.StandJump(params)
+        elseif params.InputId == "Mouse1" then
+            Standless.Punch(params)
+        end
+    
+        return params
+end
+
+--------------------------------------------------------------------------------------------------
+--// PUNCH //------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
+-- defs
+Standless.Defs.Abilities.Punch = {
+    Name = "Punch",
+    Id = "Punch",
+    Cooldown = 0.5,
+    HitEffects = {Damage = {Damage = 5}},
+    --RequireToggle_On = {},
+    --RequireToggle_Off = {"Mouse1"},
+}
+
+function Standless.Punch(params)
+    params = require(Knit.Abilities.Punch)[params.SystemStage](params, Standless.Defs.Abilities.Punch)
 end
 
 

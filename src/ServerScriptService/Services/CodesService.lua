@@ -37,7 +37,7 @@ function CodesService:RedeemCode(player, code)
                     if defEntry.Expiration > os.time() then
     
                         codeExpired = false
-    
+     
                         -- check if it was redeemed
                         for _,redeemedCode in pairs(playerData.RedeemedCodes) do
                             if code == redeemedCode then
@@ -80,6 +80,11 @@ function CodesService:RedeemCode(player, code)
 
         if codeDef.ActionType == "GiveCurrency" then
             Knit.Services.InventoryService:Give_Currency(player, codeDef.Key, codeDef.Value, "Code")
+        end
+
+        if codeDef.ActionType == "GiveArrow" then
+            -- (player, key, rarity, quantity)
+            Knit.Services.InventoryService:Give_Arrow(player, codeDef.Key, codeDef.Rarity, 1)
         end
 
         returnMessage = codeDef.Message

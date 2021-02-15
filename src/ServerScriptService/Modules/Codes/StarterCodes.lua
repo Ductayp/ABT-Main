@@ -5,8 +5,8 @@ return {
         ActionType = "GiveCurrency",
         Key = "Cash",
         Value = "1000",
-        Expiration = 1613286000,
-        Message = "You got rich! 10,000 CASH HOMIE! - Sub 2 Planet Milo"
+        Expiration = 1614609215,
+        Message = "1,000 CASH! POG - Sub 2 Planet Milo"
     },
 
     {
@@ -14,8 +14,8 @@ return {
         ActionType = "GiveCurrency",
         Key = "SoulOrbs",
         Value = "100",
-        Expiration = 1613286000,
-        Message = "You got rich! 10,000 Soul Obs - Sub 2 Planet Milo"
+        Expiration = 1614609215,
+        Message = "You just got 100 Soul Orbs!"
     },
 
     {
@@ -23,8 +23,8 @@ return {
         ActionType = "GiveCurrency",
         Key = "SoulOrbs",
         Value = "200",
-        Expiration = 1613286000,
-        Message = "TESTEEEOOO!!"
+        Expiration = 1614609215,
+        Message = "200 Soul Orbs isn't bad!"
     },
 
     {
@@ -32,8 +32,26 @@ return {
         ActionType = "GiveCurrency",
         Key = "Cash",
         Value = "4000",
-        Expiration = 1613286000,
-        Message = "You got rich! 10,000 CASH HOMIE! - Sub 2 Planet Milo"
+        Expiration = 1614609215,
+        Message = "You got rich! 4,000 CASH HOMIE! - Sub 2 Planet Milo"
+    },
+
+    {
+        CodeString = "starterarrow",
+        ActionType = "GiveArrow",
+        Key = "UniversalArrow",
+        Rarity = "Common",
+        Expiration = 1614609215,
+        Message = "You got a  Common UNIVERSAL ARROW! Use it to get a stand."
+    },
+
+    {
+        CodeString = "testersaregods",
+        ActionType = "GiveArrow",
+        Key = "UniversalArrow",
+        Rarity = "Legendary",
+        Expiration = 1614609215,
+        Message = "THANKS FOR HELPING TEST!"
     },
 
 

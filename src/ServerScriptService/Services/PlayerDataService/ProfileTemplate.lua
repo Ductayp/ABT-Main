@@ -31,7 +31,13 @@ local module = {
 
 	DeveloperProductPurchases = {},
 
-	RedeemedCodes = {}
+	RedeemedCodes = {},
+
+	PlayerStats = {},
+
+	Admin = {
+		Banned = false,
+	}
 }
 
 return module

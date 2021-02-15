@@ -54,6 +54,7 @@ function StandJump.Initialize(params, abilityDefs)
     -- tween effects
     spawn(function()
         StandJump.Run_Effects(params, abilityDefs)
+        StandJump.Run_InitPlayer(params, abilityDefs)
     end)
 	
 end
@@ -89,7 +90,7 @@ function StandJump.Activate(params, abilityDefs)
 
     -- tween hitbox
     spawn(function()
-        StandJump.Run_Server(params, abilityDefs)
+        --StandJump.Run_InitPlayer(params, abilityDefs)
     end)
     
 end
@@ -112,7 +113,7 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
-function StandJump.Run_Server(params, abilityDefs)
+function StandJump.Run_InitPlayer(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -142,15 +143,15 @@ function StandJump.Run_Server(params, abilityDefs)
 
         -- handle walkspeed and animations
         spawn(function()
-            Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Play()
+            --Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Play()
             initPlayer.Character.Humanoid.WalkSpeed = 0
             wait(1)
-            Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Stop()
+            --Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Stop()
             --local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
             initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
         end)
 
-        wait(.2) -- a short delay to make time for animations
+        --wait(.2) -- a short delay to make time for animations
 
         -- play the sound
 	    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.StandLeap)

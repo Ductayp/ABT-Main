@@ -25,7 +25,6 @@ CodesWindow.Submit_Button = CodesWindow.Frame:FindFirstChild("Submit_Button", tr
 CodesWindow.Code_Input_Box = CodesWindow.Frame:FindFirstChild("Code_Input_Box", true)
 CodesWindow.Return_Message = CodesWindow.Frame:FindFirstChild("Return_Message", true)
 
-
 --// Setup
 function CodesWindow.Setup()
 

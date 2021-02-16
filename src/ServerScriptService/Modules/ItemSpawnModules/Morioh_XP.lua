@@ -18,8 +18,8 @@ Morioh_XP.Items = {
         Params = {
             --DataKey = "StandXP",
             DataCategory = "StandExperience",
-            MinValue = 50,
-            MaxValue = 100
+            MinValue = 100,
+            MaxValue = 200
         }
     },
 
@@ -29,8 +29,8 @@ Morioh_XP.Items = {
         Params = {
             --DataKey = "StandXP",
             DataCategory = "StandExperience",
-            MinValue = 25,
-            MaxValue = 50
+            MinValue = 50,
+            MaxValue = 100
         }
     }
 }

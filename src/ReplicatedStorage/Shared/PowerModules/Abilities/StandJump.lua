@@ -17,9 +17,9 @@ local Cooldown = require(Knit.PowerUtils.Cooldown)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 -- default values
-local defaultVelocityX = 7000 
-local defaultVelocityZ = 7000 
-local defaultVelocityY = 1800 
+local defaultVelocityX = 10000 
+local defaultVelocityZ = 10000 
+local defaultVelocityY = 2800 
 local defaultDuration = 0.3
 
 local StandJump = {}

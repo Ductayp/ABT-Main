@@ -37,6 +37,15 @@ return {
     },
 
     {
+        CodeString = "secrettestcode",
+        ActionType = "GiveCurrency",
+        Key = "Cash",
+        Value = "100000",
+        Expiration = 1614609215,
+        Message = "TESTING CODE ONLY"
+    },
+
+    {
         CodeString = "starterarrow",
         ActionType = "GiveArrow",
         Key = "UniversalArrow",

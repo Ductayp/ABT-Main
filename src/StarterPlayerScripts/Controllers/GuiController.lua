@@ -31,6 +31,7 @@ GuiController.Notifications = require(Knit.GuiModules.Notifications)
 GuiController.CurrencyBar = require(Knit.GuiModules.CurrencyBar)
 GuiController.SettingsWindow = require(Knit.GuiModules.SettingsWindow)
 GuiController.CodesWindow = require(Knit.GuiModules.CodesWindow)
+GuiController.NPCDialogueWindow = require(Knit.GuiModules.NPCDialogueWindow)
 
 GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
 GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
@@ -93,12 +94,11 @@ function GuiController:KnitStart()
     GuiController.Notifications.Setup()
     GuiController.SettingsWindow.Setup()
     GuiController.CodesWindow.Setup()
-    
+    GuiController.NPCDialogueWindow.Setup()
     GuiController.ShopWindow.Setup()
     GuiController.ShopWindow_LootPanel.Setup()
     GuiController.ShopWindow_StoragePanel.Setup()
     GuiController.ShopWindow_PassesPanel.Setup()
-
 
     -- request Gui Updates
     self:Request_GuiUpdate("ArrowPanel")

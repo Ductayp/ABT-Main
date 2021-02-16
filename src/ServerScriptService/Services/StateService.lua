@@ -8,7 +8,7 @@ not temporary or permanent. It is also useful for thing like safe zones, or bonu
 Keeping all of these states and/or modifiers in one place allows us to stack them easily, remove them when needed, and always know exactly what any player
 has at any given time.
 
-States are managed as ValueBase objects so that that can easily be listed to by the client or other services.
+States are managed as ValueBase objects so that that can easily be listened to by the client or other services.
 
 We are not using playerData storage for these states, because they are not always saved, sometimes temporary, and we dont want to clutter up the playerData code.
 ]]--
@@ -32,12 +32,10 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
     if stateFolder then
 
         local thisEntry = ReplicatedStorage.StateService[player.UserId][stateName]:FindFirstChild(entryName)
-
-        if thisEntry then
-            print("This state already exists, nothing changed: ",entryName)
-        else
+        if not thisEntry then
+        
             -- make a new value object based on its type
-            thisEntry = utils.NewValueObject(entryName,entryValue,stateFolder)
+            thisEntry = utils.NewValueObject(entryName, entryValue, stateFolder)
 
             -- iterate through params and create new values also based ont their types and parent to the new entry
             if params then
@@ -47,7 +45,6 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
             end
         end
         
-
         -- run the states module if it exist 
         local stateModule = Knit.StateModules:FindFirstChild(stateName) --[stateName]) --script:FindFirstChild(stateName) -- state modules can do a lot of thingsm its cusomt for each value we might modify
         if stateModule then

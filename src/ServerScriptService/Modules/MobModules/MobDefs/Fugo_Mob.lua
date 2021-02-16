@@ -28,8 +28,8 @@ Fugo_Mob.Animations = {
 }
 
 Fugo_Mob.Defs = {}
-Fugo_Mob.Defs.XpValue = 500
-Fugo_Mob.Defs.Health = 100
+Fugo_Mob.Defs.XpValue = 1000
+Fugo_Mob.Defs.Health = 200
 Fugo_Mob.Defs.WalkSpeed = 16
 Fugo_Mob.Defs.JumpPower = 50
 Fugo_Mob.Defs.Aggressive = false

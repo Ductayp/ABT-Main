@@ -59,10 +59,9 @@ function PlayerUtilityService:LoadAnimations(player)
 
 end
 
---// DetectWaterLoop
+--// HumanoidStateEvents
 function PlayerUtilityService:HumanoidStateEvents(player)
-
-    local humanoid = player.Character.Humanoid
+--[[
 
     humanoid.Climbing:Connect(function(speed)
         --print("Climbing speed: ", speed)
@@ -102,36 +101,25 @@ function PlayerUtilityService:HumanoidStateEvents(player)
         self:SwimToggle(player, true)
     end)
 
+    ]]--
+
 end
 
 --// swim check
 function PlayerUtilityService:SwimToggle(player, boolean)
 
-    --print("START SWIM CHECKING!")
-
-    if PlayerUtilityService.PlayerSwimStates[player.userId] == true then
-        if boolean == false then
-            PlayerUtilityService.PlayerSwimStates[player.userId] = false
-        end
-    end
-
-    if PlayerUtilityService.PlayerSwimStates[player.userId] == false then
-        if boolean == true then
-            PlayerUtilityService.PlayerSwimStates[player.userId] = true
-            
-            spawn(function()
-                while PlayerUtilityService.PlayerSwimStates[player.UserId] == true do
-                    require(Knit.PowerUtils.BlockInput).AddBlock(player.UserId, "Swimming", 2)
-                    player.Character.Humanoid:TakeDamage(5)
-                    wait(1)
-                end
-            end)
-            Knit.Services.PowersService:ForceRemoveStand(player)
-        end
+    PlayerUtilityService.PlayerSwimStates[player.userId] = boolean
+    if boolean == true then
+        Knit.Services.PowersService:ForceRemoveStand(player)
+        spawn(function()
+            while PlayerUtilityService.PlayerSwimStates[player.userId] == true do
+                require(Knit.PowerUtils.BlockInput).AddBlock(player.UserId, "Swimming", 2)
+                player.Character.Humanoid:TakeDamage(5)
+                wait(1)
+            end
+        end)
     end
 end
-    
-
 
 --// PlayerAdded
 function PlayerUtilityService:PlayerAdded(player)
@@ -172,8 +160,6 @@ end
 
 --// CharacterAdded
 function PlayerUtilityService:CharacterAdded(player)
-
-    print(" PlayerUtilityService:CharacterAdded")
 
     -- wait for the character
     repeat wait() until player.Character

@@ -13,7 +13,6 @@ local TweenService = game:GetService("TweenService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local powerUtils = require(Knit.Shared.PowerUtils)
 
 -- effect part
 local poisonParticle = ReplicatedStorage.EffectParts.Effects.Poison.PoisonParticle
@@ -22,16 +21,20 @@ local Poison = {}
 
 function Poison.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
+    print("Poison.Server_ApplyEffect", effectParams, hitParams)
+
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
         -- multiply damage based on passed params
         local actualDamage = effectParams.Damage * hitParams.DamageMultiplier
 
+        effectParams.HideEffects = true
+
         spawn(function()
             for count = 1, effectParams.TickCount do
                 -- do the damage
-                require(Knit.Effects.Damage).Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
+                require(Knit.HitEffects.Damage).Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
                 wait(effectParams.TickTime)
             end

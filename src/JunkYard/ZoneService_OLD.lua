@@ -15,20 +15,18 @@ local ZoneService = Knit.CreateService { Name = "ZoneService", Client = {}}
 local utils = require(Knit.Shared.Utils)
 
 -- ZonePlus Setup
-local Zone = require(Knit.Shared.Zone)
+local ZonePlusService = require(ReplicatedStorage.GameFiles.Shared.ZonePlus:FindFirstChild("ZoneService", true))
+--local Zone = require(Knit.Shared.Zone)
 
 -- Zone: SafeZone
 local safeZoneGroup = Workspace.ZoneServiceGroups.SafeZone -- A container (i.e. Model or Folder) of parts that represent the zone
-local safeZone = Zone.new(safeZoneGroup)
+local safeZone = ZonePlusService:createZone("SafeZone", safeZoneGroup, 15) -- Construct a zone called 'ZoneName' using 'group' and with an extended height of 15
+local playersIn_safeZone = safeZone:getPlayers() -- Retrieves an array of players within the zone
 
 -- Zone: StandStorage
 local storageZoneGroup = Workspace.ZoneServiceGroups.StandStorage -- A container (i.e. Model or Folder) of parts that represent the zone
-local storageZone = Zone.new(storageZoneGroup)
-
--- Zone: StandStorage
-local swimZoneGroup = Workspace.ZoneServiceGroups.SwimZone -- A container (i.e. Model or Folder) of parts that represent the zone
-local swimZone = Zone.new(swimZoneGroup)
-
+local storageZone = ZonePlusService:createZone("StorageZone", storageZoneGroup, 15) -- Construct a zone called 'ZoneName' using 'group' and with an extended height of 15
+local playersIn_storageZone = storageZone:getPlayers() -- Retrieves an array of players within the zone
 
 --// AddSafeState
 function ZoneService:AddSafeState(player)
@@ -53,36 +51,25 @@ end
 --// PlayerAdded
 function ZoneService:PlayerAdded(player)
 
-    safeZone.playerEntered:Connect(function(player)
-        --print(("%s entered the zone!"):format(player.Name))
+    -- safeZone events
+    safeZone.playerAdded:Connect(function(player) -- Fires when a player enters the zone
         self:AddSafeState(player)
     end)
     
-    safeZone.playerExited:Connect(function(player)
-        --print(("%s exited the zone!"):format(player.Name))
-        self:AddSafeState(player)
+    safeZone.playerRemoving:Connect(function(player)  -- Fires when a player exits the zone
+        self:RemoveSafeState(player)
     end)
 
-    storageZone.playerEntered:Connect(function(player)
-        --print(("%s entered the zone!"):format(player.Name))
+    -- standStorage events
+    storageZone.playerAdded:Connect(function(player) -- Fires when a player enters the zone
+        print(player.Name.." entered: StandStorageZone")
         self:AddStorageState(player)
         self:AddSafeState(player)
     end)
-    
-    storageZone.playerExited:Connect(function(player)
-        --print(("%s exited the zone!"):format(player.Name))
-        self:AddStorageState(player)
-        self:AddSafeState(player)
-    end)
-
-    swimZone.playerEntered:Connect(function(player)
-        --print(("%s entered the SWIM zone!"):format(player.Name))
-        Knit.Services.PlayerUtilityService:SwimToggle(player, true)
-    end)
-    
-    swimZone.playerExited:Connect(function(player)
-        --print(("%s exited the SWIM zone!"):format(player.Name))
-        Knit.Services.PlayerUtilityService:SwimToggle(player, false)
+    storageZone.playerRemoving:Connect(function(player)  -- Fires when a player exits the zone
+        print(player.Name.." left: StandStorageZone")
+        self:RemoveStorageState(player)
+        self:RemoveSafeState(player)
     end)
 
 end
@@ -94,6 +81,9 @@ end
 
 --// KnitStart
 function ZoneService:KnitStart()
+
+    safeZone:initLoop() -- Initiates loop (default 0.5) which enables the events to work
+    storageZone:initLoop()
 
 end
 

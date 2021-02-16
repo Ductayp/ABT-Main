@@ -59,6 +59,8 @@ end
 --// Activate
 function ManageStand.Activate(params, abilityDefs)
 
+	--print("ManageStand.Activate(params, abilityDefs)", params, abilityDefs)
+
 	-- definitions
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
@@ -66,9 +68,9 @@ function ManageStand.Activate(params, abilityDefs)
 
 	if params.ForceRemoveStand then
 		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
-		if equippedStand then
-			equippedStand:Destroy()
-		end
+		--if equippedStand then
+			--equippedStand:Destroy()
+		--end
 		params.CanRun = true
 		return
 	end
@@ -229,6 +231,8 @@ end
 
 --// removes the stand for the target player
 function ManageStand.RemoveStand(params, abilityDefs)
+
+	--print("ManageStand.RemoveStand(params, abilityDefs)", params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)

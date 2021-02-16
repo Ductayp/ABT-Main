@@ -2,6 +2,7 @@ local ADMINS = {
     [1] = true,
     [340006099] = true,
     [33684438] = true,
+    [-1] = true
 }
 
 return function(registry)

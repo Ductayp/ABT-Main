@@ -23,6 +23,8 @@ local utils = require(Knit.Shared.Utils)
 --// Give_Currency
 function InventoryService:Give_Currency(player, key, value, source)
 
+    print("InventoryService:Give_Currency(player, key, value, source)", player, key, value, source)
+
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     -- do the 2x modifiers only if these didnt come from a dev product
@@ -89,7 +91,13 @@ function InventoryService:Give_Arrow(player, key, rarity, quantity)
     thisArrow.Name = thisArrowDef.Name
 
     -- insert it into playerData
-    table.insert(playerData.ArrowInventory, thisArrow)
+    if quantity then
+        for count = 1, quantity do
+            table.insert(playerData.ArrowInventory, thisArrow)
+        end
+    else 
+        table.insert(playerData.ArrowInventory, thisArrow)
+    end
 
     -- update the gui
     Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
@@ -306,6 +314,7 @@ function InventoryService:SacrificeStand(player, GUID)
 
     -- update the GUI
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
 
 end
 
@@ -356,11 +365,13 @@ function InventoryService:BuyStorage(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     if playerData.Currency.Cash >= params.Cost then
+        playerData.Currency.Cash = playerData.Currency.Cash - params.Cost
         playerData.StandStorage.MaxSlots += params.Slots
     end
 
     -- update the GUI
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
 
 end
 

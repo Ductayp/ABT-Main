@@ -41,6 +41,12 @@ function TimeStop.Initialize(params, abilityDefs)
 		params.CanRun = false
 		return
     end
+
+    
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
     
     -- run client
     spawn(function()

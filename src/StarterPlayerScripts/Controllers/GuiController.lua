@@ -32,14 +32,23 @@ GuiController.CurrencyBar = require(Knit.GuiModules.CurrencyBar)
 GuiController.SettingsWindow = require(Knit.GuiModules.SettingsWindow)
 GuiController.CodesWindow = require(Knit.GuiModules.CodesWindow)
 GuiController.NPCDialogueWindow = require(Knit.GuiModules.NPCDialogueWindow)
-
 GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
 GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
 GuiController.ShopWindow_StoragePanel = require(Knit.GuiModules.ShopWindow_StoragePanel)
 GuiController.ShopWindow_PassesPanel = require(Knit.GuiModules.ShopWindow_PassesPanel)
 
+GuiController.InDialogue = false -- this is a variable we can check from anywhere to see if the player is in a dialgue gui
+
 -- Gui Defs
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
+
+--// ToggleDialogue
+function GuiController:ToggleDialogue(boolean)
+
+    GuiController.InDialogue = boolean
+    GuiService:DialogueLock(boolean)
+
+end
 
 --// CloseAllWindows ------------------------------------------------------------
 function GuiController:CloseAllWindows()

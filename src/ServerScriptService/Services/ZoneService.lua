@@ -60,7 +60,7 @@ function ZoneService:PlayerAdded(player)
     
     safeZone.playerExited:Connect(function(player)
         --print(("%s exited the zone!"):format(player.Name))
-        self:AddSafeState(player)
+        self:RemoveSafeState(player)
     end)
 
     storageZone.playerEntered:Connect(function(player)
@@ -71,8 +71,8 @@ function ZoneService:PlayerAdded(player)
     
     storageZone.playerExited:Connect(function(player)
         --print(("%s exited the zone!"):format(player.Name))
-        self:AddStorageState(player)
-        self:AddSafeState(player)
+        self:RemoveStorageState(player)
+        self:RemoveSafeState(player)
     end)
 
     swimZone.playerEntered:Connect(function(player)

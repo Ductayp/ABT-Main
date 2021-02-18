@@ -30,23 +30,31 @@ function LeftGui.Setup()
 
     -- connect the clickies
     LeftGui.Inventory_Button.MouseButton1Down:Connect(function()
-        Knit.Controllers.GuiController:CloseAllWindows()
-        Knit.Controllers.GuiController.InventoryWindow.Open()
+        if not Knit.Controllers.GuiController.InDialogue then
+            Knit.Controllers.GuiController:CloseAllWindows()
+            Knit.Controllers.GuiController.InventoryWindow.Open()
+        end
     end)
 
     LeftGui.Codes_Button.MouseButton1Down:Connect(function()
-        Knit.Controllers.GuiController:CloseAllWindows()
-        Knit.Controllers.GuiController.CodesWindow.Open()
+        if not Knit.Controllers.GuiController.InDialogue then
+            Knit.Controllers.GuiController:CloseAllWindows()
+            Knit.Controllers.GuiController.CodesWindow.Open()
+        end
     end)
 
     LeftGui.Settings_Button.MouseButton1Down:Connect(function()
-        Knit.Controllers.GuiController:CloseAllWindows()
-        Knit.Controllers.GuiController.SettingsWindow.Open()
+        if not Knit.Controllers.GuiController.InDialogue then
+            Knit.Controllers.GuiController:CloseAllWindows()
+            Knit.Controllers.GuiController.SettingsWindow.Open()
+        end
     end)
 
     LeftGui.Shop_Button.MouseButton1Down:Connect(function()
-        Knit.Controllers.GuiController:CloseAllWindows()
-        Knit.Controllers.GuiController.ShopWindow.Open()
+        if not Knit.Controllers.GuiController.InDialogue then
+            Knit.Controllers.GuiController:CloseAllWindows()
+            Knit.Controllers.GuiController.ShopWindow.Open()
+        end
     end)
 end
 

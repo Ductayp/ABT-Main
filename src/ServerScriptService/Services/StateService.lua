@@ -64,6 +64,10 @@ end
 --// RemoveState -- removes  a modfier by name
 function StateService:RemoveEntryFromState(player, stateName, entryName, params)
 
+    if not ReplicatedStorage.StateService[player.UserId] then
+        return
+    end
+
     local thisState = ReplicatedStorage.StateService[player.UserId]:FindFirstChild(stateName)
     if thisState then
 

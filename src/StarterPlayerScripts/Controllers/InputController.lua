@@ -18,7 +18,9 @@ local utils = require(Knit.Shared.Utils)
 --// SendToPowersService
 function InputController:SendToPowersService(params)
 
-    Knit.Controllers.PowersController:InitializePower(params)
+    if not Knit.Controllers.GuiController.InDialogue then
+        Knit.Controllers.PowersController:InitializePower(params)
+    end
 
 end
 

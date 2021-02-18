@@ -18,12 +18,28 @@ local statesFolder = ReplicatedStorage:FindFirstChild("StateService")
 local Invulnerable = {}
 
 --// Entry_Added -- fires after entry added in StateSerive. Can be blank.
-function Invulnerable.Entry_Added(player,thisEntry,params)
+function Invulnerable.Entry_Added(player, thisEntry, params)
+    local immuneShield = player.Character.Head:FindFirstChild("InvuneraleShield", true)
+    if not immuneShield then
+        immuneShield = ReplicatedStorage.EffectParts.StateService.Invulnerable.InvuneraleShield:Clone()
+        immuneShield.Parent = player.Character.Head
+    end
 
+    immuneShield.Enabled = true
 end
 
---// Entry_Removed -- fires after entry added in StateSerive. Can be blank.
+--// Entry_Removed -- fires after entry removed in StateSerive. Can be blank.
 function Invulnerable.Entry_Removed(player, thisState, params)
+
+    -- if player is no longer invulnerable, turn it off
+    if Invulnerable.IsInvulnerable(player) then
+        -- do nothing
+    else
+        local immuneShield = player.Character.Head:FindFirstChild("InvuneraleShield", true)
+        if immuneShield then
+            immuneShield.Enabled = false
+        end
+    end
 
 end
 

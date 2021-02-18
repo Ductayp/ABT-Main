@@ -184,7 +184,7 @@ function ManageStand.EquipStand(params, abilityDefs)
 	spawnTween:Play()
 
 	-- play the sound
-	WeldedSound.NewSound(newStand.HumanoidRootPart, abilityDefs.Sounds.Equip)
+	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityDefs.Sounds.Equip)
 
 	-- tween character transparency
 	for i, v in pairs (newStand:GetChildren()) do
@@ -261,12 +261,15 @@ function ManageStand.RemoveStand(params, abilityDefs)
 		end
 
 		-- play the sound
-		WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Remove)
+		WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityDefs.Sounds.Remove)
 
 		-- weld tween
 		local thisWeld = targetStand:FindFirstChild("StandWeld", true)
-		local spawnTween = TweenService:Create(thisWeld,TweenInfo.new(.5),{C1 = CFrame.new(0,0,0)})
-		spawnTween:Play()
+		if thisWeld then
+			local spawnTween = TweenService:Create(thisWeld,TweenInfo.new(.5),{C1 = CFrame.new(0,0,0)})
+			spawnTween:Play()
+		end
+		
 		
 		-- Tween transparency
 		local tweenDuration = .5

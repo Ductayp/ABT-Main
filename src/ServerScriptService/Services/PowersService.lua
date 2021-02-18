@@ -18,9 +18,9 @@ local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 -- constants
 PowersService.XP_PER_LEVEL = {
-    Common = 3600,
-    Rare = 10800,
-    Legendary = 32400
+    Common = 1000,
+    Rare = 3000,
+    Legendary = 9000
 }
 
 -- events
@@ -31,6 +31,11 @@ PowersService.Client.RenderEffect = RemoteEvent.new()
 function PowersService:ActivatePower(player,params)
 
     --print("PowersService:ActivatePower(player,params)", player, params)
+
+    -- if the player is dialogue locked they cant use powers
+    if Knit.Services.GuiService.DialogueLocked[player.UserId] then
+        return
+    end
 
     -- check if the players input is block
     if not params.ForceRemoveStand then
@@ -223,9 +228,17 @@ end
 
 --// NPC_RegisterHit
 function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
-    print("YOU GOT HIT HOMES!")
+
+    -- be sure we have a character to act on
+    if not targetPlayer.Character then
+        return
+    end
+
+    -- default hitParams
     local hitParams = {}
     hitParams.DamageMultiplier = 1
+
+    -- run the effects on the player that was hit
     for effect,effectParams in pairs(hitEffects) do
         require(Knit.HitEffects[effect]).Server_ApplyEffect(nil, targetPlayer.Character, effectParams, hitParams)
     end

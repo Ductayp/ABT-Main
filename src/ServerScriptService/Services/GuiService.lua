@@ -24,6 +24,29 @@ GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Cooldown = RemoteEvent.new()
 
+-- variables
+GuiService.DialogueLocked = {}
+
+--// DialogueLock
+function GuiService:DialogueLock(player, isLock)
+
+    GuiService.DialogueLocked[player.UserId] = isLock
+
+    if isLock then
+        player.Character.HumanoidRootPart.Anchored = true
+        Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "DialogueLock", true)
+    else
+        player.Character.HumanoidRootPart.Anchored = false
+        Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "DialogueLock")
+    end
+    
+end
+
+--// Client:DialogueLock
+function GuiService.Client:DialogueLock(player, boolean)
+    self.Server:DialogueLock(player, boolean)
+end
+
 --// Update_Cooldown
 function GuiService:Update_Cooldown(player, params)
     self.Client.Event_Update_Cooldown:Fire(player, params)
@@ -82,7 +105,11 @@ end
 
 --// PlayerAdded
 function GuiService:PlayerAdded(player)
-    -- nothing here 
+    GuiService.DialogueLocked[player.UserId] = false
+end
+
+function GuiService:PlayerRemoved(player)
+    GuiService.DialogueLocked[player.UserId] = nil
 end
 
 
@@ -106,7 +133,7 @@ function GuiService:KnitInit()
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
-        --self:PlayerRemoved(player)
+        self:PlayerRemoved(player)
     end)
 
 end

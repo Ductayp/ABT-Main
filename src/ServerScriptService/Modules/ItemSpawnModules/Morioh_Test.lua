@@ -12,41 +12,17 @@ Morioh_B.MaxSpawned = 6
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT. Dictionary key names muct be unique.
 Morioh_B.Items = {
 
-    UniversalArrow_1 = {
-        Weight = 1,
-        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
-        Params = {
-            DataKey = "UniversalArrow",
-            DataCategory = "Arrow",
-            Rarity = "Rare",
-            ArrowName = "Universal Arrow"
-        }
-    },
-
-    UniversalArrow_2 = {
-        Weight = 5,
-        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
-        Params = {
-            DataKey = "UniversalArrow",
-            DataCategory = "Arrow",
-            Rarity = "Common",
-            ArrowName = "Universal Arrow"
-        }
-    },
-
-    UniversalArrow_3 = {
-        Weight = 5,
-        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
-        Params = {
-            DataKey = "UniversalArrow",
-            DataCategory = "Arrow",
-            Rarity = "Legendary",
-            ArrowName = "Universal Arrow"
-        }
-    },
-
-    Cash = {
+    {
         Weight = 10,
+        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
+        Params = {
+            DataKey = "Arrow",
+            DataCategory = "Item",
+        }
+    },
+
+    {
+        Weight = 1,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",

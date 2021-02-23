@@ -173,11 +173,13 @@ function ItemSpawnService:GiveItem(player, itemParams)
     elseif itemParams.DataCategory == "Currency" then
         Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")
 
+    --[[
     elseif  itemParams.DataCategory == "Arrow" then
         Knit.Services.InventoryService:Give_Arrow(player, itemParams.DataKey, itemParams.Rarity, 1)
+    ]]--
 
     elseif  itemParams.DataCategory == "Item" then
-        Knit.Services.InventoryService:Give_Item(player, itemParams.Params)
+        Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, 1)
     else    
         print("This spawn item had no matching DataCategory. Nothing given to player")
     end

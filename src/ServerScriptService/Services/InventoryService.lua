@@ -2,9 +2,9 @@
 -- PDab
 -- 12/20/2020
 
--- this service is the single source of managing player inventory covering adding and removing items
+-- this service is the single source of managing player inventory for adding and removing items
 -- it connects to modifier service so if a plyer has a modifier such as 2x Cash, sending the playeer 10 cash through a method here will give them 20
--- this service also manages container size, so a player may nto add items to a container that does not have any spaces left. 
+-- this service also manages container size, so a player may not add items to a container that does not have any spaces left. 
 
 -- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -121,6 +121,8 @@ function InventoryService:Give_Item(player, key, quantity)
 
     -- if the key is nil, make an entry in the table
     if playerData.ItemInventory[key] == nil then
+        print("playerData", playerData)
+        print("key", key)
         playerData.ItemInventory[key] = 0
     end
 
@@ -136,7 +138,6 @@ function InventoryService:Give_Item(player, key, quantity)
     notificationParams.Icon = "Item"
     notificationParams.Text = "You got: " .. tostring(quantity) .. " " .. thisItemDef.Name
     Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-
 
 end
 

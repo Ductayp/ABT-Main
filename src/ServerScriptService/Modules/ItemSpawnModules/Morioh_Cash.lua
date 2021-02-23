@@ -12,7 +12,7 @@ Morioh_Cash.MaxSpawned = 10
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_Cash.Items = {
 
-    Cash_1 = {
+    {
         Weight = 1,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
@@ -23,7 +23,7 @@ Morioh_Cash.Items = {
         }
     },
 
-    Cash_2 = {
+    {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {

@@ -12,7 +12,7 @@ Morioh_XP.MaxSpawned = 5
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_XP.Items = {
 
-    XP_1 = {
+    {
         Weight = 1,
         Model = ReplicatedStorage.SpawnItems.XpToken,
         Params = {
@@ -23,7 +23,7 @@ Morioh_XP.Items = {
         }
     },
 
-    XP_2 = {
+    {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.XpToken,
         Params = {

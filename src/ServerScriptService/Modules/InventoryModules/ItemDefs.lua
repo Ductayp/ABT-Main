@@ -4,7 +4,10 @@
 
 local ItemDefs = {}
 
---// MaskFragment
+ItemDefs.Arrow = {
+    Name = "Arrow"
+}
+
 ItemDefs.MaskFragment = {
     Name = "Mask Fragment"
 }

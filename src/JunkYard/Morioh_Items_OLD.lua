@@ -12,16 +12,37 @@ Morioh_Items.MaxSpawned = 4
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_Items.Items = {
 
-    {
-        Weight = 400,
+    UniversalArrow_1 = {
+        Weight = 1,
         Model = ReplicatedStorage.SpawnItems.UniversalArrow,
         Params = {
-            DataKey = "Arrow",
-            DataCategory = "Item",
+            DataKey = "UniversalArrow",
+            DataCategory = "Arrow",
+            Rarity = "Legendary",
         }
     },
 
-    {
+    UniversalArrow_2 = {
+        Weight = 200,
+        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
+        Params = {
+            DataKey = "UniversalArrow",
+            DataCategory = "Arrow",
+            Rarity = "Rare",
+        }
+    },
+
+    UniversalArrow_3 = {
+        Weight = 450,
+        Model = ReplicatedStorage.SpawnItems.UniversalArrow,
+        Params = {
+            DataKey = "UniversalArrow",
+            DataCategory = "Arrow",
+            Rarity = "Common",
+        }
+    },
+
+    Cash_1 = {
         Weight = 450,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
@@ -32,7 +53,7 @@ Morioh_Items.Items = {
         }
     },
 
-    {
+    XP_1 = {
         Weight = 525,
         Model = ReplicatedStorage.SpawnItems.XpToken,
         Params = {

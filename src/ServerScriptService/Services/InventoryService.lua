@@ -20,7 +20,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 
---// Give_Currency
+--// Give_Currency ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:Give_Currency(player, key, value, source)
 
     print("InventoryService:Give_Currency(player, key, value, source)", player, key, value, source)
@@ -62,54 +62,7 @@ function InventoryService:Give_Currency(player, key, value, source)
 
 end
 
---// Give_Arrow
-function InventoryService:Give_Arrow(player, key, rarity, quantity)
-
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-
-    if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
-        print("You have the arrow luck pass, LUCKY YOU!")
-        local rand = math.random(1,100)
-        if rand <= 25 then
-            print("SUCCESS! This Arrow just improved 1 rarity level!!!")
-            if rarity == "Common" then
-                rarity = "Rare"
-            elseif rarity == "Rare" then
-                rarity = "Legendary"
-            end
-        end
-    end
-
-    -- get the arrow defs
-    local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
-    local thisArrowDef = arrowDefs[key]
-
-    -- setup an table entry for playerData
-    local thisArrow = {}
-    thisArrow.Type = key
-    thisArrow.Rarity = rarity
-    thisArrow.Name = thisArrowDef.Name
-
-    -- insert it into playerData
-    if quantity then
-        for count = 1, quantity do
-            table.insert(playerData.ArrowInventory, thisArrow)
-        end
-    else 
-        table.insert(playerData.ArrowInventory, thisArrow)
-    end
-
-    -- update the gui
-    Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
-
-    local notificationParams = {}
-    notificationParams.Icon = "Arrow"
-    notificationParams.Text = "You got: " .. thisArrow.Name
-    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-
-end
-
---// Give_Item
+--// Give_Item ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:Give_Item(player, key, quantity)
     
     -- get player data
@@ -119,7 +72,13 @@ function InventoryService:Give_Item(player, key, quantity)
     local itemDefs = require(Knit.InventoryModules.ItemDefs)
     local thisItemDef = itemDefs[key]
 
-    -- if the key is nil, make an entry in the table
+    -- if theres no item with this key, then return
+    if not thisItemDef then
+        print("NO ITEM WITH THIS KEY")
+        return
+    end
+
+    -- if the data key is nil, make an entry in the table
     if playerData.ItemInventory[key] == nil then
         print("playerData", playerData)
         print("key", key)
@@ -129,20 +88,27 @@ function InventoryService:Give_Item(player, key, quantity)
     -- increment the key
     playerData.ItemInventory[key] += quantity
 
-    print(playerData.ItemInventory)
-
-    -- update the gui
-    --Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
-
+    -- update notifications
     local notificationParams = {}
     notificationParams.Icon = "Item"
     notificationParams.Text = "You got: " .. tostring(quantity) .. " " .. thisItemDef.Name
     Knit.Services.GuiService:Update_Notifications(player, notificationParams)
 
+    -- update item panel
+    Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+
 end
 
---// UseArrow
-function InventoryService:UseArrow(player, params)
+function InventoryService:UseItem(player, key)
+    print(player, " is trying to use: ", key)
+end
+
+function InventoryService.Client:UseItem(player, key)
+    self.Server:UseItem(player, key)
+end
+
+--// UseArrow ---------------------------------------------------------------------------------------------------------------------------
+function InventoryService:UseArrow(player)
 
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -155,53 +121,46 @@ function InventoryService:UseArrow(player, params)
         return
     end
 
-    -- check if the player has this arrow
-    for index,dataArrow in pairs(playerData.ArrowInventory) do
-        if dataArrow.Type == params.Type then
-            if dataArrow.Rarity == params.Rarity then
+    -- check if the player has an arrow to use
+    if playerData.ItemInventory.Arrow == nil or playerData.ItemInventory.Arrow < 1 then
+        print("tried to use arrow but there is no arrow in the players data")
+        return
+    end
 
-                -- remove arrow and update GUI to remove arrow
-                table.remove(playerData.ArrowInventory, index) -- remove the arrow
-                Knit.Services.GuiService:Update_Gui(player, "ArrowPanel")
+    -- remove arrow and update GUI to remove arrow
+    playerData.ItemInventory.Arrow = playerData.ItemInventory.Arrow - 1
+    Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
 
-                -- get the arrow defs
-                local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
-                local thisArrowDef = arrowDefs[params.Type]
-                
-                -- add stands to weighted table
-                local pickTable = {}
-                for name,weight in pairs(thisArrowDef.Stands) do
-                    for count = 1,weight do
-                        table.insert(pickTable,name)
-                    end
-                end
+    -- get the arrow defs
+    local arrowDefs = require(Knit.InventoryModules.ArrowDefs)
 
-                local randomPick = math.random(1,#pickTable)
-                local pickedStand = pickTable[randomPick]
-
-                print(pickedStand)
-
-                print("NOW YOU GET A STANDO!")
-                local newParams = {}
-                newParams.Power = pickedStand
-                newParams.Rarity = params.Rarity
-                newParams.Xp = 1
-                newParams.GUID = HttpService:GenerateGUID(false)
-
-                -- set teh current power
-                Knit.Services.PowersService:SetCurrentPower(player,newParams)
-
-                -- fire Show_StandReveal to the player, we do this after we set the data because the Gui pudates based on current data
-                Knit.Services.GuiService:Update_Gui(player, "StandReveal")
-
-                return
-            end
+    -- add stands to weighted table
+    local pickTable = {}
+    for name, weight in pairs(arrowDefs) do
+        for count = 1, weight do
+            table.insert(pickTable,name)
         end
     end
 
+    -- pick the stand
+    local randomPick = math.random(1,#pickTable)
+    local pickedStand = pickTable[randomPick]
+
+    local newParams = {}
+    newParams.Power = pickedStand
+    newParams.Rarity = "Common"
+    newParams.Xp = 1
+    newParams.GUID = HttpService:GenerateGUID(false)
+
+    -- set the current power
+    Knit.Services.PowersService:SetCurrentPower(player,newParams)
+
+    -- fire Show_StandReveal to the player
+    Knit.Services.GuiService:Update_Gui(player, "StandReveal")
+
 end
 
---// StoreStand
+--// StoreStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:StoreStand(player)
 
     -- sanity check to see if player has access
@@ -246,7 +205,7 @@ function InventoryService:StoreStand(player)
     end
 end
 
---// GetStandValue
+--// GetStandValue ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:GetStandValue(player, GUID)
 
     -- this methods returns this value, after its modified
@@ -284,7 +243,7 @@ function InventoryService:GetStandValue(player, GUID)
     return finalValue
 end
 
---// SacrificeStand
+--// SacrificeStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:SacrificeStand(player, GUID)
 
     -- sanity check to see if player has access
@@ -319,7 +278,7 @@ function InventoryService:SacrificeStand(player, GUID)
 
 end
 
---// EquipStand
+--// EquipStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:EquipStand(player, GUID)
 
     -- sanity check to see if player has access
@@ -359,7 +318,7 @@ function InventoryService:EquipStand(player, GUID)
 
 end
 
---// BuyStorage
+--// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:BuyStorage(player, params)
 
     -- get player data
@@ -376,7 +335,7 @@ function InventoryService:BuyStorage(player, params)
 
 end
 
---// GetCurrencyData
+--// GetCurrencyData ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:GetCurrencyData(player)
 
     -- get player data

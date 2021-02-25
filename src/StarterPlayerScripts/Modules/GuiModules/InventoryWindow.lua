@@ -20,18 +20,16 @@ local InventoryWindow = {}
 InventoryWindow.Window = mainGui.Windows:FindFirstChild("MainWindow", true)
 InventoryWindow.Item_Button = InventoryWindow.Window:FindFirstChild("Item_Button", true)
 InventoryWindow.Storage_Button = InventoryWindow.Window:FindFirstChild("Storage_Button", true)
-InventoryWindow.Arrow_Button = InventoryWindow.Window:FindFirstChild("Arrow_Button", true)
 InventoryWindow.Boost_Button = InventoryWindow.Window:FindFirstChild("Boost_Button", true)
 InventoryWindow.Close_Button = InventoryWindow.Window:FindFirstChild("CloseButton", true)
-InventoryWindow.Arrow_Panel = InventoryWindow.Window:FindFirstChild("Arrow_Panel", true)
 InventoryWindow.Item_Panel = InventoryWindow.Window:FindFirstChild("Item_Panel", true)
 InventoryWindow.Boost_Panel = InventoryWindow.Window:FindFirstChild("Boost_Panel", true)
 InventoryWindow.Storage_Panel = InventoryWindow.Window:FindFirstChild("Storage_Panel", true)
 
-local allPanels = {InventoryWindow.Arrow_Panel,InventoryWindow.Item_Panel,InventoryWindow.Boost_Panel,InventoryWindow.Storage_Panel}
+local allPanels = {InventoryWindow.Item_Panel,InventoryWindow.Boost_Panel,InventoryWindow.Storage_Panel}
 
 -- constants
-local DEFAULT_PANEL = InventoryWindow.Arrow_Panel
+local DEFAULT_PANEL = InventoryWindow.Item_Panel
 
 --// Setup ------------------------------------------------------------
 function InventoryWindow.Setup()
@@ -46,10 +44,6 @@ function InventoryWindow.Setup()
 
     InventoryWindow.Item_Button.Activated:Connect(function()
         InventoryWindow.ActivatePanel(InventoryWindow.Item_Panel)
-    end)
-
-    InventoryWindow.Arrow_Button.Activated:Connect(function()
-        InventoryWindow.ActivatePanel(InventoryWindow.Arrow_Panel)
     end)
 
     InventoryWindow.Storage_Button.Activated:Connect(function()

@@ -59,7 +59,7 @@ local gamePasses = {
 }
 
 --// Has_GamePass
-function GamePassService:Has_GamePass(player,passName)
+function GamePassService:Has_GamePass(player, passName)
 
     local hasPass = false
 

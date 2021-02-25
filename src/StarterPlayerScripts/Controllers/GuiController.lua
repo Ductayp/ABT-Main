@@ -23,7 +23,7 @@ local utils = require(Knit.Shared.Utils)
 -- gui modules
 GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
 GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
-GuiController.ArrowPanel = require(Knit.GuiModules.ArrowPanel)
+GuiController.ItemPanel = require(Knit.GuiModules.ItemPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
 GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
@@ -96,7 +96,7 @@ function GuiController:KnitStart()
     -- do some setups
     GuiController.InventoryWindow.Setup()
     GuiController.StoragePanel.Setup()
-    GuiController.ArrowPanel.Setup()
+    GuiController.ItemPanel.Setup()
     GuiController.StandReveal.Setup()
     GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
@@ -110,9 +110,9 @@ function GuiController:KnitStart()
     GuiController.ShopWindow_PassesPanel.Setup()
 
     -- request Gui Updates
-    self:Request_GuiUpdate("ArrowPanel")
     self:Request_GuiUpdate("Currency")
     self:Request_GuiUpdate("SoulOrb")
+    self:Request_GuiUpdate("ItemPanel")
     --self:Request_GuiUpdate("StoragePanel") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
     --self:Request_GuiUpdate("BottomGUI") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
 
@@ -120,10 +120,6 @@ function GuiController:KnitStart()
     -- connect events
     GuiService.Event_Update_Notifications:Connect(function(params)
         GuiController.Notifications.Update(params)
-    end)
-
-    GuiService.Event_Update_ArrowPanel:Connect(function(data)
-        GuiController.ArrowPanel.Update(data)
     end)
 
     GuiService.Event_Update_Currency:Connect(function(data)
@@ -145,6 +141,10 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_Cooldown:Connect(function(params)
         GuiController.BottomGui.UpdateCooldown(params)
+    end)
+
+    GuiService.Event_Update_ItemPanel:Connect(function(data)
+        GuiController.ItemPanel.Update(data)
     end)
 
 end

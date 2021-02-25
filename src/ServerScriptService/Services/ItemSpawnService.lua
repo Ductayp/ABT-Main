@@ -24,6 +24,11 @@ local SPAWN_LOOP_TIME = 20
 ItemSpawnService.CanSpawn = false
 ItemSpawnService.SpawnerGroups = {} -- an array of folders in workspace that represent the Spawner Groups
 
+--------------------------------------------------------------------------------------------------------------------------
+--// SPAWNER ---------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+
+--// DoSpawns --------------------------------------------------------------------------------------------
 function ItemSpawnService:DoSpawns()
 
     -- loop through all groups
@@ -93,6 +98,7 @@ function ItemSpawnService:DoSpawns()
     end
 end
 
+--// SpawnItem --------------------------------------------------------------------------------------------
 function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
 
     -- spawn item
@@ -124,6 +130,7 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
     end)
 end
 
+--// DestroyItem --------------------------------------------------------------------------------------------
 function ItemSpawnService:DestroyItem(item)
 
     item:FindFirstChild("TouchInterest"):Destroy()
@@ -150,9 +157,9 @@ function ItemSpawnService:DestroyItem(item)
     require(Knit.PowerUtils.WeldedSound).NewSound(item, ReplicatedStorage.Audio.ItemSpawnService.ItemPickup)
 
     Debris:AddItem(item, 10)
-
 end
 
+--// GiveItem --------------------------------------------------------------------------------------------
 function ItemSpawnService:GiveItem(player, itemParams)
 
     -- always give at least 1 as the value
@@ -173,11 +180,6 @@ function ItemSpawnService:GiveItem(player, itemParams)
     elseif itemParams.DataCategory == "Currency" then
         Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")
 
-    --[[
-    elseif  itemParams.DataCategory == "Arrow" then
-        Knit.Services.InventoryService:Give_Arrow(player, itemParams.DataKey, itemParams.Rarity, 1)
-    ]]--
-
     elseif  itemParams.DataCategory == "Item" then
         Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, 1)
     else    
@@ -186,7 +188,70 @@ function ItemSpawnService:GiveItem(player, itemParams)
     
 end
 
---// KnitStart
+--------------------------------------------------------------------------------------------------------------------------
+--// ITEM FINDER ---------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+
+--// Toggle_Finder --------------------------------------------------------------------------------------------
+function ItemSpawnService:Toggle_Finder(player, boolean)
+
+    -- get the players data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- check if player has the game pass
+    if GamePassService:Has_GamePass(player, "ItemFinder") then
+        print(player, " Has the Item Finder Pass!")
+    else
+        print(player, " NOPE! You dont have Item Finder Pass")
+        playerData.ItemFinder.FinderOn = false -- set it false just to be sure
+        return
+    end
+
+    -- set the boolean in the player data
+    playerData.ItemFinder.FinderOn = boolean
+
+    -- wait for the player character
+    repeat wait() until player.Character
+
+    -- create or destroy the attachment in the players HumanoidRootPart based on the booean sent
+    if boolean == true then
+        local oldAttachment = player.Character:FindFirstChild("ItemFinder_Attachment", true)
+        if oldAttachment then
+            oldAttachment:Destroy()
+        end
+        local newAttachment = Instance.new("Attachment")
+        newAttachment.Parent = player.Character.HumanoidRootPart
+        newAttachment.Name = "ItemFinder_Attachment"
+    else
+        local oldAttachment = player.Character:FindFirstChild("ItemFinder_Attachment", true)
+        if oldAttachment then
+            oldAttachment:Destroy()
+        end
+    end
+
+end
+
+--//  Toggle_ItemInFinder --------------------------------------------------------------------------------------------
+function ItemSpawnService:Toggle_ItemInFinder(player, itemKey)
+
+ 
+end
+
+--// Client:Toggle_Finder --------------------------------------------------------------------------------------------
+function ItemSpawnService.Client:Toggle_Finder(player, boolean)
+    self.Services:Toggle_Finder(player, boolean)
+end
+
+--//  Client:Toggle_ItemInFinder --------------------------------------------------------------------------------------------
+function ItemSpawnService.Client:Toggle_ItemInFinder(player, itemKey)
+    self.Services:Toggle_ItemInFinder(player, itemKey)
+end
+
+--------------------------------------------------------------------------------------------------------------------------
+--// KNIT ---------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+
+--// KnitStart -----------------------------------------------------------------------------------------------
 function ItemSpawnService:KnitStart()
 
     -- main spawner loop
@@ -204,7 +269,7 @@ function ItemSpawnService:KnitStart()
     end)
 end
 
---// KnitInit
+--// KnitInit -----------------------------------------------------------------------------------------------
 function ItemSpawnService:KnitInit()
 
     for _,object in pairs(Workspace:GetDescendants()) do
@@ -227,6 +292,5 @@ function ItemSpawnService:KnitInit()
         end
     end
 end
-
 
 return ItemSpawnService

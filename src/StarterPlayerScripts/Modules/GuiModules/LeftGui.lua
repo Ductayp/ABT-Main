@@ -17,7 +17,6 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
 local LeftGui = {}
 
-
 LeftGui.Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true)
 LeftGui.Inventory_Button = mainGui.LeftGui:FindFirstChild("A_Inventory_Button", true)
 LeftGui.Codes_Button = mainGui.LeftGui:FindFirstChild("D_Codes_Button", true)

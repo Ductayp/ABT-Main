@@ -17,14 +17,14 @@ local utils = require(Knit.Shared.Utils)
 
 -- events
 GuiService.Client.Event_Update_Notifications = RemoteEvent.new()
-GuiService.Client.Event_Update_ArrowPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Currency = RemoteEvent.new()
 GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Cooldown = RemoteEvent.new()
+GuiService.Client.Event_Update_ItemPanel = RemoteEvent.new()
 
--- variables
+-- public variables
 GuiService.DialogueLocked = {}
 
 --// DialogueLock
@@ -62,10 +62,6 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
-    if requestName == "ArrowPanel" then
-        self.Client.Event_Update_ArrowPanel:Fire(player, playerData.ArrowInventory)
-    end
-
     if requestName == "Currency" then
         self.Client.Event_Update_Currency:Fire(player, playerData.Currency)
     end
@@ -85,6 +81,10 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
 
     if requestName == "StoragePanel" then 
         self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage)
+    end
+
+    if requestName == "ItemPanel" then 
+        self.Client.Event_Update_ItemPanel:Fire(player, playerData.ItemInventory)
     end
 end
 

@@ -65,6 +65,7 @@ function ItemPanel.Setup()
             local currentPowerData = PowersService:GetCurrentPower()
             if currentPowerData.Power == "Standless" then
                 InventoryService:UseArrow()
+                Knit.Controllers.GuiController:CloseAllWindows()
             else
                 print("USE ARROW BUTTON: You Must Be Standless")
                 spawn(function()

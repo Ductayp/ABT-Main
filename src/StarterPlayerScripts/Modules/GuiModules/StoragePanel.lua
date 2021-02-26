@@ -98,7 +98,6 @@ function StoragePanel.Setup()
 
     -- BUTTON - Evolve Stand
     StoragePanel.Button_EvolveStand.Activated:Connect(function()
-        print("yeeeeeehhoooo!!")
         spawn(function()
 
             local originalText = StoragePanel.Button_EvolveStand.Text

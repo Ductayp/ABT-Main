@@ -13,6 +13,9 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local ItemSpawnService = Knit.CreateService { Name = "ItemSpawnService", Client = {}}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
+-- events
+ItemSpawnService.Client.Item_Spawned = RemoteEvent.new()
+
 -- modules
 local utils = require(Knit.Shared.Utils)
 
@@ -128,6 +131,8 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
             end
         end
     end)
+
+    self.Client.Item_Spawned:FireAll("FIRE TEST! - an item was spawned")
 end
 
 --// DestroyItem --------------------------------------------------------------------------------------------
@@ -195,6 +200,7 @@ end
 --// Toggle_Finder --------------------------------------------------------------------------------------------
 function ItemSpawnService:Toggle_Finder(player, boolean)
 
+    --[[
     -- get the players data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
@@ -213,7 +219,7 @@ function ItemSpawnService:Toggle_Finder(player, boolean)
     -- wait for the player character
     repeat wait() until player.Character
 
-    -- create or destroy the attachment in the players HumanoidRootPart based on the booean sent
+    -- create or destroy the attachment in the players HumanoidRootPart based on the boolean sent
     if boolean == true then
         local oldAttachment = player.Character:FindFirstChild("ItemFinder_Attachment", true)
         if oldAttachment then
@@ -228,6 +234,7 @@ function ItemSpawnService:Toggle_Finder(player, boolean)
             oldAttachment:Destroy()
         end
     end
+    ]]--
 
 end
 

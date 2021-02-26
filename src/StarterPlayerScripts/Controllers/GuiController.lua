@@ -22,11 +22,13 @@ local utils = require(Knit.Shared.Utils)
 
 -- gui modules
 GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
+GuiController.ItemFinderWindow = require(Knit.GuiModules.ItemFinderWindow)
 GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
 GuiController.ItemPanel = require(Knit.GuiModules.ItemPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
 GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
+GuiController.RightGui = require(Knit.GuiModules.RightGui)
 GuiController.Notifications = require(Knit.GuiModules.Notifications)
 GuiController.CurrencyBar = require(Knit.GuiModules.CurrencyBar)
 GuiController.SettingsWindow = require(Knit.GuiModules.SettingsWindow)
@@ -38,6 +40,7 @@ GuiController.ShopWindow_StoragePanel = require(Knit.GuiModules.ShopWindow_Stora
 GuiController.ShopWindow_PassesPanel = require(Knit.GuiModules.ShopWindow_PassesPanel)
 
 GuiController.InDialogue = false -- this is a variable we can check from anywhere to see if the player is in a dialgue gui
+GuiController.CurrentWindow = nil
 
 -- Gui Defs
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
@@ -57,6 +60,7 @@ function GuiController:CloseAllWindows()
             instance.Visible = false
         end
     end
+    GuiController.CurrentWindow = nil
 end
 
 
@@ -100,6 +104,7 @@ function GuiController:KnitStart()
     GuiController.StandReveal.Setup()
     GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
+    GuiController.RightGui.Setup()
     GuiController.Notifications.Setup()
     GuiController.SettingsWindow.Setup()
     GuiController.CodesWindow.Setup()
@@ -108,6 +113,7 @@ function GuiController:KnitStart()
     GuiController.ShopWindow_LootPanel.Setup()
     GuiController.ShopWindow_StoragePanel.Setup()
     GuiController.ShopWindow_PassesPanel.Setup()
+    GuiController.ItemFinderWindow.Setup()
 
     -- request Gui Updates
     self:Request_GuiUpdate("Currency")

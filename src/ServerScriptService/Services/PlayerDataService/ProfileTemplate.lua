@@ -34,7 +34,7 @@ local module = {
 
 	-- ItemFinder, tracks which items a player has set to find
 	ItemFinder = {
-		FinderOn = false
+		FinderOn = false,
 		ItemToggles = {}
 	},
 	

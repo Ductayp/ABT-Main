@@ -5,7 +5,7 @@ return {
     Arrow = {
         Name = "Arrow",
         Type = "Arrow",
-        Description = "Use this arrow to gain a stand.<br /><b>You MUST be standless.</b><br />Go visit Pucci's shop for more info.",
+        Description = "Use this arrow to gain a stand.<br /><u>You MUST be standless.</u><br /><br />95% Common<br />4.5% Rare<br />0.5% Legendary",
         LayoutOrder = 1,
     },
 

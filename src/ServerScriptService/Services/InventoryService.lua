@@ -146,9 +146,35 @@ function InventoryService:UseArrow(player)
     local randomPick = math.random(1,#pickTable)
     local pickedStand = pickTable[randomPick]
 
+    -- if player has the gamepass for arrow luck, give them a chance at better rarity
+    local thisRarity
+    local rand = math.random(1, 1000) / 10
+    if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
+        print("YES: arrow luck pass")
+        if rand <= 90 then
+            thisRarity = "Common" -- the default
+        elseif rand <= 99 then
+            thisRarity = "Rare"
+        else
+            thisRarity = "Legendary"
+        end
+    else
+        print("NO: arrow luck pass")
+        if rand <= 95 then
+            thisRarity = "Common" -- the default
+        elseif rand <= 99.5 then
+            thisRarity = "Rare"
+        else
+            thisRarity = "Legendary"
+        end
+    end
+
+    print("RAND: ", rand)
+    print("thisRarity", thisRarity)
+
     local newParams = {}
     newParams.Power = pickedStand
-    newParams.Rarity = "Common"
+    newParams.Rarity = thisRarity
     newParams.Xp = 1
     newParams.GUID = HttpService:GenerateGUID(false)
 
@@ -390,7 +416,9 @@ function InventoryService.Client:GetCurrencyData(player)
 end
 
 
-
+---------------------------------------------------------------------------------------------
+--// KNIT
+---------------------------------------------------------------------------------------------
 
 --// KnitStart
 function InventoryService:KnitStart()

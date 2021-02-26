@@ -47,7 +47,6 @@ StandReveal.Balls_2 = StandReveal.Main_Frame:FindFirstChild("Balls_2", true)
 
 StandReveal.Equip_Button = StandReveal.Main_Frame:FindFirstChild("Equip_Button", true)
 StandReveal.Store_Button = StandReveal.Main_Frame:FindFirstChild("Store_Button", true)
-StandReveal.MobileStorage_BuyButton = StandReveal.Main_Frame:FindFirstChild("MobileStorage_Buy_Button", true)
 
 -- a table of elements for convenience
 local elements = {
@@ -85,17 +84,15 @@ function StandReveal.Setup()
     StandReveal.Store_Button.Activated:Connect(function()
         StandReveal.ActivateQuickStore()
     end)
-    StandReveal.MobileStorage_BuyButton.Activated:Connect(function()
-        GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
-    end)
 
 end
 
 --// ActivateQuickStore ------------------------------------------------------------
 function StandReveal.ActivateQuickStore()
 
+    local hasStorageAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(Players.LocalPlayer)
 
-    if GamePassService:Has_GamePass("MobileStandStorage") then
+    if GamePassService:Has_GamePass("MobileStandStorage") or hasStorageAcces then
         InventoryService:StoreStand()
         StandReveal.ActivateClose()
     else
@@ -120,21 +117,13 @@ function StandReveal.ActivateClose()
     -- show the stand in BottomGui when we close this
     require(Knit.GuiModules.BottomGui).ShowStand()
 
+    -- open the inventory window
+    Knit.Controllers.GuiController.InventoryWindow.Open()
+
 end
 
 --// StorageWarning
 function StandReveal.StorageWarning()
-
-    -- stroe the destination position
-    local finalPosition = StandReveal.Storage_Warning.Position
-
-    -- move it over and mae it visible
-    StandReveal.Storage_Warning.Position = StandReveal.Storage_Warning.Position + UDim2.new(1,0,0,0)
-    StandReveal.Storage_Warning.Visible = true
-
-    -- setup tween
-    local moveTween = TweenService:Create(StandReveal.Storage_Warning,TweenInfo.new(.5),{Position = finalPosition})
-    moveTween:Play()
 
     spawn(function()
 
@@ -146,7 +135,7 @@ function StandReveal.StorageWarning()
         StandReveal.Store_Button.Size = StandReveal.Store_Button.Size + UDim2.new(.01,0,.01,0)
         StandReveal.Store_Button.BackgroundColor3 = Color3.new(45/255, 45/255, 45/255)
         StandReveal.Store_Button.TextColor3 = Color3.new(255/255, 0/255, 0/255)
-        StandReveal.Store_Button.Text = "NOPE"
+        StandReveal.Store_Button.Text = "CANT DO THAT HERE"
         StandReveal.Store_Button.Active = false
 
         wait(3)

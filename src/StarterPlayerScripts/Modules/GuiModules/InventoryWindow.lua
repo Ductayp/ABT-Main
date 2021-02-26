@@ -17,7 +17,7 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
 -- gui defs
 local InventoryWindow = {}
-InventoryWindow.Window = mainGui.Windows:FindFirstChild("MainWindow", true)
+InventoryWindow.Window = mainGui.Windows:FindFirstChild("InventoryWindow", true)
 InventoryWindow.Item_Button = InventoryWindow.Window:FindFirstChild("Item_Button", true)
 InventoryWindow.Storage_Button = InventoryWindow.Window:FindFirstChild("Storage_Button", true)
 InventoryWindow.Boost_Button = InventoryWindow.Window:FindFirstChild("Boost_Button", true)
@@ -56,7 +56,9 @@ function InventoryWindow.Setup()
 
 end
 
---// Activate ------------------------------------------------------------
+
+
+--// Open ------------------------------------------------------------
 function InventoryWindow.Open()
 
     -- make sure all panels are off
@@ -64,14 +66,20 @@ function InventoryWindow.Open()
         panel.Visible = false
     end
 
-    -- set the default panel to true
+    -- open the default panel
     DEFAULT_PANEL.Visible = true
 
     -- show it
     InventoryWindow.Window.Visible = true
 end
 
---// ActivatePanel
+--// Close ------------------------------------------------------------
+function InventoryWindow.Close()
+    InventoryWindow.Window.Visible = false
+    Knit.Controllers.GuiController.CurrentWindow = nil
+end
+
+--// ActivatePanel ------------------------------------------------------------
 function InventoryWindow.ActivatePanel(panelDef)
 
     -- make sure all panels are off
@@ -84,10 +92,7 @@ function InventoryWindow.ActivatePanel(panelDef)
 
 end
 
---// Close
-function InventoryWindow.Close()
-    InventoryWindow.Window.Visible = false
-end
+
 
 
 

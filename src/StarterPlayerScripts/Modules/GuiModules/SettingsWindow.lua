@@ -42,7 +42,7 @@ function SettingsWindow.Setup()
 
     -- Close Button
     SettingsWindow.Close_Button.Activated:Connect(function()
-        SettingsWindow.Frame.Visible = false
+        SettingsWindow.Close()
     end)
 
     SettingsWindow.Music_ON_Button.Activated:Connect(function()
@@ -117,6 +117,10 @@ end
 
 function SettingsWindow.Open()
     SettingsWindow.Frame.Visible = true
+end
+
+function SettingsWindow.Close()
+    SettingsWindow.Frame.Visible = false
 end
 
 

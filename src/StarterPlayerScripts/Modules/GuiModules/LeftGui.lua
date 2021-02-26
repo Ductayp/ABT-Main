@@ -17,11 +17,9 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
 local LeftGui = {}
 
-LeftGui.Cash_Value = mainGui.LeftGui:FindFirstChild("Cash_Value", true)
-LeftGui.Inventory_Button = mainGui.LeftGui:FindFirstChild("A_Inventory_Button", true)
-LeftGui.Codes_Button = mainGui.LeftGui:FindFirstChild("D_Codes_Button", true)
-LeftGui.Shop_Button = mainGui.LeftGui:FindFirstChild("B_Shop_Button", true)
-LeftGui.Settings_Button = mainGui.LeftGui:FindFirstChild("C_Settings_Button", true)
+LeftGui.Inventory_Button = mainGui.LeftGui:FindFirstChild("Inventory_Button", true)
+LeftGui.Codes_Button = mainGui.LeftGui:FindFirstChild("Codes_Button", true)
+LeftGui.Shop_Button = mainGui.LeftGui:FindFirstChild("Shop_Button", true)
 
 
 --// Setup_LeftGui() ------------------------------------------------------------
@@ -30,39 +28,42 @@ function LeftGui.Setup()
     -- connect the clickies
     LeftGui.Inventory_Button.MouseButton1Down:Connect(function()
         if not Knit.Controllers.GuiController.InDialogue then
-            Knit.Controllers.GuiController:CloseAllWindows()
-            Knit.Controllers.GuiController.InventoryWindow.Open()
+            if Knit.Controllers.GuiController.CurrentWindow == "Inventory" then
+                Knit.Controllers.GuiController.InventoryWindow.Close()
+                Knit.Controllers.GuiController.CurrentWindow = nil
+            else
+                Knit.Controllers.GuiController:CloseAllWindows()
+                Knit.Controllers.GuiController.InventoryWindow.Open()
+                Knit.Controllers.GuiController.CurrentWindow = "Inventory"
+            end
         end
     end)
 
     LeftGui.Codes_Button.MouseButton1Down:Connect(function()
         if not Knit.Controllers.GuiController.InDialogue then
-            Knit.Controllers.GuiController:CloseAllWindows()
-            Knit.Controllers.GuiController.CodesWindow.Open()
-        end
-    end)
-
-    LeftGui.Settings_Button.MouseButton1Down:Connect(function()
-        if not Knit.Controllers.GuiController.InDialogue then
-            Knit.Controllers.GuiController:CloseAllWindows()
-            Knit.Controllers.GuiController.SettingsWindow.Open()
+            if Knit.Controllers.GuiController.CurrentWindow == "Codes" then
+                Knit.Controllers.GuiController.CodesWindow.Close()
+                Knit.Controllers.GuiController.CurrentWindow = nil
+            else
+                Knit.Controllers.GuiController:CloseAllWindows()
+                Knit.Controllers.GuiController.CodesWindow.Open()
+                Knit.Controllers.GuiController.CurrentWindow = "Codes"
+            end
         end
     end)
 
     LeftGui.Shop_Button.MouseButton1Down:Connect(function()
         if not Knit.Controllers.GuiController.InDialogue then
-            Knit.Controllers.GuiController:CloseAllWindows()
-            Knit.Controllers.GuiController.ShopWindow.Open()
+            if Knit.Controllers.GuiController.CurrentWindow == "Shop" then
+                Knit.Controllers.GuiController.ShopWindow.Close()
+                Knit.Controllers.GuiController.CurrentWindow = nil
+            else
+                Knit.Controllers.GuiController:CloseAllWindows()
+                Knit.Controllers.GuiController.ShopWindow.Open()
+                Knit.Controllers.GuiController.CurrentWindow = "Shop"
+            end
         end
     end)
-end
-
---// UpdateCash ------------------------------------------------------------
-function LeftGui.Update_Cash(value)
-
-    if value ~= nil then
-        LeftGui.Cash_Value.Text = value
-    end
 end
 
 

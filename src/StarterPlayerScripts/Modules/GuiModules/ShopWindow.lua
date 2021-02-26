@@ -24,7 +24,7 @@ ShopWindow.MainButton_Loot = ShopWindow.Window:FindFirstChild("MainButton_Loot",
 ShopWindow.MainButton_Storage = ShopWindow.Window:FindFirstChild("MainButton_Storage", true)
 ShopWindow.MainButton_Passes = ShopWindow.Window:FindFirstChild("MainButton_Passes", true)
 ShopWindow.MainButton_Boosts = ShopWindow.Window:FindFirstChild("MainButton_Boosts", true)
-ShopWindow.MainButton_Close = ShopWindow.Window:FindFirstChild("MainButton_Close", true)
+ShopWindow.MainButton_Close = ShopWindow.Window:FindFirstChild("Close_Button", true)
 
 -- panels
 ShopWindow.LootPanel = ShopWindow.Window:FindFirstChild("ShopWindow_LootPanel", true)
@@ -98,6 +98,7 @@ end
 
 function ShopWindow.Close()
     ShopWindow.Window.Visible = false
+    Knit.Controllers.GuiController.CurrentWindow = nil
 end
 
 

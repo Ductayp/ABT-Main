@@ -31,7 +31,7 @@ function CodesWindow.Setup()
     CodesWindow.Frame.Visible = false
 
     CodesWindow.Close_Button.Activated:Connect(function()
-        CodesWindow.Frame.Visible = false
+        CodesWindow.Close()
     end)
 
     CodesWindow.Submit_Button.Activated:Connect(function()
@@ -40,8 +40,26 @@ function CodesWindow.Setup()
 
 end
 
+--// ToggleOpen ------------------------------------------------------------
+local isOpen = false
+function CodesWindow.ToggleOpen()
+
+    if isOpen == true then
+        CodesWindow.Close()
+        isOpen = false
+    else
+        CodesWindow.Open()
+        isOpen = true
+    end
+end
+
 function CodesWindow.Open()
     CodesWindow.Frame.Visible = true
+end
+
+function CodesWindow.Close()
+    CodesWindow.Frame.Visible = false
+    Knit.Controllers.GuiController.CurrentWindow = nil
 end
 
 function CodesWindow.SubmitCode()

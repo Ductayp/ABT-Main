@@ -177,11 +177,11 @@ function BottomGui.UpdateCooldown(params)
 end
 
 function BottomGui.HideStand()
-    
+    BottomGui.Frame_Stand.Visible = false
 end
 
 function BottomGui.ShowStand()
-    
+    BottomGui.Frame_Stand.Visible = true
 end
 
 

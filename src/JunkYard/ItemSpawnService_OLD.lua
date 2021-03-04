@@ -13,6 +13,9 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local ItemSpawnService = Knit.CreateService { Name = "ItemSpawnService", Client = {}}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
+-- events
+ItemSpawnService.Client.Item_Spawned = RemoteEvent.new()
+
 -- modules
 local utils = require(Knit.Shared.Utils)
 
@@ -32,67 +35,83 @@ ItemSpawnService.Spawners = {} -- an array that holds all spawners
 --// DoSpawns --------------------------------------------------------------------------------------------
 function ItemSpawnService:DoSpawns()
 
+    --
 
-    for _, spawnerModule in pairs(Knit.ItemSpawnTables:GetChildren()) do
+    --[[
+    -- loop through all groups
+    for _,groupFolder in pairs(ItemSpawnService.SpawnerGroups) do
 
-        -- reuqire this module
-        local thisSpawnerModule = require(spawnerModule)
+        local findModule = Knit.ItemSpawnTables:FindFirstChild(groupFolder.Name) -- we have to be sure the folder has a matching module by name to prevent errors
+        if findModule then
+            local spawnTable = require(Knit.ItemSpawnTables[groupFolder.Name]) -- require the group table based on the folders name
 
-        -- if this spawnerModule is not reached maxed spawns, then do a spawn
-        if thisSpawnerModule.TotalSpawned < thisSpawnerModule.MaxSpawned then
+            -- if the group hasnt reached is max spawned items, then we can spawn one
+            local spawnedItems = groupFolder.SpawnedItems:GetChildren()
+            local itemCount = #spawnedItems
+            if itemCount < spawnTable.MaxSpawned then
+                
+                -- pick a random spawner from the group, using only spawner that are open
+                local openSpawners = {}
+                --local pickedSpawner = {}
+                for _,spawner in pairs(groupFolder.Spawners:GetChildren()) do
 
-            -- fill a table with open spawners
-            local openSpawners = {}
-            for _, spawner in pairs(ItemSpawnService.Spawners) do
-
-                if spawner:GetAttribute("SpawnGroupId") == thisSpawnerModule.SpawnGroupId then
-                    if spawner:GetAttribute("ItemSpawned") == false then
-                        table.insert(openSpawners, spawner)
+                    local itemPointer = spawner:FindFirstChild("ItemPointer")
+                    if not itemPointer then
+                        itemPointer = Instance.new("ObjectValue")
+                        itemPointer.Name = "ItemPointer"
+                        itemPointer.Parent = spawner
+                        itemPointer.Value = nil
                     end
+
+                    -- only insert spawner with their itemPointer value as nil into a table
+                    if itemPointer.Value == nil then
+                        table.insert(openSpawners,spawner)
+                    end
+                    
+                end
+
+                -- now pick an open spawner from that table and assign it tot he variable: pickedSpawner
+                local randomPick = math.random(1,#openSpawners)
+                local pickedSpawner = openSpawners[randomPick]
+
+
+                -- if pickedSpawner is not nil, lets spawn an item
+                if pickedSpawner ~= nil then
+
+                    -- get the total weights
+                    local totalWeight = 0
+                    for key,tableObject in pairs(spawnTable.Items) do
+                        totalWeight = totalWeight + tableObject.Weight
+                    end
+
+                    -- pick an item based on weights
+                    local Chance = math.random(1,totalWeight)
+                    local Counter = 0
+                    local pickedItem
+                    for key,itemDefs in pairs(spawnTable.Items) do
+                        Counter = Counter + itemDefs.Weight
+                        if Chance <= Counter then
+                            pickedItem = itemDefs -- sets the picked item as the table of values of that object
+                            break
+                        end
+                    end
+
+                    -- spawn the item
+                    self:SpawnItem(pickedSpawner, pickedItem, groupFolder)
+
                 end
             end
-
-            -- pick a spawner from the table
-            local rand = math.random(1, #openSpawners)
-            local pickedSpawner = openSpawners[rand]
-
-            -- get the total weights
-            local totalWeight = 0
-            for key, tableObject in pairs(thisSpawnerModule.Items) do
-                totalWeight = totalWeight + tableObject.Weight
-            end
-
-            -- pick an item based on weights
-            local Chance = math.random(1,totalWeight)
-            local Counter = 0
-            local pickedItem
-            for key, itemDefs in pairs(thisSpawnerModule.Items) do
-                Counter = Counter + itemDefs.Weight
-                if Chance <= Counter then
-                    pickedItem = itemDefs -- sets the picked item as the table of values of that object
-                    break
-                end
-            end
-
-            -- spawn the item
-            self:SpawnItem(pickedSpawner, pickedItem)
-
-            -- increment the spawn groups counter
-            thisSpawnerModule.TotalSpawned = thisSpawnerModule.TotalSpawned + 1
-
-            -- clear the variable when we are done
-            openSpawners = nil
         end
     end
-
+    ]]--
 end
 
 --// SpawnItem --------------------------------------------------------------------------------------------
-function ItemSpawnService:SpawnItem(spawner, itemDefs)
+function ItemSpawnService:SpawnItem(spawner, itemDefs, groupFolder)
 
     -- spawn item
     local item = itemDefs.Model:Clone()
-    item.Parent = Workspace.SpawnedItems
+    item.Parent = groupFolder.SpawnedItems
     item.CFrame = spawner.CFrame
 
     -- set BodyMovers
@@ -102,25 +121,29 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs)
         item.Anchored = false
     end
 
-    spawner:SetAttribute("ItemSpawned", true)
+    -- set pointer
+    spawner.ItemPointer.Value = item
 
     -- create a new TouchInterest
     local connection = item.Touched:Connect(function(hit)
         if hit.Parent:FindFirstChild("Humanoid") then
             local player = utils.GetPlayerFromCharacter(hit.Parent)
             if player then
-
                 self:GiveItem(player, itemDefs.Params)
                 self:DestroyItem(item)
-
-                spawner:SetAttribute("ItemSpawned", false)
-
-                local spawnGroupModule = require(Knit.ItemSpawnTables[spawner:GetAttribute("SpawnGroupId")])
-                spawnGroupModule.TotalSpawned = spawnGroupModule.TotalSpawned - 1
-
+                spawner.ItemPointer.Value = nil
+                
             end
         end
     end)
+
+    -- check which players has ItemFinderAccess and then fire event to them
+    for _, player in pairs(Players) do
+        if require(Knit.StateModules.ItemFinderAccess).HasAccess(player) then
+            self.Client.Item_Spawned:Fire(player, item)
+        end
+    end
+
 
 end
     
@@ -128,11 +151,7 @@ end
 --// DestroyItem --------------------------------------------------------------------------------------------
 function ItemSpawnService:DestroyItem(item)
 
-    print("ITEM CHILDREN",item:GetChildren())
-
     item:FindFirstChild("TouchInterest"):Destroy()
-
-    item:SetAttribute("Destroyed", true)
 
     item.Transparency = 1
     for _,v in pairs(item:GetDescendants()) do
@@ -194,11 +213,48 @@ end
 --// Toggle_Finder --------------------------------------------------------------------------------------------
 function ItemSpawnService:Toggle_Finder(player, boolean)
 
+    --[[
+    -- get the players data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- check if player has the game pass
+    if GamePassService:Has_GamePass(player, "ItemFinder") then
+        print(player, " Has the Item Finder Pass!")
+    else
+        print(player, " NOPE! You dont have Item Finder Pass")
+        playerData.ItemFinder.FinderOn = false -- set it false just to be sure
+        return
+    end
+
+    -- set the boolean in the player data
+    playerData.ItemFinder.FinderOn = boolean
+
+    -- wait for the player character
+    repeat wait() until player.Character
+
+    -- create or destroy the attachment in the players HumanoidRootPart based on the boolean sent
+    if boolean == true then
+        local oldAttachment = player.Character:FindFirstChild("ItemFinder_Attachment", true)
+        if oldAttachment then
+            oldAttachment:Destroy()
+        end
+        local newAttachment = Instance.new("Attachment")
+        newAttachment.Parent = player.Character.HumanoidRootPart
+        newAttachment.Name = "ItemFinder_Attachment"
+    else
+        local oldAttachment = player.Character:FindFirstChild("ItemFinder_Attachment", true)
+        if oldAttachment then
+            oldAttachment:Destroy()
+        end
+    end
+    ]]--
+
 end
 
 --//  Toggle_ItemInFinder --------------------------------------------------------------------------------------------
 function ItemSpawnService:Toggle_ItemInFinder(player, itemKey)
 
+ 
 end
 
 --// Client:Toggle_Finder --------------------------------------------------------------------------------------------
@@ -242,17 +298,17 @@ function ItemSpawnService:KnitInit()
     -- create a spawned items folder
     local spawnedItemsFolder = Instance.new("Folder")
     spawnedItemsFolder.Name = "SpawnedItems"
-    spawnedItemsFolder.Parent = Workspace
+    spawnedItemsFolder.Parent = groupFolder
 
     -- setup all the spawners
     for _, instance in pairs(Workspace:GetDescendants()) do
         if instance.Name == "ItemSpawnService" then
-            for _, groupFolder in pairs(instance:GetChildren()) do
+            for _, groupFolder in pairs(object:GetChildren()) do
                 for _, spawner in pairs(groupFolder:GetChildren()) do
                     if spawner:IsA("Part") then
                         spawner.Transparency = 1
                         spawner:SetAttribute("SpawnGroupId", groupFolder.Name)
-                        spawner:SetAttribute("ItemSpawned", false)
+                        spawner:SetAttribute("Spawned", false)
                         table.insert(ItemSpawnService.Spawners, spawner)
                     end
                 end
@@ -260,6 +316,29 @@ function ItemSpawnService:KnitInit()
         end
     end
 
+    --[[
+
+    for _,object in pairs(Workspace:GetDescendants()) do
+        if object.Name == "ItemSpawnService" then
+            for _,groupFolder in pairs(object:GetChildren()) do
+                
+                --put the folders in a table for processing later
+                table.insert(ItemSpawnService.SpawnerGroups,groupFolder)
+
+                local spawnedItemsFolder = Instance.new("Folder")
+                spawnedItemsFolder.Name = "SpawnedItems"
+                spawnedItemsFolder.Parent = groupFolder
+
+                for _,spawner in pairs(groupFolder.Spawners:GetChildren()) do
+                    if spawner:IsA("Part") then
+                        spawner.Transparency = 1
+                    end
+                end
+            end
+        end
+    end
+
+    ]]--
 end
 
 return ItemSpawnService

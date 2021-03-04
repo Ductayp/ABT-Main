@@ -26,7 +26,8 @@ local gamePasses = {
 
     MobileStandStorage = {
         Id = 13434519,
-        CreateState = nil
+        CreateState = "StandStorageAccess",
+        StateValue = true
     },
 
     DoubleCash = {
@@ -48,7 +49,8 @@ local gamePasses = {
 
     ItemFinder = {
         Id = 13434805,
-        CreateState = nil
+        CreateState = "ItemFinderAccess",
+        StateValue = true
     },
 
     DoubleExperience = {
@@ -111,17 +113,12 @@ function GamePassService:Finished_GamePassPurchase(player, passId, wasPurchased)
 
                 -- create state is StateService 
                 if passTable.CreateState then
+                    print("OK DO IT THEN. ", passTable)
                     Knit.Services.StateService:AddEntryToState(player, passTable.CreateState, "GamePassService", passTable.StateValue)
                 end
 
             end
         end
-
-       
-
-
-
-
     end
 
 end
@@ -290,14 +287,16 @@ function GamePassService:PlayerAdded(player)
 
     -- get gamepasses for player and create states for them
     for passName,passTable in pairs(gamePasses) do
+
         local passId = passTable.Id
-        if MarketplaceService:UserOwnsGamePassAsync(player.UserId,passId) then
+        if MarketplaceService:UserOwnsGamePassAsync(player.UserId, passId) then
 
             -- create and set valueObject to true
             utils.NewValueObject(passName,true,playerFolder)
 
             -- create state in StateService 
             if passTable.CreateState then
+                print("GAMEPASS SEVRIE SETUP: ", passName,passTable)
                 Knit.Services.StateService:AddEntryToState(player, passTable.CreateState, "GamePassService", passTable.StateValue)
             end
         else

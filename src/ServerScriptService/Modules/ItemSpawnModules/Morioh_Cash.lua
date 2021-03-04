@@ -6,8 +6,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Morioh_Cash = {}
 
+Morioh_Cash.SpawnGroupId = "Morioh_Cash"
 Morioh_Cash.Region = "Morioh"
 Morioh_Cash.MaxSpawned = 10
+Morioh_Cash.TotalSpawned = 0
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_Cash.Items = {

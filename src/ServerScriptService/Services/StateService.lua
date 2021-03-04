@@ -27,6 +27,8 @@ local utils = require(Knit.Shared.Utils)
 --// AddState - add a modfier value, if one of the same name exists then do nothing
 function StateService:AddEntryToState(player, stateName, entryName, entryValue, params)
 
+    print("STATE SERVICE SAYS: ", player, stateName, entryName, entryValue, params)
+
     -- see if the state exists and make it if it doesnt
     local stateFolder = ReplicatedStorage.StateService[player.UserId]:FindFirstChild(stateName)
     if stateFolder then
@@ -46,6 +48,7 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
         end
         
         -- run the states module if it exist 
+        local results = nil
         local stateModule = Knit.StateModules:FindFirstChild(stateName) --[stateName]) --script:FindFirstChild(stateName) -- state modules can do a lot of thingsm its cusomt for each value we might modify
         if stateModule then
             local requiredModule = require(stateModule)

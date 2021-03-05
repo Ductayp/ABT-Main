@@ -22,25 +22,26 @@ function ItemSpawnController:UpdateItemFinder()
         return
     end
 
-    print("this player can find items: ", Players.LocalPlayer)
+    --[[
+    for _, item in pairs(spawnedItemsFolder:GetChildren()) do
+        -- disable all beams
+        local itemBeam = item:FindFirstChild("ItemBeam")
+        if itemBeam then
+            print("FOUND BEAM")
+            print(itemBeam.Enabled)
+            itemBeam.Enabled = false
+            print(itemBeam.Enabled)
+        end
+    end
 
+    ]]--
 
     if Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys ~= nil then
-        for key,_ in pairs(Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys) do
+        for itemKey, itemBool in pairs(Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys) do
             for _, item in pairs(spawnedItemsFolder:GetChildren()) do
 
-                -- destroy old beams
-                local itemBeam = item:FindFirstChild("ItemBeam")
-                if itemBeam then
-                    itemBeam:Destroy()
-                end
-
-                if item:GetAttribute("Destroyed") then
-                    itemBeam:Destroy()
-                end
-
                 -- if this item.Name and key match, make a new beam and attachments
-                if item.Name == key then
+                if item.Name == itemKey then
                     
                     -- find or create item attachment
                     local itemAttchment = item:FindFirstChild("ItemAttachment")
@@ -58,14 +59,12 @@ function ItemSpawnController:UpdateItemFinder()
                         playerAttachment.Parent = Players.LocalPlayer.Character.HumanoidRootPart
                     end
 
-                    -- find or create beam
+                    -- find
                     local itemBeam = item:FindFirstChild("ItemBeam")
-                    if not itemBeam then
-                        itemBeam = ReplicatedStorage.EffectParts.ItemFinder.ItemBeam:Clone()
-                        itemBeam.Parent = item
-                        itemBeam.Attachment0 = playerAttachment
-                        itemBeam.Attachment1 = itemAttchment
-                        itemBeam.Enabled = true
+                    if itemBeam then
+                        itemBeam.Attachment0 = itemAttchment
+                        itemBeam.Attachment1 = playerAttachment
+                        itemBeam.Enabled = itemBool
                     end
 
                 end

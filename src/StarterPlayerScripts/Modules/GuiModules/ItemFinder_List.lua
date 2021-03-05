@@ -19,7 +19,7 @@ return {
     },
 
     {
-        Key = "XPToken",
+        Key = "XpToken",
         Name = "XP Token",
         LayoutOrder = 4
     },

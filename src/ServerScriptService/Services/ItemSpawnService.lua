@@ -102,6 +102,11 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs)
         item.Anchored = false
     end
 
+    -- clone the beam
+    local newBeam = ReplicatedStorage.EffectParts.ItemFinder.ItemBeam:Clone()
+    newBeam.Parent = item
+    newBeam.Enabled = false
+
     spawner:SetAttribute("ItemSpawned", true)
 
     -- create a new TouchInterest
@@ -128,11 +133,8 @@ end
 --// DestroyItem --------------------------------------------------------------------------------------------
 function ItemSpawnService:DestroyItem(item)
 
-    print("ITEM CHILDREN",item:GetChildren())
-
     item:FindFirstChild("TouchInterest"):Destroy()
-
-    item:SetAttribute("Destroyed", true)
+    item:FindFirstChild("ItemBeam"):Destroy()
 
     item.Transparency = 1
     for _,v in pairs(item:GetDescendants()) do

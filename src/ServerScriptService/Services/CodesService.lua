@@ -82,9 +82,12 @@ function CodesService:RedeemCode(player, code)
             Knit.Services.InventoryService:Give_Currency(player, codeDef.Key, codeDef.Value, "Code")
         end
 
-        if codeDef.ActionType == "GiveArrow" then
-            -- (player, key, rarity, quantity)
-            Knit.Services.InventoryService:Give_Arrow(player, codeDef.Key, codeDef.Rarity, 1)
+        if codeDef.ActionType == "GiveItem" then
+            Knit.Services.InventoryService:Give_Item(player, codeDef.Key, codeDef.Quantity)
+        end
+        
+        if codeDef.ActionType == "GiveItemFinder" then
+            --Knit.Services.BoostService:AddBoost(player, "ItemFinderAccess", codeDef.Duration)
         end
 
         returnMessage = codeDef.Message

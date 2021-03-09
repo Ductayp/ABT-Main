@@ -15,7 +15,7 @@ Morioh_B.TotalSpawned = 0
 Morioh_B.Items = {
 
     {
-        Weight = 10,
+        Weight = 1,
         Model = ReplicatedStorage.SpawnItems.Arrow,
         Params = {
             DataKey = "Arrow",
@@ -32,7 +32,64 @@ Morioh_B.Items = {
             MinValue = 1,
             MaxValue = 10
         }
-    }
+    },
+
+    {
+        Weight = 1,
+        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
+        Params = {
+            DataKey = "SoulOrbs",
+            DataCategory = "Currency",
+            MinValue = 5,
+            MaxValue = 10
+        }
+    },
+
+    {
+        Weight = 1,
+        Model = ReplicatedStorage.SpawnItems.VirusBulb,
+        Params = {
+            DataKey = "VirusBulb",
+            DataCategory = "Item",
+        }
+    },
+
+    {
+        Weight = 1,
+        Model = ReplicatedStorage.SpawnItems.MaskFragment,
+        Params = {
+            DataKey = "MaskFragment",
+            DataCategory = "Item",
+        }
+    },
+
+    {
+        Weight = 10,
+        Model = ReplicatedStorage.SpawnItems.Boost,
+        Params = {
+            DataKey = "Boost",
+            DataCategory = "Boost",
+            Random = true,
+            PickList = {
+                {
+                    Key = "ItemFinder",
+                    Duration = 600
+                },
+                {
+                    Key = "DoubleCash",
+                    Duration = 600
+                },
+                {
+                    Key = "DoubleSoulOrbs",
+                    Duration = 600
+                },
+                {
+                    Key = "DoubleExperience",
+                    Duration = 600
+                },
+            },
+        }
+    },
 }
 
 return Morioh_B

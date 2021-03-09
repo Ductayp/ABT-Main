@@ -23,7 +23,6 @@ local SPAWN_LOOP_TIME = 20
 -- variables & stuff :)
 ItemSpawnService.CanSpawn = false
 ItemSpawnService.Spawners = {} -- an array that holds all spawners
---ItemSpawnService.SpawnerGroups = {} -- an array of folders in workspace that represent the Spawner Groups
 
 --------------------------------------------------------------------------------------------------------------------------
 --// SPAWNER ---------------------------------------------------------------------------------------------------------
@@ -181,8 +180,16 @@ function ItemSpawnService:GiveItem(player, itemParams)
     elseif itemParams.DataCategory == "Currency" then
         Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")
 
-    elseif  itemParams.DataCategory == "Item" then
+    elseif itemParams.DataCategory == "Item" then
         Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, 1)
+
+    elseif itemParams.DataCategory == "Boost" then
+        if itemParams.Random then
+            local randomPick = math.random(1, #itemParams.PickList)
+            local pickedBoost = itemParams.PickList[randomPick]
+            print(pickedBoost)
+            Knit.Services.InventoryService:Give_Boost(player, pickedBoost.Key, pickedBoost.Duration)
+        end
     else    
         print("This spawn item had no matching DataCategory. Nothing given to player")
     end

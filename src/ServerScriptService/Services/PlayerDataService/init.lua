@@ -15,7 +15,7 @@ local profiles = {} -- this is the table that holds each players data
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PlayerDataService = Knit.CreateService { Name = "PlayerDataService", Client = {}}
 
-local DATA_VERSION = "Yeet_52"
+local DATA_VERSION = "A_8"
 
 
 -- This is loading the main functionality of profile service

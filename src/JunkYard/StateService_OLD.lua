@@ -31,43 +31,46 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
 
     -- see if the state exists and make it if it doesnt
     local stateFolder = ReplicatedStorage.StateService[player.UserId]:FindFirstChild(stateName)
-    if not stateFolder then
-        print("State Class does not exist")
-        return
-    end
+    if stateFolder then
 
-    -- if entry does not exist, make a new one
-    local duplicateEntry
-    local thisEntry = ReplicatedStorage.StateService[player.UserId][stateName]:FindFirstChild(entryName)
-    if not thisEntry then
+        local thisEntry = ReplicatedStorage.StateService[player.UserId][stateName]:FindFirstChild(entryName)
+        if not thisEntry then
+        
+            -- make a new value object based on its type
+            thisEntry = utils.NewValueObject(entryName, entryValue, stateFolder)
 
-        -- create new entry object
-        duplicateEntry = false
-        thisEntry = utils.NewValueObject(entryName, entryValue, stateFolder)
-
-        -- iterate through params and create new values also based ont their types and parent to the new entry
-        if params then
-            for key,value in pairs(params) do
-                utils.NewValueObject(key, value, thisEntry)
+            --[[
+            -- iterate through params and create new values also based ont their types and parent to the new entry
+            if params then
+                for key,value in pairs(params) do
+                    utils.NewValueObject(key, value, thisEntry)
+                end
             end
+            ]]--
+            
+        else
+            print("Duplicate State Entry Found - No New Entry Created")
+        end
+        
+        -- run the states module if it exist 
+        local results = nil
+        local stateModule = Knit.StateModules:FindFirstChild(stateName) 
+        if stateModule then
+            local requiredModule = require(stateModule)
+            results = requiredModule.Entry_Added(player,thisEntry,params)
         end
 
+        -- return the results
+        return results
     else
-        duplicateEntry = true
+        print("State Class does not exist")
     end
-
-    -- run the states module if it exist 
-    local results
-    local stateModule = Knit.StateModules:FindFirstChild(stateName) 
-    if stateModule then
-        --local requiredModule = require(stateModule)
-        results = require(stateModule).Entry_Added(player, thisEntry, params, duplicateEntry)
-    end
-
-    -- return the results
-    return results
-
 end
+
+--// UpdateEntryInState 
+function StateService:UpdateTimedEntryInState(player, stateName, entryName, entryValue, params)
+    print("UpdateEntryInState", player, stateName, entryName, entryValue, params)
+end 
 
 --// RemoveState -- removes a modfier by name
 function StateService:RemoveEntryFromState(player, stateName, entryName, params)
@@ -122,12 +125,32 @@ end
 --// KnitStart
 function StateService:KnitStart()
 
+    --[[
+    -- start the tickupdate loop
+    local lastUpdate = os.time()
+    local loopTime = 1
+    while game:GetService("RunService").Heartbeat:Wait() do
+
+        if lastUpdate <= (os.time() -loopTime) then
+            lastUpdate = os.time()
+
+            for _, thisModule in pairs(Knit.StateModules:GetChildren()) do
+                local module = require(thisModule)
+                if module.Timer_Update then
+                    module.Timer_Update()
+                end
+            end
+        end
+        
+    end
+    ]]--
+
 end
 
 --// KnitInit
 function StateService:KnitInit()
 
-    -- create a folder to hold all the states
+    -- create a folde rto hold al the states
     local mainFolder = utils.EasyInstance("Folder",{Name = "StateService", Parent = ReplicatedStorage})
 
     -- Player Added event

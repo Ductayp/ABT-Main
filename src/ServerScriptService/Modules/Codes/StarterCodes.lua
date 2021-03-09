@@ -5,7 +5,7 @@ return {
         ActionType = "GiveCurrency",
         Key = "Cash",
         Value = "1000",
-        Expiration = 1614609215,
+        Expiration = 1741217469,
         Message = "1,000 CASH! POG - Sub 2 Planet Milo"
     },
 
@@ -14,7 +14,7 @@ return {
         ActionType = "GiveCurrency",
         Key = "SoulOrbs",
         Value = "100",
-        Expiration = 1614609215,
+        Expiration = 1741217469,
         Message = "You just got 100 Soul Orbs!"
     },
 
@@ -23,7 +23,7 @@ return {
         ActionType = "GiveCurrency",
         Key = "SoulOrbs",
         Value = "200",
-        Expiration = 1614609215,
+        Expiration = 1741217469,
         Message = "200 Soul Orbs isn't bad!"
     },
 
@@ -32,7 +32,7 @@ return {
         ActionType = "GiveCurrency",
         Key = "Cash",
         Value = "4000",
-        Expiration = 1614609215,
+        Expiration = 1741217469,
         Message = "You got rich! 4,000 CASH HOMIE! - Sub 2 Planet Milo"
     },
 
@@ -41,26 +41,51 @@ return {
         ActionType = "GiveCurrency",
         Key = "Cash",
         Value = "100000",
-        Expiration = 1614609215,
+        Expiration = 1741217469,
         Message = "TESTING CODE ONLY"
     },
 
     {
         CodeString = "starterarrow",
-        ActionType = "GiveArrow",
-        Key = "UniversalArrow",
-        Rarity = "Common",
-        Expiration = 1614609215,
-        Message = "You got a  Common UNIVERSAL ARROW! Use it to get a stand."
+        ActionType = "GiveItem",
+        Key = "Arrow",
+        Quantity = 1,
+        Expiration = 1741217469,
+        Message = "You got an ARROW! Use it to get a stand."
     },
 
     {
         CodeString = "testersaregods",
-        ActionType = "GiveArrow",
-        Key = "UniversalArrow",
-        Rarity = "Legendary",
-        Expiration = 1614609215,
+        ActionType = "GiveItem",
+        Key = "Arrow",
+        Quantity = 5,
+        Expiration = 1741217469,
         Message = "THANKS FOR HELPING TEST!"
+    },
+
+    
+    {
+        CodeString = "sub2planetmilo",
+        ActionType = "GiveItemFinder",
+        Duration = 60,
+        Expiration = 1741217469,
+        Message = "You got Temporary Item Finder Access!"
+    },
+
+    {
+        CodeString = "finderboost",
+        ActionType = "GiveItemFinder",
+        Duration = 6000,
+        Expiration = 1741217469,
+        Message = "You got Temporary Item Finder Access!"
+    },
+
+    {
+        CodeString = "booster",
+        ActionType = "GiveItemFinder",
+        Duration = 100000,
+        Expiration = 1741217469,
+        Message = "You got Temporary Item Finder Access!"
     },
 
 

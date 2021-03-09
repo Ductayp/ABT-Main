@@ -17,12 +17,12 @@ local statesFolder = ReplicatedStorage:FindFirstChild("StateService")
 local StandStorageAccess = {}
 
 --// Entry_Added -- fires after entry added in StateSerive. Can be blank.
-function StandStorageAccess.Entry_Added(player,thisEntry,params)
+function StandStorageAccess.Entry_Added(player, thisEntry, params, duplicateEntry)
 
 end
 
 --// Entry_Removed -- fires after entry added in StateSerive. Can be blank.
-function StandStorageAccess.Entry_Removed(player, thisState, params)
+function StandStorageAccess.Entry_Removed(player, thisState)
 
 end
 

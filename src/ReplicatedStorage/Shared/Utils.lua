@@ -6,6 +6,15 @@ local debris = game:GetService("Debris")
 
 local module = {}
 
+--Get playeer by UserId
+function module.GetPlayerByUserId(userId)
+	for _, player in pairs(Players:GetPlayers()) do
+		if player.UserId == userId then
+			return player
+		end
+	end
+end
+
 -- get character form player
 function module.GetPlayerFromCharacter(character)
 	for _, player in pairs(game:GetService("Players"):GetPlayers()) do
@@ -102,16 +111,6 @@ function module.NewValueObject(name,value,parent)
 	return NewValue
 	
 end
-
---Get playeer by UserId
-function module.GetPlayerByUserId(userId)
-	for _, player in pairs(Players:GetPlayers()) do
-		if player.UserId == userId then
-			return player
-		end
-	end
-end
-
 
 --// shallow copy table
 function module.ShallowCopy(orig)

@@ -18,12 +18,12 @@ local statesFolder = ReplicatedStorage:FindFirstChild("StateService")
 local Immunity = {}
 
 --// Entry_Added -- fires after entry added in StateSerive. Can be blank.
-function Immunity.Entry_Added(player,thisEntry,params)
+function Immunity.Entry_Added(player, thisEntry, params, duplicateEntry)
 
 end
 
 --// Entry_Removed -- fires after entry added in StateSerive. Can be blank.
-function Immunity.Entry_Removed(player, thisState, params)
+function Immunity.Entry_Removed(player, thisState)
 
 end
 

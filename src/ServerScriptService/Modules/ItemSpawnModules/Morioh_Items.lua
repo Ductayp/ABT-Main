@@ -15,6 +15,17 @@ Morioh_Items.TotalSpawned = 0
 Morioh_Items.Items = {
 
     {
+        Weight = 300,
+        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
+        Params = {
+            DataKey = "SoulOrbs",
+            DataCategory = "Currency",
+            MinValue = 5,
+            MaxValue = 10
+        }
+    },
+
+    {
         Weight = 400,
         Model = ReplicatedStorage.SpawnItems.Arrow,
         Params = {
@@ -44,6 +55,7 @@ Morioh_Items.Items = {
             MaxValue = 10
         }
     }
+
 }
 
 

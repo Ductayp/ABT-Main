@@ -69,33 +69,12 @@ function GuiController:Request_GuiUpdate(requestName)
     GuiService:Request_GuiUpdate(requestName)
 end
 
---// HandleAction - ContextActionService
-GuiController.ButtonHover = false
-function GuiController:HandleHover(bool)
-    GuiController.ButtonHover = bool
-end
-
 
 --// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
 
     repeat wait() until Players.LocalPlayer.Character
     repeat wait() until Players.LocalPlayer.PlayerGui
-    print("FOUND IT!!!!")
-
-    -- setup Hover handling for Gui buttons
-    for _, instance in pairs(Players.LocalPlayer.PlayerGui:GetDescendants()) do
-        if instance:IsA("TextButton") or instance:IsA("ImageButton") or instance:IsA("Frame") then
-
-            instance.MouseEnter:Connect(function()
-                self:HandleHover(true)
-            end)
-            
-            instance.MouseLeave:Connect(function()
-                self:HandleHover(false)
-            end)
-        end
-    end
 
     -- do some setups
     GuiController.InventoryWindow.Setup()
@@ -119,6 +98,7 @@ function GuiController:KnitStart()
     self:Request_GuiUpdate("Currency")
     self:Request_GuiUpdate("SoulOrb")
     self:Request_GuiUpdate("ItemPanel")
+    self:Request_GuiUpdate("ItemFinderWindow")
     --self:Request_GuiUpdate("StoragePanel") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
     --self:Request_GuiUpdate("BottomGUI") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
 
@@ -151,6 +131,10 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_ItemPanel:Connect(function(data)
         GuiController.ItemPanel.Update(data)
+    end)
+
+    GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, expirationTime)
+        GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
     end)
 
 end

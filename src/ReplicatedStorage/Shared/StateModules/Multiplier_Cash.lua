@@ -16,12 +16,12 @@ local statesFolder = ReplicatedStorage:FindFirstChild("StateService")
 local Multiplier_Cash = {}
 
 --// Entry_Added -- fires after entry added in StateSerive. Can be blank.
-function Multiplier_Cash.Entry_Added(player,thisEntry,params)
+function Multiplier_Cash.Entry_Added(player, thisEntry, params, duplicateEntry)
 
 end
 
 --// Entry_Removed -- fires after entry added in StateSerive. Can be blank.
-function Multiplier_Cash.Entry_Removed(player, thisState, params)
+function Multiplier_Cash.Entry_Removed(player, thisState)
 
 end
 

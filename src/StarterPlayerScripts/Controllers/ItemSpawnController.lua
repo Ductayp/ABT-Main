@@ -9,7 +9,11 @@ local Workspace = game:GetService("Workspace")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local ItemSpawnController = Knit.CreateController { Name = "ItemSpawnController" }
 local ItemSpawnService = Knit.GetService("ItemSpawnService")
+local GamePassService = Knit.GetService("GamePassService")
+local BoostService = Knit.GetService("BoostService")
 local utils = require(Knit.Shared.Utils)
+
+print("Knit", Knit)
 
 -- local variables
 local spawnedItemsFolder = Workspace:WaitForChild("SpawnedItems")
@@ -17,24 +21,23 @@ local spawnedItemsFolder = Workspace:WaitForChild("SpawnedItems")
 --// UpdateItemFinder
 function ItemSpawnController:UpdateItemFinder()
 
-    -- check if player has ItemFinder State
-    if not require(Knit.StateModules.ItemFinderAccess).HasAccess(Players.LocalPlayer) then
+    --[[
+    -- check if player has access to finder
+    local hasAccess = false
+
+    if GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
+        hasAccess = true
+    end
+
+    if not hasAccess then
         return
     end
-
-    --[[
-    for _, item in pairs(spawnedItemsFolder:GetChildren()) do
-        -- disable all beams
-        local itemBeam = item:FindFirstChild("ItemBeam")
-        if itemBeam then
-            print("FOUND BEAM")
-            print(itemBeam.Enabled)
-            itemBeam.Enabled = false
-            print(itemBeam.Enabled)
-        end
-    end
-
     ]]--
+
+    if not GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
+       return
+    end
+        
 
     if Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys ~= nil then
         for itemKey, itemBool in pairs(Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys) do
@@ -71,10 +74,6 @@ function ItemSpawnController:UpdateItemFinder()
             end
         end
     end
-
-    
-
-
 
 end
 

@@ -49,8 +49,7 @@ local gamePasses = {
 
     ItemFinder = {
         Id = 13434805,
-        CreateState = "ItemFinderAccess",
-        StateValue = true
+        CreateState = nil
     },
 
     DoubleExperience = {
@@ -113,11 +112,15 @@ function GamePassService:Finished_GamePassPurchase(player, passId, wasPurchased)
 
                 -- create state is StateService 
                 if passTable.CreateState then
-                    print("OK DO IT THEN. ", passTable)
                     Knit.Services.StateService:AddEntryToState(player, passTable.CreateState, "GamePassService", passTable.StateValue)
                 end
 
             end
+        end
+
+        -- if pass is ItemFinder then update ItemFinderWindow
+        if passId == 13434805 then
+            Knit.Services.GuiService:Update_Gui(player, "ItemFinderWindow")
         end
     end
 

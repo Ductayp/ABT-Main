@@ -186,6 +186,23 @@ function InventoryService:UseArrow(player)
 
 end
 
+--// GiveBoost ---------------------------------------------------------------------------------------------------------------------------
+function InventoryService:Give_Boost(player, key, duration)
+
+        -- get player data
+        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+        if not playerData then return end
+
+        local entry = {}
+        entry.Key = key
+        entry.Duration = duration
+
+        table.insert(playerData.BoostInventory, entry)
+
+        print(playerData.BoostInventory)
+
+end
+
 --// StoreStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:StoreStand(player)
 

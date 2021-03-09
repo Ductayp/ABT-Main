@@ -23,6 +23,7 @@ GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 GuiService.Client.Event_Update_Cooldown = RemoteEvent.new()
 GuiService.Client.Event_Update_ItemPanel = RemoteEvent.new()
+GuiService.Client.Event_Update_ItemFinderWindow = RemoteEvent.new()
 
 -- public variables
 GuiService.DialogueLocked = {}
@@ -85,6 +86,13 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
 
     if requestName == "ItemPanel" then 
         self.Client.Event_Update_ItemPanel:Fire(player, playerData.ItemInventory)
+    end
+
+    if requestName == "ItemFinderWindow" then 
+
+        local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "ItemFinder")
+        local hasBoost, expirationTime = Knit.Services.BoostService:Has_Boost(player, "ItemFinder")
+        self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass, hasBoost, expirationTime)
     end
 end
 

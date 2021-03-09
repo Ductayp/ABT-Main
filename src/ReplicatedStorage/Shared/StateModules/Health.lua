@@ -16,7 +16,7 @@ local DEFAULT_HEALTH = 100
 local Health = {}
 
 --// AddState - fires after AddState from 
-function Health.Entry_Added(player,thisEntry,params)
+function Health.Entry_Added(player, thisEntry, params, duplicateEntry)
 
     local newMaxHealth = DEFAULT_HEALTH -- start with the default and then add the modifers
     for _,valueObject in pairs(thisEntry.Parent:GetChildren()) do
@@ -29,7 +29,7 @@ function Health.Entry_Added(player,thisEntry,params)
 end
 
 --// RemoveEntry - fires after RemoveEntry from 
-function Health.Entry_Removed(player, thisState, params)
+function Health.Entry_Removed(player, thisState)
 
     local newMaxHealth = DEFAULT_HEALTH -- start with the default and then add the modifers
     for _,valueObject in pairs(thisState:GetChildren()) do

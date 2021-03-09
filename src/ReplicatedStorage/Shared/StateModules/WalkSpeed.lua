@@ -19,7 +19,7 @@ local DEFAULT_WALKSPEED = 16
 local WalkSpeed = {}
 
 --// AddState - fires after AddState from 
-function WalkSpeed.Entry_Added(player,thisEntry,params)
+function WalkSpeed.Entry_Added(player, thisEntry, params, duplicateEntry)
 
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
     for _,valueObject in pairs(thisEntry.Parent:GetChildren()) do
@@ -32,7 +32,7 @@ function WalkSpeed.Entry_Added(player,thisEntry,params)
 end
 
 --// RemoveEntry - fires after RemoveEntry from 
-function WalkSpeed.Entry_Removed(player, thisState, params)
+function WalkSpeed.Entry_Removed(player, thisState)
 
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
 

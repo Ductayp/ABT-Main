@@ -36,6 +36,7 @@ function AdminService:KnitStart()
     Cmdr:RegisterDefaultCommands()
     Cmdr:RegisterCommandsIn(Knit.ServerModules.Cmdr_Modules.Commands)
     Cmdr:RegisterHooksIn(Knit.ServerModules.Cmdr_Modules.Hooks)
+    Cmdr:RegisterTypesIn(Knit.ServerModules.Cmdr_Modules.Types)
 
 end
 

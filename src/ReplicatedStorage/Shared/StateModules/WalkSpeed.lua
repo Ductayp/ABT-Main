@@ -14,7 +14,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
 -- Constants
-local DEFAULT_WALKSPEED = 16
+local DEFAULT_WALKSPEED = 18
 
 local WalkSpeed = {}
 

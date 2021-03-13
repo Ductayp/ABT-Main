@@ -73,18 +73,22 @@ Morioh_B.Items = {
             PickList = {
                 {
                     Key = "ItemFinder",
+                    Name = "Item Finder",
                     Duration = 600
                 },
                 {
                     Key = "DoubleCash",
+                    Name = "Double Cash",
                     Duration = 600
                 },
                 {
                     Key = "DoubleSoulOrbs",
+                    Name = "Double Soul Orbs",
                     Duration = 600
                 },
                 {
                     Key = "DoubleExperience",
+                    Name = "Double XP",
                     Duration = 600
                 },
             },

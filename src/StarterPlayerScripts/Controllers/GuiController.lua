@@ -25,6 +25,7 @@ GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
 GuiController.ItemFinderWindow = require(Knit.GuiModules.ItemFinderWindow)
 GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
 GuiController.ItemPanel = require(Knit.GuiModules.ItemPanel)
+GuiController.BoostPanel = require(Knit.GuiModules.BoostPanel)
 GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
 GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
 GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
@@ -69,6 +70,24 @@ function GuiController:Request_GuiUpdate(requestName)
     GuiService:Request_GuiUpdate(requestName)
 end
 
+--// TimerLoop
+function GuiController:TimerLoop()
+    spawn(function()
+        local lastUpdate = 0
+        while game:GetService("RunService").Heartbeat:Wait() do
+            if lastUpdate < os.clock() - 1 then
+                for _, module in pairs(Knit.GuiModules:GetChildren()) do
+                    local thisModule = require(module)
+                    if thisModule.UpdateTimer then
+                        thisModule.UpdateTimer()
+                    end
+                end
+                lastUpdate = os.clock()
+            end
+        end
+    end)
+end
+
 
 --// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
@@ -80,6 +99,7 @@ function GuiController:KnitStart()
     GuiController.InventoryWindow.Setup()
     GuiController.StoragePanel.Setup()
     GuiController.ItemPanel.Setup()
+    GuiController.BoostPanel.Setup()
     GuiController.StandReveal.Setup()
     GuiController.BottomGui.Setup()
     GuiController.LeftGui.Setup()
@@ -99,9 +119,6 @@ function GuiController:KnitStart()
     self:Request_GuiUpdate("SoulOrb")
     self:Request_GuiUpdate("ItemPanel")
     self:Request_GuiUpdate("ItemFinderWindow")
-    --self:Request_GuiUpdate("StoragePanel") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
-    --self:Request_GuiUpdate("BottomGUI") -- not required because PowerService updates this gui on startup when it sets the CurrentPower
-
 
     -- connect events
     GuiService.Event_Update_Notifications:Connect(function(params)
@@ -133,9 +150,15 @@ function GuiController:KnitStart()
         GuiController.ItemPanel.Update(data)
     end)
 
+    GuiService.Event_Update_BoostPanel:Connect(function(data)
+        GuiController.BoostPanel.Update(data)
+    end)
+
     GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, expirationTime)
         GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
     end)
+
+    self:TimerLoop()
 
 end
 

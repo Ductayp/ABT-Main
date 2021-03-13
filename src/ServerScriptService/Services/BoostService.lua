@@ -12,55 +12,81 @@ local BoostService = Knit.CreateService { Name = "BoostService", Client = {}}
 
 -- modules
 local utils = require(Knit.Shared.Utils)
+local Timer = require(Knit.Shared.TimerModule)
+
+-- public variables
+BoostService.PlayerTimers = {}
 
 --// AddBoost
 function BoostService:AddBoost(player, boostName, duration)
 
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if not playerData.BoostTimers then
-        playerData.BoostTimers = {}
+    -- get thisBoostDef
+    local thisBoostDef = BoostService.PlayerTimers[player.UserId][boostName]
+    if not thisBoostDef then
+        print("BoostService:AddBoost - Boost Def not found")
+        return
     end
 
-    if playerData.BoostTimers[boostName] == nil then
-        playerData.BoostTimers[boostName] = 0
+    -- see if there is a timerobject in the bostdef, make it if not
+    if not thisBoostDef.TimerObject then
+        thisBoostDef.TimerObject = Timer.new(duration)
+        thisBoostDef.TimerObject:Start()
+        thisBoostDef.TimerObject:OnFinished(function()
+            self:UpdateGui(player)
+        end)
+    elseif thisBoostDef.TimerObject:GetState() == "Dead" then
+        thisBoostDef.TimerObject = Timer.new(duration)
+        thisBoostDef.TimerObject:Start()
+        thisBoostDef.TimerObject:OnFinished(function()
+            self:UpdateGui(player)
+        end)
+    else
+        local timeRemaining = thisBoostDef.TimerObject:GetRemaining()
+        local newDuration = timeRemaining + duration
+        thisBoostDef.TimerObject:IncrementTime(newDuration)
     end
 
-    playerData.BoostTimers[boostName] += duration
-
+    self:UpdateGui(player)
 end
 
---// UpdateLoop
-function BoostService:UpdateLoop()
+--// UpdateGui
+function BoostService:UpdateGui(player)
 
-    spawn(function()
-        local lastUpdate = os.time()
-        local loopTime = 1
-        while game:GetService("RunService").Heartbeat:Wait() do
+    print("ALL OF THE", BoostService.PlayerTimers[player.userId])
 
-            if lastUpdate <= (os.time() -loopTime) then
-                lastUpdate = os.time()
+    local guiDefs = {}
 
-                for _, player in pairs(Players:GetPlayers()) do
+    for boostName, boostDefs in pairs(BoostService.PlayerTimers[player.userId]) do
 
-                    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-                    if playerData ~= nil then
-                        if playerData.BoostTimers ~= nil then
-                            for boostName,_ in pairs(playerData.BoostTimers) do
-
-                                -- update the counter in player data
-                                if playerData.BoostTimers[boostName] > 0 then
-                                    playerData.BoostTimers[boostName] = playerData.BoostTimers[boostName] - 1
-                                end
-
-                                -- updateStateService
-                                self:UpdateStateService(player, boostName, playerData.BoostTimers[boostName])
-                            end
-                        end 
-                    end 
-                end
+        local timeLeft
+        local timerState
+        if boostDefs.TimerObject == nil then
+            timeLeft = 0
+            isRunning = false
+        else
+            timerState = boostDefs.TimerObject:GetState()
+            if timerState == "Running" then
+                timeLeft = boostDefs.TimerObject:GetRemaining()
+                isRunning = true
+            elseif timerState == "Paused" then
+                timeLeft = boostDefs.TimerObject:GetRemaining()
+                isRunning = false
+            else
+                timeLeft = 0
+                isRunning = false
             end
         end
-    end)
+
+        local thisDef = {}
+        thisDef.BoostName = boostName
+        thisDef.TimeRemaining = timeLeft
+        thisDef.TimeEnding = os.time() + timeLeft
+        thisDef.TimerState = timerState
+        table.insert(guiDefs, thisDef)
+
+    end
+
+    Knit.Services.GuiService:Update_Gui(player, "BoostPanel", guiDefs)
 end
 
 --// Has_Boost
@@ -68,28 +94,81 @@ function BoostService:Has_Boost(player, boostName, BoostValue)
     --print("BoostService:Has_Boost", player, boostName, BoostValue)
 end
 
---// Has_Boost
+--// Cient:Has_Boost
 function BoostService.Client:Has_Boost(player, boostName, BoostValue)
     self.Server:Has_Boost(player, boostName, BoostValue)
 end
 
+--// FinalSaveOnLeave - this is fied from ProfileService, we do it there intead of here to be sure it happens before the profiles final save
+function BoostService:FinalSaveOnLeave(player)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    for boostName, boostDefs in pairs(BoostService.PlayerTimers[player.userId]) do
+
+        local timeLeft = 0
+        if boostDefs.TimerObject~= nil then
+            local timerState = boostDefs.TimerObject:GetState()
+            if timerState == "Running" or timerState == "Paused" then
+                timeLeft = boostDefs.TimerObject:GetRemaining()
+            end
+        end
+
+        playerData.BoostTimeRemaining[boostName] = timeLeft
+
+    end
+
+    -- remove player entry in the timer table
+    BoostService.PlayerTimers[player.UserId] = nil
+
+    print("FINAL PLAYERDATA", playerData)
+
+end
+
 --// PlayerAdded
 function BoostService:PlayerAdded(player)
+
+    -- make sure the players data is loaded
+    local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
+    local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
+    repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
+
+    -- create an entry for the player in the timer table
+    BoostService.PlayerTimers[player.UserId] = {}
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- first we will make a table entry for this boost
+    for boostName, boostDuration in pairs(playerData.BoostTimeRemaining) do
+        BoostService.PlayerTimers[player.UserId][boostName] = {}
+    end
+
+    -- second we will then addbost based on what the save values are
+    for boostName, boostDuration in pairs(playerData.BoostTimeRemaining) do
+        self:AddBoost(player, boostName, boostDuration)
+    end
 
 end
 
 --// PlayerRemoved
 function BoostService:PlayerRemoved(player)
 
+    -- do not remove the players table here! It is removed after final save initiated from PlayerDataService
+
 end
    
 --// KnitStart
 function BoostService:KnitStart()
-    self:UpdateLoop()
+
 end
 
 --// KnitInit
 function BoostService:KnitInit()
+
+    -- create a boost folder
+    local boostFolder = Instance.new("Folder")
+    boostFolder.Name = "BoostService"
+    boostFolder.Parent = ReplicatedStorage
 
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)

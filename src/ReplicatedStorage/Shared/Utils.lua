@@ -24,6 +24,11 @@ function module.GetPlayerFromCharacter(character)
 	end
 end
 
+--// ConvertToHMS - cpmbverts seconds to HH:MM:SS
+function module.ConvertToHMS(s)
+	return string.format("%02i:%02i:%02i", s/60^2, s/60%60, s%60)
+end
+
 --// EASY CLONE
 function module.EasyClone(object, dictionary)
 	local newClone = object:Clone();

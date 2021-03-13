@@ -13,8 +13,27 @@ local AdminController = Knit.CreateController { Name = "AdminController" }
 local utils = require(Knit.Shared.Utils)
 local Cmdr = require(ReplicatedStorage:WaitForChild("CmdrClient"))
 
+-- admins
+local admins = {
+    340006099,
+    33684438,
+}
+
 --// PlayerAdded
 function AdminController:PlayerAdded(player)
+
+    local isAdmin = false
+    for _,userId in pairs(admins) do
+        if player.UserId == userId then
+            isAdmin = true
+        end
+    end
+
+    if isAdmin == true then
+        Cmdr:SetEnabled(true)
+    else
+        Cmdr:SetEnabled(false)
+    end
 
 end
 

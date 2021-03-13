@@ -23,7 +23,14 @@ local module = {
 	-- ItemInventory, for all items inculding arrows and collectibles
 	ItemInventory = {},
 
-	BoostInventory = {},
+	-- boost timers, these datakeys are set here an are the only ones allowed in BoostService
+	BoostTimeRemaining = {
+		DoubleExperience = 0,
+		DoubleCash = 0,
+		DoubleSoulOrbs = 0,
+		FastWalker = 0,
+		ItemFinder = 0,
+	},
 
 	-- StandStorage, just to hold the stands and data regarding storage
 	StandStorage = {

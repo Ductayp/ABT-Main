@@ -15,7 +15,7 @@ local profiles = {} -- this is the table that holds each players data
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PlayerDataService = Knit.CreateService { Name = "PlayerDataService", Client = {}}
 
-local DATA_VERSION = "A_8"
+local DATA_VERSION = "A_11"
 
 
 -- This is loading the main functionality of profile service
@@ -122,6 +122,9 @@ function PlayerDataService:PlayerAdded(player)
 end
 
 function PlayerDataService:PlayerRemoved(player)
+
+    -- update BoostService, we do it here to be sure it runs before the profile is released
+    Knit.Services.BoostService:FinalSaveOnLeave(player)
 
     -- destroy player data boolean
     local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")

@@ -21,19 +21,6 @@ local spawnedItemsFolder = Workspace:WaitForChild("SpawnedItems")
 --// UpdateItemFinder
 function ItemSpawnController:UpdateItemFinder()
 
-    --[[
-    -- check if player has access to finder
-    local hasAccess = false
-
-    if GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
-        hasAccess = true
-    end
-
-    if not hasAccess then
-        return
-    end
-    ]]--
-
     if not GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
        return
     end

@@ -25,9 +25,45 @@ GuiService.Client.Event_Update_Cooldown = RemoteEvent.new()
 GuiService.Client.Event_Update_ItemPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_ItemFinderWindow = RemoteEvent.new()
 GuiService.Client.Event_Update_BoostPanel = RemoteEvent.new()
+GuiService.Client.Event_Update_RightGui = RemoteEvent.new()
 
 -- public variables
 GuiService.DialogueLocked = {}
+GuiService.PvPToggles = {}
+
+function GuiService:TogglePvP(player)
+
+    local canToggle = false
+    local isInSafezone = Knit.Services.ZoneService:IsPlayerInZone(player, "SafeZone") -- only allow toggling only in safe zone 
+    if isInSafezone then
+        print("IN SAFE ZONE")
+        canToggle = true
+        if  GuiService.PvPToggles[player.UserId] == true then
+            GuiService.PvPToggles[player.UserId] = false
+            Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
+            Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Experience", "GuiService")
+            Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Cash", "GuiService")
+            Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Orbs", "GuiService")
+        else
+            GuiService.PvPToggles[player.UserId] = true
+            Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "GuiService", true)
+            Knit.Services.StateService:AddEntryToState(player, "Multiplier_Experience", "GuiService", 2)
+            Knit.Services.StateService:AddEntryToState(player, "Multiplier_Cash", "GuiService", 2)
+            Knit.Services.StateService:AddEntryToState(player, "Multiplier_Orbs", "GuiService", 2)
+        end
+    end
+
+    local params = {
+        CanToggle = canToggle
+    }
+
+    self:Update_Gui(player, "RightGui", params)
+
+end
+
+function GuiService.Client:TogglePvP(player)
+    self.Server:TogglePvP(player)
+end
 
 --// DialogueLock
 function GuiService:DialogueLock(player, isLock)
@@ -61,6 +97,8 @@ end
 
 --// Update_Gui
 function GuiService:Update_Gui(player, requestName, optionalParams)
+
+    print("GuiService:Update_Gui", player, requestName, optionalParams)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
@@ -99,6 +137,10 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     if requestName == "BoostPanel" then
         self.Client.Event_Update_BoostPanel:Fire(player, optionalParams)
     end
+
+    if requestName == "RightGui" then
+        self.Client.Event_Update_RightGui:Fire(player, GuiService.PvPToggles[player.UserId], optionalParams)
+    end
 end
 
 --// Client:Request_GuiUpdate
@@ -119,10 +161,12 @@ end
 --// PlayerAdded
 function GuiService:PlayerAdded(player)
     GuiService.DialogueLocked[player.UserId] = false
+    GuiService.PvPToggles[player.UserId] = false
 end
 
 function GuiService:PlayerRemoved(player)
     GuiService.DialogueLocked[player.UserId] = nil
+    GuiService.PvPToggles[player.UserId] = nil
 end
 
 

@@ -119,6 +119,7 @@ function GuiController:KnitStart()
     self:Request_GuiUpdate("SoulOrb")
     self:Request_GuiUpdate("ItemPanel")
     self:Request_GuiUpdate("ItemFinderWindow")
+    self:Request_GuiUpdate("RightGui")
 
     -- connect events
     GuiService.Event_Update_Notifications:Connect(function(params)
@@ -156,6 +157,10 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, expirationTime)
         GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
+    end)
+
+    GuiService.Event_Update_RightGui:Connect(function(pvpToggle, params)
+        GuiController.RightGui.Update(pvpToggle, params)
     end)
 
     self:TimerLoop()

@@ -136,81 +136,7 @@ MarketplaceService.ProcessReceipt = function(receiptInfo)
 end
 
 -- DEV PRODUCTS
-local devProducts = {}
-
-devProducts.Cash_A = {}
-devProducts.Cash_A.ProductId = 1137882746
-devProducts.Cash_A.Params = {
-    DataCategory = "Currency",
-    DataKey = "Cash",
-    Value = 1000,
-    Source = "GamePassService"
-}
-
-
-devProducts.Cash_B = {}
-devProducts.Cash_B.ProductId = 1137883156
-devProducts.Cash_B.Params = {
-    DataCategory = "Currency",
-    DataKey = "Cash",
-    Value = 10000,
-    Source = "GamePassService"
-}
-
-devProducts.Cash_C = {}
-devProducts.Cash_C.ProductId = 1137883275
-devProducts.Cash_C.Params = {
-    DataCategory = "Currency",
-    DataKey = "Cash",
-    Value = 50000,
-    Source = "GamePassService"
-}
-
-devProducts.Cash_D = {}
-devProducts.Cash_D.ProductId = 1137883348
-devProducts.Cash_D.Params = {
-    DataCategory = "Currency",
-    DataKey = "Cash",
-    Value = 100000,
-    Source = "GamePassService"
-}
-
-devProducts.Orbs_A = {}
-devProducts.Orbs_A.ProductId = 1137883425
-devProducts.Orbs_A.Params = {
-    DataCategory = "Currency",
-    DataKey = "SoulOrbs",
-    Value = 100,
-    Source = "GamePassService"
-}
-
-devProducts.Orbs_B = {}
-devProducts.Orbs_B.ProductId = 1137883502
-devProducts.Orbs_B.Params = {
-    DataCategory = "Currency",
-    DataKey = "SoulOrbs",
-    Value = 1000,
-    Source = "GamePassService"
-}
-
-devProducts.Orbs_C = {}
-devProducts.Orbs_C.ProductId = 1137883593
-devProducts.Orbs_C.Params = {
-    DataCategory = "Currency",
-    DataKey = "SoulOrbs",
-    Value = 5000,
-    Source = "GamePassService"
-}
-
-devProducts.Orbs_D = {}
-devProducts.Orbs_D.ProductId = 1137883674
-devProducts.Orbs_D.Params = {
-    DataCategory = "Currency",
-    DataKey = "SoulOrbs",
-    Value = 10000,
-    Source = "GamePassService"
-}
-
+local devProducts = require(script.DevProducts)
 
 --// Prompt_ProductPurchase
 function GamePassService:Prompt_ProductPurchase(player, productName)
@@ -247,7 +173,7 @@ function GamePassService:ProcessReceipt(receiptInfo)
 
             -- process the results
             if purchaseExists then
-                print("puchase already existed, NOPERS!")
+                print("purchase already existed, NOPERS!")
 
                 -- return to Roblox that we did not give the product
                 return Enum.ProductPurchaseDecision.NotProcessedYet
@@ -260,9 +186,16 @@ function GamePassService:ProcessReceipt(receiptInfo)
                 -- find the dev product by the productId sent
                 for _, productTable in pairs(devProducts) do
                     if productTable.ProductId == receiptInfo.ProductId then
+
                         if productTable.Params.DataCategory == "Currency" then
                             Knit.Services.InventoryService:Give_Currency(player, productTable.Params.DataKey, productTable.Params.Value, "GamePassService")
                         end
+
+                        if productTable.Params.DataCategory == "Boost" then
+                            --AddBoost(player, boostName, duration)
+                            Knit.Services.BoostService:AddBoost(player, productTable.Params.DataKey, productTable.Params.Duration, "GamePassService")
+                        end
+
                         print("Match!")
                         print(productTable.ProductId, productTable.Params.DataKey, productTable.Params.Value, productTable.Params.DataCategory)
                     end

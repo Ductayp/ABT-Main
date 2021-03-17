@@ -15,15 +15,12 @@ local profiles = {} -- this is the table that holds each players data
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PlayerDataService = Knit.CreateService { Name = "PlayerDataService", Client = {}}
 
-local DATA_VERSION = "A_11"
+local DATA_VERSION = "A_12" -- store name, change this to "forget" old data
 
 
 -- This is loading the main functionality of profile service
 -- The first argument is the data store name, the second is the default profile template structure
-PlayerDataService.gameProfileStore = profileService.GetProfileStore(
-	DATA_VERSION, -- store name, change this to "forget" old data
-	profileTemplate
-)
+PlayerDataService.gameProfileStore = profileService.GetProfileStore(DATA_VERSION, profileTemplate)
 
 --// PlayerConnected - fires once player has connected to data, we can do all osrts of things from here
 function PlayerDataService:PlayerConnected(player)

@@ -93,15 +93,13 @@ function BoostService:UpdateGui(player)
         thisDef.TimeEnding = os.time() + timeLeft
         table.insert(guiDefs, thisDef)
     end
-
     Knit.Services.GuiService:Update_Gui(player, "BoostPanel", guiDefs)
-    Knit.Services.GuiService:Update_Gui(player, "ItemFinderWindow")
 end
 
 --// ToggleState
 function BoostService:ToggleState(player, boostName, toggleBool)
 
-    --print("BoostService:ToggleState",player, boostName, toggleBool)
+    print("BoostService:ToggleState",player, boostName, toggleBool)
 
     local stateDef = boostToState[boostName]
     if stateDef.StateName ~= nil then
@@ -111,6 +109,7 @@ function BoostService:ToggleState(player, boostName, toggleBool)
             Knit.Services.StateService:RemoveEntryFromState(player, stateDef.StateName, "BoostService")
         end
     end
+
 end
 
 --// Has_Boost
@@ -125,6 +124,7 @@ function BoostService:Has_Boost(player, boostName)
     end
 
     if thisBoostDef.TimerObject then
+
         if thisBoostDef.TimerObject:GetRemaining() > 0 then
             hasBoost = true
         end
@@ -162,7 +162,7 @@ function BoostService:FinalSaveOnLeave(player)
     BoostService.PlayerTimers[player.UserId] = nil
 
     print("FINAL PLAYERDATA", playerData)
- 
+
 end
 
 --// PlayerAdded
@@ -193,6 +193,8 @@ end
 --// PlayerRemoved
 function BoostService:PlayerRemoved(player)
 
+    -- do not remove the players table here! It is removed after final save initiated from PlayerDataService
+
 end
    
 --// KnitStart
@@ -202,6 +204,11 @@ end
 
 --// KnitInit
 function BoostService:KnitInit()
+
+    -- create a boost folder
+    local boostFolder = Instance.new("Folder")
+    boostFolder.Name = "BoostService"
+    boostFolder.Parent = ReplicatedStorage
 
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)

@@ -29,6 +29,25 @@ local storageZone = Zone.new(storageZoneGroup)
 local swimZoneGroup = Workspace.ZoneServiceGroups.SwimZone -- A container (i.e. Model or Folder) of parts that represent the zone
 local swimZone = Zone.new(swimZoneGroup)
 
+--// 
+function ZoneService:IsPlayerInZone(player, zoneName)
+
+    local ValidZoneNames = {
+       ["SafeZone"] = safeZone,
+       ["StorageZone"] = storageZone,
+       ["SwimZone"] = swimZone
+    }
+
+    local isInZone = false -- default returns false
+
+    local thisZone = ValidZoneNames[zoneName]
+    if thisZone then
+        isInZone = thisZone:findPlayer(player)
+    end
+
+    return isInZone
+end
+
 
 --// AddSafeState
 function ZoneService:AddSafeState(player)

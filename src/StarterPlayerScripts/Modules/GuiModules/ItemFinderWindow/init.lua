@@ -8,8 +8,6 @@ local Players = game:GetService("Players")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
---local InventoryService = Knit.GetService("InventoryService")
---local PowersService = Knit.GetService("PowersService")
 local GamePassService = Knit.GetService("GamePassService")
 local utils = require(Knit.Shared.Utils)
 
@@ -119,7 +117,7 @@ end
 --// Update ------------------------------------------------------------
 function ItemFinder.Update(hasGamePass, hasBoost, expirationTime)
 
-    if hasGamePass then
+    if hasGamePass or hasBoost then
         ItemFinder.Frame_Blocker.Visible = false
         ItemFinder.HasAccess = true
         ItemFinder.Time_Left_Text.Text = "TIME LEFT - INF."

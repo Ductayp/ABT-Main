@@ -39,8 +39,8 @@ BoostPanel.InfoCard_Buy_Pass = BoostPanel.Panel:FindFirstChild("InfoCard_Buy_Pas
 
 BoostPanel.Defs = {
     DoubleExperience = {
-        Name = "2x Experience",
-        Description = "Double stand experience. Stacks with Gamepass.",
+        Name = "2x Soul Power",
+        Description = "Double the soul power you gain when you defeat mobs. Stacks with Gamepass.",
         Button = BoostPanel.ListItem_DoubleExperience,
         CanBuy = true
     },

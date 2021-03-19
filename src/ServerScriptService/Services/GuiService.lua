@@ -40,23 +40,21 @@ function GuiService:TogglePvP(player)
         canToggle = true
         if  GuiService.PvPToggles[player.UserId] == true then
             GuiService.PvPToggles[player.UserId] = false
-            Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
+            Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "GuiService", true)
             Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Experience", "GuiService")
             Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Cash", "GuiService")
             Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Orbs", "GuiService")
         else
             GuiService.PvPToggles[player.UserId] = true
-            Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "GuiService", true)
+            Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
+        
             Knit.Services.StateService:AddEntryToState(player, "Multiplier_Experience", "GuiService", 2)
             Knit.Services.StateService:AddEntryToState(player, "Multiplier_Cash", "GuiService", 2)
             Knit.Services.StateService:AddEntryToState(player, "Multiplier_Orbs", "GuiService", 2)
         end
     end
 
-    local params = {
-        CanToggle = canToggle
-    }
-
+    local params = {CanToggle = canToggle}
     self:Update_Gui(player, "RightGui", params)
 
 end
@@ -98,7 +96,7 @@ end
 --// Update_Gui
 function GuiService:Update_Gui(player, requestName, optionalParams)
 
-    print("GuiService:Update_Gui", player, requestName, optionalParams)
+    --print("GuiService:Update_Gui", player, requestName, optionalParams)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
@@ -109,7 +107,6 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     if requestName == "BottomGUI" then
         local data = {}
         data.CurrentStand = playerData.CurrentStand
-        data.XpData = Knit.Services.PowersService:GetXpData(playerData.CurrentStand.Xp, playerData.CurrentStand.Rarity)
         data.CurrentHealth = player.Character.Humanoid.Health
         data.MaxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
         self.Client.Event_Update_BottomGUI:Fire(player, data)
@@ -161,7 +158,7 @@ end
 --// PlayerAdded
 function GuiService:PlayerAdded(player)
     GuiService.DialogueLocked[player.UserId] = false
-    GuiService.PvPToggles[player.UserId] = false
+    GuiService.PvPToggles[player.UserId] = true
 end
 
 function GuiService:PlayerRemoved(player)

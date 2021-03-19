@@ -16,6 +16,13 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local utils = require(Knit.Shared.Utils)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
 
+-- constants
+PowersService.XP_PER_LEVEL = {
+    Common = 1000,
+    Rare = 3000,
+    Legendary = 9000
+}
+
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
 PowersService.Client.RenderEffect = RemoteEvent.new()
@@ -93,6 +100,132 @@ function PowersService.Client:GetCurrentPower(player)
     local currentPower = playerData.CurrentStand
 
     return currentPower
+end
+
+--[[
+--// GetLevelFromXp
+function PowersService:GetLevelFromXp(standXp, standRarity)
+
+	if standXp == nil then
+		standXp = 1
+	end
+
+    local xpPerLevel = PowersService.XP_PER_LEVEL[standRarity]
+
+    local rawLevel = math.floor(standXp / xpPerLevel)
+    local adjustedLevel = rawLevel + 1
+
+    local completedXp = adjustedLevel * xpPerLevel
+    local adjustedXp = standXp + xpPerLevel
+
+    local remainingXpToLevel = xpPerLevel - (adjustedXp - completedXp)
+    local percentageComplete = 1 - (remainingXpToLevel / xpPerLevel)
+    percentageComplete *= 100
+    percentageComplete = math.floor(percentageComplete)
+    percentageComplete = percentageComplete / 100
+
+    if percentageComplete <= 0 then
+        percentageComplete = 0.01
+    elseif percentageComplete >= 1 then
+        percentageComplete = 1
+    end
+ 
+    return adjustedLevel, percentageComplete, remainingXpToLevel
+end
+
+--// GetXpData
+function PowersService:GetXpData(standXp, standRarity)
+
+    -- be sure we start with at least 1 xp
+    if standXp == nil then
+		standXp = 1
+    end
+
+    -- if stand rarity is nil, its was probably a request that had standless
+    if standRarity == nil then
+        return
+    end
+    
+    local xpPerLevel = PowersService.XP_PER_LEVEL[standRarity]
+
+    local rawLevel = math.floor(standXp / xpPerLevel)
+    local adjustedLevel = rawLevel + 1
+
+    local completedXp = adjustedLevel * xpPerLevel
+    local adjustedXp = standXp + xpPerLevel
+
+    local remainingXpToLevel = xpPerLevel - (adjustedXp - completedXp)
+    local percentageComplete = 1 - (remainingXpToLevel / xpPerLevel)
+    percentageComplete *= 100
+    percentageComplete = math.floor(percentageComplete)
+    percentageComplete = percentageComplete / 100
+
+    if percentageComplete <= 0 then
+        percentageComplete = 0.01
+    elseif percentageComplete >= 1 then
+        percentageComplete = 1
+    end
+
+    -- build the data dictionary
+    local data = {
+        XpPerLevel = xpPerLevel, -- the static number of XP required for each level, depends on stand rarity
+        Level = adjustedLevel, -- the level of the stand
+        PercentageComplete = percentageComplete, -- a percetage of the xp completed for THIS LEVEL, used in Gui stuff
+        XpThisLevel = xpPerLevel - remainingXpToLevel -- a number the represents how much xp has been gain THIS LEVEL
+    }
+
+    return data
+
+end
+
+--// Client:GetXPData
+function PowersService.Client:GetXpData(standXp, standRarity)
+    local data = self:GetXpData(standXp, standRarity)
+    return data
+end
+
+--// Client:GetLevelFromXp
+function PowersService.Client:GetLevelFromXp(player, standXp, standRarity) -- player arg is not used but gets passed in by Knit. we just ignore it
+    local actualLevel, percentageRemaining, remainingXpToLevel = self.Server:GetLevelFromXp(standXp, standRarity)
+    return actualLevel, percentageRemaining, remainingXpToLevel
+end
+]]--
+
+
+--// AwardXpForKill
+function PowersService:AwardXp(player, xpValue)
+
+    -- check if player has any bonuses
+    local multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
+    print("XP Multiplier is: ", multiplier)
+
+    -- multiply the value
+    xpValue = xpValue * multiplier
+
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- check if player is standless, if they are return out of here
+    if playerData.CurrentStand.Power == "Standless" then
+
+        local notificationParams = {}
+        notificationParams.Icon = "XP"
+        notificationParams.Text = "You are STANDLESS:  ZERO XP gained"
+        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+        return
+    end
+
+    playerData.CurrentStand.Xp += xpValue
+
+    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+    local notificationParams = {}
+    notificationParams.Icon = "XP"
+    notificationParams.Text = "You got: " .. tostring(xpValue) .. " XP Points"
+    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+    return
+
 end
 
 --// NPC_RegisterHit

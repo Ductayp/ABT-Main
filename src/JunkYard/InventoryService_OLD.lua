@@ -99,67 +99,10 @@ function InventoryService:Give_Item(player, key, quantity)
 
 end
 
-
---// Give_Xp
-function InventoryService:Give_Xp(player, xpValue)
-
-    -- check if player has any bonuses
-    local multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
-    print("XP Multiplier is: ", multiplier)
-
-    -- multiply the value
-    xpValue = xpValue * multiplier
-
-    -- get player data
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-
-    -- check if player is standless, if they are return out of here
-    if playerData.CurrentStand.Power == "Standless" then
-
-        local notificationParams = {}
-        notificationParams.Icon = "XP"
-        notificationParams.Text = "You are STANDLESS:  ZERO XP gained"
-        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-        return
-    end
-
-    local maxXpReached = false
-    local currentExperience = playerData.CurrentStand.Xp
-    local maxExperience = require(Knit.InventoryModules.MaxExperience)[playerData.CurrentStand.Rarity]
-    if currentExperience >= maxExperience then
-        playerData.CurrentStand.Xp = maxExperience
-        maxXpReached = true
-        xpValue = 0
-    elseif xpValue > maxExperience - currentExperience then
-        xpValue = InventoryService.MaxExperience[playerData.CurrentStand.Rarity] - playerData.CurrentStand.Xp
-    end
-
-    playerData.CurrentStand.Xp += xpValue
-
-    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-
-    if maxXpReached then
-        local notificationParams = {}
-        notificationParams.Icon = "XP"
-        notificationParams.Text = "MAX Soul Power for this stand. Upgrade it to increase capacity"
-        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-    else
-        local notificationParams = {}
-        notificationParams.Icon = "XP"
-        notificationParams.Text = "You got: " .. tostring(xpValue) .. " Soul Power"
-        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-    end
-    
-
-end
-
---// USeItem
 function InventoryService:UseItem(player, key)
     print(player, " is trying to use: ", key)
 end
 
---// Client:UseItem
 function InventoryService.Client:UseItem(player, key)
     self.Server:UseItem(player, key)
 end
@@ -193,7 +136,7 @@ function InventoryService:UseArrow(player)
 
     -- add stands to weighted table
     local pickTable = {}
-    for name, weight in pairs(arrowOpenDefs) do
+    for name, weight in pairs(arrowDefs) do
         for count = 1, weight do
             table.insert(pickTable,name)
         end
@@ -220,17 +163,118 @@ end
 --// StoreStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:StoreStand(player)
 
+    -- sanity check to see if player has access
+    local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
+    if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
+        -- yup were good
+    else
+        -- nope were not good
+        return
+    end
 
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
+    if playerData.CurrentStand.Power == "Standless" then
+        print("You cant store STANDLESS, you noob!")
+        return
+    end
 
+    -- count the number of stands stored
+    local count = 0
+    for _,stand in pairs(playerData.StandStorage.StoredStands) do
+        count = count + 1
+    end
+
+    -- only store if theres room left
+    if count < playerData.StandStorage.MaxSlots then
+
+        -- insert the stand into storage
+        table.insert(playerData.StandStorage.StoredStands, playerData.CurrentStand)
+
+        print("INventoryService",playerData.StandStorage.StoredStands)
+        
+        -- give the player the Standless power
+        local newParams = {}
+        newParams.Power = "Standless"
+        Knit.Services.PowersService:SetCurrentPower(player, newParams)
+
+        -- update the GUI
+        --Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+    end
 end
 
+--// GetStandValue ---------------------------------------------------------------------------------------------------------------------------
+function InventoryService:GetStandValue(player, GUID)
 
+    -- this methods returns this value, after its modified
+    local finalValue = 0
+
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    --find the stand by GUID and set some variable we need
+    local thisPower
+    local thisIndex
+    local thisXp
+    local thisRarity
+    for index,stand in pairs(playerData.StandStorage.StoredStands) do
+        if stand.GUID == GUID then
+            thisPower = stand.Power
+            thisIndex = index
+            thisXp = stand.Xp
+            thisRarity = stand.Rarity
+            break
+        end
+    end
+
+    if thisPower then
+        local findPowerModule = Knit.Powers:FindFirstChild(thisPower)
+        if findPowerModule then
+            local powerModule = require(findPowerModule)
+    
+            -- get the values
+            local level = Knit.Services.PowersService:GetLevelFromXp(thisXp, thisRarity)
+            finalValue = level * powerModule.Defs.SacrificeValue[thisRarity]
+        end
+    end
+
+    return finalValue
+end
 
 --// SacrificeStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:SacrificeStand(player, GUID)
 
+    -- sanity check to see if player has access
+    local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
+    if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
+        -- yup were good
+    else
+        -- nope were not good
+        return
+    end
 
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    -- get the stands value
+    value = self:GetStandValue(player, GUID)
+
+    -- give the currency
+    self:Give_Currency(player, "SoulOrbs", value, "Sacrifice")
+
+    -- remove the stand from storage
+    for index,stand in pairs(playerData.StandStorage.StoredStands) do
+        if stand.GUID == GUID then
+            table.remove(playerData.StandStorage.StoredStands, index)
+            break
+        end
+    end
+
+    -- update the GUI
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
 
 end
 
@@ -277,6 +321,17 @@ end
 --// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:BuyStorage(player, params)
 
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+    if playerData.Currency.Cash >= params.Cost then
+        playerData.Currency.Cash = playerData.Currency.Cash - params.Cost
+        playerData.StandStorage.MaxSlots += params.Slots
+    end
+
+    -- update the GUI
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
 
 end
 

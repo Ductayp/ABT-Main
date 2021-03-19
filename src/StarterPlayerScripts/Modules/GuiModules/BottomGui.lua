@@ -104,7 +104,7 @@ end
 --// Update ------------------------------------------------------------
 function BottomGui.Update(data)
     
-    print("BottomGui.Update", data)
+    --print("BottomGui.Update", data)
 
     -- delete the old stand icon if it exists
     local oldIcon = BottomGui.Frame_Stand:FindFirstChild("StandIcon")
@@ -128,13 +128,10 @@ function BottomGui.Update(data)
         newStandIcon.Visible = true
         newStandIcon.BackgroundTransparency = 1
 
-        -- set the level
-        BottomGui.Text_StandLevel.Visible = true
-        BottomGui.Text_StandLevel.Text = data.XpData.Level
-
         -- set the XP bar
-        BottomGui.Text_Xp.Text = data.XpData.XpThisLevel .. " / " .. data.XpData.XpPerLevel
-        local percent = data.XpData.XpThisLevel / data.XpData.XpPerLevel
+        local maxExperience = require(Knit.InventoryModules.MaxExperience)
+        BottomGui.Text_Xp.Text = data.CurrentStand.Xp .. " / " .. maxExperience[data.CurrentStand.Rarity]
+        local percent = data.CurrentStand.Xp / maxExperience[data.CurrentStand.Rarity]
         BottomGui.Frame_Xp.Size = UDim2.new(percent,BottomGui.Frame_Health.Size.X.Offset,BottomGui.Frame_Health.Size.Y.Scale,BottomGui.Frame_Health.Size.Y.Offset)
     end
 end

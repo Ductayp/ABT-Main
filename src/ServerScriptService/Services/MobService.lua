@@ -317,7 +317,7 @@ function MobService:KillMob(mobData)
         if damage > mobData.Defs.Health / 3 then
 
             -- give XP
-            Knit.Services.PowersService:AwardXp(player, mobData.Defs.XpValue)
+            Knit.Services.InventoryService:Give_Xp(player, mobData.Defs.XpValue)
 
             -- give drops
             mobData.Functions.Drop(player, mobData)

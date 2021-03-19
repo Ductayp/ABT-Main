@@ -116,7 +116,8 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         self.Client.Event_Update_StandReveal:Fire(player, playerData.CurrentStand)
     end
 
-    if requestName == "StoragePanel" then 
+    if requestName == "StoragePanel" then
+        
         self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage)
     end
 

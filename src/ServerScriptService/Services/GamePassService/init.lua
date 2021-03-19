@@ -122,6 +122,13 @@ function GamePassService:Finished_GamePassPurchase(player, passId, wasPurchased)
         if passId == 13434805 then
             Knit.Services.GuiService:Update_Gui(player, "ItemFinderWindow")
         end
+
+        -- if pass is ItemFinder then update ItemFinderWindow
+        if passId == 13434519 then
+            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+        end
+
+
     end
 
 end

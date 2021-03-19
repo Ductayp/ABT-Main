@@ -46,7 +46,6 @@ local module = {
 			["9"] = false,
 			["10"] = false,
 			["11"] = false,
-			["12"] = false,
 		},
 		StoredStands = {}
 	},

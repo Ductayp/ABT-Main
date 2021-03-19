@@ -39,12 +39,21 @@ StoragePanel.Panel = mainGui.Windows:FindFirstChild("Storage_Panel", true)
 StoragePanel.Frame_StorageGrid = StoragePanel.Panel:FindFirstChild("Frame_StorageGrid", true)
 StoragePanel.StandSlot_Equipped = StoragePanel.Panel:FindFirstChild("StandSlot_Equipped", true)
 StoragePanel.Textlabel_Standless = StoragePanel.Panel:FindFirstChild("Textlabel_Standless", true)
+StoragePanel.Icon_Locked = StoragePanel.Panel:FindFirstChild("Icon_Locked", true)
+
+StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Button_Buy_MobileStorage", true)
 
 
                    
 --// Setup_StandPanel ------------------------------------------------------------
 function StoragePanel.Setup()
-                          
+
+    StoragePanel.Icon_Locked.Visible = false
+                       
+    StoragePanel.Button_Buy_MobileStorage.MouseButton1Down:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
+    end)
+
 end
 
 
@@ -67,6 +76,16 @@ function StoragePanel.Update(currentStand, storageData)
         newIcon.Parent = StoragePanel.StandSlot_Equipped.Frame_Icon
     end
 
+    for slotNumber, isUnlocked in pairs(storageData.SlotUnlocked) do
+        local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. slotNumber, true)
+        local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
+
+        if isUnlocked then
+            lockedIcon.Visible = false
+        else
+            lockedIcon.Visible = true
+        end
+    end
 
 end
 

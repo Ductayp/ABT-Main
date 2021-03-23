@@ -24,7 +24,7 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 local GUI_COLOR = {
     COMMON = Color3.new(239/255, 239/255, 239/255),
     RARE = Color3.new(10/255, 202/255, 0/255),
-    LEGENDARY = Color3.new(255/255, 149/255, 43/255)
+    LEGENDARY = Color3.new(255/255, 149/255, 43/255) 
 }
 
 local StoragePanel = {}
@@ -41,7 +41,16 @@ StoragePanel.StandSlot_Equipped = StoragePanel.Panel:FindFirstChild("StandSlot_E
 StoragePanel.Textlabel_Standless = StoragePanel.Panel:FindFirstChild("Textlabel_Standless", true)
 StoragePanel.Icon_Locked = StoragePanel.Panel:FindFirstChild("Icon_Locked", true)
 
+StoragePanel.Button_EquipStand = StoragePanel.Panel:FindFirstChild("Button_EquipStand", true)
+StoragePanel.Button_SellStand = StoragePanel.Panel:FindFirstChild("Button_SellStand", true)
+StoragePanel.Button_StoreStand = StoragePanel.Panel:FindFirstChild("Button_StoreStand", true)
+StoragePanel.Button_UpgradeStand = StoragePanel.Panel:FindFirstChild("Button_UpgradeStand", true)
 StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Button_Buy_MobileStorage", true)
+StoragePanel.Frame_ManageButtons_Cover = StoragePanel.Panel:FindFirstChild("Frame_ManageButtons_Cover", true)
+
+--local variables
+local storageSlotCosts = require(Knit.InventoryModules.StorageSlotCosts)
+
 
 
                    
@@ -49,7 +58,35 @@ StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Butto
 function StoragePanel.Setup()
 
     StoragePanel.Icon_Locked.Visible = false
+    StoragePanel.Frame_ManageButtons_Cover.Visible = true
+    StoragePanel.Button_EquipStand.Visible = false
+    StoragePanel.Button_SellStand.Visible = false
+    StoragePanel.Button_StoreStand.Visible = false
+    StoragePanel.Button_UpgradeStand.Visible = false
+
+    for slotNumber, slotCost in pairs(storageSlotCosts) do
+        local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. slotNumber, true)
+        local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
+        local convertNumber = utils.CommaValue(slotCost)
+        lockedIcon.TextLabel_SlotCost.Text = convertNumber .. "<br/>Soul Orbs"
+    end
                        
+    StoragePanel.Button_EquipStand.MouseButton1Down:Connect(function()
+        print("BEEP")
+    end)
+
+    StoragePanel.Button_SellStand.MouseButton1Down:Connect(function()
+        print("BEEP")
+    end)
+
+    StoragePanel.Button_StoreStand.MouseButton1Down:Connect(function()
+        print("BEEP")
+    end)
+
+    StoragePanel.Button_UpgradeStand.MouseButton1Down:Connect(function()
+        print("BEEP")
+    end)
+
     StoragePanel.Button_Buy_MobileStorage.MouseButton1Down:Connect(function()
         GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
     end)
@@ -58,12 +95,26 @@ end
 
 
 --// Update_StandPanel ------------------------------------------------------------
-function StoragePanel.Update(currentStand, storageData)
+function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
 
-    print("StoragePanel.Textlabel_Standless", StoragePanel.Textlabel_Standless)
+    --print("StoragePanel.Update", currentStand, storageData, hasGamePass, isInZone)
 
-    print("StoragePanel.Update", currentStand, storageData)
+    -- handle the buttons and cover frame
+    if hasGamePass or isInZone then
+        StoragePanel.Frame_ManageButtons_Cover.Visible = false
+        StoragePanel.Button_EquipStand.Visible = true
+        StoragePanel.Button_SellStand.Visible = true
+        StoragePanel.Button_StoreStand.Visible = true
+        StoragePanel.Button_UpgradeStand.Visible = true
+    else
+        StoragePanel.Frame_ManageButtons_Cover.Visible = true
+        StoragePanel.Button_EquipStand.Visible = false
+        StoragePanel.Button_SellStand.Visible = false
+        StoragePanel.Button_StoreStand.Visible = false
+        StoragePanel.Button_UpgradeStand.Visible = false
+    end
 
+    -- handle the Equppped Stand button
     if currentStand.Power == "Standless" then
         StoragePanel.Textlabel_Standless.Visible = true
     else
@@ -76,6 +127,19 @@ function StoragePanel.Update(currentStand, storageData)
         newIcon.Parent = StoragePanel.StandSlot_Equipped.Frame_Icon
     end
 
+    -- handle locking and unlocking slots
+    for count = 1, 11 do
+        local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. count, true)
+        local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
+        if storageData.SlotUnlocked[count]  then
+            lockedIcon.Visible = false
+        else
+            lockedIcon.Visible = true
+        end
+        
+    end
+
+    --[[
     for slotNumber, isUnlocked in pairs(storageData.SlotUnlocked) do
         local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. slotNumber, true)
         local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
@@ -86,6 +150,7 @@ function StoragePanel.Update(currentStand, storageData)
             lockedIcon.Visible = true
         end
     end
+    ]]--
 
 end
 

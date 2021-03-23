@@ -86,13 +86,17 @@ function PowersService.Client:ClientActivatePower(player,params)
     self.Server:ActivatePower(player,params)
 end
 
---// Client:GetCurrentPower
-function PowersService.Client:GetCurrentPower(player)
-
+--// GetCurrentPower
+function PowersService:GetCurrentPower(player)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     local currentPower = playerData.CurrentStand
-
     return currentPower
+end
+
+--// Client:GetCurrentPower
+function PowersService.Client:GetCurrentPower(player)
+    --local currentPower = self.Server:GetCurrentPower(player)
+    return self.Server:GetCurrentPower(player)
 end
 
 --// NPC_RegisterHit
@@ -178,7 +182,7 @@ end
 --// SetPower -- sets the players current power
 function PowersService:SetCurrentPower(player,params)
 
-    print("PowersService:SetCurrentPower(player,params)", player,params)
+    --print("PowersService:SetCurrentPower(player,params)", player,params)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)

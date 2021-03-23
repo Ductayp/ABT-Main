@@ -48,50 +48,29 @@ function ZoneService:IsPlayerInZone(player, zoneName)
     return isInZone
 end
 
-
---// AddSafeState
-function ZoneService:AddSafeState(player)
-    Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "ZoneService", true)
-end
-
---// RemoveSafeState
-function ZoneService:RemoveSafeState(player)
-    Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "ZoneService", true)
-end
-
---// AddStorageState
-function ZoneService:AddStorageState(player)
-    Knit.Services.StateService:AddEntryToState(player, "StandStorageAccess", "ZoneService", true)
-end
-
---// RemoveStorageState
-function ZoneService:RemoveStorageState(player)
-    Knit.Services.StateService:RemoveEntryFromState(player, "StandStorageAccess", "ZoneService", true)
-end
-
 --// PlayerAdded
 function ZoneService:PlayerAdded(player)
 
     safeZone.playerEntered:Connect(function(player)
         --print(("%s entered the zone!"):format(player.Name))
-        self:AddSafeState(player)
+        Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "ZoneService", true)
     end)
     
     safeZone.playerExited:Connect(function(player)
         --print(("%s exited the zone!"):format(player.Name))
-        self:RemoveSafeState(player)
+        Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "ZoneService", true)
     end)
 
     storageZone.playerEntered:Connect(function(player)
         --print(("%s entered the zone!"):format(player.Name))
-        self:AddStorageState(player)
-        self:AddSafeState(player)
+        Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+        Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "ZoneService", true)
     end)
     
     storageZone.playerExited:Connect(function(player)
         --print(("%s exited the zone!"):format(player.Name))
-        self:RemoveStorageState(player)
-        self:RemoveSafeState(player)
+        Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+        Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "ZoneService", true)
     end)
 
     swimZone.playerEntered:Connect(function(player)

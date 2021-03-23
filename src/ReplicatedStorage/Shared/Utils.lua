@@ -29,6 +29,18 @@ function module.ConvertToHMS(s)
 	return string.format("%02i:%02i:%02i", s/60^2, s/60%60, s%60)
 end
 
+--// CommaValue - converts a number to have commas
+function module.CommaValue(amount)
+	local formatted = amount
+	while true do  
+	  formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+	  if (k==0) then
+		break
+	  end
+	end
+	return formatted
+  end
+
 --// EASY CLONE
 function module.EasyClone(object, dictionary)
 	local newClone = object:Clone();

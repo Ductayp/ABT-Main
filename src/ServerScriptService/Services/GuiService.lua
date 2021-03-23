@@ -117,8 +117,9 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "StoragePanel" then
-        
-        self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage)
+        local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
+        local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
+        self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage, hasGamePass, isInZone)
     end
 
     if requestName == "ItemPanel" then 

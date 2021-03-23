@@ -109,7 +109,7 @@ function ItemPanel.Update_ItemList(inventoryData)
     end
 
     -- add all the new items
-    for itemDefKey, itemDefTable in pairs(require(Knit.InventoryModules.ItemDefs)) do
+    for itemDefKey, itemDefTable in pairs(require(Knit.Defs.ItemDefs)) do
 
         -- create new item
         local newListItem = ItemPanel.Item_Template:Clone()

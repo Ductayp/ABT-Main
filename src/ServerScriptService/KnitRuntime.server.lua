@@ -21,7 +21,7 @@ Knit.ServerModules = ServerScriptService.GameFiles.Modules
 
 Knit.ItemSpawnTables = ServerScriptService.GameFiles.Modules.ItemSpawnModules
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
-Knit.InventoryModules = ReplicatedStorage.GameFiles.Shared.InventoryModules
+Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs
 Knit.MobModules = ServerScriptService.GameFiles.Modules.MobModules
 
 -- Load all services:

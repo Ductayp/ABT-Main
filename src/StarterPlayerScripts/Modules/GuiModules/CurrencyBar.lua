@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui
@@ -27,8 +28,8 @@ end
 
 --// Update ------------------------------------------------------------
 function CashBar.Update(data)
-    CashBar.Text_Cash.Text = data.Cash
-    CashBar.Text_SoulOrbs.Text = data.SoulOrbs
+    CashBar.Text_Cash.Text = utils.CommaValue(data.Cash)
+    CashBar.Text_SoulOrbs.Text = utils.CommaValue(data.SoulOrbs)
 end
 
 return CashBar

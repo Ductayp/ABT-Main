@@ -125,13 +125,14 @@ function InventoryService:Give_Xp(player, xpValue)
 
     local maxXpReached = false
     local currentExperience = playerData.CurrentStand.Xp
-    local maxExperience = require(Knit.InventoryModules.MaxExperience)[playerData.CurrentStand.Rarity]
+    local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
+    local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rarity]
     if currentExperience >= maxExperience then
         playerData.CurrentStand.Xp = maxExperience
         maxXpReached = true
         xpValue = 0
     elseif xpValue > maxExperience - currentExperience then
-        xpValue = InventoryService.MaxExperience[playerData.CurrentStand.Rarity] - playerData.CurrentStand.Xp
+        xpValue = maxExperience - playerData.CurrentStand.Xp
     end
 
     playerData.CurrentStand.Xp += xpValue
@@ -189,7 +190,7 @@ function InventoryService:UseArrow(player)
     Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
 
     -- get the arrow defs
-    local arrowOpenDefs = require(Knit.InventoryModules.ArrowOpenDefs)
+    local arrowOpenDefs = require(Knit.Defs.ArrowOpenDefs)
 
     -- add stands to weighted table
     local pickTable = {}
@@ -203,9 +204,35 @@ function InventoryService:UseArrow(player)
     local randomPick = math.random(1,#pickTable)
     local pickedStand = pickTable[randomPick]
 
+    -- if player has the gamepass for arrow luck, give them a chance at better rarity
+    local thisRarity
+    local rand = math.random(1, 1000) / 10
+    if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
+        print("YES: arrow luck pass")
+        if rand <= 90 then
+            thisRarity = "Common" -- the default
+        elseif rand <= 99 then
+            thisRarity = "Rare"
+        else
+            thisRarity = "Legendary"
+        end
+    else
+        print("NO: arrow luck pass")
+        if rand <= 95 then
+            thisRarity = "Common" -- the default
+        elseif rand <= 99.5 then
+            thisRarity = "Rare"
+        else
+            thisRarity = "Legendary"
+        end
+    end
+
+    print("RAND: ", rand)
+    print("thisRarity", thisRarity)
+
     local newParams = {}
     newParams.Power = pickedStand
-    newParams.Rarity = "Common"
+    newParams.Rarity = thisRarity
     newParams.Xp = 0
     newParams.GUID = HttpService:GenerateGUID(false)
 
@@ -277,7 +304,39 @@ end
 --// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:BuyStorage(player, params)
 
+    local results
 
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local standStorageDefs = require(Knit.Defs.StandStorageDefs)
+    if playerData.StandStorage.SlotsUnlocked >= standStorageDefs.MaxSlots then
+        print("You cant buy more slots than the max")
+        return
+    end
+
+    local nextSlotId = tostring(playerData.StandStorage.SlotsUnlocked + 1)
+    local nextSlotCost = standStorageDefs.SlotCosts[nextSlotId]
+
+    if playerData.Currency.SoulOrbs >= nextSlotCost then
+        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - nextSlotCost
+        playerData.StandStorage.SlotsUnlocked += 1
+        print("you bought it")
+        results = "Success"
+    else
+        print("you cant afford it")
+        results = "CantAfford"
+    end  
+
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
+    
+    return results
+
+end
+
+--// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
+function InventoryService.Client:BuyStorage(player, params)
+    local results = self.Services:BuyStorage(player, params)
+    return results
 end
 
 --// GetCurrencyData ---------------------------------------------------------------------------------------------------------------------------

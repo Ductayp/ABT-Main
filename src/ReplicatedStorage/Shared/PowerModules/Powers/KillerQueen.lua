@@ -16,15 +16,15 @@ local KillerQueen = {}
 
 KillerQueen.Defs = {
     PowerName = "Killer Queen",
-    SacrificeValue = {
-        Common = 10,
-        Rare = 20,
-        Legendary = 40,
+    MaxXp = {
+        Common = 13000,
+        Rare = 15000,
+        Legendary = 19000
     },
     DamageMultiplier = {
         Common = 1,
-        Rare = 2,
-        Legendary = 3,
+        Rare = 1.5,
+        Legendary = 2,
     },
     HealthModifier = {
         Common = 10,

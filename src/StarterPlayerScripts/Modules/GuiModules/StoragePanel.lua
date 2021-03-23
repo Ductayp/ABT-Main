@@ -49,11 +49,9 @@ StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Butto
 StoragePanel.Frame_ManageButtons_Cover = StoragePanel.Panel:FindFirstChild("Frame_ManageButtons_Cover", true)
 
 --local variables
-local storageSlotCosts = require(Knit.InventoryModules.StorageSlotCosts)
+local storageDefs = require(Knit.Defs.StandStorageDefs)
+local slotData = {}
 
-
-
-                   
 --// Setup_StandPanel ------------------------------------------------------------
 function StoragePanel.Setup()
 
@@ -64,12 +62,19 @@ function StoragePanel.Setup()
     StoragePanel.Button_StoreStand.Visible = false
     StoragePanel.Button_UpgradeStand.Visible = false
 
-    for slotNumber, slotCost in pairs(storageSlotCosts) do
+    
+    for slotNumber, slotCost in pairs(storageDefs.SlotCosts) do
         local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. slotNumber, true)
         local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
         local convertNumber = utils.CommaValue(slotCost)
         lockedIcon.TextLabel_SlotCost.Text = convertNumber .. "<br/>Soul Orbs"
+        thisGuiSlot:SetAttribute("SlotId", slotNumber)
+
+        thisGuiSlot.MouseButton1Down:Connect(function()
+            StoragePanel.SlotClicked(thisGuiSlot)
+        end)
     end
+    
                        
     StoragePanel.Button_EquipStand.MouseButton1Down:Connect(function()
         print("BEEP")
@@ -99,6 +104,9 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
 
     --print("StoragePanel.Update", currentStand, storageData, hasGamePass, isInZone)
 
+    slotData.CurrentStand = currentStand
+    slotData.StoredStands = storageData
+
     -- handle the buttons and cover frame
     if hasGamePass or isInZone then
         StoragePanel.Frame_ManageButtons_Cover.Visible = false
@@ -114,7 +122,7 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
         StoragePanel.Button_UpgradeStand.Visible = false
     end
 
-    -- handle the Equppped Stand button
+    -- handle the Equippped Stand button
     if currentStand.Power == "Standless" then
         StoragePanel.Textlabel_Standless.Visible = true
     else
@@ -128,15 +136,24 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
     end
 
     -- handle locking and unlocking slots
-    for count = 1, 11 do
+    for count = 1, storageDefs.MaxSlots do -- there are 11 storage slots possible
+
         local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. count, true)
         local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
-        if storageData.SlotUnlocked[count]  then
+
+        if count <= storageData.SlotsUnlocked then
             lockedIcon.Visible = false
+            thisGuiSlot:SetAttribute("LockStatus", "Unlocked")
+        elseif count == storageData.SlotsUnlocked + 1 then
+            lockedIcon.Visible = true
+            lockedIcon.TextLabel_SlotCost.TextColor3 = Color3.fromRGB(0, 255, 0)
+            thisGuiSlot:SetAttribute("LockStatus", "Locked_CanBuy")
         else
             lockedIcon.Visible = true
+            lockedIcon.TextLabel_SlotCost.TextColor3 = Color3.fromRGB(163, 163, 163)
+            thisGuiSlot:SetAttribute("LockStatus", "Locked_CantBuy")
         end
-        
+
     end
 
     --[[
@@ -151,6 +168,31 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
         end
     end
     ]]--
+
+end
+
+function StoragePanel.SlotClicked(thisSlot)
+
+    local results = nextSlotId
+    local lockStatus = thisSlot:GetAttribute("LockStatus")
+
+    if lockStatus == "Locked_CanBuy" then
+        results = InventoryService:BuyStorage()
+    end
+
+    if results == "CantAfford" then
+        local textLabel = thisSlot:FindFirstChild("TextLabel_SlotCost", true)
+        spawn(function()
+            local originalText = textLabel.Text
+            local originalColor = textLabel.TextColor3
+            textLabel.Text = "CANT AFFORD"
+            textLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+            wait(3)
+            textLabel.Text = originalText
+            textLabel.TextColor3 = originalColor
+        end)
+        
+    end
 
 end
 

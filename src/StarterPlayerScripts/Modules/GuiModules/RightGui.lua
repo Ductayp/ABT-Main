@@ -24,6 +24,8 @@ RightGui.Settings_Button = mainGui.RightGui:FindFirstChild("Settings_Button", tr
 
 RightGui.PVP_TOGGLE_TEXT = RightGui.PVP_Button:FindFirstChild("PVP_TOGGLE_TEXT", true)
 RightGui.PVP_OUTER_FRAME = mainGui.RightGui:FindFirstChild("PVP_OUTER_FRAME", true)
+RightGui.Label_2XExpereince = mainGui.RightGui:FindFirstChild("Label_2XExpereince", true)
+RightGui.CantUse_Warning = mainGui.RightGui:FindFirstChild("CantUse_Warning", true)
 
 local color_Green = Color3.fromRGB(16, 214, 46)
 local color_Red = Color3.fromRGB(255, 2, 6)
@@ -32,6 +34,8 @@ local currentWindow = nil
 
 --// Setup_RightGui() ------------------------------------------------------------
 function RightGui.Setup()
+
+    RightGui.CantUse_Warning.Visible = false
 
     -- PvP button
     RightGui.PVP_Button.MouseButton1Down:Connect(function()
@@ -73,24 +77,29 @@ end
 
 function RightGui.Update(pvpToggle, params)
 
-    print("RIGHT GUI SETUP", pvpToggle, params)
-
+    print("RIGHT GUI Update", pvpToggle, params)
 
     if pvpToggle == true then
         RightGui.PVP_TOGGLE_TEXT.Text = "ON"
         RightGui.PVP_TOGGLE_TEXT.TextColor3 = color_Green
         RightGui.PVP_OUTER_FRAME.BackgroundColor3 = color_Green
+        RightGui.Label_2XExpereince.Visible = true
     else
         RightGui.PVP_TOGGLE_TEXT.Text = "OFF"
         RightGui.PVP_TOGGLE_TEXT.TextColor3 = color_Red
         RightGui.PVP_OUTER_FRAME.BackgroundColor3 = color_Red
+        RightGui.Label_2XExpereince.Visible = false
     end
 
-    --if not params.CanToggle then
-
-        --print("You Must be in the spawn area to toggle pvp")
-
-    --end
+    if params then
+        if not params.CanToggle then
+            spawn(function()
+                RightGui.CantUse_Warning.Visible = true
+                wait(3)
+                RightGui.CantUse_Warning.Visible = false
+            end)
+        end
+    end
 
 end
 

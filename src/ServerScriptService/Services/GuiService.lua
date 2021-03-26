@@ -31,6 +31,10 @@ GuiService.Client.Event_Update_RightGui = RemoteEvent.new()
 GuiService.DialogueLocked = {}
 GuiService.PvPToggles = {}
 
+function GuiService:PvpToggle(player)
+    --return GuiService.PvPToggles[player.UserId]
+end
+
 function GuiService:TogglePvP(player)
 
     local canToggle = false
@@ -42,15 +46,14 @@ function GuiService:TogglePvP(player)
             GuiService.PvPToggles[player.UserId] = false
             Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "GuiService", true)
             Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Experience", "GuiService")
-            Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Cash", "GuiService")
-            Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Orbs", "GuiService")
+            --Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Cash", "GuiService")
+            --Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Orbs", "GuiService")
         else
             GuiService.PvPToggles[player.UserId] = true
             Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
-        
             Knit.Services.StateService:AddEntryToState(player, "Multiplier_Experience", "GuiService", 2)
-            Knit.Services.StateService:AddEntryToState(player, "Multiplier_Cash", "GuiService", 2)
-            Knit.Services.StateService:AddEntryToState(player, "Multiplier_Orbs", "GuiService", 2)
+            --Knit.Services.StateService:AddEntryToState(player, "Multiplier_Cash", "GuiService", 2)
+            --Knit.Services.StateService:AddEntryToState(player, "Multiplier_Orbs", "GuiService", 2)
         end
     end
 
@@ -127,7 +130,6 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "ItemFinderWindow" then 
-
         local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "ItemFinder")
         local hasBoost, expirationTime = Knit.Services.BoostService:Has_Boost(player, "ItemFinder")
         self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass, hasBoost, expirationTime)
@@ -138,6 +140,7 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "RightGui" then
+        print("optionalParams", optionalParams)
         self.Client.Event_Update_RightGui:Fire(player, GuiService.PvPToggles[player.UserId], optionalParams)
     end
 end

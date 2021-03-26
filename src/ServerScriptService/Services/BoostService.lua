@@ -15,31 +15,79 @@ local utils = require(Knit.Shared.Utils)
 local Timer = require(Knit.Shared.TimerModule)
 
 -- local variables
-local boostToState = {
+local boostDefs = require(Knit.Shared.Defs.BoostDefs)
+--[[
+local boostDefs = {
     DoubleExperience = {
         StateName = "Multiplier_Experience",
-        StateValue = 2
+        StateValue = 2,
+        CashPrice_1 = 1000,
+        CashPrice_2 = 5000,
     },
     DoubleCash = {
         StateName = "Multiplier_Cash",
-        StateValue = 2
+        StateValue = 2,
+        CashPrice_1 = 1000,
+        CashPrice_2 = 5000,
     },
     DoubleSoulOrbs = {
         StateName = "Multiplier_Orbs",
         StateValue = 2,
+        CashPrice_1 = 1000,
+        CashPrice_2 = 5000,
     },
     FastWalker = {
         StateName = "WalkSpeed",
         StateValue = 5,
+        CashPrice_1 = 1000,
+        CashPrice_2 = 5000,
     },
     ItemFinder = {
         StateName = nil, 
         StateValue = nil,
+        CashPrice_1 = nil,
+        CashPrice_2 = nil,
     },
 }
+]]--
 
 -- public variables
 BoostService.PlayerTimers = {}
+
+--// BuyBoost
+function BoostService:BuyBoost(player, currency, boostKey, productId)
+
+    if currency == "Robux" then
+        Knit.Services.GamePassService:Prompt_ProductPurchase(player, "Boost_" .. boostKey .. "_" .. productId)
+        return
+    end
+
+    if currency == "Cash" then
+
+        --print("BuyBoost(player, currency, boostKey, productId)", player, currency, boostKey, productId)
+
+        local thisCost = boostDefs[boostKey]["CashPrice_" .. productId]
+        local thisDuration = boostDefs[boostKey]["Duration_" .. productId]
+
+        -- get player data
+        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+
+        if playerData.Currency.Cash >= thisCost then
+            playerData.Currency.Cash = playerData.Currency.Cash  - thisCost
+            Knit.Services.GuiService:Update_Gui(player, "Currency")
+            self:AddBoost(player, boostKey, thisDuration)
+        else
+            print("Cant Afford this Boost")
+            return
+        end
+    end
+        
+end
+
+--// Client:BuyBoost
+function BoostService.Client:BuyBoost(player, currency, boost, productId)
+    self.Server:BuyBoost(player, currency, boost, productId)
+end
 
 --// AddBoost
 function BoostService:AddBoost(player, boostName, duration)
@@ -103,12 +151,12 @@ function BoostService:ToggleState(player, boostName, toggleBool)
 
     --print("BoostService:ToggleState",player, boostName, toggleBool)
 
-    local stateDef = boostToState[boostName]
-    if stateDef.StateName ~= nil then
+    local boostDef = boostDefs[boostName]
+    if boostDef.StateName ~= nil then
         if toggleBool == true then
-            Knit.Services.StateService:AddEntryToState(player, stateDef.StateName, "BoostService", stateDef.StateValue)
+            Knit.Services.StateService:AddEntryToState(player, boostDef.StateName, "BoostService", boostDef.StateValue)
         else
-            Knit.Services.StateService:RemoveEntryFromState(player, stateDef.StateName, "BoostService")
+            Knit.Services.StateService:RemoveEntryFromState(player, boostDef.StateName, "BoostService")
         end
     end
 end

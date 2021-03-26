@@ -69,7 +69,7 @@ function InventoryService:Give_Item(player, key, quantity)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     -- get the defs
-    local itemDefs = require(Knit.InventoryModules.ItemDefs)
+    local itemDefs = require(Knit.Defs.ItemDefs)
     local thisItemDef = itemDefs[key]
 
     -- if theres no item with this key, then return
@@ -143,12 +143,12 @@ function InventoryService:Give_Xp(player, xpValue)
     if maxXpReached then
         local notificationParams = {}
         notificationParams.Icon = "XP"
-        notificationParams.Text = "MAX Soul Power for this stand. Upgrade it to increase capacity"
+        notificationParams.Text = "MAX XP for this stand. Upgrade it to increase capacity"
         Knit.Services.GuiService:Update_Notifications(player, notificationParams)
     else
         local notificationParams = {}
         notificationParams.Icon = "XP"
-        notificationParams.Text = "You got: " .. tostring(xpValue) .. " Soul Power"
+        notificationParams.Text = "You got: " .. tostring(xpValue) .. " XP"
         Knit.Services.GuiService:Update_Notifications(player, notificationParams)
     end
     
@@ -208,7 +208,7 @@ function InventoryService:UseArrow(player)
     local thisRarity
     local rand = math.random(1, 1000) / 10
     if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
-        print("YES: arrow luck pass")
+        --print("YES: arrow luck pass")
         if rand <= 90 then
             thisRarity = "Common" -- the default
         elseif rand <= 99 then
@@ -217,7 +217,7 @@ function InventoryService:UseArrow(player)
             thisRarity = "Legendary"
         end
     else
-        print("NO: arrow luck pass")
+        --print("NO: arrow luck pass")
         if rand <= 95 then
             thisRarity = "Common" -- the default
         elseif rand <= 99.5 then
@@ -245,30 +245,89 @@ function InventoryService:UseArrow(player)
 end
 
 --// StoreStand ---------------------------------------------------------------------------------------------------------------------------
-function InventoryService:StoreStand(player)
+function InventoryService:StoreStand(player, GUID)
 
+    -- sanity check to see if player has access
+    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
+    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
+    if not hasGamePass or isInZone then
+        print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
+        return
+    end
 
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
+    -- if the ucrrent power is standless, we dont store it obviously!
+    if playerData.CurrentStand.Power == "Standless" then
+        return
+    end
 
+    -- store the current stand in the player has space
+    if playerData.StandStorage.SlotsUnlocked > #playerData.StandStorage.StoredStands then
+        table.insert(playerData.StandStorage.StoredStands, 1, playerData.CurrentStand)
+        playerData.CurrentStand = {Power = "Standless"}
+    else
+        print("no space in storage for this stand")
+        return
+    end
+
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 end
 
+--// SellStand ---------------------------------------------------------------------------------------------------------------------------
+function InventoryService:SellStand(player, GUID)
 
+    -- return is GUID is nil
+    if not GUID then
+        return
+    end
 
---// SacrificeStand ---------------------------------------------------------------------------------------------------------------------------
-function InventoryService:SacrificeStand(player, GUID)
+    -- sanity check to see if player has access
+    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
+    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
+    if not hasGamePass or isInZone then
+        print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
+        return
+    end
 
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
+    -- check if the equipped stand is thie one we are selling
+    if playerData.CurrentStand.Power ~= "Standless" then
+        if GUID == playerData.CurrentStand.GUID then
+            local sellValue = math.floor(playerData.CurrentStand.Xp / 100)
+            self:Give_Currency(player, "SoulOrbs", sellValue, "SellStand")
+            playerData.CurrentStand = {Power = "Standless"}
+            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+            Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+            return
+        end
+    end
 
+    -- check if the stand is in storage and sell if it is
+    for index, standData in pairs(playerData.StandStorage.StoredStands) do
+        if GUID == standData.GUID then
+            self:Give_Currency(player, "SoulOrbs", standData.Xp, "SellStand")
+            table.remove(playerData.StandStorage.StoredStands, index)
+            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+            Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+            return
+        end
+    end
+
+    --print("InventoryService:SellStand", player, GUID)
 end
 
 --// EquipStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:EquipStand(player, GUID)
 
     -- sanity check to see if player has access
-    local hasAcces = require(Knit.StateModules.StandStorageAccess).HasAccess(player)
-    if Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage") or hasAcces == true then
-    else
-        print("You cant equip a stand: Either no Mobile Storage or you are not at Puccis")
+    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
+    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
+    if not hasGamePass or isInZone then
+        print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
         return
     end
 
@@ -276,10 +335,10 @@ function InventoryService:EquipStand(player, GUID)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
     -- save the current stand in a variable to store it after we equip the new one
-    local tempStoredStand = playerData.CurrentStand
+    tempStoredStand = playerData.CurrentStand
 
     --find the stand by GUID and set some variable we need
-    for index,stand in pairs(playerData.StandStorage.StoredStands) do
+    for index, stand in pairs(playerData.StandStorage.StoredStands) do
         if stand.GUID == GUID then
 
             -- remove the old stand form storage
@@ -297,14 +356,12 @@ function InventoryService:EquipStand(player, GUID)
     end
 
     -- update the GUI
-    --Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
 end
 
 --// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
-function InventoryService:BuyStorage(player, params)
-
-    local results
+function InventoryService:BuyStorage(player)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     local standStorageDefs = require(Knit.Defs.StandStorageDefs)
@@ -316,26 +373,18 @@ function InventoryService:BuyStorage(player, params)
     local nextSlotId = tostring(playerData.StandStorage.SlotsUnlocked + 1)
     local nextSlotCost = standStorageDefs.SlotCosts[nextSlotId]
 
+    local results
     if playerData.Currency.SoulOrbs >= nextSlotCost then
         playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - nextSlotCost
         playerData.StandStorage.SlotsUnlocked += 1
-        print("you bought it")
-        results = "Success"
+        Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+        Knit.Services.GuiService:Update_Gui(player, "Currency")
+        results = "Sucess"
     else
-        print("you cant afford it")
         results = "CantAfford"
     end  
 
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-    Knit.Services.GuiService:Update_Gui(player, "Currency")
-    
-    return results
-
-end
-
---// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
-function InventoryService.Client:BuyStorage(player, params)
-    local results = self.Services:BuyStorage(player, params)
+    print("SERVER RESULTS", results)
     return results
 end
 
@@ -361,9 +410,9 @@ function InventoryService.Client:StoreStand(player)
     self.Server:StoreStand(player)
 end
 
---// Client:SacrificeStand
-function InventoryService.Client:SacrificeStand(player, GUID)
-    self.Server:SacrificeStand(player, GUID)
+--// Client:SellStand
+function InventoryService.Client:SellStand(player, GUID)
+    self.Server:SellStand(player, GUID)
 end
 
 --// Client:GetStandValue
@@ -383,8 +432,9 @@ function InventoryService.Client:UseArrow(player, params)
 end
 
 --// Client:BuyStorage
-function InventoryService.Client:BuyStorage(player, params)
-    self.Server:BuyStorage(player, params)
+function InventoryService.Client:BuyStorage(player)
+    results = self.Server:BuyStorage(player)
+    return results
 end
 
 --// Client:GetCurrencyData

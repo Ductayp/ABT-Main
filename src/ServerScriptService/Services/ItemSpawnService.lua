@@ -175,7 +175,7 @@ function ItemSpawnService:GiveItem(player, itemParams)
     end
 
     if itemParams.DataCategory == "StandExperience" then
-        Knit.Services.PowersService:AwardXp(player, value)
+        Knit.Services.InventoryService:Give_Xp(player, value)
 
     elseif itemParams.DataCategory == "Currency" then
         Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")

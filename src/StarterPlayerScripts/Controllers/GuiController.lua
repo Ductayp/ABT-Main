@@ -36,9 +36,6 @@ GuiController.SettingsWindow = require(Knit.GuiModules.SettingsWindow)
 GuiController.CodesWindow = require(Knit.GuiModules.CodesWindow)
 GuiController.NPCDialogueWindow = require(Knit.GuiModules.NPCDialogueWindow)
 GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
-GuiController.ShopWindow_LootPanel = require(Knit.GuiModules.ShopWindow_LootPanel)
-GuiController.ShopWindow_StoragePanel = require(Knit.GuiModules.ShopWindow_StoragePanel)
-GuiController.ShopWindow_PassesPanel = require(Knit.GuiModules.ShopWindow_PassesPanel)
 
 GuiController.InDialogue = false -- this is a variable we can check from anywhere to see if the player is in a dialgue gui
 GuiController.CurrentWindow = nil
@@ -109,9 +106,6 @@ function GuiController:KnitStart()
     GuiController.CodesWindow.Setup()
     GuiController.NPCDialogueWindow.Setup()
     GuiController.ShopWindow.Setup()
-    GuiController.ShopWindow_LootPanel.Setup()
-    GuiController.ShopWindow_StoragePanel.Setup()
-    GuiController.ShopWindow_PassesPanel.Setup()
     GuiController.ItemFinderWindow.Setup()
 
     -- request Gui Updates
@@ -127,7 +121,6 @@ function GuiController:KnitStart()
     end)
 
     GuiService.Event_Update_Currency:Connect(function(data)
-        GuiController.ShopWindow.Update_Currency(data)
         GuiController.CurrencyBar.Update(data)
     end)
 

@@ -9,6 +9,7 @@ local Players = game:GetService("Players")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GamePassService = Knit.GetService("GamePassService")
+local BoostService = Knit.GetService("BoostService")
 
 
 -- utils
@@ -32,47 +33,23 @@ BoostPanel.ListItem_ItemFinder = BoostPanel.Panel:FindFirstChild("ListItem_ItemF
 BoostPanel.InfoCard_TimeLeft = BoostPanel.Panel:FindFirstChild("InfoCard_TimeLeft", true)
 BoostPanel.InfoCard_BoostName = BoostPanel.Panel:FindFirstChild("InfoCard_BoostName", true)
 BoostPanel.InfoCard_Description = BoostPanel.Panel:FindFirstChild("InfoCard_Description", true)
-BoostPanel.InfoCard_Buy_1 = BoostPanel.Panel:FindFirstChild("InfoCard_Buy_1", true)
-BoostPanel.InfoCard_Buy_2 = BoostPanel.Panel:FindFirstChild("InfoCard_Buy_2", true)
-BoostPanel.InfoCard_Buy_3 = BoostPanel.Panel:FindFirstChild("InfoCard_Buy_3", true)
+BoostPanel.Button_Buy_Robux_1 = BoostPanel.Panel:FindFirstChild("Button_Buy_Robux_1", true)
+BoostPanel.Button_Buy_Cash_1 = BoostPanel.Panel:FindFirstChild("Button_Buy_Cash_1", true)
+BoostPanel.Button_Buy_Robux_2 = BoostPanel.Panel:FindFirstChild("Button_Buy_Robux_2", true)
+BoostPanel.Button_Buy_Cash_2 = BoostPanel.Panel:FindFirstChild("Button_Buy_Cash_2", true)
 BoostPanel.InfoCard_Buy_Pass = BoostPanel.Panel:FindFirstChild("InfoCard_Buy_Pass", true)
 
-BoostPanel.Defs = {
-    DoubleExperience = {
-        Name = "2x Soul Power",
-        Description = "Double the soul power you gain when you defeat mobs. Stacks with Gamepass.",
-        Button = BoostPanel.ListItem_DoubleExperience,
-        CanBuy = true
-    },
+BoostPanel.Defs = require(Knit.Shared.Defs.BoostDefs)
 
-    DoubleCash = {
-        Name = "2x Cash",
-        Description = "Double your money! Stacks with Gamepass.",
-        Button = BoostPanel.ListItem_DoubleCash,
-        CanBuy = true
-    },
-
-    DoubleSoulOrbs = {
-        Name = "2x Soul Orbs",
-        Description = "Double Soul Orbs! Stacks with Gamepass.",
-        Button = BoostPanel.ListItem_DoubleSoulOrbs,
-        CanBuy = true
-    },
-
-    FastWalker = {
-        Name = "Fast Walker",
-        Description = "+5 Walkspeed. Stacks with your stand bonus.",
-        Button = BoostPanel.ListItem_FastWalker,
-        CanBuy = true
-    },
-
-    ItemFinder = {
-        Name = "Item Finder",
-        Description = "You can use the item finder. Get Gamepass if you want INFINITE access.",
-        Button = BoostPanel.ListItem_ItemFinder,
-        CanBuy = false
-    },
+local boostButtons = {
+    DoubleExperience = BoostPanel.ListItem_DoubleExperience,
+    DoubleCash = BoostPanel.ListItem_DoubleCash,
+    DoubleSoulOrbs = BoostPanel.ListItem_DoubleSoulOrbs,
+    FastWalker = BoostPanel.ListItem_FastWalker,
+    ItemFinder = BoostPanel.ListItem_ItemFinder,
 }
+
+
 
 local timerText_Green = Color3.fromRGB(16, 214, 46)
 local timerText_Red = Color3.fromRGB(255, 2, 6)
@@ -87,6 +64,8 @@ function BoostPanel.Setup()
 
     BoostPanel.InfoCard_Buy_Pass.Visible = false
     BoostPanel.Update_InfoCard("DoubleExperience")
+
+    --BoostPanel.Button_Buy_Cash_1.Cash_Price.Text = BoostPanel.Defs.
     
     -- list item buttons
     BoostPanel.ListItem_DoubleExperience.MouseButton1Down:Connect(function()
@@ -110,21 +89,27 @@ function BoostPanel.Setup()
     end)
 
     -- dev product buy buttons
-    BoostPanel.InfoCard_Buy_1.MouseButton1Down:Connect(function()
+    BoostPanel.Button_Buy_Robux_1.MouseButton1Down:Connect(function()
         if currentBoostKey ~= nil then
-            GamePassService:Prompt_ProductPurchase("Boost_" .. currentBoostKey .. "_1")
+            BoostService:BuyBoost("Robux", currentBoostKey, "1")
         end
     end)
 
-    BoostPanel.InfoCard_Buy_2.MouseButton1Down:Connect(function()
+    BoostPanel.Button_Buy_Robux_2.MouseButton1Down:Connect(function()
         if currentBoostKey ~= nil then
-            GamePassService:Prompt_ProductPurchase("Boost_" .. currentBoostKey .. "_2")
+            BoostService:BuyBoost("Robux", currentBoostKey, "2")
         end
     end)
 
-    BoostPanel.InfoCard_Buy_3.MouseButton1Down:Connect(function()
+    BoostPanel.Button_Buy_Cash_1.MouseButton1Down:Connect(function()
         if currentBoostKey ~= nil then
-            GamePassService:Prompt_ProductPurchase("Boost_" .. currentBoostKey .. "_3")
+            BoostService:BuyBoost("Cash", currentBoostKey, "1")
+        end
+    end)
+
+    BoostPanel.Button_Buy_Cash_2.MouseButton1Down:Connect(function()
+        if currentBoostKey ~= nil then
+            BoostService:BuyBoost("Cash", currentBoostKey, "2")
         end
     end)
 
@@ -138,9 +123,12 @@ end
 
 function BoostPanel.UpdateTimer()
 
-    for _, boostDef in pairs(boostData) do
+    if not boostData then
+        return
+    end
 
-        local thisListItem = BoostPanel.Defs[boostDef.BoostName].Button
+    for _, boostDef in pairs(boostData) do
+        local thisListItem = boostButtons[boostDef.BoostName]
         local timerText = thisListItem:FindFirstChild("Time_Remaining", true)
         if timerText then
             if boostDef.TimeEnding - os.time() > 0 then
@@ -151,7 +139,6 @@ function BoostPanel.UpdateTimer()
                 timerText.Text = utils.ConvertToHMS(0)
             end
         end
-
     end
 end
 
@@ -169,22 +156,17 @@ function BoostPanel.Update_InfoCard(boostKey)
     BoostPanel.InfoCard_Description.Text = BoostPanel.Defs[boostKey].Description
 
     if boostKey == "ItemFinder" then
-        BoostPanel.InfoCard_Buy_1.Active = false
-        BoostPanel.InfoCard_Buy_2.Active = false
-        BoostPanel.InfoCard_Buy_3.Active = false
-        BoostPanel.InfoCard_Buy_Pass.Active = true
-        BoostPanel.InfoCard_Buy_1.Visible = false
-        BoostPanel.InfoCard_Buy_2.Visible = false
-        BoostPanel.InfoCard_Buy_3.Visible = false
+
+        BoostPanel.Button_Buy_Robux_1.Visible = false
+        BoostPanel.Button_Buy_Cash_1.Visible = false 
+        BoostPanel.Button_Buy_Robux_2.Visible = false 
+        BoostPanel.Button_Buy_Cash_2.Visible = false 
         BoostPanel.InfoCard_Buy_Pass.Visible = true
     else
-        BoostPanel.InfoCard_Buy_1.Active = true
-        BoostPanel.InfoCard_Buy_2.Active = true
-        BoostPanel.InfoCard_Buy_3.Active = true
-        BoostPanel.InfoCard_Buy_Pass.Active = false
-        BoostPanel.InfoCard_Buy_1.Visible = true
-        BoostPanel.InfoCard_Buy_2.Visible = true
-        BoostPanel.InfoCard_Buy_3.Visible = true
+        BoostPanel.Button_Buy_Robux_1.Visible = true
+        BoostPanel.Button_Buy_Cash_1.Visible = true 
+        BoostPanel.Button_Buy_Robux_2.Visible = true
+        BoostPanel.Button_Buy_Cash_2.Visible = true 
         BoostPanel.InfoCard_Buy_Pass.Visible = false
     end
 

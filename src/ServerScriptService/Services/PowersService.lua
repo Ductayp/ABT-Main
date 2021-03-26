@@ -138,6 +138,16 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     local isPlayer = utils.GetPlayerFromCharacter(characterHit)
     if isPlayer then
 
+        print("HIT PLAYER")
+
+        -- check if initPlayer has PvP off, if so then return
+        if Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then
+            --print("YES PVP !!!!!!!!!!!!!!!!!!")
+        else
+            --print("NO PVP !!!!!!!!!!!!!!!!!!")
+            return
+        end
+
         -- check if players character is invulnerable
         local isInvulnerable = require(Knit.StateModules.Invulnerable).IsInvulnerable(isPlayer)
         if not isInvulnerable then

@@ -34,41 +34,6 @@ local module = {
 
 	-- StandStorage, just to hold the stands and data regarding storage
 	StandStorage = {
-		--[[
-		["1"] = {
-			Unlocked = true
-		},
-        ["2"] = {
-			Unlocked = false
-		},
-        ["3"] = {
-			Unlocked = false
-		},
-        ["4"] = {
-			Unlocked = false
-		},
-        ["5"] = {
-			Unlocked = false
-		},
-        ["6"] = {
-			Unlocked = false
-		},
-        ["7"] = {
-			Unlocked = false
-		},
-        ["8"] = {
-			Unlocked = false
-		},
-        ["9"] = {
-			Unlocked = false
-		},
-        ["10"] = {
-			Unlocked = false
-		},
-        ["11"] = {
-			Unlocked = false
-		},
-		]]
 		SlotsUnlocked = 1,
 		StoredStands = {}
 	},

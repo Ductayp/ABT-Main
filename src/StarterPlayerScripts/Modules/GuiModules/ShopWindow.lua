@@ -9,6 +9,7 @@ local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local GamePassService = Knit.GetService("GamePassService")
 local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
@@ -18,34 +19,14 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 local ShopWindow = {}
 
 ShopWindow.Window = mainGui.Windows:FindFirstChild("ShopWindow", true)
-
--- main buttons
-ShopWindow.MainButton_Loot = ShopWindow.Window:FindFirstChild("MainButton_Loot", true)
-ShopWindow.MainButton_Storage = ShopWindow.Window:FindFirstChild("MainButton_Storage", true)
-ShopWindow.MainButton_Passes = ShopWindow.Window:FindFirstChild("MainButton_Passes", true)
-ShopWindow.MainButton_Boosts = ShopWindow.Window:FindFirstChild("MainButton_Boosts", true)
 ShopWindow.MainButton_Close = ShopWindow.Window:FindFirstChild("Close_Button", true)
 
--- panels
-ShopWindow.LootPanel = ShopWindow.Window:FindFirstChild("ShopWindow_LootPanel", true)
-ShopWindow.StoragePanel = ShopWindow.Window:FindFirstChild("ShopWindow_StoragePanel", true)
-ShopWindow.PassesPanel = ShopWindow.Window:FindFirstChild("ShopWindow_PassesPanel", true)
-ShopWindow.BoostsPanel = ShopWindow.Window:FindFirstChild("ShopWindow_BoostsPanel", true)
-
--- update values
-ShopWindow.Current_Cash = ShopWindow.Window:FindFirstChild("Current_Cash", true)
-ShopWindow.Current_SoulOrbs = ShopWindow.Window:FindFirstChild("Current_SoulOrbs", true)
-
-ShopWindow.All_Panels = {ShopWindow.LootPanel, ShopWindow.StoragePanel, ShopWindow.PassesPanel, ShopWindow.BoostsPanel}
-
-local DEFAULT_PANEL = ShopWindow.LootPanel
-
---// Update_Currency
-function ShopWindow.Update_Currency(data)
-
-    ShopWindow.Current_Cash.Text = data.Cash
-    ShopWindow.Current_SoulOrbs.Text = data.SoulOrbs
-end
+ShopWindow.Button_2XCash = ShopWindow.Window:FindFirstChild("Button_2XCash", true)
+ShopWindow.Button_2XSoulOrbs = ShopWindow.Window:FindFirstChild("Button_2XSoulOrbs", true)
+ShopWindow.Button_2XArrowLuck = ShopWindow.Window:FindFirstChild("Button_2XArrowLuck", true)
+ShopWindow.Button_MobileStorage = ShopWindow.Window:FindFirstChild("Button_MobileStorage", true)
+ShopWindow.Button_ItemFinder = ShopWindow.Window:FindFirstChild("Button_ItemFinder", true)
+ShopWindow.Button_2XExperience = ShopWindow.Window:FindFirstChild("Button_2XExperience", true)
 
 --// Setup
 function ShopWindow.Setup()
@@ -53,46 +34,44 @@ function ShopWindow.Setup()
     -- be sure this shop window is not visible
     ShopWindow.Close()
 
-    -- MainButton_Loot
-    ShopWindow.MainButton_Loot.Activated:Connect(function()
-        ShopWindow.CloseAllPanels()
-        ShopWindow.LootPanel.Visible = true
-    end)
-
-    -- MainButton_Arrows
-    ShopWindow.MainButton_Storage.Activated:Connect(function()
-        ShopWindow.CloseAllPanels()
-        ShopWindow.StoragePanel.Visible = true
-    end)
-
-    -- MainButton_Passes
-    ShopWindow.MainButton_Passes.Activated:Connect(function()
-        ShopWindow.CloseAllPanels()
-        ShopWindow.PassesPanel.Visible = true
-    end)
-
-    -- MainButton_Boosts
-    ShopWindow.MainButton_Boosts.Activated:Connect(function()
-        ShopWindow.CloseAllPanels()
-        ShopWindow.BoostsPanel.Visible = true
-    end)
-
     -- MainButton_Close
     ShopWindow.MainButton_Close.Activated:Connect(function()
         ShopWindow.Close()
     end)
 
-end
+    -- Button_2XCash
+    ShopWindow.Button_2XCash.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("DoubleCash")
+    end)
 
-function ShopWindow.CloseAllPanels()
-    for _i,panel in pairs(ShopWindow.All_Panels) do
-        panel.Visible = false
-    end
+    -- Button_2XSoulOrbs
+    ShopWindow.Button_2XSoulOrbs.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("DoubleOrbs")
+    end)
+
+    -- Button_2XArrowLuck
+    ShopWindow.Button_2XArrowLuck.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("ArrowLuck")
+    end)
+
+    -- Button_MobileStorage
+    ShopWindow.Button_MobileStorage.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
+    end)
+
+    -- Button_ItemFinder
+    ShopWindow.Button_ItemFinder.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("ItemFinder")
+    end)
+
+    -- Button_2XExperience
+    ShopWindow.Button_2XExperience.Activated:Connect(function()
+        GamePassService:Prompt_GamePassPurchase("DoubleExperience")
+    end)
+
 end
 
 function ShopWindow.Open()
-    ShopWindow.CloseAllPanels()
-    DEFAULT_PANEL.Visible = true
     ShopWindow.Window.Visible = true
 end
 

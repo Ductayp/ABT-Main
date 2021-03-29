@@ -220,6 +220,10 @@ function NPCDialogue.ProcessDialogueChoice(choiceName)
         NPCDialogue.Close()
     end
 
+    if stageDef[choiceName].Action.Type == "BuyItem" then
+        print("BUY ITEM!")
+    end
+
 end
 
 

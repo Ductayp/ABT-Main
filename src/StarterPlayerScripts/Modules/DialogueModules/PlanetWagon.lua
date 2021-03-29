@@ -32,12 +32,15 @@ module.Stage.Start = {
         }
     },
     Choice_3 = {
+        Display = false,
+        --[[
         Display = true,
         Text = "I just need codes",
         Action = {
             Type = "ChangeStage",
             Stage = "Codes"
         }
+        ]]--
     },
 }
 
@@ -55,18 +58,22 @@ module.Stage.PlanetIntro = {
         }
     },
     Choice_2 = {
+        Display = false,
+        --[[
         Display = true,
         Text = "Did you say CODES?",
         Action = {
             Type = "ChangeStage",
             Stage = "Codes"
         }
+        ]]--
     },
     Choice_3 = {
         Display = false,
     },
 }
 
+--[[
 module.Stage.Codes = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
@@ -109,11 +116,12 @@ module.Stage.Codes2 = {
         Display = false,
     },
 }
+]]--
 
 module.Stage.QuickTutorial1 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Well, first you need to find an arrow, they aren't super common but you should be able to find about 4 per hour. I also have a code for an arrow to get you started.",
+    Body = "Well, first you need to find an arrow, they aren't super common but you should be able to find one if you look around. I also have a code for an arrow to get you started.",
     Choice_1 = {
         Display = true,
         Text = "Ok, then what?",
@@ -123,12 +131,15 @@ module.Stage.QuickTutorial1 = {
         }
     },
     Choice_2 = {
+        Display = false,
+        --[[
         Display = true,
         Text = "Did you say codes?",
         Action = {
-            Type = "ChangeStage",
+            Type = "ChangeStage", 
             Stage = "Codes"
         }
+        ]]--
     },
     Choice_3 = {
         Display = false
@@ -158,10 +169,10 @@ module.Stage.QuickTutorial2 = {
 module.Stage.QuickTutorial3 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Then you gotta GRIND! Get Soul Orbs by finding them or killing the mobs. You can use the orbs to level up your stand.",
+    Body = "Then you gotta GRIND! Your stand will gain XP as you kill mobs and you can SACRIFICE it to gain Soul Orbs.<br/><br/>Pucci Can tell you more about that at his Shop.",
     Choice_1 = {
         Display = true,
-        Text = "Level the stands?",
+        Text = "And then? ...",
         Action = {
             Type = "ChangeStage",
             Stage = "QuickTutorial4"
@@ -178,7 +189,7 @@ module.Stage.QuickTutorial3 = {
 module.Stage.QuickTutorial4 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "There are 3 rarities of each stand: Common, Rare and Legendary and each does more damage than the last. If you get 3 of the same stand to lvl 100, you can merge them to increase it's rarity!",
+    Body = "There are 3 rarities of each stand: Common, Rare and Legendary and each does more damage than the last. You probably need to get pretty lucky to get a Legendary.",
     Choice_1 = {
         Display = true,
         Text = "Wow! Then what?",
@@ -198,7 +209,7 @@ module.Stage.QuickTutorial4 = {
 module.Stage.QuickTutorial5 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Then grind, explore and have fun! Be sure to talk to all the NPCs on the map to learn more about the game.",
+    Body = "Then grind, explore and have fun! Be sure to talk to all the NPCs on the map to learn more about the game.<br/>Dont forget to sub to Planet Milo on YouTube for codes and leaks.",
     Choice_1 = {
         Display = true,
         Text = "Aight then, thanks!",

@@ -17,9 +17,9 @@ local KillerQueen = {}
 KillerQueen.Defs = {
     PowerName = "Killer Queen",
     MaxXp = {
-        Common = 13000,
+        Common = 10000,
         Rare = 15000,
-        Legendary = 19000
+        Legendary = 20000
     },
     DamageMultiplier = {
         Common = 1,
@@ -31,7 +31,33 @@ KillerQueen.Defs = {
         Rare = 30,
         Legendary = 70
     },
-    Abilities = {} -- ability defs are inside each ability function area
+    Abilities = {}, -- ability defs are inside each ability function area
+    KeyMap = {
+        Q = {
+            AbilityName = "Summon Stand"
+        },
+        E = {
+            AbilityName = "Barrage"
+        },
+        F = {
+            AbilityName = "Bites The Dust"
+        },
+        T = {
+            AbilityName = "Coin Toss"
+        },
+        R = {
+            AbilityName = "Bomb Punch"
+        },
+        X = {
+            AbilityName = "Sheer Heart Attack"
+        },
+        Z = {
+            AbilityName = "Stand Jump"
+        },
+        C = {
+            AbilityName = "-"
+        }
+    }
 }
 
 --// SETUP - run this once when the stand is equipped

@@ -37,7 +37,7 @@ function Barrage.Initialize(params, abilityDefs)
 		-- check cooldown
 		if not Cooldown.Client_IsCooled(params) then
 			params.CanRun = false
-			return
+			return params
 		end
 
 		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
@@ -45,6 +45,7 @@ function Barrage.Initialize(params, abilityDefs)
 			return params
 		end
 
+		--[[
 		-- only operate if toggle is off
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
 
@@ -59,6 +60,7 @@ function Barrage.Initialize(params, abilityDefs)
 				Barrage.EndEffect(params, abilityDefs)
 			end)
 		end
+		]]--
 
 		params.CanRun = true
 	end
@@ -66,13 +68,17 @@ function Barrage.Initialize(params, abilityDefs)
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
 
+		--[[
 		if AbilityToggle.GetToggleValue(params.InitUserId, "Client_Barrage") == true then
 			AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", false)
 			Barrage.EndEffect(params)
 		end
+		]]--
 
 		params.CanRun = true
 	end
+
+	return params
 
 end
 
@@ -85,7 +91,7 @@ function Barrage.Activate(params, abilityDefs)
 		-- check cooldown
 		if not Cooldown.Server_IsCooled(params) then
 			params.CanRun = false
-			return
+			return params
 		end
 
 		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
@@ -93,10 +99,12 @@ function Barrage.Activate(params, abilityDefs)
 			return params
 		end
 
+		print("acrivate barrage: BEGAN")
+
 		-- only operate if toggle is off
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
 
-			AbilityToggle.SetToggle(params.InitUserId, "Server_Barrage", true)
+			AbilityToggle.SetToggle(params.InitUserId, "Barrage", true)
 			Barrage.CreateHitbox(params, abilityDefs)
 
 			 -- block input for the duration of the barrage
@@ -106,7 +114,7 @@ function Barrage.Activate(params, abilityDefs)
 			-- spawn a function to kill the barrage if the duration expires
 			spawn(function()
 				wait(abilityDefs.Duration)
-				AbilityToggle.SetToggle(params.InitUserId, "Server_Barrage", false)
+				AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
 				Barrage.DestroyHitbox(params, abilityDefs)
 				Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
@@ -118,8 +126,10 @@ function Barrage.Activate(params, abilityDefs)
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
 
-		if AbilityToggle.GetToggleValue(params.InitUserId, "Server_Barrage") == true then
-			AbilityToggle.SetToggle(params.InitUserId, "Server_Barrage", false)
+		print("acrivate barrage: ENDED")
+
+		if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") == true then
+			AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
 			Barrage.DestroyHitbox(params)
 			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
@@ -134,12 +144,18 @@ end
 --// Execute
 function Barrage.Execute(params, abilityDefs)
 
+	
+
+	--[[
 	-- do not render for initPlayer
 	if Players.LocalPlayer.UserId == params.InitUserId then
-		return
+		--return
 	end
+	]]--
 
-	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+	print("Execute Barrage", params)
+
+	if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") == true then
 		Barrage.RunEffect(params, abilityDefs)
 	else
 		Barrage.EndEffect(params, abilityDefs)

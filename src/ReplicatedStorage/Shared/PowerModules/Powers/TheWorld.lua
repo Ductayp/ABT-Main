@@ -17,9 +17,9 @@ local TheWorld = {}
 TheWorld.Defs = {
     PowerName = "The World",
     MaxXp = {
-        Common = 13000,
+        Common = 10000,
         Rare = 15000,
-        Legendary = 19000
+        Legendary = 20000
     },
     DamageMultiplier = {
         Common = 1,
@@ -31,7 +31,33 @@ TheWorld.Defs = {
         Rare = 30,
         Legendary = 70
     },
-    Abilities = {} -- ability defs are inside each ability function area
+    Abilities = {}, -- ability defs are inside each ability function area
+    KeyMap = {
+        Q = {
+            AbilityName = "Summon Stand"
+        },
+        E = {
+            AbilityName = "Barrage"
+        },
+        F = {
+            AbilityName = "Time Stop"
+        },
+        T = {
+            AbilityName = "Knife Throw"
+        },
+        R = {
+            AbilityName = "Time Punch"
+        },
+        X = {
+            AbilityName = "Bullet Kick"
+        },
+        Z = {
+            AbilityName = "Stand Jump"
+        },
+        C = {
+            AbilityName = "-"
+        }
+    }
 }
 
 --// SETUP - run this once when the stand is equipped
@@ -132,7 +158,7 @@ TheWorld.Defs.Abilities.TimeStop = {
     Cooldown = 30,
     Range = 80,
     RequireToggle_On = {"StandEquipped"},
-    HitEffects = {PinCharacter = {Duration = 8}}, 
+    HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}}, 
     Sounds = {
         TimeStop = ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop,
     }

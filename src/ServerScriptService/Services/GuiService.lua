@@ -102,6 +102,9 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     --print("GuiService:Update_Gui", player, requestName, optionalParams)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData then
+        return
+    end
 
     if requestName == "Currency" then
         self.Client.Event_Update_Currency:Fire(player, playerData.Currency)

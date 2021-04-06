@@ -13,19 +13,19 @@ local GamePassService = Knit.GetService("GamePassService")
 local BoostService = Knit.GetService("BoostService")
 local utils = require(Knit.Shared.Utils)
 
-print("Knit", Knit)
-
 -- local variables
 local spawnedItemsFolder = Workspace:WaitForChild("SpawnedItems")
 
 --// UpdateItemFinder
 function ItemSpawnController:UpdateItemFinder()
 
-    if not GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
-       return
+    local hasFinder
+    if GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
+        hasFinder = true
+    else
+        hasFinder = false
     end
         
-
     if Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys ~= nil then
         for itemKey, itemBool in pairs(Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys) do
             for _, item in pairs(spawnedItemsFolder:GetChildren()) do
@@ -54,7 +54,11 @@ function ItemSpawnController:UpdateItemFinder()
                     if itemBeam then
                         itemBeam.Attachment0 = itemAttchment
                         itemBeam.Attachment1 = playerAttachment
-                        itemBeam.Enabled = itemBool
+                        if hasFinder then
+                            itemBeam.Enabled = itemBool
+                        else
+                            itemBeam.Enabled = false
+                        end
                     end
 
                 end

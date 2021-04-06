@@ -11,6 +11,8 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local InventoryService = Knit.GetService("InventoryService")
 local GamePassService = Knit.GetService("GamePassService")
+local PowersService = Knit.GetService("PowersService")
+
 
 -- utils
 local utils = require(Knit.Shared.Utils)
@@ -64,6 +66,8 @@ local elements = {
     StandReveal.Balls_2
 }
 
+local revealedStandData 
+
 
 
 --// Setup_StandReveal ------------------------------------------------------------
@@ -82,11 +86,13 @@ function StandReveal.Setup()
         StandReveal.ActivateClose()
     end)
     StandReveal.Store_Button.Activated:Connect(function()
-        StandReveal.ActivateQuickStore()
+        InventoryService:SellStand(revealedStandData.GUID)
+        StandReveal.ActivateClose()
     end)
 
 end
 
+--[[
 --// ActivateQuickStore ------------------------------------------------------------
 function StandReveal.ActivateQuickStore()
 
@@ -100,6 +106,7 @@ function StandReveal.ActivateQuickStore()
     end
     
 end
+]]--
 
 --// ActivateClose ------------------------------------------------------------
 function StandReveal.ActivateClose()
@@ -152,6 +159,8 @@ end
 
 --// Update ------------------------------------------------------------
 function StandReveal.Update(data)
+
+    revealedStandData = data
 
     -- hide the current stand text until after the reveal
     require(Knit.GuiModules.BottomGui).HideStand()

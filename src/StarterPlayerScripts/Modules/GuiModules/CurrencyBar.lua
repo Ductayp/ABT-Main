@@ -10,26 +10,95 @@ local Players = game:GetService("Players")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local NumberSpinner = require(Knit.Shared.NumberSpinner)
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
-local CashBar = {}
+local CurrencyBar = {}
+CurrencyBar.Frame = mainGui.TopGui:FindFirstChild("CurrencyFrame", true)
+CurrencyBar.Frame_Cash = CurrencyBar.Frame:FindFirstChild("Frame_Cash", true)
+CurrencyBar.Frame_SoulOrbs = CurrencyBar.Frame:FindFirstChild("Frame_SoulOrbs", true)
+CurrencyBar.Text_Cash = CurrencyBar.Frame:FindFirstChild("Text_Cash", true)
+CurrencyBar.Text_SoulOrbs = CurrencyBar.Frame:FindFirstChild("Text_SoulOrbs", true)
 
-CashBar.Frame = mainGui.TopGui:FindFirstChild("CurrencyFrame", true)
-CashBar.Text_Cash = CashBar.Frame:FindFirstChild("Text_Cash", true)
-CashBar.Text_SoulOrbs = CashBar.Frame:FindFirstChild("Text_SoulOrbs", true)
 
 --// Setup ------------------------------------------------------------
-function CashBar.Setup()
+function CurrencyBar.Setup()
+
+    --[[
+    CurrencyBar.CashSpinner = NumberSpinner.fromGuiObject(CurrencyBar.Text_Cash)
+    CurrencyBar.OrbsSpinner = NumberSpinner.fromGuiObject(CurrencyBar.Text_SoulOrbs)
+
+    CurrencyBar.CashSpinner.Prefix = ""
+    CurrencyBar.CashSpinner.Decimals = 0
+    CurrencyBar.CashSpinner.Duration = .5
+    CurrencyBar.CashSpinner.Commas = true
+
+    CurrencyBar.Text_Cash.Visible = false
+    CurrencyBar.Text_SoulOrbs.Visible = false
+    ]]--
 
 end
 
 --// Update ------------------------------------------------------------
-function CashBar.Update(data)
-    CashBar.Text_Cash.Text = utils.CommaValue(data.Cash)
-    CashBar.Text_SoulOrbs.Text = utils.CommaValue(data.SoulOrbs)
+function CurrencyBar.Update(data)
+
+    --[[
+    --CurrencyBar.CashSpinner.Value = data.Cash
+    --CurrencyBar.OrbsSpinner.Value = data.SoulOrbs
+    ]]--
+
+
+    if utils.CommaValue(data.Cash) ~= CurrencyBar.Text_Cash.Text then
+        if data.Cash < 1 then
+            CurrencyBar.Text_Cash.Text = data.Cash
+        else
+            spawn(function()
+                for count = 1, 5 do
+                    local rand = math.random(1, data.Cash)
+                    CurrencyBar.Text_Cash.Text = utils.CommaValue(rand)
+                    wait(.02)
+                end
+                CurrencyBar.Text_Cash.Text = utils.CommaValue(data.Cash)
+            end)
+
+            spawn(function()
+                for count = 1, 3 do
+                    CurrencyBar.Frame_Cash.BackgroundColor3 = Color3.fromRGB(57,57,57)
+                    wait(.3)
+                    CurrencyBar.Frame_Cash.BackgroundColor3 = Color3.fromRGB(0,0,0)
+                    wait(.3)
+                end
+            end)
+        end
+    end
+
+    if utils.CommaValue(data.SoulOrbs) ~= CurrencyBar.Text_SoulOrbs.Text then
+        if data.SoulOrbs < 1 then
+            CurrencyBar.Text_SoulOrbs.Text = data.SoulOrbs
+        else
+            spawn(function()
+                for count = 1, 5 do
+                    local rand = math.random(1, data.SoulOrbs)
+                    CurrencyBar.Text_SoulOrbs.Text = utils.CommaValue(rand)
+                    wait(.02)
+                end
+                CurrencyBar.Text_SoulOrbs.Text = utils.CommaValue(data.SoulOrbs)
+            end)
+
+            spawn(function()
+                for count = 1, 3 do
+                    CurrencyBar.Frame_SoulOrbs.BackgroundColor3 = Color3.fromRGB(57,57,57)
+                    wait(.3)
+                    CurrencyBar.Frame_SoulOrbs.BackgroundColor3 = Color3.fromRGB(0,0,0)
+                    wait(.3)
+                end
+            end)
+        end
+    end
+
 end
 
-return CashBar
+return CurrencyBar

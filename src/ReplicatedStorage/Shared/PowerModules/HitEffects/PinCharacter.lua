@@ -18,12 +18,21 @@ local PinCharacter = {}
 
 function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, hitParams)
 
-    spawn(function()
-        local storedAnchorState = hitCharacter.HumanoidRootPart.Anchored
-        hitCharacter.HumanoidRootPart.Anchored = true
-        wait(effectParams.Duration)
-        hitCharacter.HumanoidRootPart.Anchored = storedAnchorState
-    end) 
+    if not hitCharacter.HumanoidRootPart then return end
+
+    if hitCharacter.HumanoidRootPart.Anchored == true then
+        return
+    else
+        spawn(function()
+            --local storedAnchorState = hitCharacter.HumanoidRootPart.Anchored
+            hitCharacter.HumanoidRootPart.Anchored = true
+            wait(effectParams.Duration)
+            hitCharacter.HumanoidRootPart.Anchored = false
+            --hitCharacter.HumanoidRootPart.Anchored = storedAnchorState
+        end) 
+    end
+
+    
 
     -- if this is a mob, then stop its animation here
     if hitParams.IsMob then

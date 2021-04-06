@@ -16,40 +16,6 @@ local Timer = require(Knit.Shared.TimerModule)
 
 -- local variables
 local boostDefs = require(Knit.Shared.Defs.BoostDefs)
---[[
-local boostDefs = {
-    DoubleExperience = {
-        StateName = "Multiplier_Experience",
-        StateValue = 2,
-        CashPrice_1 = 1000,
-        CashPrice_2 = 5000,
-    },
-    DoubleCash = {
-        StateName = "Multiplier_Cash",
-        StateValue = 2,
-        CashPrice_1 = 1000,
-        CashPrice_2 = 5000,
-    },
-    DoubleSoulOrbs = {
-        StateName = "Multiplier_Orbs",
-        StateValue = 2,
-        CashPrice_1 = 1000,
-        CashPrice_2 = 5000,
-    },
-    FastWalker = {
-        StateName = "WalkSpeed",
-        StateValue = 5,
-        CashPrice_1 = 1000,
-        CashPrice_2 = 5000,
-    },
-    ItemFinder = {
-        StateName = nil, 
-        StateValue = nil,
-        CashPrice_1 = nil,
-        CashPrice_2 = nil,
-    },
-}
-]]--
 
 -- public variables
 BoostService.PlayerTimers = {}
@@ -126,6 +92,10 @@ end
 --// UpdateGui
 function BoostService:UpdateGui(player)
 
+    if not BoostService.PlayerTimers[player.userId] then
+        return
+    end
+    
     local guiDefs = {}
     for boostName, boostDefs in pairs(BoostService.PlayerTimers[player.userId]) do
 

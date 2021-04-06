@@ -42,16 +42,17 @@ function TimeStop.Initialize(params, abilityDefs)
 		return
     end
 
-    
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
         params.CanRun = false
         return params
     end
     
+    --[[
     -- run client
     spawn(function()
         TimeStop.Run_Client(params, abilityDefs)
     end)
+    ]]--
 
 end
 
@@ -93,12 +94,13 @@ end
 
 --// Execute
 function TimeStop.Execute(params, abilityDefs)
-	print(params)
 
+    --[[
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
     end
+    ]]--
     
     -- run client
     spawn(function()
@@ -119,12 +121,15 @@ function TimeStop.Run_Server(params, abilityDefs)
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
+    -- apply color shift to the initPlayer
+    require(Knit.Shared.PowerModules.HitEffects.ColorShift).Server_ApplyEffect(initPlayer, initPlayer.Character, {Duration = 8})
+
     -- hit all players in range, subject to immunity
     for _, player in pairs(game.Players:GetPlayers()) do
         if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
-            --if player ~= initPlayer then
+            if player ~= initPlayer then
                 Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, abilityDefs)
-            --end
+            end
         end
     end
 
@@ -161,6 +166,7 @@ function TimeStop.Run_Client(params, abilityDefs)
         wait(effectDelay - ping)
     end
 
+    --[[
     -- color shift effect for all players in range
     for _, player in pairs(game.Players:GetPlayers()) do
         if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
@@ -189,6 +195,12 @@ function TimeStop.Run_Client(params, abilityDefs)
             end)
         end
     end
+    ]]--
+
+    -- if this is the initPlayer, then do colorshift for them
+    if Players.LocalPlayer.UserId == params.InitUserId then
+
+    end
 
     -- animate spheres
     local sphereParams = {}
@@ -202,9 +214,9 @@ function TimeStop.Run_Client(params, abilityDefs)
     sphereParams.Material = Enum.Material.ForceField
     sphereParams.CastShadow = false
 
-    local sphere1 = utils.EasyInstance("Part",sphereParams)
-    local sphere2 = utils.EasyInstance("Part",sphereParams)
-    local sphere3 = utils.EasyInstance("Part",sphereParams)
+    local sphere1 = utils.EasyInstance("Part", sphereParams)
+    local sphere2 = utils.EasyInstance("Part", sphereParams)
+    local sphere3 = utils.EasyInstance("Part", sphereParams)
 
     sphere1.Color = Color3.new(255, 7, 160)
     sphere2.Color = Color3.new(2, 243, 255)

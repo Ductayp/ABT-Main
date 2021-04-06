@@ -133,12 +133,21 @@ function ItemPanel.Update_ItemList(inventoryData)
             currentItemKey = itemDefKey
             ItemPanel.Update_InfoCard(itemDefKey, itemDefTable, quantityOwned) -- pass the key and the quantity the player owns
         end)
-
     end
+
+    -- uwe need to update the visible stand card too, so we use the currentItemKey if not nil
+    if currentItemKey then
+        local thisDef = require(Knit.Defs.ItemDefs)[currentItemKey]
+        local thisQuantity = inventoryData[currentItemKey]
+        ItemPanel.Update_InfoCard(currentItemKey, thisDef, thisQuantity)
+    end
+
 end
 
 --// UpdateInfoCard ------------------------------------------------------------
 function ItemPanel.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
+
+    print("Update_InfoCard(itemKey, itemDefTable, itemQuantity)", itemKey, itemDefTable, itemQuantity)
 
     -- setup the card and show it
     ItemPanel.Item_Card_Name.Text = itemDefTable.Name
@@ -156,6 +165,13 @@ function ItemPanel.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
 
     -- if the type is COLLECTABLE
     if itemDefTable.Type == "Collectable" then
+        ItemPanel.Item_Card_Button_Use.Visible = false
+        ItemPanel.Item_Card_Button_Use.Active = false
+        ItemPanel.Item_Card_Cant_Use.Visible = true
+    end
+
+    -- if the type is COLLECTABLE
+    if itemDefTable.Type == "Shard" then
         ItemPanel.Item_Card_Button_Use.Visible = false
         ItemPanel.Item_Card_Button_Use.Active = false
         ItemPanel.Item_Card_Cant_Use.Visible = true

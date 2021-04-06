@@ -10,40 +10,81 @@ end
 module.Stage = {}
 
 module.Stage.Start = {
-    IconName = "Icon_Josuke",
-    Title = "Guy With Nice Hair (don't make fun of it!)",
-    Body = "You new here too!? Lately so many weird people been showing up, seems like everyone is a stand user these days. If you already have a Stand and need to store or get rid of it, be sure to visit Pucci's down the street, you can't miss it.",
+    IconName = "Icon_Pucci",
+    Title = "Pucci",
+    Body = "Welcome to my shop, in here you can access your Stand Storage.<br/><br/>You don't need to talk to me, just stop in here anytime and your menu will work.",
     Choice_1 = {
         Display = true,
-        Text = "Why are stand users showing up?",
-        CustomSize = UDim2.new(0.6, 6, 0.9, 0),
+        Text = "Mobile Storage?",
+        --CustomSize = UDim2.new(0.6, 6, 0.9, 0),
         Action = {
             Type = "ChangeStage",
-            Stage = "Stage2"
+            Stage = "MobileStorage"
         }
     },
+
     Choice_2 = {
-        Display = false,
+        Display = true,
+        Text = "Sacrifice Stands?",
+        Action = {
+            Type = "ChangeStage",
+            Stage = "Sacrifice"
+        }
     },
+
     Choice_3 = {
         Display = false,
     },
 }
 
-module.Stage.Stage2 = {
-    IconName = "Icon_Josuke",
-    Title = "Guy With Nice Hair (don't make fun of it!)",
-    Body = "No idea whats going on, but things are getting very strange. It seems the whole island might be stuck in a time rift. Maybe my nephew knows more. He's by the hotel.",
+module.Stage.MobileStorage = {
+    IconName = "Icon_Pucci",
+    Title = "Pucci",
+    Body = "If you want to be able to manage your stands outside the shop you will need to get the MOBILE STORAGE pass, then you can use any of my services wherver you go!",
     Choice_1 = {
         Display = true,
-        Text = "Cool, thanks!",
+        Text = "Sacrifice Stands?",
+        Action = {
+            Type = "ChangeStage",
+            Stage = "Sacrifice"
+        }
+    },
+
+    Choice_2 = {
+        Display = true,
+        Text = "Aight thanks",
         Action = {
             Type = "Close",
         }
     },
-    Choice_2 = {
+
+    Choice_3 = {
         Display = false,
     },
+}
+
+module.Stage.Sacrifice = {
+    IconName = "Icon_Pucci",
+    Title = "Pucci",
+    Body = "Sacrificing stands is a great way to get Soul Orbs. I will give you 1 Soul Orb for every 100 XP the stand has.<br/><br/>You can use Soul Orbs to buy more storage, and 'other' things too.",
+    Choice_1 = {
+        Display = true,
+        Text = "Mobile Stand Storage?",
+        --CustomSize = UDim2.new(0.6, 6, 0.9, 0),
+        Action = {
+            Type = "ChangeStage",
+            Stage = "MobileStorage"
+        }
+    },
+
+    Choice_2 = {
+        Display = true,
+        Text = "Aight thanks",
+        Action = {
+            Type = "Close",
+        },
+    },
+
     Choice_3 = {
         Display = false,
     },

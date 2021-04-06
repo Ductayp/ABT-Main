@@ -28,7 +28,7 @@ Fugo_Mob.Animations = {
 }
 
 Fugo_Mob.Defs = {}
-Fugo_Mob.Defs.XpValue = 1000
+Fugo_Mob.Defs.XpValue = 100
 Fugo_Mob.Defs.Health = 200
 Fugo_Mob.Defs.WalkSpeed = 16
 Fugo_Mob.Defs.JumpPower = 50
@@ -176,11 +176,11 @@ function Fugo_Mob.Drop(player, mobData)
         Knit.Services.InventoryService:Give_Item(player, "VirusBulb", 1)
     end
 
-    local cashDropPercent = 50
+    local orbDropPercent = 50
     local rand = math.random(1, 100)
-    if rand <= cashDropPercent then
-        local value = math.random(10,20)
-        Knit.Services.InventoryService:Give_Currency(player, "Cash", value, "MobDrop")
+    if rand <= orbDropPercent then
+        local value = math.random(20,40)
+        Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", value, "MobDrop")
     end
 end
 

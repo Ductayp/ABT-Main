@@ -6,7 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Morioh_Cash = {}
 
-Morioh_Cash.SpawnGroupId = "Morioh_Cash"
+Morioh_Cash.SpawnGroupId = "Morioh_Currency"
 Morioh_Cash.Region = "Morioh"
 Morioh_Cash.MaxSpawned = 10
 Morioh_Cash.TotalSpawned = 0
@@ -26,10 +26,32 @@ Morioh_Cash.Items = {
     },
 
     {
+        Weight = 1,
+        Model = ReplicatedStorage.SpawnItems.Cash,
+        Params = {
+            DataKey = "SoulOrbs",
+            DataCategory = "Currency",
+            MinValue = 50,
+            MaxValue = 250
+        }
+    },
+
+    {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",
+            DataCategory = "Currency",
+            MinValue = 5,
+            MaxValue = 50
+        }
+    },
+
+    {
+        Weight = 10,
+        Model = ReplicatedStorage.SpawnItems.Cash,
+        Params = {
+            DataKey = "SoulOrbs",
             DataCategory = "Currency",
             MinValue = 5,
             MaxValue = 50

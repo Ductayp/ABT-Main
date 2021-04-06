@@ -43,6 +43,7 @@ function ManageStand.Initialize(params, abilityDefs)
 		return
 	end
 
+	--[[
 	-- check the stands toggle and render effects
 	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
 		spawn(function()
@@ -53,6 +54,7 @@ function ManageStand.Initialize(params, abilityDefs)
 			ManageStand.EquipStand(params, abilityDefs)
 		end)
 	end
+	]]--
 
 end
 
@@ -116,10 +118,12 @@ function ManageStand.Execute(params, abilityDefs)
 		return
 	end
 
+	--[[
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
 	end
+	]]--
 
 	-- check the stands toggle and render effects
 	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
@@ -430,7 +434,14 @@ end
 function ManageStand.Aura_Off(params)
 
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	if not playerStandFolder then
+		return
+	end
+
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	if not targetStand then
+		return
+	end
 
 	if targetStand then
 		for _,emitter in pairs(targetStand.Aura:GetDescendants()) do

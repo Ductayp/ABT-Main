@@ -12,6 +12,7 @@ local SoundService = game:GetService("SoundService")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiService = Knit.GetService("GuiService")
+local InventoryService = Knit.GetService("InventoryService")
 local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
@@ -220,8 +221,17 @@ function NPCDialogue.ProcessDialogueChoice(choiceName)
         NPCDialogue.Close()
     end
 
-    if stageDef[choiceName].Action.Type == "BuyItem" then
-        print("BUY ITEM!")
+    if stageDef[choiceName].Action.Type == "SellItem" then
+
+        local sellItemKey = stageDef[choiceName].Action.SellItemKey
+        local sellItemQuantity = stageDef[choiceName].Action.SellItemQuantity
+        local valueKey = stageDef[choiceName].Action.ValueKey
+        local valueQauntity = stageDef[choiceName].Action.ValueQauntity
+
+        print(InventoryService)
+
+        InventoryService:SellItem()
+        --InventoryService:SellItem(sellItemKey, sellItemQuantity, valueKey, valueQauntity)
     end
 
 end

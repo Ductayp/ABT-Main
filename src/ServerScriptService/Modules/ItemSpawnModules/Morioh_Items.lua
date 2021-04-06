@@ -8,53 +8,29 @@ local Morioh_Items = {}
 
 Morioh_Items.SpawnGroupId = "Morioh_Items"
 Morioh_Items.Region = "Morioh"
-Morioh_Items.MaxSpawned = 4
+Morioh_Items.MaxSpawned = 3
 Morioh_Items.TotalSpawned = 0
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
 Morioh_Items.Items = {
 
     {
-        Weight = 300,
-        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
+        Weight = 1,
+        Model = ReplicatedStorage.SpawnItems.VirusBulb,
         Params = {
-            DataKey = "SoulOrbs",
-            DataCategory = "Currency",
-            MinValue = 5,
-            MaxValue = 10
-        }
-    },
-
-    {
-        Weight = 400,
-        Model = ReplicatedStorage.SpawnItems.Arrow,
-        Params = {
-            DataKey = "Arrow",
+            DataKey = "VirusBulb",
             DataCategory = "Item",
         }
     },
 
     {
-        Weight = 450,
-        Model = ReplicatedStorage.SpawnItems.Cash,
+        Weight = 1,
+        Model = ReplicatedStorage.SpawnItems.MaskFragment,
         Params = {
-            DataKey = "Cash",
-            DataCategory = "Currency",
-            MinValue = 5,
-            MaxValue = 50
+            DataKey = "MaskFragment",
+            DataCategory = "Item",
         }
     },
-
-    {
-        Weight = 525,
-        Model = ReplicatedStorage.SpawnItems.XpToken,
-        Params = {
-            DataKey = "StandXP",
-            DataCategory = "StandXP",
-            MinValue = 1,
-            MaxValue = 10
-        }
-    }
 
 }
 

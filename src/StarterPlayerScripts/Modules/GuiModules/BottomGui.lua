@@ -53,6 +53,17 @@ BottomGui.Cooldowns = {
     C = BottomGui.Frame_Main:FindFirstChild("Cooldown_C", true)
  }
 
+ BottomGui.AbilityNames = {
+    Q = BottomGui.Frame_Main:FindFirstChild("AbilityName_Q", true),
+    E = BottomGui.Frame_Main:FindFirstChild("AbilityName_E", true),
+    R = BottomGui.Frame_Main:FindFirstChild("AbilityName_R", true),
+    T = BottomGui.Frame_Main:FindFirstChild("AbilityName_T", true),
+    F = BottomGui.Frame_Main:FindFirstChild("AbilityName_F", true),
+    Z = BottomGui.Frame_Main:FindFirstChild("AbilityName_Z", true),
+    X = BottomGui.Frame_Main:FindFirstChild("AbilityName_X", true),
+    C = BottomGui.Frame_Main:FindFirstChild("AbilityName_C", true)
+ }
+
 -- Constants
 local EMPTY_COOLDOWN_SIZE = UDim2.new(1,0,0,0)
 local FULL_COOLDOWN_SIZE = UDim2.new(1,0,1,0)
@@ -75,9 +86,10 @@ function BottomGui.Setup()
     end)
 
     Players.LocalPlayer.CharacterAdded:Connect(function()
-        repeat wait() until Players.LocalPlayer.Character.Humanoid
+        local humanoid = Players.LocalPlayer.Character:WaitForChild("Humanoid")
+        --repeat wait() until Players.LocalPlayer.Character.Humanoid
         BottomGui.UpdateHealth()
-        Players.LocalPlayer.Character.Humanoid.HealthChanged:Connect(function()
+        humanoid.HealthChanged:Connect(function()
             BottomGui.UpdateHealth()
         end)
     end)
@@ -112,29 +124,40 @@ function BottomGui.Update(data)
         oldIcon:Destroy()
     end
 
-    -- set the stand icon
+    -- if the player is standless
     if data.CurrentStand.Power == "Standless" then
         BottomGui.Frame_Stand.Standless.Visible = true
         BottomGui.Text_StandLevel.Visible = false
         BottomGui.Text_Xp.Text = "0 / 0"
         BottomGui.Frame_Xp.Size = UDim2.new(0,BottomGui.Frame_Health.Size.X.Offset,BottomGui.Frame_Health.Size.Y.Scale,BottomGui.Frame_Health.Size.Y.Offset)
-    else
-        BottomGui.Frame_Stand.Standless.Visible = false
-
-        -- make a new icon
-        local newStandIcon =  mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. data.CurrentStand.Rarity):Clone()
-        newStandIcon.Name = "StandIcon"
-        newStandIcon.Parent = BottomGui.Frame_Stand
-        newStandIcon.Visible = true
-        newStandIcon.BackgroundTransparency = 1
-
-        -- set the XP bar
-        local currentPowerModule = require(Knit.Powers[data.CurrentStand.Power])
-        local maxExperience = currentPowerModule.Defs.MaxXp[data.CurrentStand.Rarity]
-        BottomGui.Text_Xp.Text = data.CurrentStand.Xp .. " / " .. maxExperience
-        local percent = data.CurrentStand.Xp / maxExperience
-        BottomGui.Frame_Xp.Size = UDim2.new(percent,BottomGui.Frame_Health.Size.X.Offset,BottomGui.Frame_Health.Size.Y.Scale,BottomGui.Frame_Health.Size.Y.Offset)
+        for i, v in pairs(BottomGui.AbilityNames) do
+            v.Text = "-"
+        end
+        return
     end
+
+    BottomGui.Frame_Stand.Standless.Visible = false
+
+    local currentPowerModule = require(Knit.Powers[data.CurrentStand.Power])
+
+    -- make a new icon
+    local newStandIcon =  mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. data.CurrentStand.Rarity):Clone()
+    newStandIcon.Name = "StandIcon"
+    newStandIcon.Parent = BottomGui.Frame_Stand
+    newStandIcon.Visible = true
+    newStandIcon.BackgroundTransparency = 1
+
+    -- set the XP bar
+    local maxExperience = currentPowerModule.Defs.MaxXp[data.CurrentStand.Rarity]
+    BottomGui.Text_Xp.Text = data.CurrentStand.Xp .. " / " .. maxExperience
+    local percent = data.CurrentStand.Xp / maxExperience
+    BottomGui.Frame_Xp.Size = UDim2.new(percent,BottomGui.Frame_Health.Size.X.Offset,BottomGui.Frame_Health.Size.Y.Scale,BottomGui.Frame_Health.Size.Y.Offset)
+
+    -- setup the ability buttons
+    for i, v in pairs(currentPowerModule.Defs.KeyMap) do
+        BottomGui.AbilityNames[i].Text = v.AbilityName
+    end
+    
 end
 
 --// SetHealth - we do this seperately becuse it is fired from both the Update function and a Changed event

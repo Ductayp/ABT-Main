@@ -92,10 +92,16 @@ function GuiController:KnitStart()
     repeat wait() until Players.LocalPlayer.Character
     repeat wait() until Players.LocalPlayer.PlayerGui
 
+    -- make sure the players data is loaded
+    local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
+    local playerDataBoolean = playerDataStatuses:WaitForChild(Players.LocalPlayer.UserId)
+    repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
+
     -- do some setups
     GuiController.InventoryWindow.Setup()
     GuiController.StoragePanel.Setup()
     GuiController.ItemPanel.Setup()
+    GuiController.CurrencyBar.Setup()
     GuiController.BoostPanel.Setup()
     GuiController.StandReveal.Setup()
     GuiController.BottomGui.Setup()

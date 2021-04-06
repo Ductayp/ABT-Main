@@ -26,10 +26,15 @@ local GUI_COLOR = {
     Rare = Color3.new(10/255, 202/255, 0/255),
     Legendary = Color3.new(255/255, 149/255, 43/255) 
 }
+local TOGGLE_COLOR = {
+    On = Color3.fromRGB(0, 170, 0),
+    Off = Color3.fromRGB(86, 86, 86)
+}
 
 local StoragePanel = {}
 
 -- variables
+StoragePanel.EvolutionAction = nil -- gets set when a user clicks evolutions
 StoragePanel.StandCardGUID = nil -- this gets set when a player clicks a stand button to show a stand card. Its used in buttons to send the viewed stand for actions
 
 --// DEFS - Storage PANEL ------------------------------------------------------------
@@ -41,20 +46,33 @@ StoragePanel.StandSlot_Equipped = StoragePanel.Panel:FindFirstChild("StandSlot_E
 StoragePanel.Textlabel_Standless = StoragePanel.Panel:FindFirstChild("Textlabel_Standless", true)
 StoragePanel.Icon_Locked = StoragePanel.Panel:FindFirstChild("Icon_Locked", true)
 
+-- stand management buttons
 StoragePanel.Button_Equip = StoragePanel.Panel:FindFirstChild("Button_Equip", true)
 StoragePanel.Button_Sell = StoragePanel.Panel:FindFirstChild("Button_Sell", true)
 StoragePanel.Button_Store = StoragePanel.Panel:FindFirstChild("Button_Store", true)
-StoragePanel.Button_ConfirmSell_Yes = StoragePanel.Panel:FindFirstChild("Button_ConfirmSell_Yes", true)
-StoragePanel.Button_ConfirmSell_No = StoragePanel.Panel:FindFirstChild("Button_ConfirmSell_No", true)
+StoragePanel.Button_Evolve = StoragePanel.Panel:FindFirstChild("Button_Evolve", true)
 
+-- mobile storage stuff
 StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Button_Buy_MobileStorage", true)
 StoragePanel.Frame_ManageButtons_Cover = StoragePanel.Panel:FindFirstChild("Frame_ManageButtons_Cover", true)
 
+-- stand card stuff
 StoragePanel.Stand_Card = StoragePanel.Panel:FindFirstChild("Stand_Card", true)
 StoragePanel.Frame_XP = StoragePanel.Panel:FindFirstChild("Frame_XP", true)
 StoragePanel.Xp_Bar = StoragePanel.Panel:FindFirstChild("Xp_Bar", true)
 StoragePanel.Xp_Text = StoragePanel.Panel:FindFirstChild("Xp_Text", true)
+
+-- evolve panel stuff
+StoragePanel.Frame_Evolve = StoragePanel.Panel:FindFirstChild("Frame_Evolve", true)
+StoragePanel.Frame_ConfirmEvolve = StoragePanel.Panel:FindFirstChild("Frame_ConfirmEvolve", true)
+StoragePanel.Button_ConfirmEvolve_Yes = StoragePanel.Panel:FindFirstChild("Button_ConfirmEvolve_Yes", true)
+StoragePanel.Button_ConfirmEvolve_No = StoragePanel.Panel:FindFirstChild("Button_ConfirmEvolve_No", true)
+StoragePanel.Button_RarityUpgrade = StoragePanel.Panel:FindFirstChild("Button_RarityUpgrade", true)
+
+-- confirm sell stuff
 StoragePanel.Frame_ConfirmSell = StoragePanel.Panel:FindFirstChild("Frame_ConfirmSell", true)
+StoragePanel.Button_ConfirmSell_Yes = StoragePanel.Panel:FindFirstChild("Button_ConfirmSell_Yes", true)
+StoragePanel.Button_ConfirmSell_No = StoragePanel.Panel:FindFirstChild("Button_ConfirmSell_No", true)
 
 --local variables
 local storageDefs = require(Knit.Defs.StandStorageDefs)
@@ -71,7 +89,10 @@ function StoragePanel.Setup()
     StoragePanel.Button_Store.Visible = false
     StoragePanel.Stand_Card.Visible = false
     StoragePanel.Frame_ConfirmSell.Visible = false
+    StoragePanel.Frame_Evolve.Visible = false
+    StoragePanel.Frame_ConfirmEvolve.Visible = false
 
+    -- setup the storage slots
     for slotNumber, slotCost in pairs(storageDefs.SlotCosts) do
         local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. slotNumber, true)
         local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
@@ -90,18 +111,47 @@ function StoragePanel.Setup()
         StoragePanel.StandSlot_Equipped:SetAttribute("LockStatus", "Unlocked")
         StoragePanel.SlotClicked(StoragePanel.StandSlot_Equipped)
     end)
-             
+       
+    -- setup stand manage buttons
     StoragePanel.Button_Equip.MouseButton1Down:Connect(function()
         if selectedStandData.GUID then
             InventoryService:EquipStand(selectedStandData.GUID)
         end
     end)
 
-    StoragePanel.Button_Sell.MouseButton1Down:Connect(function()
-        StoragePanel.Frame_ConfirmSell.Visible = true
-        --StoragePanel.SellStand()
+    StoragePanel.Button_Evolve.MouseButton1Down:Connect(function()
+        StoragePanel.Frame_Evolve.Visible = true
+        StoragePanel.Frame_ConfirmEvolve.Visible = true
+        StoragePanel.Frame_StorageGrid.Visible = false
     end)
 
+    StoragePanel.Button_Store.MouseButton1Down:Connect(function()
+        InventoryService:StoreStand()
+    end)
+
+    StoragePanel.Button_Sell.MouseButton1Down:Connect(function()
+        StoragePanel.Frame_ConfirmSell.Visible = true
+    end)
+
+    -- setup evolution options
+    StoragePanel.Button_RarityUpgrade.MouseButton1Down:Connect(function()
+        StoragePanel.SetEvolutionAction("RarityUpgrade", StoragePanel.Button_RarityUpgrade)
+    end)
+
+    -- setup evolution confirms
+    StoragePanel.Button_ConfirmEvolve_Yes.MouseButton1Down:Connect(function()
+        StoragePanel.ConfirmEvolutionAction()
+    end)
+
+    StoragePanel.Button_ConfirmEvolve_No.MouseButton1Down:Connect(function()
+        if selectedStandData.GUID then
+            StoragePanel.Frame_Evolve.Visible = false
+            StoragePanel.Frame_ConfirmEvolve.Visible = false
+            StoragePanel.Frame_StorageGrid.Visible = true
+        end
+    end)
+
+    -- setup sell confirmation
     StoragePanel.Button_ConfirmSell_Yes.MouseButton1Down:Connect(function()
         if selectedStandData.GUID then
             InventoryService:SellStand(selectedStandData.GUID)
@@ -112,13 +162,12 @@ function StoragePanel.Setup()
         StoragePanel.Frame_ConfirmSell.Visible = false
     end)
 
-    StoragePanel.Button_Store.MouseButton1Down:Connect(function()
-        InventoryService:StoreStand()
-    end)
-
+    -- buy moble storage button
     StoragePanel.Button_Buy_MobileStorage.MouseButton1Down:Connect(function()
         GamePassService:Prompt_GamePassPurchase("MobileStandStorage")
     end)
+
+
 
 end
 
@@ -130,6 +179,9 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
 
     StoragePanel.Stand_Card.Visible = false
     StoragePanel.Frame_ConfirmSell.Visible = false
+    StoragePanel.Frame_Evolve.Visible = false
+    StoragePanel.Frame_ConfirmEvolve.Visible = false
+    StoragePanel.Frame_StorageGrid.Visible = true
 
     -- set data
     selectedStandData = nil
@@ -319,8 +371,26 @@ function StoragePanel.SlotClicked(thisSlot)
 
 end
 
-function StoragePanel.SellStand()
-    StoragePanel.Frame_ConfirmSell.Visible = true
+function StoragePanel.SetEvolutionAction(actionName, buttonObject)
+    
+    if buttonObject.BackgroundColor3 == TOGGLE_COLOR.On then
+        buttonObject.BackgroundColor3 = TOGGLE_COLOR.Off
+        StoragePanel.EvolutionAction = nil
+    else
+        buttonObject.BackgroundColor3 = TOGGLE_COLOR.On
+        StoragePanel.EvolutionAction = actionName
+    end
+end
+
+function StoragePanel.ConfirmEvolutionAction()
+    if selectedStandData.GUID and StoragePanel.EvolutionAction then
+
+        if StoragePanel.EvolutionAction == "RarityUpgrade" then
+            InventoryService:UpgradeStandRarity(selectedStandData.GUID)
+        end
+        
+    end
+    
 end
 
 

@@ -49,7 +49,7 @@ return {
         CodeString = "starterarrow",
         ActionType = "GiveItem",
         Key = "Arrow",
-        Quantity = 1,
+        Quantity = 3,
         Expiration = 1741217469,
         Message = "You got an ARROW! Use it to get a stand."
     },
@@ -63,11 +63,10 @@ return {
         Message = "THANKS FOR HELPING TEST!"
     },
 
-    
     {
         CodeString = "sub2planetmilo",
         ActionType = "GiveItemFinder",
-        Duration = 60,
+        Duration = 12000,
         Expiration = 1741217469,
         Message = "You got Temporary Item Finder Access!"
     },
@@ -79,14 +78,5 @@ return {
         Expiration = 1741217469,
         Message = "You got Temporary Item Finder Access!"
     },
-
-    {
-        CodeString = "booster",
-        ActionType = "GiveItemFinder",
-        Duration = 100000,
-        Expiration = 1741217469,
-        Message = "You got Temporary Item Finder Access!"
-    },
-
 
 }

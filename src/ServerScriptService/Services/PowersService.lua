@@ -23,7 +23,7 @@ PowersService.Client.RenderEffect = RemoteEvent.new()
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
 
-    --print("PowersService:ActivatePower(player,params)", player, params)
+    print("PowersService:ActivatePower(player,params)", player, params)
 
     -- if the player is dialogue locked they cant use powers
     if Knit.Services.GuiService.DialogueLocked[player.UserId] then
@@ -103,9 +103,8 @@ end
 function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
 
     -- be sure we have a character to act on
-    if not targetPlayer.Character then
-        return
-    end
+    if not targetPlayer then return end
+    if not targetPlayer.Character then return end
 
     -- default hitParams
     local hitParams = {}
@@ -190,7 +189,7 @@ function PowersService:RenderEffect_SinglePlayer(player,effect,params)
 end
 
 --// SetPower -- sets the players current power
-function PowersService:SetCurrentPower(player,params)
+function PowersService:SetCurrentPower(player, params)
 
     --print("PowersService:SetCurrentPower(player,params)", player,params)
 

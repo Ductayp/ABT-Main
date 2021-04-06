@@ -31,7 +31,7 @@ RedHot_Mob.Animations = {
 
 --/ Defs
 RedHot_Mob.Defs = {}
-RedHot_Mob.Defs.XpValue = 500
+RedHot_Mob.Defs.XpValue = 66
 RedHot_Mob.Defs.Health = 100
 RedHot_Mob.Defs.WalkSpeed = 0
 RedHot_Mob.Defs.JumpPower = 50
@@ -195,6 +195,13 @@ end
 --// Drop
 function RedHot_Mob.Drop(player, mobData)
 
+    local orbDropPercent = 50
+    local rand = math.random(1, 100)
+    if rand <= orbDropPercent then
+        local value = math.random(20,40)
+        Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", value, "MobDrop")
+    end
+    
 end
 
 

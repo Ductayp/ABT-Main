@@ -28,7 +28,7 @@ Santana_Mob.Animations = {
 }
 
 Santana_Mob.Defs = {}
-Santana_Mob.Defs.XpValue = 500
+Santana_Mob.Defs.XpValue = 33
 Santana_Mob.Defs.Health = 100
 Santana_Mob.Defs.WalkSpeed = 16
 Santana_Mob.Defs.JumpPower = 50
@@ -166,11 +166,11 @@ function Santana_Mob.Drop(player, mobData)
         Knit.Services.InventoryService:Give_Item(player, "MaskFragment", 1)
     end
 
-    local cashDropPercent = 50
+    local orbDropPercent = 60
     local rand = math.random(1, 100)
-    if rand <= cashDropPercent then
+    if rand <= orbDropPercent then
         local value = math.random(10,20)
-        Knit.Services.InventoryService:Give_Currency(player, "Cash", value, "MobDrop")
+        Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", value, "MobDrop")
     end
 end
 

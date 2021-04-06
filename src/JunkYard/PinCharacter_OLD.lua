@@ -20,12 +20,17 @@ function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, 
 
     if not hitCharacter.HumanoidRootPart then return end
 
-    local newAnchor = Instance.new("Part")
-    newAnchor.Transparency = 1
-    newAnchor.Parent = hitCharacter.HumanoidRootPart
-    utils.EasyWeld(newAnchor, hitCharacter.HumanoidRootPart, newAnchor)
-    newAnchor.Anchored = true
-    Debris:AddItem(newAnchor, effectParams.Duration)
+    if hitCharacter.HumanoidRootPart.Anchored == true then
+        return
+    else
+        spawn(function()
+            --local storedAnchorState = hitCharacter.HumanoidRootPart.Anchored
+            hitCharacter.HumanoidRootPart.Anchored = true
+            wait(effectParams.Duration)
+            hitCharacter.HumanoidRootPart.Anchored = false
+            --hitCharacter.HumanoidRootPart.Anchored = storedAnchorState
+        end) 
+    end
 
     -- if this is a mob, then stop its animation here
     if hitParams.IsMob then

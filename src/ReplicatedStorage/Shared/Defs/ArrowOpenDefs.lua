@@ -4,8 +4,8 @@
 return {
     TheWorld = 3,
     KillerQueen = 2,
-    --GoldExperience = 1,
+    --GoldExperience = 10,
     --WhiteSnake = 1,
-    --CrazyDiamond = 1,
+    --CrazyDiamond = 10,
     --TheHand = 1,
 }

@@ -45,41 +45,15 @@ function Barrage.Initialize(params, abilityDefs)
 			return params
 		end
 
-		--[[
-		-- only operate if toggle is off
-		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
-
-			--params.Local_BarrageToggle = AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", true)
-			AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", true)
-			Barrage.RunEffect(params, abilityDefs)
-
-			-- spawn a function to kill the barrage if the duration expires
-			spawn(function()
-				wait(abilityDefs.Duration)
-				AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", false)
-				Barrage.EndEffect(params, abilityDefs)
-			end)
-		end
-		]]--
-
 		params.CanRun = true
 	end
 
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
-
-		--[[
-		if AbilityToggle.GetToggleValue(params.InitUserId, "Client_Barrage") == true then
-			AbilityToggle.SetToggle(params.InitUserId, "Client_Barrage", false)
-			Barrage.EndEffect(params)
-		end
-		]]--
-
 		params.CanRun = true
 	end
 
 	return params
-
 end
 
 --// Activate
@@ -99,7 +73,7 @@ function Barrage.Activate(params, abilityDefs)
 			return params
 		end
 
-		print("acrivate barrage: BEGAN")
+		--print("acrivate barrage: BEGAN")
 
 		-- only operate if toggle is off
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
@@ -126,7 +100,7 @@ function Barrage.Activate(params, abilityDefs)
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
 
-		print("acrivate barrage: ENDED")
+		--print("activate barrage: ENDED")
 
 		if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") == true then
 			AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
@@ -144,16 +118,7 @@ end
 --// Execute
 function Barrage.Execute(params, abilityDefs)
 
-	
-
-	--[[
-	-- do not render for initPlayer
-	if Players.LocalPlayer.UserId == params.InitUserId then
-		--return
-	end
-	]]--
-
-	print("Execute Barrage", params)
+	--print("Execute Barrage", params)
 
 	if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") == true then
 		Barrage.RunEffect(params, abilityDefs)
@@ -249,7 +214,7 @@ end
 --// Run Effect
 function Barrage.RunEffect(params, abilityDefs)
 
-	print("run barrage",params, abilityDefs)
+	--print("run barrage",params, abilityDefs)
 
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
@@ -268,12 +233,7 @@ function Barrage.RunEffect(params, abilityDefs)
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]
 
-	local thisToggle
-	if params.SystemStage == "Initialize" then
-		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Client_Barrage")
-	else
-		thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, params.InputId)
-	end
+	local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")
 
 	spawn(function()
 		while thisToggle.Value == true  do

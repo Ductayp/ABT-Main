@@ -134,7 +134,7 @@ TheWorld.Defs.Abilities.Barrage = {
     Name = "Barrage",
     Id = "Barrage",
     Duration = 5,
-    Cooldown = 10,
+    Cooldown = 7,
     RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 5}},
     Sounds = {

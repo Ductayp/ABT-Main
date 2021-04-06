@@ -19,7 +19,7 @@ local ColorShift = {}
 
 function ColorShift.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
-    print("do it YUP! 1", params)
+    --print("do it YUP! 1", params)
 
     -- only apply this effect to players
     local player = utils.GetPlayerFromCharacter(hitCharacter)
@@ -30,7 +30,7 @@ end
 
 function ColorShift.Client_RenderEffect(params)
 
-    print("do it YUP! 2")
+    --print("do it YUP! 2")
 
     spawn(function()
         local originalColorCorrection = Lighting:FindFirstChild("ColorCorrection")

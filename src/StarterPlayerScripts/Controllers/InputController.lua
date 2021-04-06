@@ -14,12 +14,15 @@ local InputController = Knit.CreateController { Name = "InputController" }
 -- modules
 local utils = require(Knit.Shared.Utils)
 
-l-- local variables
+-- local variables
 local localPlayer = game.Players.LocalPlayer
 local character
 local humanoid
 local canDoubleJump = false
 local hasDoubleJumped = false
+local oldPower
+local TIME_BETWEEN_JUMPS = 0.2
+local DOUBLE_JUMP_POWER_MULTIPLIER = 2
 
 --// SendToPowersService
 function InputController:SendToPowersService(params)
@@ -102,14 +105,19 @@ end
 function InputController:DoubleJumpSetup()
 
     UserInputService.JumpRequest:connect(function()
-    
-        if not character or not humanoid or not character:IsDescendantOf(workspace) or
-        humanoid:GetState() == Enum.HumanoidStateType.Dead then
+
+        if not character or not humanoid or not character:IsDescendantOf(workspace) or humanoid:GetState() == Enum.HumanoidStateType.Dead then
             return
+            print("YEET")
         end
 	
+        print("canDoubleJump", canDoubleJump)
+        print("hasDoubleJumped", hasDoubleJumped)
+
         if canDoubleJump and not hasDoubleJumped then
+            oldPower = humanoid.JumpPower
             hasDoubleJumped = true
+            humanoid.JumpPower = oldPower * DOUBLE_JUMP_POWER_MULTIPLIER
             humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
     end)
@@ -121,7 +129,12 @@ function InputController:CharacterAdded(newCharacter)
 
     humanoid.StateChanged:connect(function(old, new)
         if new == Enum.HumanoidStateType.Freefall then
+            wait(TIME_BETWEEN_JUMPS)
             canDoubleJump = true
+        elseif new == Enum.HumanoidStateType.Landed then
+			canDoubleJump = false
+			hasDoubleJumped = false
+            humanoid.JumpPower = oldPower
         end
     end)
 end
@@ -130,14 +143,14 @@ function InputController:KnitStart()
 
     self:KeyboardSetup()
     self:MouseSetup()
-    self::DoubleJumpSetup()
+    --self:DoubleJumpSetup()
 
     if localPlayer.Character then
-        characterAdded(localPlayer.Character)
+        --self:CharacterAdded(localPlayer.Character)
     end
 
     localPlayer.CharacterAdded:connect(function(newCharacter)
-        self:CharacterAdded(newCharacter)
+        --self:CharacterAdded(newCharacter)
     end)
 
 end

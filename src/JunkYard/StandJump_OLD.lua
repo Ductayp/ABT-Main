@@ -14,13 +14,13 @@ local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 -- default values
-local defaultVelocityX = 7000 
-local defaultVelocityZ = 7000 
-local defaultVelocityY = 1800 
+local defaultVelocityX = 10000 
+local defaultVelocityZ = 10000 
+local defaultVelocityY = 2800 
 local defaultDuration = 0.3
-local forceDelay = .2
 
 local StandJump = {}
 
@@ -39,6 +39,11 @@ function StandJump.Initialize(params, abilityDefs)
 		params.CanRun = false
 		return
     end
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
     
     -- check cooldown
 	if not Cooldown.Client_IsCooled(params) then
@@ -49,6 +54,7 @@ function StandJump.Initialize(params, abilityDefs)
     -- tween effects
     spawn(function()
         StandJump.Run_Effects(params, abilityDefs)
+        StandJump.Run_InitPlayer(params, abilityDefs)
     end)
 	
 end
@@ -76,21 +82,15 @@ function StandJump.Activate(params, abilityDefs)
         return params
     end
 
-     -- require toggles to be inactive, excluding "Q"
-     if not AbilityToggle.RequireOff(params.InitUserId, abilityDefs.RequireToggle_Off) then
-        params.CanRun = false
-        return params
-    end
-
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    -- set toggle
-    AbilityToggle.QuickToggle(params.InitUserId, params.InputId, true)
+    -- block input
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "StandJump", 2)
 
     -- tween hitbox
     spawn(function()
-        StandJump.Run_Server(params, abilityDefs)
+        --StandJump.Run_InitPlayer(params, abilityDefs)
     end)
     
 end
@@ -113,7 +113,7 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
-function StandJump.Run_Server(params, abilityDefs)
+function StandJump.Run_InitPlayer(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -141,14 +141,20 @@ function StandJump.Run_Server(params, abilityDefs)
 
     spawn(function()
 
+        -- handle walkspeed and animations
         spawn(function()
+            --Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Play()
             initPlayer.Character.Humanoid.WalkSpeed = 0
             wait(1)
-            local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
-            initPlayer.Character.Humanoid.WalkSpeed = totalWalkSpeed
+            --Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].PlayerJump:Stop()
+            --local totalWalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+            initPlayer.Character.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
         end)
 
-        wait(forceDelay) -- a short delay to make time for animations
+        --wait(.2) -- a short delay to make time for animations
+
+        -- play the sound
+	    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.StandLeap)
         
         initPlayer.Character.Humanoid.Jump = true
        
@@ -158,6 +164,7 @@ function StandJump.Run_Server(params, abilityDefs)
         Debris:AddItem(positiveBodyForce,duration)
 
         wait(.3)
+
         local negativeBodyForce = Instance.new("BodyForce")
         negativeBodyForce.Force =  Vector3.new(-velocityX,0,-velocityZ)
         negativeBodyForce.Parent = initPlayer.Character.HumanoidRootPart
@@ -177,26 +184,17 @@ function StandJump.Run_Effects(params, abilityDefs)
 		targetStand = ManageStand.QuickRender(params)
     end
 
-    wait(animationDelay) -- a small delay to wait for animations
-
     -- apply depth of field effect for the initPlayer
     if initPlayer == Players.LocalPlayer then
-
         -- depth of field effect
         local newDepthOfField = ReplicatedStorage.EffectParts.Effects.DepthOfField.Default:Clone()
         newDepthOfField.Name = "newDepthOfField"
         newDepthOfField.Parent = game:GetService("Lighting")
-        Debris:AddItem(newDepthOfField,1)
+        Debris:AddItem(newDepthOfField, 1)
     end
 
     --move the stand and do animations
     spawn(function()
-
-        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_2:Play()
-
-        -- player jump animation
-        --local anim = initPlayer.Character.Humanoid:LoadAnimation(ReplicatedStorage.Animations.PlayerJump)
-        --anim:Play()
 
         ManageStand.PlayAnimation(params, "StandJump")
         ManageStand.MoveStand(params, "StandJump")
@@ -205,8 +203,6 @@ function StandJump.Run_Effects(params, abilityDefs)
 
         ManageStand.StopAnimation(params, "StandJump")
         ManageStand.MoveStand(params, "Idle")
-        --anim:Stop()
-        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Punch_2:Stop()
 
     end)
 

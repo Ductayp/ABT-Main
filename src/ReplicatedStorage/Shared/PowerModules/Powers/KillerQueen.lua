@@ -222,7 +222,7 @@ end
 KillerQueen.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
-    Cooldown = 5,
+    Cooldown = 2,
     RequireToggle_On = {"StandEquipped"},
 }
 

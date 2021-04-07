@@ -27,7 +27,7 @@ Morioh_Cash.Items = {
 
     {
         Weight = 1,
-        Model = ReplicatedStorage.SpawnItems.Cash,
+        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
@@ -49,7 +49,7 @@ Morioh_Cash.Items = {
 
     {
         Weight = 10,
-        Model = ReplicatedStorage.SpawnItems.Cash,
+        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",

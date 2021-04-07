@@ -88,11 +88,12 @@ function Barrage.Activate(params, abilityDefs)
 			-- spawn a function to kill the barrage if the duration expires
 			spawn(function()
 				wait(abilityDefs.Duration)
-				AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
-				Barrage.DestroyHitbox(params, abilityDefs)
-				Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-
-				BlockInput.RemoveBlock(params.InitUserId, "Barrage")
+				if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") then
+					AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
+					Barrage.DestroyHitbox(params, abilityDefs)
+					Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+					BlockInput.RemoveBlock(params.InitUserId, "Barrage")
+				end
 			end)
 		end
 	end
@@ -106,7 +107,6 @@ function Barrage.Activate(params, abilityDefs)
 			AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
 			Barrage.DestroyHitbox(params)
 			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-
 			BlockInput.RemoveBlock(params.InitUserId, "Barrage")
 		end
 	end
@@ -240,12 +240,15 @@ function Barrage.RunEffect(params, abilityDefs)
 			Barrage.ShootArm(initPlayer, effectArm)
 			wait(armSpawnRate)
 		end
+		Barrage.EndEffect(params, abilityDefs)
 	end)
 
 end
 
 --// End Effect
 function Barrage.EndEffect(params, abilityDefs)
+
+	print("END BARRAGE")
 
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then

@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -101,42 +102,7 @@ end
 --// --------------------------------------------------------------------
 
 function StandJump.Run_Server(params, abilityDefs)
-
-    spawn(function()
-
-        -- get initPlayer
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-
-        -- declare here for use everywhere
-        local velocityX
-        local velocityZ
-        local velocityY
-        local duration
-
-        -- grab the LookVector before we do anything else
-        local lookVector = initPlayer.Character.HumanoidRootPart.CFrame.LookVector
-        velocityX = lookVector.X * defaultVelocityX 
-        velocityZ = lookVector.Z * defaultVelocityZ
-        velocityY = defaultVelocityY
-        duration = defaultDuration
-
-        -- play the sound
-	    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.StandLeap)
-
-
-        -- do the body mover
-        local bodyPosition = Instance.new("BodyPosition")
-        bodyPosition.MaxForce = Vector3.new(10000,10000,10000)
-        bodyPosition.P = 50000
-        bodyPosition.D = 2000
-        bodyPosition.Position = (initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 40, -400)).Position
-        bodyPosition.Parent = initPlayer.Character.HumanoidRootPart
-        Debris:AddItem(bodyPosition, .2)
-        spawn(function()
-            wait(.2)
-            bodyPosition:Destroy()
-        end)
-    end)
+    -- nothing
 end
 
 function StandJump.Run_Client(params, abilityDefs)
@@ -150,22 +116,15 @@ function StandJump.Run_Client(params, abilityDefs)
 		targetStand = ManageStand.QuickRender(params)
     end
 
-    -- apply depth of field effect for the initPlayer
-    if initPlayer == Players.LocalPlayer then
-        -- depth of field effect
-        local newDepthOfField = ReplicatedStorage.EffectParts.Effects.DepthOfField.Default:Clone()
-        newDepthOfField.Name = "newDepthOfField"
-        newDepthOfField.Parent = game:GetService("Lighting")
-        Debris:AddItem(newDepthOfField, 1)
-    end
+    -- play the sound
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.StandLeap)
 
-    
 
     --move the stand and do animations
     spawn(function() 
         ManageStand.PlayAnimation(params, "StandJump")
         ManageStand.MoveStand(params, "StandJump")
-        wait(.7)
+        wait(1.5)
         ManageStand.StopAnimation(params, "StandJump")
         ManageStand.MoveStand(params, "Idle")
     end)
@@ -187,7 +146,46 @@ function StandJump.Run_Client(params, abilityDefs)
     sizeTween:Play()
     fadeTween:Play()
 
+    -- apply deffect to the initPlayer
+    if initPlayer == Players.LocalPlayer then
 
+        -- depth of field effect
+        local newDepthOfField = ReplicatedStorage.EffectParts.Effects.DepthOfField.Default:Clone()
+        newDepthOfField.Name = "newDepthOfField"
+        newDepthOfField.Parent = game:GetService("Lighting")
+        Debris:AddItem(newDepthOfField, 1)
+
+        -- declare here for use everywhere
+        local velocityX
+        local velocityZ
+        local velocityY
+        local duration
+
+        -- grab the LookVector before we do anything else
+        local lookVector = initPlayer.Character.HumanoidRootPart.CFrame.LookVector
+        velocityX = lookVector.X * defaultVelocityX 
+        velocityZ = lookVector.Z * defaultVelocityZ
+        velocityY = defaultVelocityY
+        duration = defaultDuration
+
+        -- do the body mover
+        local bodyPosition = Instance.new("BodyPosition")
+        bodyPosition.MaxForce = Vector3.new(10000,10000,10000)
+        bodyPosition.P = 50000
+        bodyPosition.D = 6000
+        bodyPosition.Position = (initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 150, -300)).Position
+        bodyPosition.Parent = initPlayer.Character.HumanoidRootPart
+
+        local duration = 0.4
+        local startTime = tick()
+        while tick() < startTime + duration do
+            RunService.Heartbeat:Wait()
+        end
+        bodyPosition:Destroy()
+
+    end
+
+    --[[ -- trails commented out because they didnt look great, but im leaving them here justin case :)
     -- add some trails
     local locations = {"Head","UpperTorso","LeftLowerLeg","RightLowerLeg","LeftHand","RightHand"}
     for count = 1, 6 do
@@ -203,8 +201,8 @@ function StandJump.Run_Client(params, abilityDefs)
             newTrail:Destroy()
         end)
     end
+    ]]--
 
-    
 
 end
 

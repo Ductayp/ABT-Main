@@ -215,7 +215,7 @@ end
 CrazyDiamond.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
-    Cooldown = 2,
+    Cooldown = 3,
     RequireToggle_On = {"StandEquipped"},
 }
 

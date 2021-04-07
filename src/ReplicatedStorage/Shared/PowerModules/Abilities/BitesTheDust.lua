@@ -131,7 +131,6 @@ function BitesTheDust.Run_Server(params, abilityDefs)
     local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, false)
     newHitbox.OnHit:Connect(function(hit, humanoid)
         if humanoid.Parent ~= initPlayer.Character then
-            print("hit 1")
             BitesTheDust.HitCharacter(initPlayer, humanoid.Parent, abilityDefs)
         end
     end)

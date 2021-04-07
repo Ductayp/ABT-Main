@@ -42,20 +42,6 @@ function ManageStand.Initialize(params, abilityDefs)
 		print("not cooled down")
 		return
 	end
-
-	--[[
-	-- check the stands toggle and render effects
-	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
-		spawn(function()
-			ManageStand.RemoveStand(params, abilityDefs)
-		end)
-	else
-		spawn(function()
-			ManageStand.EquipStand(params, abilityDefs)
-		end)
-	end
-	]]--
-
 end
 
 --// Activate
@@ -70,11 +56,8 @@ function ManageStand.Activate(params, abilityDefs)
 
 	if params.ForceRemoveStand then
 		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
-		--if equippedStand then
-			--equippedStand:Destroy()
-		--end
 		params.CanRun = true
-		return
+		return params
 	end
 
 	-- check KeyState
@@ -112,30 +95,16 @@ end
 function ManageStand.Execute(params, abilityDefs)
 
 	if params.ForceRemoveStand then
-		spawn(function()
-			ManageStand.RemoveStand(params, abilityDefs)
-		end)
+		ManageStand.RemoveStand(params, abilityDefs)
 		return
 	end
-
-	--[[
-	if Players.LocalPlayer.UserId == params.InitUserId then
-		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
-		return
-	end
-	]]--
 
 	-- check the stands toggle and render effects
 	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
-		spawn(function()
-			ManageStand.EquipStand(params, abilityDefs)
-		end)
+		ManageStand.EquipStand(params, abilityDefs)
 	else
-		spawn(function()
-			ManageStand.RemoveStand(params, abilityDefs)
-		end)
+		ManageStand.RemoveStand(params, abilityDefs)
 	end
-
 end
 
 
@@ -176,9 +145,8 @@ function ManageStand.EquipStand(params, abilityDefs)
 	newWeld.Parent = newStand.HumanoidRootPart
 
 	-- do the auras
-	ManageStand.Aura_On(params)
-	wait(.5)
 	spawn(function()
+		ManageStand.Aura_On(params)
 		wait(5)
 		ManageStand.Aura_Off(params)
 	end)
@@ -240,22 +208,18 @@ function ManageStand.RemoveStand(params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
-	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-	if not targetStand then
-		return
-	end
 
-	-- do the auras
-	ManageStand.Aura_On(params)
-	wait(.2)
-	spawn(function()
-		wait(1)
-		ManageStand.Aura_Off(params)
-	end)
-
-	-- if theres a stand, get rid of it
 	if targetStand then
+
+		local initPlayerRoot = initPlayer.Character.HumanoidRootPart
+
+		-- do the auras
+		spawn(function()
+			ManageStand.Aura_On(params)
+			wait(1)
+			ManageStand.Aura_Off(params)
+		end)
 		
 		local noTweenFolder = targetStand:FindFirstChild("NoTween")
 		if noTweenFolder then
@@ -265,7 +229,7 @@ function ManageStand.RemoveStand(params, abilityDefs)
 		end
 
 		-- play the sound
-		WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityDefs.Sounds.Remove)
+		WeldedSound.NewSound(initPlayerRoot, abilityDefs.Sounds.Remove)
 
 		-- weld tween
 		local thisWeld = targetStand:FindFirstChild("StandWeld", true)
@@ -273,7 +237,6 @@ function ManageStand.RemoveStand(params, abilityDefs)
 			local spawnTween = TweenService:Create(thisWeld,TweenInfo.new(.5),{C1 = CFrame.new(0,0,0)})
 			spawnTween:Play()
 		end
-		
 		
 		-- Tween transparency
 		local tweenDuration = .5
@@ -291,13 +254,15 @@ function ManageStand.RemoveStand(params, abilityDefs)
 		end
 
 		-- for parts in the "NoTween" folder, just make them visible once its all done
-		local noTweenFolder = targetStand.StandParts:FindFirstChild("NoTween")
-		if noTweenFolder then
-			for i,v in pairs (noTweenFolder:GetChildren()) do
-				v.Transparency = 1
+		if targetStand.StandParts then
+			local noTweenFolder = targetStand.StandParts:FindFirstChild("NoTween")
+			if noTweenFolder then
+				for i,v in pairs (noTweenFolder:GetChildren()) do
+					v.Transparency = 1
+				end
 			end
 		end
-
+		
 		spawn(function()
 			wait(tweenDuration + 1)
 			playerStandFolder:ClearAllChildren()

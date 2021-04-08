@@ -25,7 +25,7 @@ function Blast.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
         -- send the visual effects to all clients
         params.HitCharacter = hitCharacter
-        Knit.Services.PowersService:RenderEffect_AllPlayers("Blast",params)
+        Knit.Services.PowersService:RenderEffect_AllPlayers("Blast", params)
         
     end
 

@@ -17,5 +17,4 @@ projectileData["Function"] = function(result)
     end
 end
 
-
 hitboxMod:CastProjectileHitbox(projectileData)

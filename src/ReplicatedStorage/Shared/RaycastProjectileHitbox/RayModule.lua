@@ -2,6 +2,7 @@ local rayModule = {}
 
 local RunService = game:GetService("RunService")
 local PhysicsService = game:GetService("PhysicsService")
+local Debris = game:GetService("Debris")
 
 local function ConvertToVector(CF)
     return typeof(CF) == "CFrame" and CF.Position or CF
@@ -36,7 +37,8 @@ function rayModule:Visualize(Orgin, Goal, Color)
     Beam.CanCollide = false
     Beam.Size = Vector3.new(0.1, 0.1, Distance)
     Beam.CFrame = CFrame.new(StartPosition, EndPosition) * CFrame.new(0, 0, -Distance / 2)
-    Beam.Parent = game.Workspace:FindFirstChild("Debris") or game.Workspace
+    Beam.Parent = game.Workspace:FindFirstChild("RenderedEffects") or game.Workspace
+    Debris:AddItem(Beam, 5)
 end
 
 return rayModule

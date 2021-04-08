@@ -165,13 +165,13 @@ end
 CrazyDiamond.Defs.Abilities.BulletLaunch = {
     Name = "Bullet Launch",
     Id = "BulletLaunch",
-    Cooldown = 8,
+    Cooldown = .1,
     RequireToggle_On = {"StandEquipped"},
-    --AbilityMod = Knit.AbilityMods.BasicGrenade_BulletLaunch,
+    AbilityMod = Knit.Abilities.BasicProjectile.BulletLaunch,
 }
 
 function CrazyDiamond.BulletLaunch(params)
-    --params = require(Knit.Abilities.BasicGrenade)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.BulletLaunch)
+    params = require(Knit.Abilities.BulletLaunch)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.BulletLaunch)
 end
 
 

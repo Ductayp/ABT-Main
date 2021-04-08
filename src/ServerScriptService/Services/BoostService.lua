@@ -191,6 +191,9 @@ function BoostService:PlayerAdded(player)
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
 
+    -- wait for the character to be loaded
+    local character = player.Character or player.CharacterAdded:Wait()
+
     -- create an entry for the player in the timer table
     BoostService.PlayerTimers[player.UserId] = {}
 
@@ -216,11 +219,6 @@ end
 --// KnitStart
 function BoostService:KnitStart()
 
-end
-
---// KnitInit
-function BoostService:KnitInit()
-
     -- Player Added event
     Players.PlayerAdded:Connect(function(player)
         self:PlayerAdded(player)
@@ -235,6 +233,11 @@ function BoostService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         self:PlayerRemoved(player)
     end)
+end
+
+--// KnitInit
+function BoostService:KnitInit()
+
 
 end
 

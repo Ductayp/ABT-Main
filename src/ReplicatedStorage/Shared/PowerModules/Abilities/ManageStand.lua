@@ -55,6 +55,7 @@ function ManageStand.Activate(params, abilityDefs)
 	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand") -- this is a pointer to the un-cloned model in Replicated
 
 	if params.ForceRemoveStand then
+		
 		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
 		params.CanRun = true
 		return params

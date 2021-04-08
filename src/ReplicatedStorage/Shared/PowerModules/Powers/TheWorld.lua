@@ -194,7 +194,7 @@ TheWorld.Defs.Abilities.KnifeThrow = {
 }
 
 function TheWorld.KnifeThrow(params)
-    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheWorld.Defs.Abilities.KnifeThrow)
+    params = require(Knit.Abilities.BasicProjectile_OLD)[params.SystemStage](params, TheWorld.Defs.Abilities.KnifeThrow)
 end
 
 --------------------------------------------------------------------------------------------------

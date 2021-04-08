@@ -1,6 +1,6 @@
 local hitboxModule = {}
 
-local rayMod = require(game.ReplicatedStorage.RayModule)
+local rayMod = require(script.RayModule)
 
 function hitboxModule:GetSquarePoints(CF, x, y)
 	

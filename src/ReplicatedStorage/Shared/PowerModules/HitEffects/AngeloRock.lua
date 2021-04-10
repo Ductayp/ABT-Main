@@ -21,7 +21,7 @@ function DestroyEffectParts.Server_ApplyEffect(initPlayer, hitCharacter, params)
     end
     
     params.HitCharacter = hitCharacter
-    Knit.Services.PowersService:RenderEffect_AllPlayers("DestroyEffectParts", params)
+    Knit.Services.PowersService:RenderHitEffect_AllPlayers("DestroyEffectParts", params)
 end
 
 function DestroyEffectParts.Client_RenderEffect(params)

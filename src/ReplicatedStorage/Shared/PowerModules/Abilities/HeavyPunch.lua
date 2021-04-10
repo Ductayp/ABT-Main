@@ -53,7 +53,7 @@ function HeavyPunch.Initialize(params, abilityDefs)
 
     -- tween effects
     spawn(function()
-        HeavyPunch.Run_Effects(params, abilityDefs)
+        --HeavyPunch.Run_Effects(params, abilityDefs)
     end)
 	
 end
@@ -95,10 +95,12 @@ end
 --// Execute
 function HeavyPunch.Execute(params, abilityDefs)
 
+    --[[
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
 	end
+    ]]--
 
     -- tween effects
 	HeavyPunch.Run_Effects(params, abilityDefs)

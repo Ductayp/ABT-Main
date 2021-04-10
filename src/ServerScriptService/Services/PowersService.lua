@@ -18,7 +18,8 @@ local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
-PowersService.Client.RenderEffect = RemoteEvent.new()
+PowersService.Client.RenderHitEffect = RemoteEvent.new()
+PowersService.Client.RenderAbilityEffect = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
@@ -127,11 +128,16 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     local hitParams = {} -- additional params we need to pass into the effects
 
     -- get damage multiplier
+    local damageMultiplier = require(Knit.StateModules.Multiplier_Damage).GetTotalMultiplier(initPlayer)
+    hitParams.DamageMultiplier = damageMultiplier
+    print("HIT: DMG MULT: ", damageMultiplier)
+    --[[
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(initPlayer)
     local findPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
     if findPowerModule then
         hitParams.DamageMultiplier = require(findPowerModule).Defs.DamageMultiplier[playerData.CurrentStand.Rarity]
     end
+    ]]--
 
     -- test if a player or a mob, then set variables
     local isPlayer = utils.GetPlayerFromCharacter(characterHit)
@@ -176,14 +182,24 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
 end
 
---// RenderEffectAllPlayers -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
-function PowersService:RenderEffect_AllPlayers(effect,params)
-    self.Client.RenderEffect:FireAll(effect,params)
+--// RenderEffectAllPlayers 
+function PowersService:RenderHitEffect_AllPlayers(effect,params)
+    self.Client.RenderHitEffect:FireAll(effect,params)
 end
 
---// RenderEffectSinglePlayer -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
-function PowersService:RenderEffect_SinglePlayer(player,effect,params)
-    self.Client.RenderEffect:Fire(player,effect,params)
+--// RenderEffectSinglePlayer 
+function PowersService:RenderHitEffect_SinglePlayer(player,effect,params)
+    self.Client.RenderHitEffect:Fire(player,effect,params)
+end
+
+--// RenderAbilityEffect_AllPlayers
+function PowersService:RenderAbilityEffect_AllPlayers(abilityModule, functionName, params)
+    self.Client.RenderAbilityEffect:FireAll(abilityModule, functionName, params)
+end
+
+--// RenderAbilityEffect_SinglePlayers
+function PowersService:RenderAbilityEffect_SinglePlayers(abilityModule, functionName, params)
+    self.Client.RenderAbilityEffect:Fire(player, abilityModule, functionName, params)
 end
 
 --// SetPower -- sets the players current power
@@ -326,6 +342,7 @@ function PowersService:KnitInit()
 
     -- make some folders
     local effectFolder = utils.EasyInstance("Folder",{Name = "RenderedEffects",Parent = workspace})
+    local effectFolder_2 = utils.EasyInstance("Folder",{Name = "RenderedEffects_BlockAbility",Parent = workspace})
     local standsFolder = utils.EasyInstance("Folder",{Name = "PlayerStands",Parent = workspace})
     local serverHitboxes = utils.EasyInstance("Folder",{Name = "ServerHitboxes",Parent = workspace})
     local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})

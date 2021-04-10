@@ -40,7 +40,7 @@ local SphereFields = {}
 function SphereFields.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     params.HitCharacter = hitCharacter
-    Knit.Services.PowersService:RenderEffect_AllPlayers("SphereFields",params)
+    Knit.Services.PowersService:RenderHitEffect_AllPlayers("SphereFields",params)
 
 end
 

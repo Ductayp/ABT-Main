@@ -299,7 +299,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 end
 
 --// RenderEffectAllPlayers -- this function can be called from anywhere and will render Effects from Knit.Effects on all clients
-function PowersService:RenderEffect_AllPlayers(effect,params)
+function PowersService:RenderHitEffect_AllPlayers(effect,params)
     self.Client.RenderEffect:FireAll(effect,params)
 end
 

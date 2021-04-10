@@ -333,10 +333,11 @@ function ManageStand.QuickRender(params)
 end
 
 -- PlayAnimation
-function ManageStand.PlayAnimation(params, animationName)
+function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 
-	local animationTime
+	--print("PLAY", params, animationName, animationSpeed)
 
+	local animationLength
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	
@@ -346,13 +347,18 @@ function ManageStand.PlayAnimation(params, animationName)
 		local thisAnimation = ReplicatedStorage.StandAnimations:FindFirstChild(animationName)
 		if thisAnimation then
 			local newTrack = animationController:LoadAnimation(thisAnimation)
+
 			newTrack:Play()
+			--print("newTrack",newTrack)
+			if animationSpeed then
+				newTrack:AdjustSpeed(animationSpeed)
+				--print("newTrack.Speed",newTrack.Speed)
+			end
 			animationTime = newTrack.Length
 		end
-		thisAnimation = nil
 	end
 
-	return animationTime
+	return animationLength
 end
 
 -- StopAnimation

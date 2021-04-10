@@ -23,7 +23,7 @@ function DepthOfField.Server_ApplyEffect(initPlayer,hitCharacter, params)
 
     local player = utils.GetPlayerFromCharacter(hitCharacter)
     if player then
-        Knit.Services.PowersService:RenderEffect_SinglePlayer(player,"DepthOfField",params)
+        Knit.Services.PowersService:RenderHitEffect_AllPlayers(player,"DepthOfField",params)
     end
 
 end

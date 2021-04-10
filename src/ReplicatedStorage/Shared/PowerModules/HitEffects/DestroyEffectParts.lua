@@ -21,7 +21,7 @@ function AngeloRock.Server_ApplyEffect(initPlayer, hitCharacter, params)
     end
     
     params.HitCharacter = hitCharacter
-    Knit.Services.PowersService:RenderEffect_AllPlayers("AngeloRock", params)
+    Knit.Services.PowersService:RenderHitEffect_AllPlayers("AngeloRock", params)
 end
 
 function AngeloRock.Client_RenderEffect(params)

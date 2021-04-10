@@ -69,10 +69,15 @@ function PowersController:ExecutePower(params)
 end
 
 --// RenderEffect -- render general effects
-function PowersController:RenderEffect(effect,params)
-
+function PowersController:RenderHitEffect(effect, params)
     local effectModule = require(Knit.HitEffects[effect])
     effectModule.Client_RenderEffect(params)
+end
+
+--// RenderAbilityEffect
+function PowersController:RenderAbilityEffect(abilityModule, functionName, params)
+    local thisModule = require(abilityModule)
+    thisModule[functionName](params)
 end
 
 --// RenderExistingStands
@@ -114,8 +119,12 @@ function PowersController:KnitStart()
         self:ExecutePower(initPlayer,params)
     end)
 
-    PowersService.RenderEffect:Connect(function(effect,params)
-        self:RenderEffect(effect,params)
+    PowersService.RenderHitEffect:Connect(function(effect,params)
+        self:RenderHitEffect(effect, params)
+    end)
+
+    PowersService.RenderAbilityEffect:Connect(function(abilityModule, functionName, params)
+        self:RenderAbilityEffect(abilityModule, functionName, params)
     end)
 
 end

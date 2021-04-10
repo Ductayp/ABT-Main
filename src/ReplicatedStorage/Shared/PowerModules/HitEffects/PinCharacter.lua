@@ -37,7 +37,7 @@ function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, 
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitPlayer then
         print("hitPlayer", hitPlayer)
-        Knit.Services.PowersService:RenderEffect_SinglePlayer(hitPlayer, "PinCharacter", effectParams)
+        Knit.Services.PowersService:RenderHitEffect_AllPlayers(hitPlayer, "PinCharacter", effectParams)
         require(Knit.PowerUtils.BlockInput).AddBlock(hitPlayer.UserId, "PinCharacter", effectParams.Duration)
     end
 

@@ -45,7 +45,7 @@ function Poison.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
     local renderParams = {}
     renderParams.HitCharacter = hitCharacter
     renderParams.Duration = effectParams.TickTime * effectParams.TickCount
-    Knit.Services.PowersService:RenderEffect_AllPlayers("Poison", renderParams)
+    Knit.Services.PowersService:RenderHitEffect_AllPlayers("Poison", renderParams)
 
 end
 

@@ -44,10 +44,12 @@ function Punch.Initialize(params, abilityDefs)
 		return
     end
     
+    --[[
     -- tween effects
     spawn(function()
         Punch.Run_Effects(params, abilityDefs)
     end)
+    ]]--
 	
 end
 
@@ -84,10 +86,12 @@ end
 --// Execute
 function Punch.Execute(params, abilityDefs)
 
+    --[[
 	if Players.LocalPlayer.UserId == params.InitUserId then
 		--print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
 	end
+    ]]--
 
     -- tween effects
 	Punch.Run_Effects(params, abilityDefs)

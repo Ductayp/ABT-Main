@@ -56,7 +56,7 @@ function KnockBack.Server_ApplyEffect(initPlayer, hitCharacter, params)
         
         -- send the visual effects to all clients
         params.HitCharacter = hitCharacter
-        Knit.Services.PowersService:RenderEffect_AllPlayers("KnockBack",params)
+        Knit.Services.PowersService:RenderHitEffect_AllPlayers("KnockBack",params)
     end
 
 end

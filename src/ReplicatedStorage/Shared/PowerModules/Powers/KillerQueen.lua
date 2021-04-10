@@ -64,12 +64,14 @@ KillerQueen.Defs = {
 function KillerQueen.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "KillerQueen_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "KillerQueen_Setup", KillerQueen.Defs.HealthModifier[params.Rarity], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup", KillerQueen.Defs.DamageMultiplier[params.Rarity], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function KillerQueen.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "KillerQueen_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "KillerQueen_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.

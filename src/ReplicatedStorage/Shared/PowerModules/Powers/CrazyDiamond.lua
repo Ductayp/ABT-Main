@@ -38,7 +38,7 @@ CrazyDiamond.Defs = {
             AbilityName = "Wall Blast"
         },
         T = {
-            AbilityName = "Bullet Launch"
+            AbilityName = "Bullet Barrage"
         },
         R = {
             AbilityName = "Stone Punch"
@@ -59,12 +59,14 @@ CrazyDiamond.Defs = {
 function CrazyDiamond.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rarity], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rarity], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function CrazyDiamond.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CrazyDiamond_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -78,7 +80,7 @@ function CrazyDiamond.Manager(params)
     elseif params.InputId == "R" then
         CrazyDiamond.StonePunch(params)
     elseif params.InputId == "T" then
-        CrazyDiamond.BulletLaunch(params)
+        CrazyDiamond.BulletBarrage(params)
     elseif params.InputId == "F" then
         CrazyDiamond.WallBlast(params)
     elseif params.InputId == "X" then
@@ -129,7 +131,9 @@ CrazyDiamond.Defs.Abilities.Barrage = {
     RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 3}},
     Sounds = {
-        Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
+        --Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
+        Barrage = ReplicatedStorage.Audio.StandSpecific.CrazyDiamond.DoraBarrage
+
     }
 }
 
@@ -145,7 +149,7 @@ end
 CrazyDiamond.Defs.Abilities.StonePunch = {
     Name = "Stone Punch",
     Id = "StonePunch",
-    Cooldown = 5,
+    Cooldown = 10,
     RequireToggle_On = {"StandEquipped"},
     HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}},
     Sounds = {
@@ -162,16 +166,17 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.BulletLaunch = {
-    Name = "Bullet Launch",
-    Id = "BulletLaunch",
-    Cooldown = .1,
+CrazyDiamond.Defs.Abilities.BulletBarrage = {
+    Name = "Bullet Barrage",
+    Id = "BulletBarrage",
+    Cooldown = 6,
     RequireToggle_On = {"StandEquipped"},
-    AbilityMod = Knit.Abilities.BasicProjectile.BulletLaunch,
+    HitEffects = {Damage = {Damage = 5}},
+    --AbilityMod = Knit.Abilities.BasicProjectile.BulletBarrage,
 }
 
-function CrazyDiamond.BulletLaunch(params)
-    params = require(Knit.Abilities.BulletLaunch)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.BulletLaunch)
+function CrazyDiamond.BulletBarrage(params)
+    params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.BulletBarrage)
 end
 
 
@@ -183,12 +188,13 @@ end
 CrazyDiamond.Defs.Abilities.WallBlast = {
     Name = "Wall Blast",
     Id = "WallBlast",
-    Cooldown = 20,
+    Cooldown = 6,
+    Duration = 5,
     RequireToggle_On = {"StandEquipped"},
 }
 
 function CrazyDiamond.WallBlast(params)
-    --params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.WallBlast)
+    params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.WallBlast)
 end
 
 
@@ -200,11 +206,13 @@ end
 CrazyDiamond.Defs.Abilities.RageBoost = {
     Name = "Rage Boost",
     Id = "RageBoost",
-    Cooldown = 15,
+    Cooldown = 90,
+    Duration = 20,
+    Multiplier = 2
 }
 
 function CrazyDiamond.RageBoost(params)
-    --params = require(Knit.Abilities.BasicSeeker)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.RageBoost)
+    params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.RageBoost)
 end
 
 --------------------------------------------------------------------------------------------------

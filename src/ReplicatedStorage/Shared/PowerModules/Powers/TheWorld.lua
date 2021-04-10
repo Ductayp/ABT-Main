@@ -65,6 +65,7 @@ function TheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rarity], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "TheWorld_Setup", TheWorld.Defs.DamageMultiplier[params.Rarity], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
@@ -72,6 +73,7 @@ function TheWorld.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "TheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "TheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "TheWorld_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "TheWorld_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -155,7 +157,7 @@ TheWorld.Defs.Abilities.TimeStop = {
     Name = "Time Stop",
     Id = "TimeStop",
     Duration = 8,
-    Cooldown = 30,
+    Cooldown = 60,
     Range = 80,
     RequireToggle_On = {"StandEquipped"},
     HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}}, 

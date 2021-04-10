@@ -67,7 +67,7 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
         renderParams.Damage = actualDamage
         renderParams.HitCharacter = hitCharacter
         renderParams.HideEffects = effectParams.HideEffects
-        Knit.Services.PowersService:RenderEffect_AllPlayers("Damage", renderParams)
+        Knit.Services.PowersService:RenderHitEffect_AllPlayers("Damage", renderParams)
     end
 
 end

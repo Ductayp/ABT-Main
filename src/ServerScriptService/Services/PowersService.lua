@@ -63,7 +63,7 @@ end
 --// ForceRemoveStand 
 function PowersService:ForceRemoveStand(player)
 
-    print("PowersService:ForceRemoveStand(player)", player)
+    --print("PowersService:ForceRemoveStand(player)", player)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
@@ -121,7 +121,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    -- print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     -- setup some variables
     local canHit = false

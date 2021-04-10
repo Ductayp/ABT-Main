@@ -123,8 +123,11 @@ function BulletLaunch.Run_Server(params, abilityDefs)
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     local rootPart = initPlayer.Character.HumanoidRootPart
 
-    local ignoreList = require(Knit.Shared.RaycastProjectileHitbox.IgnoreList)
-    --table.insert(ignoreList, initPlayer.Character)
+    local ignoreList = {initPlayer.Character}
+    local masterList = require(Knit.Shared.RaycastProjectileHitbox.IgnoreList)
+    for _, v in pairs(masterList) do
+        table.insert(ignoreList, v)
+    end
 
     spawn(function()
         Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Point:Play()
@@ -136,7 +139,7 @@ function BulletLaunch.Run_Server(params, abilityDefs)
     for count = 1, shotCount do
         local randX = math.random(-200,200) / 100
         local randY = math.random(-200,200) / 100
-        local bulletOrigin = params.HRPOrigin:ToWorldSpace(CFrame.new(randX, randY, -3))
+        local bulletOrigin = params.HRPOrigin:ToWorldSpace(CFrame.new(randX, randY, -2))
         local bulletID = params.InitUserId .. "_BulletBarrage_" .. bulletSerial
         bulletSerial = bulletSerial + 1
         params.BulletsFired[count] = {}
@@ -219,6 +222,11 @@ function BulletLaunch.Run_Client(params, abilityDefs)
         bullet.CFrame = thisBulletDef.Origin
         bullet.Name = thisBulletDef.ID
 
+        bullet.Touched:Connect(function(hit)
+            if hit.Parent.Name == "RenderedEffects_BlockAbility" then
+                bullet:Destroy()
+            end
+        end)
 
         spawn(function()
             local waitTime = (shotDelay * count) - shotDelay

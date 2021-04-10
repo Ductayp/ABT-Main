@@ -118,7 +118,8 @@ function RageBoost.Run_Effects(params, abilityDefs)
     end)
     
     -- play the sound when it is fired
-	WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.AgressiveYell)
+	--WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.AgressiveYell)
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.CrazyDiamond.JosukeScream)
     
     local rageText = ReplicatedStorage.EffectParts.Abilities.RageBoost.RageText:Clone()
     rageText.Parent = character.Head

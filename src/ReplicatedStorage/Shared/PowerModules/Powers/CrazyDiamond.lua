@@ -190,6 +190,7 @@ CrazyDiamond.Defs.Abilities.WallBlast = {
     Id = "WallBlast",
     Cooldown = 6,
     Duration = 5,
+    HitEffects = {Damage = {Damage = 30}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
     RequireToggle_On = {"StandEquipped"},
 }
 

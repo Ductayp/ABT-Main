@@ -3,6 +3,7 @@
 -- 12-1-2020
 
 --Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")

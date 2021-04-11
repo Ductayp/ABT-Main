@@ -144,17 +144,24 @@ function WallBlast.Run_Server(params, abilityDefs)
         projectileData["BreakOnHit"] = false
         projectileData["Ignore"] = require(Knit.Shared.RaycastProjectileHitbox.IgnoreList)
 
+        local charactersHit = {} -- table to hld characters already hit so we dont hit them twice
+
         projectileData["Function"] = function(result)
             if result.Instance.Parent then
 
-                --local resultParams = {}
-                --resultParams.Position = result.Position
-                --resultParams.BulletID = bulletID
-                --Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "BulletImpact", resultParams)
-
                 if result.Instance.Parent:FindFirstChild("Humanoid") then
                     --print("HIT A HUMANOID", result.Instance.Parent)
-                    Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+                    local canHit = true
+                    for _, v in pairs(charactersHit) do
+                        if v == result.Instance.Parent then
+                            canHit = false
+                        end
+                    end
+
+                    if canHit then
+                        table.insert(charactersHit, result.Instance.Parent)
+                        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+                    end
                 end
             end
         end
@@ -234,10 +241,10 @@ function WallBlast.Run_Effects(params, abilityDefs)
             brick.CFrame = v.CFrame
 
             -- bodyVelocity settings
-            local maxForce = 1000 --math.huge
+            local maxForce = math.huge
             brick.BodyVelocity.MaxForce = Vector3.new(maxForce,maxForce,maxForce)
-            brick.BodyVelocity.P = 1000
-            local randVelocity = math.random(150,300)
+            brick.BodyVelocity.P = 2000
+            local randVelocity = math.random(200,300)
             brick.BodyVelocity.Velocity = newWall.CFrame.LookVector * randVelocity
 
             -- angularVelocity settings
@@ -246,6 +253,17 @@ function WallBlast.Run_Effects(params, abilityDefs)
             local randZ = math.random(-10,10)
             brick.BodyAngularVelocity.AngularVelocity = Vector3.new(randX, randY, randZ)
 
+
+            local whiteBlock = brick:Clone()
+            whiteBlock.Name = "white"
+            whiteBlock.Size = Vector3.new(.5,.5,.5)
+            whiteBlock.Color= Color3.fromRGB(255, 255, 255)
+
+            local randX = math.random(-100, 100) / 100
+            local randZ = math.random(-100, 100) / 100
+            whiteBlock.CFrame = v.CFrame * CFrame.new(randX, randY, 0)
+
+            table.insert(blastBricks, whiteBlock)
             table.insert(blastBricks, brick)
         end
     end
@@ -257,14 +275,109 @@ function WallBlast.Run_Effects(params, abilityDefs)
 
     for _, brick in pairs(blastBricks) do
         brick.Parent = Workspace.RenderedEffects
-        Debris:AddItem(brick, 5)
-
-        local transparencyTween = TweenService:Create(brick, TweenInfo.new(1),{Transparency = 1})
-        transparencyTween:Play()
+        --local transparencyTween = TweenService:Create(brick, TweenInfo.new(.4),{Transparency = 1})
+        --transparencyTween:Play()
+        spawn(function()
+            wait(.15)
+            brick:Destroy()
+        end)
     end
     
+    local blastMesh_1 = ReplicatedStorage.EffectParts.Abilities.WallBlast.BlastMesh_1:Clone()
+    blastMesh_1.CFrame = params.WallCFrame
+    blastMesh_1.Parent = Workspace.RenderedEffects
+
+    local blastMesh_2 = ReplicatedStorage.EffectParts.Abilities.WallBlast.BlastMesh_2:Clone()
+    blastMesh_2.CFrame = params.WallCFrame
+    blastMesh_2.Parent = Workspace.RenderedEffects
+
+    local blastMesh_3 = ReplicatedStorage.EffectParts.Abilities.WallBlast.BlastMesh_3:Clone()
+    blastMesh_3.CFrame = params.WallCFrame
+    blastMesh_3.Parent = Workspace.RenderedEffects
+
+    --[[
+    local tween_1 = TweenService:Create(blastMesh_1, weenInfo.new(.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Transparency = 1})
+    local tween_2 = TweenService:Create(blastMesh_1, weenInfo.new(.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Transparency = 1})
+    ]]--
+
+    local allTweens = {}
+    allTweens.BlastMesh_1 = {
+        Part = blastMesh_1.shock_1,
+        DebrisTime = 5,
+        Tweens = {
+            --[[
+            SizeTween = {
+                Tween_Info = TweenInfo.new(.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+                Tween_Params = {Size = Vector3.new(2,2,2)},
+                Delay = 0
+            },
+            ]]--
+            TransparencyTween = {
+                Tween_Info = TweenInfo.new(1),
+                Tween_Params = {Transparency = 1},
+                Delay = 0
+            },
+        }
+    }
+
+    allTweens.BlastMesh_2 = {
+        Part = blastMesh_2.shock_2,
+        DebrisTime = 5,
+        Tweens = {
+            --[[
+            SizeTween = {
+                Tween_Info = TweenInfo.new(.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+                Tween_Params = {Size = Vector3.new(2,2,2)},
+                Delay = 0
+            },
+            ]]--
+            TransparencyTween = {
+                Tween_Info = TweenInfo.new(1),
+                Tween_Params = {Transparency = 1},
+                Delay = 0
+            },
+        }
+    }
+
+    allTweens.BlastMesh_3 = {
+        Part = blastMesh_3.Smoke,
+        DebrisTime = 5,
+        Tweens = {
+            SizeTween = {
+                Tween_Info = TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+                Tween_Params = {Size = Vector3.new(25,25,25)},
+                Delay = 0
+            },
+            TransparencyTween = {
+                Tween_Info = TweenInfo.new(4),
+                Tween_Params = {Transparency = 1},
+                Delay = 0
+            },
+        }
+    }
+
+    -- setup and tween
+    for _, partTable in pairs(allTweens) do
+
+        print("partTable", partTable)
+
+        Debris:AddItem(partTable.Part, partTable.DebrisTime)
+
+        for _,tween in pairs(partTable.Tweens) do
+
+            spawn(function()
+                wait(tween.Delay)
+                local thisTween = TweenService:Create(partTable.Part, tween.Tween_Info, tween.Tween_Params)
+                thisTween:Play()
+                print("YEET")
+                --thisTween = nil
+            end)
+
+        end
+    end
+
+    WeldedSound.NewSound(blastMesh_3, ReplicatedStorage.Audio.General.Explosion_1)
     newWall:Destroy()
-    
 
 end
 

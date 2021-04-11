@@ -190,7 +190,7 @@ CrazyDiamond.Defs.Abilities.WallBlast = {
     Id = "WallBlast",
     Cooldown = 6,
     Duration = 5,
-    HitEffects = {Damage = {Damage = 30}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
+    HitEffects = {Damage = {Damage = 20}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
     RequireToggle_On = {"StandEquipped"},
 }
 
@@ -207,6 +207,7 @@ end
 CrazyDiamond.Defs.Abilities.RageBoost = {
     Name = "Rage Boost",
     Id = "RageBoost",
+    RequireToggle_On = {"StandEquipped"},
     Cooldown = 90,
     Duration = 20,
     Multiplier = 2

@@ -6,6 +6,6 @@ return {
     KillerQueen = 2,
     --GoldExperience = 10,
     --WhiteSnake = 1,
-    --CrazyDiamond = 10,
+    CrazyDiamond = 1,
     --TheHand = 1,
 }

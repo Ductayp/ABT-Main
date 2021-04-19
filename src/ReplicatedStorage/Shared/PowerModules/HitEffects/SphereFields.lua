@@ -66,7 +66,8 @@ function SphereFields.Client_RenderEffect(params)
             thisSphere.Material = Enum.Material.ForceField
             thisSphere.Transparency = -.5
             thisSphere.Color = Color3.new(1, 1, 1)
-            thisSphere.CFrame = params.HitCharacter.UpperTorso.CFrame
+            thisSphere.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
+            --thisSphere.CFrame = params.HitCharacter.UpperTorso.CFrame
 
             -- set color random if param is true
             if params.RandomColor then

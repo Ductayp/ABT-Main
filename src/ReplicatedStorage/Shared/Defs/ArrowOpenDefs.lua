@@ -2,10 +2,10 @@
 -- each key has a weight, the larger the number the more likely to be picked
 
 return {
-    TheWorld = 3,
+    TheWorld = 1,
     KillerQueen = 2,
-    --GoldExperience = 10,
+    --GoldExperience = 1,
     --WhiteSnake = 1,
-    CrazyDiamond = 1,
+    CrazyDiamond = 3,
     --TheHand = 1,
 }

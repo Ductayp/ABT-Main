@@ -24,7 +24,10 @@ PowersService.Client.RenderAbilityEffect = RemoteEvent.new()
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
 
-    print("PowersService:ActivatePower(player,params)", player, params)
+    --print("PowersService:ActivatePower(player,params)", player, params)
+    
+    if not player.Character then return end
+    if player.Character.Humanoid.Health < 1 then return end
 
     -- if the player is dialogue locked they cant use powers
     if Knit.Services.GuiService.DialogueLocked[player.UserId] then
@@ -82,9 +85,43 @@ function PowersService:ForceRemoveStand(player)
 
 end
 
---// Client:ActivatePower -- fired by client to activate apower
-function PowersService.Client:ClientActivatePower(player,params)
-    self.Server:ActivatePower(player,params)
+
+
+--// SetPower -- sets the players current power
+function PowersService:SetCurrentPower(player, params)
+
+    --print("PowersService:SetCurrentPower(player,params)", player,params)
+
+    -- get the players current power and run the remove function if it exists
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
+    if currentPowerModule then
+        local removePowerModule = require(currentPowerModule)
+        local removePowerParams = {} --right now this is nil, but we can add things later if we need to
+        if removePowerModule.RemovePower then
+            removePowerModule.RemovePower(player,removePowerParams)
+        end
+    else
+        print("no power exists with that name, cant run the REMOVE POWER function")
+        --return
+    end
+
+    if Knit.Powers:FindFirstChild(params.Power) then
+        local setupPowerModule = require(Knit.Powers[params.Power])
+        local setupPowerParams = {} 
+        setupPowerParams.Rarity = params.Rarity
+        if setupPowerModule.SetupPower then
+            setupPowerModule.SetupPower(player, setupPowerParams)
+        end
+    end
+
+    playerData.CurrentStand = params
+
+    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+    self:PlayerRefresh(player)
+
 end
 
 --// GetCurrentPower
@@ -94,11 +131,9 @@ function PowersService:GetCurrentPower(player)
     return currentPower
 end
 
---// Client:GetCurrentPower
-function PowersService.Client:GetCurrentPower(player)
-    --local currentPower = self.Server:GetCurrentPower(player)
-    return self.Server:GetCurrentPower(player)
-end
+-----------------------------------------------------------------------------------------------------------------------------
+--// HIT REGISTRATION FUNCTIONS
+-----------------------------------------------------------------------------------------------------------------------------
 
 --// NPC_RegisterHit
 function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
@@ -130,14 +165,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     -- get damage multiplier
     local damageMultiplier = require(Knit.StateModules.Multiplier_Damage).GetTotalMultiplier(initPlayer)
     hitParams.DamageMultiplier = damageMultiplier
-    print("HIT: DMG MULT: ", damageMultiplier)
-    --[[
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(initPlayer)
-    local findPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
-    if findPowerModule then
-        hitParams.DamageMultiplier = require(findPowerModule).Defs.DamageMultiplier[playerData.CurrentStand.Rarity]
-    end
-    ]]--
 
     -- test if a player or a mob, then set variables
     local isPlayer = utils.GetPlayerFromCharacter(characterHit)
@@ -182,6 +209,10 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
 end
 
+-----------------------------------------------------------------------------------------------------------------------------
+--// EFFECT RENDERING FUNCTIONS
+-----------------------------------------------------------------------------------------------------------------------------
+
 --// RenderEffectAllPlayers 
 function PowersService:RenderHitEffect_AllPlayers(effect,params)
     self.Client.RenderHitEffect:FireAll(effect,params)
@@ -198,61 +229,21 @@ function PowersService:RenderAbilityEffect_AllPlayers(abilityModule, functionNam
 end
 
 --// RenderAbilityEffect_SinglePlayers
-function PowersService:RenderAbilityEffect_SinglePlayers(abilityModule, functionName, params)
+function PowersService:RenderAbilityEffect_SinglePlayers(player, abilityModule, functionName, params)
     self.Client.RenderAbilityEffect:Fire(player, abilityModule, functionName, params)
 end
 
---// SetPower -- sets the players current power
-function PowersService:SetCurrentPower(player, params)
-
-    --print("PowersService:SetCurrentPower(player,params)", player,params)
-
-    -- get the players current power and run the remove function if it exists
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
-    if currentPowerModule then
-        local removePowerModule = require(currentPowerModule)
-        local removePowerParams = {} --right now this is nil, but we can add things later if we need to
-        if removePowerModule.RemovePower then
-            removePowerModule.RemovePower(player,removePowerParams)
-        end
-    else
-        print("no power exists with that name, cant run the REMOVE POWER function")
-        --return
-    end
-
-    -- run the new powers setup function
-    if Knit.Powers:FindFirstChild(params.Power) then
-        local setupPowerModule = require(Knit.Powers[params.Power])
-        local setupPowerParams = {} 
-        setupPowerParams.Rarity = params.Rarity
-        if setupPowerModule.SetupPower then
-            setupPowerModule.SetupPower(player, setupPowerParams)
-        end
-    end
-
-    -- give the stand t the playerData
-    playerData.CurrentStand = params
-
-    -- update the gui
-    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-
-    -- run the player setup so we can start fresh
-    self:PlayerRefresh(player)
-
-end
+-----------------------------------------------------------------------------------------------------------------------------
+--// PLAYER MANAGEMENT
+-----------------------------------------------------------------------------------------------------------------------------
 
 --// PlayerRefresh - fires when the player joins and after each death
 function PowersService:PlayerRefresh(player)
 
-    -- wait for the character
     repeat wait() until player.Character
 
-    -- cleanup before setup
     self:PlayerCleanup(player)
 
-    -- setup player folders
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
@@ -263,7 +254,6 @@ end
 --// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh
 function PowersService:PlayerCleanup(player)
 
-    -- cleanup folders
     local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
     for _,location in pairs(cleanupLocations) do
         for _,object in pairs(location:GetChildren()) do
@@ -277,15 +267,12 @@ end
 --// PlayerAdded - run once when the player joins the game
 function PowersService:PlayerAdded(player)
 
-    -- make sure the players data is loaded
     local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
 
-    -- refresh the player, this sets up all their folders (it happens a second time when we set powers, i guess we just VERY sure it happens!)
     self:PlayerRefresh(player)
 
-    -- setup the current powers
     local character = player.Character or player.CharacterAdded:Wait()
     if character then
         local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -297,19 +284,37 @@ end
 --// CharacterAdded - run once when the player joins the game
 function PowersService:CharacterAdded(player)
 
-    -- setup the current powers
+
     local character = player.Character or player.CharacterAdded:Wait()
     if character then
         local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
         self:SetCurrentPower(player, playerData.CurrentStand)
     end
+
 end
 
+-----------------------------------------------------------------------------------------------------------------------------
+--// CLIENT FUNCTIONS
+-----------------------------------------------------------------------------------------------------------------------------
+
+--// Client:ActivatePower -- fired by client to activate apower
+function PowersService.Client:ClientActivatePower(player,params)
+    self.Server:ActivatePower(player,params)
+end
+
+--// Client:GetCurrentPower
+function PowersService.Client:GetCurrentPower(player)
+    --local currentPower = self.Server:GetCurrentPower(player)
+    return self.Server:GetCurrentPower(player)
+end
+
+-----------------------------------------------------------------------------------------------------------------------------
+--// KNIT STARTUP
+-----------------------------------------------------------------------------------------------------------------------------
 
 --// KnitStart
 function PowersService:KnitStart()
 
-        -- Player Added event
         Players.PlayerAdded:Connect(function(player)
             self:PlayerAdded(player)
     

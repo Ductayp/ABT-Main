@@ -94,6 +94,21 @@ function PlayerDataService:GetPlayerData(player)
 	end
 end
 
+function PlayerDataService:ResetPlayerData(player)
+    local profile = profiles[player]
+    if profile then
+		profile.Data = nil
+        profile.Data = profileTemplate
+	end
+end
+
+function PlayerDataService:WipePlayerData(player)
+    local profile = profiles[player]
+    if profile then
+		--PlayerDataService.gameProfileStore:WipeProfileAsync("Player_" .. player.UserId)
+	end
+end
+
 function PlayerDataService.Client:GetPlayerData(player)
     --print("yes",player)
     --self:GetPlayerData(player)

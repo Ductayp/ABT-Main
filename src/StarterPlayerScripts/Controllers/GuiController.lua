@@ -142,6 +142,10 @@ function GuiController:KnitStart()
         GuiController.StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
     end)
 
+    GuiService.Event_Update_StoragePanel_Access:Connect(function(hasGamePass, isInZone)
+        GuiController.StoragePanel.Update_Access(hasGamePass, isInZone)
+    end)
+
     GuiService.Event_Update_Cooldown:Connect(function(params)
         GuiController.BottomGui.UpdateCooldown(params)
     end)

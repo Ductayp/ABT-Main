@@ -17,6 +17,7 @@ Morioh_Items.Items = {
         Model = ReplicatedStorage.SpawnItems.Arrow,
         Params = {
             DataKey = "Arrow",
+            Quantity = 1,
             DataCategory = "Item",
         }
     },

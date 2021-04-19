@@ -31,11 +31,15 @@ NPCDialogue.Text_Title = NPCDialogue.Frame:FindFirstChild("Text_Title", true)
 NPCDialogue.Text_Body = NPCDialogue.Frame:FindFirstChild("Text_Body", true)
 
 NPCDialogue.AllProximityPrompts = {} -- a table to held them all
-NPCDialogue.DialogueModules = {}
+NPCDialogue.DialogueModules = {} -- the current active dialogue module, gets set when you open a dialogue
 
 local currentDialogueDef = {}
 local currentStageName
-local defaultChoiceButtonSize = UDim2.new(0.3, 0, 0.9, 0)
+local disableChoiceButtons = false
+local defaultButtonProperties = {
+    Size = UDim2.new(0.3, 0, 0.9, 0),
+    BackgroundColor3 = Color3.fromRGB(59,59,59)
+}
 
 
 --// Setup
@@ -51,17 +55,23 @@ function NPCDialogue.Setup()
 
     -- dialogue choice1 button
     NPCDialogue.Button_Choice1.MouseButton1Down:Connect(function()
-        NPCDialogue.ProcessDialogueChoice("Choice_1")
+        if not disableChoiceButtons then
+            NPCDialogue.ProcessDialogueChoice("Choice_1", NPCDialogue.Button_Choice1)
+        end
     end)
 
     -- dialogue choice2 button
     NPCDialogue.Button_Choice2.MouseButton1Down:Connect(function()
-        NPCDialogue.ProcessDialogueChoice("Choice_2")
+        if not disableChoiceButtons then
+            NPCDialogue.ProcessDialogueChoice("Choice_2", NPCDialogue.Button_Choice2)
+        end
     end)
 
     -- dialogue choice3 button
     NPCDialogue.Button_Choice3.MouseButton1Down:Connect(function()
-        NPCDialogue.ProcessDialogueChoice("Choice_3")
+        if not disableChoiceButtons then
+            NPCDialogue.ProcessDialogueChoice("Choice_3", NPCDialogue.Button_Choice3)
+        end
     end)
 
     -- connect proximity prompts
@@ -144,6 +154,7 @@ end
 function NPCDialogue.RenderDialogueWindow()
 
     local stageDef = currentDialogueDef.Stage[currentStageName]
+    if not stageDef then return end
 
     -- render the icon
     for _, icon in pairs(NPCDialogue.Frame_Icons:GetChildren()) do
@@ -167,11 +178,18 @@ function NPCDialogue.RenderDialogueWindow()
         NPCDialogue.Button_Choice1.Visible = true
         NPCDialogue.Button_Choice1.Active = true
         NPCDialogue.Button_Choice1.Text = stageDef.Choice_1.Text
-        if stageDef.Choice_1.CustomSize then
-            NPCDialogue.Button_Choice1.Size = stageDef.Choice_1.CustomSize
+
+        if stageDef.Choice_1.CustomProperties then
+            for propName, propValue in pairs(stageDef.Choice_1.CustomProperties) do
+                NPCDialogue.Button_Choice1[propName] = propValue
+            end
         else
-            NPCDialogue.Button_Choice1.Size = defaultChoiceButtonSize
+            for propName, propValue in pairs(defaultButtonProperties) do
+                NPCDialogue.Button_Choice1[propName] = propValue
+            end
         end
+
+
     else
         NPCDialogue.Button_Choice1.Visible = false
         NPCDialogue.Button_Choice1.Active = false
@@ -181,11 +199,17 @@ function NPCDialogue.RenderDialogueWindow()
         NPCDialogue.Button_Choice2.Visible = true
         NPCDialogue.Button_Choice2.Active = true
         NPCDialogue.Button_Choice2.Text = stageDef.Choice_2.Text
-        if stageDef.Choice_2.CustomSize then
-            NPCDialogue.Button_Choice2.Size = stageDef.Choice_2.CustomSize
+
+        if stageDef.Choice_2.CustomProperties then
+            for propName, propValue in pairs(stageDef.Choice_2.CustomProperties) do
+                NPCDialogue.Button_Choice2[propName] = propValue
+            end
         else
-            NPCDialogue.Button_Choice2.Size = defaultChoiceButtonSize
+            for propName, propValue in pairs(defaultButtonProperties) do
+                NPCDialogue.Button_Choice2[propName] = propValue
+            end
         end
+        
     else
         NPCDialogue.Button_Choice2.Visible = false
         NPCDialogue.Button_Choice2.Active = false
@@ -195,11 +219,16 @@ function NPCDialogue.RenderDialogueWindow()
         NPCDialogue.Button_Choice3.Visible = true
         NPCDialogue.Button_Choice3.Active = true
         NPCDialogue.Button_Choice3.Text = stageDef.Choice_3.Text
-        if stageDef.Choice_3.CustomSize then
-            NPCDialogue.Button_Choice3.Size = stageDef.Choice_3.CustomSize
+        if stageDef.Choice_3.CustomProperties then
+            for propName, propValue in pairs(stageDef.Choice_3.CustomProperties) do
+                NPCDialogue.Button_Choice3[propName] = propValue
+            end
         else
-            NPCDialogue.Button_Choice3.Size = defaultChoiceButtonSize
+            for propName, propValue in pairs(defaultButtonProperties) do
+                NPCDialogue.Button_Choice3[propName] = propValue
+            end
         end
+        
     else
         NPCDialogue.Button_Choice3.Visible = false
         NPCDialogue.Button_Choice3.Active = false
@@ -207,7 +236,7 @@ function NPCDialogue.RenderDialogueWindow()
 end
 
 --// ProcessDialogueChoice
-function NPCDialogue.ProcessDialogueChoice(choiceName)
+function NPCDialogue.ProcessDialogueChoice(choiceName, button)
 
     local stageDef = currentDialogueDef.Stage[currentStageName]
     
@@ -221,18 +250,44 @@ function NPCDialogue.ProcessDialogueChoice(choiceName)
         NPCDialogue.Close()
     end
 
-    if stageDef[choiceName].Action.Type == "SellItem" then
+    if stageDef[choiceName].Action.Type == "Shop" then
 
-        local sellItemKey = stageDef[choiceName].Action.SellItemKey
-        local sellItemQuantity = stageDef[choiceName].Action.SellItemQuantity
-        local valueKey = stageDef[choiceName].Action.ValueKey
-        local valueQauntity = stageDef[choiceName].Action.ValueQauntity
+        local shopParams = {}
+        shopParams.ModuleName = stageDef[choiceName].Action.ModuleName
+        shopParams.TransactionKey = stageDef[choiceName].Action.TransactionKey
 
-        print(InventoryService)
+        local shopSuccess = InventoryService:NPCTransaction(shopParams)
+        print("shopSuccess", shopSuccess)
 
-        InventoryService:SellItem()
-        --InventoryService:SellItem(sellItemKey, sellItemQuantity, valueKey, valueQauntity)
+        local originalText = button.Text
+        local originalTextColor = button.TextColor3
+        if shopSuccess then
+            spawn(function()
+                button.Text = "SUCCESS"
+                button.TextColor3 = Color3.fromRGB(0, 255, 0)
+                disableChoiceButtons = true
+                wait(2)
+                button.Text = originalText
+                button.TextColor3 = originalTextColor
+                disableChoiceButtons = false
+            end)
+        else
+            spawn(function()
+                button.Text = "FAILURE"
+                button.TextColor3 = Color3.fromRGB(255, 0, 0)
+                disableChoiceButtons = true
+                wait(2)
+                button.Text = originalText
+                button.TextColor3 = originalTextColor
+                disableChoiceButtons = false
+            end)
+        end
+
     end
+
+    
+
+
 
 end
 

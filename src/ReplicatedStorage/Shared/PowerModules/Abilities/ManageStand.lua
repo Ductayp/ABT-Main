@@ -1,6 +1,7 @@
 -- Stand Manager
 
 --Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
@@ -337,11 +338,12 @@ function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 
 	--print("PLAY", params, animationName, animationSpeed)
 
-	local animationLength
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	local playerStandFolder = Workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	if not targetStand then return end
 	
 	-- run the animation
+	local animationLength
 	local animationController = targetStand:FindFirstChild("AnimationController")
 	if animationController then
 		local thisAnimation = ReplicatedStorage.StandAnimations:FindFirstChild(animationName)

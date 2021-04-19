@@ -157,6 +157,7 @@ function Barrage.CreateHitbox(params, abilityDefs)
 	-- make a new hitbox
 	--local newHitbox = RaycastHitbox:Initialize(hitPart)
 	local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
+	wait()
 	--newHitbox:DebugMode(true)
 
 	-- cycle the hitbox
@@ -193,6 +194,8 @@ end
 --// Shoot Arm 
 function Barrage.ShootArm(initPlayer, effectArm)
 
+	if not initPlayer.Character.HumanoidRootPart then return end
+
 	-- clone a single arm and parent it, add it to the Debris
 	local newArm = effectArm:Clone()
 	newArm.Parent = Workspace.RenderedEffects
@@ -215,6 +218,8 @@ end
 function Barrage.RunEffect(params, abilityDefs)
 
 	--print("run barrage",params, abilityDefs)
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	if not initPlayer.Character.HumanoidRootPart then return end
 
 	-- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
@@ -230,7 +235,6 @@ function Barrage.RunEffect(params, abilityDefs)
 	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Barrage, {SpeakerProperties = {Name = "Barrage"}, SoundProperties = {Looped = true}})
 
 	-- spawn the arms shooter
-	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]
 
 	local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")

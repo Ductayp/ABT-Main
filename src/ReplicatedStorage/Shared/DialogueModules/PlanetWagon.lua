@@ -13,7 +13,7 @@ module.Stage.Start = {
     IconName = "Icon_PlanetWagon",
     Title = "Planet Wagon (A.K.A. Planet_Dad)",
     Body = "Yo Homie! Glad you stopped by!<br /><br />" ..
-            "To get you started, just click the TWITTER button on the left and enter this code to get your first arrow.<br /><br />" ..
+            "To get you started, just click the TWITTER button on the left and enter this code to get 3 arrows.<br /><br />" ..
             "CODE: <b>StarterArrow</b>",
     Choice_1 = {
         Display = true,
@@ -32,15 +32,12 @@ module.Stage.Start = {
         }
     },
     Choice_3 = {
-        Display = false,
-        --[[
         Display = true,
-        Text = "I just need codes",
+        Text = "Any more codes?",
         Action = {
             Type = "ChangeStage",
-            Stage = "Codes"
+            Stage = "Codes2"
         }
-        ]]--
     },
 }
 
@@ -59,14 +56,13 @@ module.Stage.PlanetIntro = {
     },
     Choice_2 = {
         Display = false,
-        --[[
         Display = true,
         Text = "Did you say CODES?",
+        CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
-            Stage = "Codes"
+            Stage = "Codes2"
         }
-        ]]--
     },
     Choice_3 = {
         Display = false,
@@ -97,16 +93,18 @@ module.Stage.Codes = {
         Display = false,
     },
 }
+]]--
 
 module.Stage.Codes2 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Well, follow us on YouTube and Twitter and we will drop the fresh ones, also dont forget to join the Discord. oh TAGS? Well you know...",
+    Body = "Just use the starter code for 3 arrows: <b>StarterArrow</b><br/><br/>Follow us on YouTube, Twitter, and join Dis-cord for fresh codes. Links are on the Roblox game page.",
     Choice_1 = {
         Display = true,
-        Text = "Aight then",
+        Text = "So, how do I play?",
         Action = {
-            Type = "Close",
+            Type = "ChangeStage",
+            Stage = "QuickTutorial1"
         }
     },
     Choice_2 = {
@@ -116,12 +114,12 @@ module.Stage.Codes2 = {
         Display = false,
     },
 }
-]]--
+
 
 module.Stage.QuickTutorial1 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Well, first you need to find an arrow, they aren't super common but you should be able to find one if you look around. I also have a code for an arrow to get you started.",
+    Body = "Well, first you need to find an arrow, there should always be a few on the map.<br/><br/>When someone grabs one, another one spawns.",
     Choice_1 = {
         Display = true,
         Text = "Ok, then what?",
@@ -131,8 +129,9 @@ module.Stage.QuickTutorial1 = {
         }
     },
     Choice_2 = {
-        Display = false,
+        Display = false
         --[[
+        Display = false,
         Display = true,
         Text = "Did you say codes?",
         Action = {
@@ -149,7 +148,7 @@ module.Stage.QuickTutorial1 = {
 module.Stage.QuickTutorial2 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Next, open your inventory and use it! You will gain a new power called a STAND. Hit the Q key to summon it!",
+    Body = "Next, open your inventory and use it! You will gain a new power called a STAND.<br/><br/>Hit the Q key to summon it!",
     Choice_1 = {
         Display = true,
         Text = "Ok, then what?",
@@ -169,7 +168,7 @@ module.Stage.QuickTutorial2 = {
 module.Stage.QuickTutorial3 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Then you gotta GRIND! Your stand will gain XP as you kill mobs and you can SACRIFICE it to gain Soul Orbs.<br/><br/>Pucci Can tell you more about that at his Shop.",
+    Body = "Then you gotta GRIND! Your stand will gain XP and SOUL ORBS as you kill mobs. When your stand reaches max XP, you use the SOUL ORBS to EVOLVE it.<br/><br/><b>Pucci Can tell you more about that at his Shop.</b>",
     Choice_1 = {
         Display = true,
         Text = "And then? ...",
@@ -189,10 +188,11 @@ module.Stage.QuickTutorial3 = {
 module.Stage.QuickTutorial4 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "There are 3 rarities of each stand: Common, Rare and Legendary and each does more damage than the last. You probably need to get pretty lucky to get a Legendary.",
+    Body = "EACH and EVERY stand has 3 rarity versions: Common, Rare and Legendary. Each does more damage than the last and looks different.<br/><br/><b>Talk to Pucci at his shop for more info.</b>",
     Choice_1 = {
         Display = true,
         Text = "Wow! Then what?",
+        CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
             Stage = "QuickTutorial5"
@@ -209,10 +209,32 @@ module.Stage.QuickTutorial4 = {
 module.Stage.QuickTutorial5 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Then grind, explore and have fun! Be sure to talk to all the NPCs on the map to learn more about the game.<br/>Dont forget to sub to Planet Milo on YouTube for codes and leaks.",
+    Body = "If you need to remove your stand, you can SACFRICICE it or STORE it at Pucci's Shop.<br/><br/><b>You really should go visit the place, its just down the road by the Harbor!!!</b>",
     Choice_1 = {
         Display = true,
-        Text = "Aight then, thanks!",
+        Text = "I will go see Pucci, Then what?",
+        CustomProperties = {Size = UDim2.new(0.6, 0, 0.9, 0)},
+        Action = {
+            Type = "ChangeStage",
+            Stage = "QuickTutorial6"
+        }
+    },
+    Choice_2 = {
+        Display = false
+    },
+    Choice_3 = {
+        Display = false
+    },
+}
+
+module.Stage.QuickTutorial6 = {
+    IconName = "Icon_PlanetWagon",
+    Title = "PlanetWagon (A.K.A. Planet_Dad)",
+    Body = "Then grind, explore and have fun! Be sure to talk to all the NPCs on the map to learn more about the game.<br/><br/>Dont forget to sub to Planet Milo on YouTube for codes and leaks.",
+    Choice_1 = {
+        Display = true,
+        Text = "A'ight then, thanks!",
+        CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Close",
         }

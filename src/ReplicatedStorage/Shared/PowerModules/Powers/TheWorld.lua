@@ -178,25 +178,12 @@ end
 TheWorld.Defs.Abilities.KnifeThrow = {
     Name = "Knife Throw",
     Id = "KnifeThrow",
-    Cooldown = 5,
-    Range = 75,
-    Speed = 90,
-    Projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Projectile,
-    HitBox = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Hitbox,
-    StandAnimation = "KnifeThrow",
-    StandMove = {
-        PositionName = "Front",
-        ReturnDelay = 0.5,
-    },
     RequireToggle_On = {"StandEquipped"},
-    HitEffects = {Damage = {Damage = 20}},
-    Sounds = {
-        Shoot = ReplicatedStorage.Audio.General.GenericWhoosh_Slow
-    }
+    AbilityMod = Knit.Abilities.BasicProjectile.KnifeThrow
 }
 
 function TheWorld.KnifeThrow(params)
-    params = require(Knit.Abilities.BasicProjectile_OLD)[params.SystemStage](params, TheWorld.Defs.Abilities.KnifeThrow)
+    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheWorld.Defs.Abilities.KnifeThrow)
 end
 
 --------------------------------------------------------------------------------------------------

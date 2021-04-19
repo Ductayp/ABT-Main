@@ -21,7 +21,7 @@ Knit.PowerUtils = ReplicatedStorage.GameFiles.Shared.PowerModules.PowerUtils
 Knit.ClientModules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules
 
 Knit.GuiModules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules.GuiModules
-Knit.DialogueModules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules.DialogueModules
+Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
 Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 

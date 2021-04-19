@@ -21,6 +21,7 @@ GuiService.Client.Event_Update_Currency = RemoteEvent.new()
 GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
+GuiService.Client.Event_Update_StoragePanel_Access = RemoteEvent.new()
 GuiService.Client.Event_Update_Cooldown = RemoteEvent.new()
 GuiService.Client.Event_Update_ItemPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_ItemFinderWindow = RemoteEvent.new()
@@ -126,6 +127,12 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
         local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
         self.Client.Event_Update_StoragePanel:Fire(player, playerData.CurrentStand, playerData.StandStorage, hasGamePass, isInZone)
+    end
+
+    if requestName == "StoragePanel_Access" then
+        local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
+        local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
+        self.Client.Event_Update_StoragePanel_Access:Fire(player, hasGamePass, isInZone)
     end
 
     if requestName == "ItemPanel" then 

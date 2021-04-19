@@ -29,7 +29,7 @@ InventoryWindow.Storage_Panel = InventoryWindow.Window:FindFirstChild("Storage_P
 local allPanels = {InventoryWindow.Item_Panel,InventoryWindow.Boost_Panel,InventoryWindow.Storage_Panel}
 
 -- constants
-local DEFAULT_PANEL = InventoryWindow.Item_Panel
+local DEFAULT_PANEL = InventoryWindow.Storage_Panel
 
 --// Setup ------------------------------------------------------------
 function InventoryWindow.Setup()
@@ -55,8 +55,6 @@ function InventoryWindow.Setup()
     end)
 
 end
-
-
 
 --// Open ------------------------------------------------------------
 function InventoryWindow.Open()

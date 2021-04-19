@@ -54,12 +54,15 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
         local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
         if hitPlayer then
+            if not Players:FindFirstChild(hitPlayer.Name) then return end
+
             local rand = math.random(1,2)
             if rand == 1 then
                 Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_1:Play()
             else
                 Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_2:Play()
             end
+
         end
 
         -- send the visual effects to all clients

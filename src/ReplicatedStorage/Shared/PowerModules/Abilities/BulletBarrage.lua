@@ -23,8 +23,8 @@ local Velocity = 300
 local Lifetime = 2
 local PlayerAnchorTime = 1
 local bulletSerial = 1 -- incremented ever time e fire a bullet
-local shotCount = 8
-local shotDelay = .1
+local shotCount = 10
+local shotDelay = .08
 
 local BulletLaunch = {}
 
@@ -84,7 +84,7 @@ function BulletLaunch.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BulletLaunch", 0.05)
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BulletLaunch", 1.25)
 
     -- tween hitbox
     BulletLaunch.Run_Server(params, abilityDefs)
@@ -137,7 +137,7 @@ function BulletLaunch.Run_Server(params, abilityDefs)
 
     params.BulletsFired = {}
     for count = 1, shotCount do
-        local randX = math.random(-200,200) / 100
+        local randX = math.random(-250,250) / 100
         local randY = math.random(-200,200) / 100
         local bulletOrigin = params.HRPOrigin:ToWorldSpace(CFrame.new(randX, randY, -2))
         local bulletID = params.InitUserId .. "_BulletBarrage_" .. bulletSerial

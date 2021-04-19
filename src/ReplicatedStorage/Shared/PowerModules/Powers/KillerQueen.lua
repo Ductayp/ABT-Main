@@ -191,7 +191,7 @@ KillerQueen.Defs.Abilities.BitesTheDust = {
     Name = "Bites The Dust",
     Id = "BitesTheDust",
     Cooldown = 20,
-    RequireToggle_On = {"StandEquipped"},
+    --RequireToggle_On = {"StandEquipped"},
 }
 
 function KillerQueen.BitesTheDust(params)

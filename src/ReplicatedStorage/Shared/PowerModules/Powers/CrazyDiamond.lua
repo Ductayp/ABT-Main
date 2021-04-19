@@ -171,7 +171,7 @@ CrazyDiamond.Defs.Abilities.BulletBarrage = {
     Id = "BulletBarrage",
     Cooldown = 6,
     RequireToggle_On = {"StandEquipped"},
-    HitEffects = {Damage = {Damage = 5}},
+    HitEffects = {Damage = {Damage = 8}},
     --AbilityMod = Knit.Abilities.BasicProjectile.BulletBarrage,
 }
 
@@ -188,6 +188,7 @@ end
 CrazyDiamond.Defs.Abilities.WallBlast = {
     Name = "Wall Blast",
     Id = "WallBlast",
+    RequireToggle_On = {"StandEquipped"},
     Cooldown = 6,
     Duration = 5,
     HitEffects = {Damage = {Damage = 20}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},

@@ -126,6 +126,7 @@ function PlayerUtilityService:PlayerAdded(player)
 
     -- wait for the character
     repeat wait() until player.Character
+    self:CharacterAdded(player)
     
     -- setup the ping tracker
     local pingFolder = ReplicatedStorage:FindFirstChild("PlayerPings")
@@ -168,6 +169,11 @@ function PlayerUtilityService:CharacterAdded(player)
 
 end
 
+--// CharacterDied
+function PlayerUtilityService:CharacterDied(player)
+    --print("PLAYER DIED:", player)
+end
+
 
 --// KnitStart
 function PlayerUtilityService:KnitStart()
@@ -183,7 +189,7 @@ function PlayerUtilityService:KnitStart()
                 self:CharacterAdded(player)
         
                 character:WaitForChild("Humanoid").Died:Connect(function()
-                    -- empty for now
+                    --self:CharacterDied(player)
                 end)
             end)
         end)
@@ -196,7 +202,7 @@ function PlayerUtilityService:KnitStart()
                 self:CharacterAdded(player)
         
                 character:WaitForChild("Humanoid").Died:Connect(function()
-                    -- empty for now
+                    --self:CharacterDied(player)
                 end)
             end)
         end

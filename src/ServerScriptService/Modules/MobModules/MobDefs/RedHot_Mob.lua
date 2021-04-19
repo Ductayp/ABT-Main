@@ -20,7 +20,7 @@ RedHot_Mob.Model = ReplicatedStorage.Mobs.RHCP_Model
 RedHot_Mob.RespawnTime = 5
 RedHot_Mob.RandomPlacement = true
 RedHot_Mob.Spawn_Z_Offset = 0
-RedHot_Mob.Max_Spawned = 4
+RedHot_Mob.Max_Spawned = 1
 
 --/ Animations
 RedHot_Mob.Animations = {
@@ -31,8 +31,9 @@ RedHot_Mob.Animations = {
 
 --/ Defs
 RedHot_Mob.Defs = {}
-RedHot_Mob.Defs.XpValue = 66
-RedHot_Mob.Defs.Health = 100
+RedHot_Mob.Defs.Name = "Hot Tamale"
+RedHot_Mob.Defs.XpValue = 150
+RedHot_Mob.Defs.Health = 200
 RedHot_Mob.Defs.WalkSpeed = 0
 RedHot_Mob.Defs.JumpPower = 50
 RedHot_Mob.Defs.Aggressive = true
@@ -58,7 +59,7 @@ function RedHot_Mob.Post_Spawn(mobData)
 
     mobData.Model.HumanoidRootPart.Anchored = true
     
-    local spawnTween = TweenService:Create(mobData.Model.HumanoidRootPart, TweenInfo.new(.5), {Position = mobData.Model.HumanoidRootPart.Position + Vector3.new(0, 4, 0)})
+    local spawnTween = TweenService:Create(mobData.Model.HumanoidRootPart, TweenInfo.new(.5), {Position = mobData.Model.HumanoidRootPart.Position + Vector3.new(0, 5, 0)})
     spawnTween:Play()
 
     spawnTween.Completed:Connect(function()
@@ -195,13 +196,19 @@ end
 --// Drop
 function RedHot_Mob.Drop(player, mobData)
 
-    local orbDropPercent = 50
+    local rewards = {}
+    rewards.Items = {}
+
+    local itemDropPercent = 25
     local rand = math.random(1, 100)
-    if rand <= orbDropPercent then
-        local value = math.random(20,40)
-        Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", value, "MobDrop")
+    if rand <= itemDropPercent then
+        rewards.Items["BrokenArrow"] = 1
     end
-    
+
+    rewards.XP = RedHot_Mob.Defs.XpValue
+    rewards.SoulOrbs = 2
+
+    return rewards
 end
 
 

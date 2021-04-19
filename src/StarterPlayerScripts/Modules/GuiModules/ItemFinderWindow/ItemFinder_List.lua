@@ -42,4 +42,22 @@ return {
         LayoutOrder = 7
     },
 
+    {
+        Key = "BrokenArrow",
+        Name = "Broken Arrow",
+        LayoutOrder = 8
+    },
+
+    {
+        Key = "BlankPage",
+        Name = "Blank Page",
+        LayoutOrder = 9
+    },
+
+    {
+        Key = "Diamond",
+        Name = "Diamond",
+        LayoutOrder = 10
+    },
+
 }

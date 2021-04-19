@@ -18,7 +18,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- constants
 local INITIAL_WAIT = 5
-local SPAWN_LOOP_TIME = 20 
+local SPAWN_LOOP_TIME = 10
 
 -- variables & stuff :)
 ItemSpawnService.CanSpawn = false
@@ -181,7 +181,16 @@ function ItemSpawnService:GiveItem(player, itemParams)
         Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")
 
     elseif itemParams.DataCategory == "Item" then
-        Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, 1)
+        Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, itemParams.Quantity)
+
+        local itemDefs = require(Knit.Defs.ItemDefs)
+        local thisItemDef = itemDefs[itemParams.DataKey]
+
+        -- update notifications
+        local notificationParams = {}
+        notificationParams.Icon = "Item"
+        notificationParams.Text = "Found an Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemParams.Quantity)
+        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
 
     elseif itemParams.DataCategory == "Boost" then
         if itemParams.Random then

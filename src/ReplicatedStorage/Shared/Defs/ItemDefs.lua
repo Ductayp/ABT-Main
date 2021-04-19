@@ -12,36 +12,57 @@ return {
     MaskFragment = {
         Name = "Mask Fragment",
         Type = "Collectable",
-        Description = "A small piece of a stone mask.<br />It might be valuable to somebody ...",
+        Description = "A small piece of a stone mask. Maybe they can be used somehow?<br/><br/>Or maybe you can sell them Jonathon, he's at the beach surfing.",
         LayoutOrder = 5,
     },
 
     VirusBulb = {
         Name = "Virus Bulb",
         Type = "Collectable",
-        Description = "<b>BIOHAZARD!</b><br />Please dispose of properly.",
+        Description = "<b>BIOHAZARD!</b><br/>Please dispose of properly.<br/><br/>... or just sell the to Mista so he can deal with this mess.<br/>He's over on the ship somewhere.",
         LayoutOrder = 6
     },
 
     Shard_Common = {
         Name = "Shard: Common",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a Common stand.<br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a Common stand.<br /><br />You should save these up, you will need them.",
         LayoutOrder = 2,
     },
 
     Shard_Rare = {
         Name = "Shard: Rare",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a Rare stand.<br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a Rare stand.<br /><br />You should save these up, you will need them.",
         LayoutOrder = 3,
     },
 
     Shard_Legendary = {
         Name = "Shard: Legendary",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a Legendary stand.<br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a Legendary stand.<br /><br />You should save these up, you will need them.",
         LayoutOrder = 4,
+    },
+
+    BrokenArrow = {
+        Name = "Broken Arrow",
+        Type = "Collectable",
+        Description = "The head has been broken off of this arrow. I wonder why?<br /><br />You can sell this to Akira at the Harbor, or maybe somebody else wants them too?",
+        LayoutOrder = 7
+    },
+
+    BlankPage = {
+        Name = "Blank Page",
+        Type = "Collectable",
+        Description = "It's just a blank page for a book. Maybe it's useful to someone?<br/><br/>Try selling these to the Mangaka, he's at his house by the park. Who knows who else might want these?",
+        LayoutOrder = 8
+    },
+
+    Diamond = {
+        Name = "Diamond",
+        Type = "Collectable",
+        Description = "Diamonds are unbreakable, or so they say...<br/><br/>Some are for selling to Josuke, hes right by the park.",
+        LayoutOrder = 9
     },
 
 }

@@ -21,7 +21,7 @@ Morioh_Cash.Items = {
             DataKey = "Cash",
             DataCategory = "Currency",
             MinValue = 50,
-            MaxValue = 250
+            MaxValue = 250,
         }
     },
 
@@ -31,8 +31,8 @@ Morioh_Cash.Items = {
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
-            MinValue = 50,
-            MaxValue = 250
+            MinValue = 1,
+            MaxValue = 3,
         }
     },
 
@@ -43,7 +43,7 @@ Morioh_Cash.Items = {
             DataKey = "Cash",
             DataCategory = "Currency",
             MinValue = 5,
-            MaxValue = 50
+            MaxValue = 50,
         }
     },
 
@@ -53,9 +53,9 @@ Morioh_Cash.Items = {
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
-            MinValue = 5,
-            MaxValue = 50
-        }
+            MinValue = 1,
+            MaxValue = 1,
+        },
     }
 }
 

@@ -2,9 +2,21 @@ local hitboxModule = {}
 
 local rayMod = require(script.RayModule)
 
-function hitboxModule:GetSquarePoints(CF, x, y)
+function hitboxModule:GetSquarePoints(CF, x, y, resolutionX, resolutionY)
 	
-	local hSizex, hSizey = 2, 5
+	if resolutionX then
+		hSizex = resolutionX
+	else 
+		hSizex = 2
+	end
+
+	if resolutionY then
+		hSizey = resolutionY
+	else 
+		hSizey = 5
+	end
+
+	--local hSizex, hSizey = 1, 1
 	local splitx, splity = 1 + math.floor(x / hSizex), 1 + math.floor(y / hSizey)
 	local studPerPointX = x / splitx
 	local studPerPointY = y / splity
@@ -31,9 +43,12 @@ function hitboxModule:CastProjectileHitbox(Data)
 	local Visualize = Data.Visualize
 	local BreakOnHit = Data.BreakOnHit
 	local BreakifNotHuman = Data.BreakifNotHuman
+	local BreakifHuman = Data.BreakifHuman
+	local BreakOnBlockAbility = Data.BreakOnBlockAbility
 	
 	if Data.BreakOnHit == nil then BreakOnHit = true end
 	if Data.BreakifNotHuman == nil then BreakifNotHuman = false end
+	if Data.BreakifHuman == nil then BreakifHuman = false end
 	local Function = Data.Function or function()
 		warn("There was no function provided for projectile hitbox")
 	end
@@ -93,7 +108,25 @@ function hitboxModule:CastProjectileHitbox(Data)
 								Interception = true
 								break
 							end
+
 						end
+
+						if BreakOnHit == false and BreakifHuman == true  then
+							
+							if Result.Instance.Parent and Result.Instance.Parent:FindFirstChild("HumanoidRootPart") then
+								Interception = true
+								break
+							end
+						end
+
+						if BreakOnHit == false and BreakOnBlockAbility == true  then
+							
+							if Result.Instance.Parent and Result.Instance.Parent.Name == "RenderedEffects_BlockAbility" then
+								Interception = true
+								break
+							end
+						end
+
 					end
 					
 					Points[Index] = CFrame.new(EndPosition)

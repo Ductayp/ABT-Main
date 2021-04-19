@@ -67,7 +67,7 @@ function ItemPanel.Setup()
                 InventoryService:UseArrow()
                 Knit.Controllers.GuiController:CloseAllWindows()
             else
-                print("USE ARROW BUTTON: You Must Be Standless")
+                --print("USE ARROW BUTTON: You Must Be Standless")
                 spawn(function()
                     ItemPanel.Item_Card_Button_Use.Visible = false
                     ItemPanel.Item_Card_Button_Use.Active = false
@@ -91,7 +91,6 @@ end
 
 --// Update ------------------------------------------------------------
 function ItemPanel.Update(inventoryData)
-    print("ITEM PANEL RECEIVED UPDATE")
     ItemPanel.Update_ItemList(inventoryData)
     ItemPanel.Update_ItemFinder()
 end
@@ -147,7 +146,7 @@ end
 --// UpdateInfoCard ------------------------------------------------------------
 function ItemPanel.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
 
-    print("Update_InfoCard(itemKey, itemDefTable, itemQuantity)", itemKey, itemDefTable, itemQuantity)
+    --print("Update_InfoCard(itemKey, itemDefTable, itemQuantity)", itemKey, itemDefTable, itemQuantity)
 
     -- setup the card and show it
     ItemPanel.Item_Card_Name.Text = itemDefTable.Name

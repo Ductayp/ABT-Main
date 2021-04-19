@@ -120,7 +120,7 @@ function PowersService:SetCurrentPower(player, params)
     Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
-    self:PlayerRefresh(player)
+    self:PlayerSetup(player)
 
 end
 
@@ -237,12 +237,19 @@ end
 --// PLAYER MANAGEMENT
 -----------------------------------------------------------------------------------------------------------------------------
 
---// PlayerRefresh - fires when the player joins and after each death
-function PowersService:PlayerRefresh(player)
+--// PlayerSetup - fires when the player joins and when a new power is set
+function PowersService:PlayerSetup(player)
 
     repeat wait() until player.Character
 
-    self:PlayerCleanup(player)
+    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes, ReplicatedStorage.PowerStatus}
+    for _,location in pairs(cleanupLocations) do
+        for _,object in pairs(location:GetChildren()) do
+            if object.Name == tostring(player.UserId) then
+                object:Destroy()
+            end
+        end
+    end
 
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
@@ -251,10 +258,10 @@ function PowersService:PlayerRefresh(player)
 
 end
 
---// PlayerCleanup -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerRefresh
-function PowersService:PlayerCleanup(player)
+--// PlayerRemoving -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerSetup
+function PowersService:PlayerRemoving(player)
 
-    local cleanupLocations = {workspace.PlayerStands,workspace.ServerHitboxes,workspace.ClientHitboxes,ReplicatedStorage.PowerStatus}
+    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes, ReplicatedStorage.PowerStatus}
     for _,location in pairs(cleanupLocations) do
         for _,object in pairs(location:GetChildren()) do
             if object.Name == tostring(player.UserId) then
@@ -271,7 +278,7 @@ function PowersService:PlayerAdded(player)
     local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
 
-    self:PlayerRefresh(player)
+    self:PlayerSetup(player)
 
     local character = player.Character or player.CharacterAdded:Wait()
     if character then
@@ -281,15 +288,34 @@ function PowersService:PlayerAdded(player)
 
 end
 
---// CharacterAdded - run once when the player joins the game
+--// CharacterAdded - run once when the player dies
 function PowersService:CharacterAdded(player)
 
-
-    local character = player.Character or player.CharacterAdded:Wait()
-    if character then
-        local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-        self:SetCurrentPower(player, playerData.CurrentStand)
+    local thisPlayerFolder = ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId)
+    if thisPlayerFolder then
+        local toggleFolder = thisPlayerFolder:FindFirstChild("Toggles")
+        if toggleFolder then
+            for i, v in pairs(toggleFolder:GetChildren()) do
+                v.Value = false
+            end
+        end
     end
+
+    local equippedStandObject = thisPlayerFolder:FindFirstChild("EquippedStand")
+    if equippedStandObject then equippedStandObject:Destroy() end
+
+    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes}
+    for _,location in pairs(cleanupLocations) do
+        for _, folder in pairs(location:GetChildren()) do
+            if folder.Name == tostring(player.UserId) then
+                folder:Destroy()
+            end
+        end
+    end
+
+    local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
+    local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
+    local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
 
 end
 
@@ -355,7 +381,7 @@ function PowersService:KnitInit()
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)
-        self:PlayerCleanup(player)
+        self:PlayerRemoving(player)
     end)
     
 

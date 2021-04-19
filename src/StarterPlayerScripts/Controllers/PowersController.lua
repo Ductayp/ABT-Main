@@ -43,7 +43,7 @@ function PowersController:InitializePower(params)
     if findModule then
         powerModule = require(Knit.Powers[params.PowerID])
     else
-        print("power doesnt exist")
+        warn("power doesnt exist")
         return
     end
 
@@ -92,7 +92,6 @@ function PowersController:RenderExistingStands()
             if equippedStand then
                 local thisStand = Workspace.PlayerStands[folder.Name]:FindFirstChildWhichIsA("Model")
                 if not thisStand then
-                    print("WE NEED TO RENDER A STAND!!!!")
                     params = {}
                     params.InitUserId = folder.Name
                     params.StandModel = equippedStand.Value

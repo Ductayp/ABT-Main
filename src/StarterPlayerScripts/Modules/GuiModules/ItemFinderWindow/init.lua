@@ -41,8 +41,6 @@ ItemFinder.HasAccess = false
 --// Setup ------------------------------------------------------------
 function ItemFinder.Setup()
 
-    print("setup")
-
     -- turn it off when we start
     ItemFinder.Window.Visible = false
     ItemFinder.List_Item.Visible = false

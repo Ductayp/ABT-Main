@@ -57,7 +57,7 @@ function ManageStand.Activate(params, abilityDefs)
 
 	if params.ForceRemoveStand then
 		
-		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
+		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 		params.CanRun = true
 		return params
 	end
@@ -77,13 +77,13 @@ function ManageStand.Activate(params, abilityDefs)
 	end
 
 	-- set the toggles and StandTracker
-	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
-		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", false)
+	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 		if equippedStand then
 			equippedStand:Destroy()
 		end
 	else
-		AbilityToggle.SetToggle(params.InitUserId, "StandEquipped", true)
+		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
 		local thisStand = abilityDefs.StandModels[params.PowerRarity]
 		utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = powerStatusFolder, Value = thisStand}) -- this is a pointer to the un-cloned model in Replicated
 	end
@@ -102,7 +102,7 @@ function ManageStand.Execute(params, abilityDefs)
 	end
 
 	-- check the stands toggle and render effects
-	if AbilityToggle.GetToggleValue(params.InitUserId, "StandEquipped") == true then
+	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 		ManageStand.EquipStand(params, abilityDefs)
 	else
 		ManageStand.RemoveStand(params, abilityDefs)
@@ -137,8 +137,7 @@ function ManageStand.EquipStand(params, abilityDefs)
 	end
 
 	-- cframe and weld
-	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame --initPlayerRoot.CFrame:ToWorldSpace(CFrame.new(2,1,2.5))
-
+	newStand.HumanoidRootPart.CFrame = initPlayerRoot.CFrame
 	local newWeld = Instance.new("Weld")
 	newWeld.Name = "StandWeld"
 	newWeld.C1 =  CFrame.new(0, 0, 0)
@@ -206,7 +205,7 @@ end
 --// removes the stand for the target player
 function ManageStand.RemoveStand(params, abilityDefs)
 
-	--print("ManageStand.RemoveStand(params, abilityDefs)", params, abilityDefs)
+	print("ManageStand.RemoveStand(params, abilityDefs)", params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)

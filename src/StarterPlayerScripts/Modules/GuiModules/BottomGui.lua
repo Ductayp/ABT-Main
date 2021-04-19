@@ -116,7 +116,7 @@ end
 --// Update ------------------------------------------------------------
 function BottomGui.Update(data)
     
-    print("BottomGui.Update", data)
+    --print("BottomGui.Update", data)
 
     -- delete the old stand icon if it exists
     local oldIcon = BottomGui.Frame_Stand:FindFirstChild("StandIcon")

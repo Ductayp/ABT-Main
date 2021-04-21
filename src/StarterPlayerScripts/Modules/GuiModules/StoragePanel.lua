@@ -21,15 +21,17 @@ local PlayerGui = Players.LocalPlayer.PlayerGui
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
 -- Constants
-local GUI_COLOR = {
-    Common = Color3.new(239/255, 239/255, 239/255),
-    Rare = Color3.new(10/255, 202/255, 0/255),
-    Legendary = Color3.new(255/255, 149/255, 43/255) 
+local GUI_COLOR = { -- by rank number
+    [1] = Color3.new(239/255, 239/255, 239/255),
+    [2] = Color3.new(10/255, 202/255, 0/255),
+    [3] = Color3.new(255/255, 149/255, 43/255) 
 }
 local TOGGLE_COLOR = {
     On = Color3.fromRGB(0, 170, 0),
-    Off = Color3.fromRGB(86, 86, 86)
+    Off = Color3.fromRGB(86, 86, 86),
+    Fail = Color3.fromRGB(195, 0, 0),
 }
+local evolveRank_DefaultText = "UPGRADE RANK"
 
 local StoragePanel = {}
 
@@ -54,7 +56,7 @@ StoragePanel.Button_Evolve = StoragePanel.Panel:FindFirstChild("Button_Evolve", 
 
 -- mobile storage stuff
 StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Button_Buy_MobileStorage", true)
-StoragePanel.Frame_ManageButtons_Cover = StoragePanel.Panel:FindFirstChild("Frame_ManageButtons_Cover", true)
+StoragePanel.Frame_ManageStands_Cover = StoragePanel.Panel:FindFirstChild("Frame_ManageStands_Cover", true)
 
 -- stand card stuff
 StoragePanel.Stand_Card = StoragePanel.Panel:FindFirstChild("Stand_Card", true)
@@ -67,7 +69,7 @@ StoragePanel.Frame_Evolve = StoragePanel.Panel:FindFirstChild("Frame_Evolve", tr
 StoragePanel.Frame_ConfirmEvolve = StoragePanel.Panel:FindFirstChild("Frame_ConfirmEvolve", true)
 StoragePanel.Button_ConfirmEvolve_Yes = StoragePanel.Panel:FindFirstChild("Button_ConfirmEvolve_Yes", true)
 StoragePanel.Button_ConfirmEvolve_No = StoragePanel.Panel:FindFirstChild("Button_ConfirmEvolve_No", true)
-StoragePanel.Button_RarityUpgrade = StoragePanel.Panel:FindFirstChild("Button_RarityUpgrade", true)
+StoragePanel.Button_RankUpgrade = StoragePanel.Panel:FindFirstChild("Button_RankUpgrade", true)
 
 -- confirm sell stuff
 StoragePanel.Frame_ConfirmSell = StoragePanel.Panel:FindFirstChild("Frame_ConfirmSell", true)
@@ -84,7 +86,7 @@ local canManageStands
 function StoragePanel.Setup()
 
     StoragePanel.Icon_Locked.Visible = false
-    StoragePanel.Frame_ManageButtons_Cover.Visible = true
+    StoragePanel.Frame_ManageStands_Cover.Visible = true
     StoragePanel.Button_Equip.Visible = false
     StoragePanel.Button_Sell.Visible = false
     StoragePanel.Button_Store.Visible = false
@@ -139,8 +141,8 @@ function StoragePanel.Setup()
     end)
 
     -- setup evolution options
-    StoragePanel.Button_RarityUpgrade.MouseButton1Down:Connect(function()
-        StoragePanel.SetEvolutionAction("RarityUpgrade", StoragePanel.Button_RarityUpgrade)
+    StoragePanel.Button_RankUpgrade.MouseButton1Down:Connect(function()
+        StoragePanel.SetEvolutionAction("RankUpgrade", StoragePanel.Button_RankUpgrade)
     end)
 
     -- setup evolution confirms
@@ -149,10 +151,7 @@ function StoragePanel.Setup()
     end)
 
     StoragePanel.Button_ConfirmEvolve_No.MouseButton1Down:Connect(function()
-        StoragePanel.Frame_Evolve.Visible = false
-        StoragePanel.Frame_ConfirmEvolve.Visible = false
-        StoragePanel.Frame_StorageGrid.Visible = true
-
+        StoragePanel.CancelEvolutionAction()
     end)
 
     -- setup sell confirmation
@@ -205,7 +204,7 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
         StoragePanel.StandSlot_Equipped.Frame_Icon.Textlabel_Standless.Visible = true
     else
         StoragePanel.StandSlot_Equipped.Frame_Icon.Textlabel_Standless.Visible = false
-        local iconName = currentStand.Power .. "_" .. currentStand.Rarity
+        local iconName = currentStand.Power .. "_" .. tostring(currentStand.Rank)
         StoragePanel.ShowStandIcon(iconName, StoragePanel.StandSlot_Equipped.Frame_Icon)
     end
 
@@ -216,7 +215,7 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
         local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
 
         if storageData.StoredStands[count] then
-            local iconName = storageData.StoredStands[count].Power .. "_" .. storageData.StoredStands[count].Rarity
+            local iconName = storageData.StoredStands[count].Power .. "_" .. tostring(storageData.StoredStands[count].Rank)
             StoragePanel.ShowStandIcon(iconName, thisGuiSlot.Frame_Icon)
         end
 
@@ -240,10 +239,10 @@ function StoragePanel.Update_Access(hasGamePass, isInZone)
 
     if hasGamePass or isInZone then
         canManageStands = true
-        StoragePanel.Frame_ManageButtons_Cover.Visible = false
+        StoragePanel.Frame_ManageStands_Cover.Visible = false
     else
         canManageStands = false
-        StoragePanel.Frame_ManageButtons_Cover.Visible = true
+        StoragePanel.Frame_ManageStands_Cover.Visible = true
     end
 
 end
@@ -356,8 +355,20 @@ function StoragePanel.UpdateStandCard()
     local powerModule = require(Knit.Shared.PowerModules.Powers[selectedStandData.Power])
 
     StoragePanel.Stand_Card.Stand_Name.Text = powerModule.Defs.PowerName
-    StoragePanel.Stand_Card.Stand_Rarity.Text = selectedStandData.Rarity
-    StoragePanel.Stand_Card.Stand_Rarity.TextColor3 = GUI_COLOR[selectedStandData.Rarity]
+    if selectedStandData.Rank == 1 then
+        StoragePanel.Stand_Card.Stand_Rank.star_1.Visible = true
+        StoragePanel.Stand_Card.Stand_Rank.star_2.Visible = false
+        StoragePanel.Stand_Card.Stand_Rank.star_3.Visible = false
+    elseif selectedStandData.Rank == 2 then
+        StoragePanel.Stand_Card.Stand_Rank.star_1.Visible = true
+        StoragePanel.Stand_Card.Stand_Rank.star_2.Visible = true
+        StoragePanel.Stand_Card.Stand_Rank.star_3.Visible = false
+    elseif selectedStandData.Rank == 3 then
+        StoragePanel.Stand_Card.Stand_Rank.star_1.Visible = true
+        StoragePanel.Stand_Card.Stand_Rank.star_2.Visible = true
+        StoragePanel.Stand_Card.Stand_Rank.star_3.Visible = true
+    end
+
 
     -- destroy old icon
     local targetIconFrame = StoragePanel.Stand_Card:FindFirstChild("Stand_Icon_Frame", true)
@@ -368,11 +379,11 @@ function StoragePanel.UpdateStandCard()
     end
 
     -- set new icon
-    local iconName = selectedStandData.Power .. "_" .. selectedStandData.Rarity
+    local iconName = selectedStandData.Power .. "_" .. selectedStandData.Rank
     StoragePanel.ShowStandIcon(iconName, targetIconFrame)
 
     -- set the Xp bar
-    local maxExperience = powerModule.Defs.MaxXp[selectedStandData.Rarity]
+    local maxExperience = powerModule.Defs.MaxXp[selectedStandData.Rank]
     StoragePanel.Xp_Text.Text = selectedStandData.Xp .. " / " .. maxExperience
     local percent = selectedStandData.Xp / maxExperience
     StoragePanel.Xp_Bar.Size = UDim2.new(percent, StoragePanel.Xp_Bar.Size.X.Offset, StoragePanel.Xp_Bar.Size.Y.Scale, StoragePanel.Xp_Bar.Size.Y.Offset)
@@ -394,13 +405,48 @@ end
 
 --// ConfirmEvolutionAction
 function StoragePanel.ConfirmEvolutionAction()
+    local result
     if selectedStandData.GUID and StoragePanel.EvolutionAction then
-        if StoragePanel.EvolutionAction == "RarityUpgrade" then
-            local result = InventoryService:UpgradeStandRarity(selectedStandData.GUID)
-            print("RESULT", result)
+        if StoragePanel.EvolutionAction == "RankUpgrade" then
+            result = InventoryService:UpgradeStandRank(selectedStandData.GUID)
         end
-    
     end
+
+    if result == "NoExperience" then
+        StoragePanel.Button_RankUpgrade.Text = "Not Enough XP"
+        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Fail
+        wait(3)
+        StoragePanel.Button_RankUpgrade.Text = evolveRank_DefaultText
+        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
+        StoragePanel.EvolutionAction = nil
+        return
+    end
+
+    if result == "CantAfford" then
+        StoragePanel.Button_RankUpgrade.Text = "Not Enough Soul Orbs"
+        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Fail
+        wait(3)
+        StoragePanel.Button_RankUpgrade.Text = evolveRank_DefaultText
+        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
+        StoragePanel.EvolutionAction = nil
+        return
+    end
+
+    StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
+    StoragePanel.EvolutionAction = nil
+
+end
+
+--// CancelEvolutionAction
+function StoragePanel.CancelEvolutionAction()
+
+    StoragePanel.Frame_Evolve.Visible = false
+    StoragePanel.Frame_ConfirmEvolve.Visible = false
+    StoragePanel.Frame_StorageGrid.Visible = true
+
+    StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
+    StoragePanel.EvolutionAction = nil
+
 end
 
 

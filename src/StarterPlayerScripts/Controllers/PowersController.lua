@@ -35,7 +35,7 @@ function PowersController:InitializePower(params)
 
     local powerData = PowersService:GetCurrentPower(Players.LocalPlayer)
     params.PowerID = powerData.Power
-    params.PowerRarity = powerData.Rarity
+    params.PowerRank = powerData.Rank
 
     -- find the powerModule
     local powerModule

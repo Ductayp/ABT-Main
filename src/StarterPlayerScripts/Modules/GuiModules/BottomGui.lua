@@ -141,14 +141,14 @@ function BottomGui.Update(data)
     local currentPowerModule = require(Knit.Powers[data.CurrentStand.Power])
 
     -- make a new icon
-    local newStandIcon =  mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. data.CurrentStand.Rarity):Clone()
+    local newStandIcon =  mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. tostring(data.CurrentStand.Rank)):Clone()
     newStandIcon.Name = "StandIcon"
     newStandIcon.Parent = BottomGui.Frame_Stand
     newStandIcon.Visible = true
     newStandIcon.BackgroundTransparency = 1
 
     -- set the XP bar
-    local maxExperience = currentPowerModule.Defs.MaxXp[data.CurrentStand.Rarity]
+    local maxExperience = currentPowerModule.Defs.MaxXp[data.CurrentStand.Rank]
     BottomGui.Text_Xp.Text = data.CurrentStand.Xp .. " / " .. maxExperience
     local percent = data.CurrentStand.Xp / maxExperience
     BottomGui.Frame_Xp.Size = UDim2.new(percent,BottomGui.Frame_Health.Size.X.Offset,BottomGui.Frame_Health.Size.Y.Scale,BottomGui.Frame_Health.Size.Y.Offset)

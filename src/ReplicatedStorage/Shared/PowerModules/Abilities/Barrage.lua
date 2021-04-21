@@ -217,7 +217,6 @@ end
 --// Run Effect
 function Barrage.RunEffect(params, abilityDefs)
 
-	--print("run barrage",params, abilityDefs)
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer.Character.HumanoidRootPart then return end
 
@@ -235,7 +234,7 @@ function Barrage.RunEffect(params, abilityDefs)
 	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Barrage, {SpeakerProperties = {Name = "Barrage"}, SoundProperties = {Looped = true}})
 
 	-- spawn the arms shooter
-	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. params.PowerRarity]
+	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. tostring(params.PowerRank)]
 
 	local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")
 
@@ -251,8 +250,6 @@ end
 
 --// End Effect
 function Barrage.EndEffect(params, abilityDefs)
-
-	print("END BARRAGE")
 
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then

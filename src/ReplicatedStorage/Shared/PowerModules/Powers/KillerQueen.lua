@@ -17,19 +17,19 @@ local KillerQueen = {}
 KillerQueen.Defs = {
     PowerName = "Killer Queen",
     MaxXp = {
-        Common = 10000,
-        Rare = 15000,
-        Legendary = 20000
+        [1] = 10000,
+        [2] = 15000,
+        [3] = 20000
     },
     DamageMultiplier = {
-        Common = 1,
-        Rare = 1.5,
-        Legendary = 2,
+        [1] = 1,
+        [2] = 1.5,
+        [3] = 2,
     },
     HealthModifier = {
-        Common = 10,
-        Rare = 30,
-        Legendary = 70
+        [1] = 10,
+        [2] = 30,
+        [3] = 70
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
@@ -63,15 +63,15 @@ KillerQueen.Defs = {
 --// SETUP - run this once when the stand is equipped
 function KillerQueen.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "KillerQueen_Setup", 2, nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "KillerQueen_Setup", KillerQueen.Defs.HealthModifier[params.Rarity], nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup", KillerQueen.Defs.DamageMultiplier[params.Rarity], nil)
+    --Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "KillerQueen_Setup", KillerQueen.Defs.HealthModifier[params.Rank], nil)
+    --Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup", KillerQueen.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function KillerQueen.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "KillerQueen_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "KillerQueen_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup")
+    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "KillerQueen_Setup")
+    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -109,9 +109,9 @@ KillerQueen.Defs.Abilities.EquipStand = {
     Id = "EquipStand",
     Cooldown = 5,
     StandModels = {
-        Common = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Common,
-        Rare = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Rare,
-        Legendary = ReplicatedStorage.EffectParts.StandModels.KillerQueen_Legendary,
+        [1] = ReplicatedStorage.EffectParts.StandModels.KillerQueen_1,
+        [2] = ReplicatedStorage.EffectParts.StandModels.KillerQueen_2,
+        [3] = ReplicatedStorage.EffectParts.StandModels.KillerQueen_3,
     },
     Sounds = {
         Equip = ReplicatedStorage.Audio.StandSpecific.KillerQueen.Summon,

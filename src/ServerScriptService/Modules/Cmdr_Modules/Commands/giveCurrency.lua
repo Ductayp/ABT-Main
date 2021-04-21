@@ -10,7 +10,7 @@ return {
 			Description = "The player to give to";
 		},
 		{
-			Type = "string";
+			Type = "currency";
 			Name = "Currency Key";
 			Description = "The key must be: Cash or SoulOrbs"
 		},

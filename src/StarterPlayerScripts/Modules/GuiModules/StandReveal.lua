@@ -38,7 +38,7 @@ StandReveal.Button_Frame = StandReveal.Main_Frame:FindFirstChild("Button_Frame",
 StandReveal.Icon_Frame = StandReveal.Main_Frame:FindFirstChild("Icon_Frame", true)
 StandReveal.Storage_Warning = StandReveal.Main_Frame:FindFirstChild("Storage_Warning", true)
 StandReveal.Stand_Name = StandReveal.Main_Frame:FindFirstChild("Stand_Name", true)
-StandReveal.Stand_Rarity = StandReveal.Main_Frame:FindFirstChild("Stand_Rarity", true)
+StandReveal.Stand_Rank = StandReveal.Main_Frame:FindFirstChild("Stand_Rank", true)
 StandReveal.Rays_1 = StandReveal.Main_Frame:FindFirstChild("Rays_1", true)
 StandReveal.Rays_2 = StandReveal.Main_Frame:FindFirstChild("Rays_2", true)
 StandReveal.Rays_3 = StandReveal.Main_Frame:FindFirstChild("Rays_3", true)
@@ -56,7 +56,7 @@ local elements = {
     StandReveal.Icon_Frame,
     StandReveal.Storage_Warning,
     StandReveal.Stand_Name,
-    StandReveal.Stand_Rarity,
+    StandReveal.Stand_Rank,
     StandReveal.Rays_1,
     StandReveal.Rays_2,
     StandReveal.Rays_3,
@@ -169,15 +169,21 @@ function StandReveal.Update(data)
     local currentPowerModule = Knit.Powers:FindFirstChild(data.Power)
     local powerModule = require(currentPowerModule)
 
-    -- set things based on rarity
+    -- set things based on Rank
     StandReveal.Stand_Name.Text = powerModule.Defs.PowerName
-    StandReveal.Stand_Rarity.Text = data.Rarity
-    if data.Rarity == "Common" then
-        StandReveal.Stand_Rarity.TextColor3 = Color3.new(255/255, 255/255, 255/255)
-    elseif data.Rarity == "Rare" then
-        StandReveal.Stand_Rarity.TextColor3 = Color3.new(10/255, 202/255, 0/255)
-    elseif data.Rarity == "Legendary" then
-        StandReveal.Stand_Rarity.TextColor3 = Color3.new(255/255, 149/255, 43/255)
+    --StandReveal.Stand_Rank.Text = data.Rank
+    if data.Rank == 1 then
+        StandReveal.Stand_Rank.star_1.Visible = true
+        StandReveal.Stand_Rank.star_2.Visible = false
+        StandReveal.Stand_Rank.star_3.Visible = false
+    elseif data.Rank == 2 then
+        StandReveal.Stand_Rank.star_1.Visible = true
+        StandReveal.Stand_Rank.star_2.Visible = true
+        StandReveal.Stand_Rank.star_3.Visible = false
+    elseif data.Rank == 3 then
+        StandReveal.Stand_Rank.star_1.Visible = true
+        StandReveal.Stand_Rank.star_2.Visible = true
+        StandReveal.Stand_Rank.star_3.Visible = true
     end
 
     -- clear old icons out of the container
@@ -185,7 +191,7 @@ function StandReveal.Update(data)
 
     -- clone in a new icon
     --local newIcon = mainGui.Stand_Icons:FindFirstChild(data.CurrentPower):Clone()
-    local standIcon = data.Power .. "_" .. data.Rarity
+    local standIcon = data.Power .. "_" .. data.Rank
     local newIcon = mainGui.Stand_Icons:FindFirstChild(standIcon):Clone()
     newIcon.Visible = true
     newIcon.Parent = StandReveal.Icon_Frame.Icon_Container
@@ -313,7 +319,7 @@ function StandReveal.RevealStand()
         StandReveal.Icon_Frame.Visible = true
         StandReveal.Button_Frame.Visible = true
         StandReveal.Stand_Name.Visible = true
-        StandReveal.Stand_Rarity.Visible = true
+        StandReveal.Stand_Rank.Visible = true
         newRay_1.Visible = true
         newRay_2.Visible = true
         newBurst_2.Visible = true

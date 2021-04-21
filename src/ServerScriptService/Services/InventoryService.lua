@@ -29,7 +29,7 @@ function InventoryService:Give_Currency(player, key, value, source)
     if not playerData then return end
 
     -- do the 2x modifiers only if these didnt come from a dev product
-    if source ~= "GamePassService" then 
+    if source ~= "GamePassService" and source ~= "Admin" then 
 
         -- Double cash if they have the gamepass
         if key == "Cash" then
@@ -65,8 +65,7 @@ function InventoryService:Give_Item(player, key, quantity)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
     
-    print("Give_Item(player, key, quantity)", player, key, quantity)
-    print("PLAYER DATA", playerData)
+    --print("Give_Item(player, key, quantity)", player, key, quantity)
 
     -- get the defs
     local itemDefs = require(Knit.Defs.ItemDefs)
@@ -74,14 +73,12 @@ function InventoryService:Give_Item(player, key, quantity)
 
     -- if theres no item with this key, then return
     if not thisItemDef then
-        print("NO ITEM WITH THIS KEY")
+        warn("NO ITEM WITH THIS KEY")
         return
     end
 
     -- if the data key is nil, make an entry in the table
     if playerData.ItemInventory[key] == nil then
-        print("playerData", playerData)
-        print("key", key)
         playerData.ItemInventory[key] = 0
     end
 
@@ -121,7 +118,7 @@ function InventoryService:Give_Xp(player, xpValue)
     local maxXpReached = false
     local currentExperience = playerData.CurrentStand.Xp
     local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
-    local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rarity]
+    local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
     if currentExperience >= maxExperience then
         playerData.CurrentStand.Xp = maxExperience
         maxXpReached = true
@@ -194,35 +191,35 @@ function InventoryService:UseArrow(player)
     local randomPick = math.random(1,#pickTable)
     local pickedStand = pickTable[randomPick]
 
-    -- if player has the gamepass for arrow luck, give them a chance at better rarity
-    local thisRarity
+    -- if player has the gamepass for arrow luck, give them a chance at better Rank
+    local thisRank
     local rand = math.random(1, 1000) / 10
     if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
         --print("YES: arrow luck pass")
         if rand <= 90 then
-            thisRarity = "Common" -- the default
+            thisRank = 1 -- the default
         elseif rand <= 99 then
-            thisRarity = "Rare"
+            thisRank = 2
         else
-            thisRarity = "Legendary"
+            thisRank = 3
         end
     else
         --print("NO: arrow luck pass")
         if rand <= 95 then
-            thisRarity = "Common" -- the default
+            thisRank = 1 -- the default
         elseif rand <= 99.5 then
-            thisRarity = "Rare"
+            thisRank = 2
         else
-            thisRarity = "Legendary"
+            thisRank = 3
         end
     end
 
     print("RAND: ", rand)
-    print("thisRarity", thisRarity)
+    print("thisRank", thisRank)
 
     local newParams = {}
     newParams.Power = pickedStand
-    newParams.Rarity = thisRarity
+    newParams.Rank = thisRank
     newParams.Xp = 0
     newParams.GUID = HttpService:GenerateGUID(false)
 
@@ -295,16 +292,27 @@ function InventoryService:SellStand(player, GUID)
     if playerData.CurrentStand.Power ~= "Standless" then
         if GUID == playerData.CurrentStand.GUID then
 
-            --local sellValue = math.floor(playerData.CurrentStand.Xp / 100)
-            --self:Give_Currency(player, "SoulOrbs", sellValue, "SellStand")
-
-            local shardKey = "Shard_" .. playerData.CurrentStand.Rarity
+            local shardKey
+            if playerData.CurrentStand.Rank == 1 then
+                shardKey = "Shard_Dull"
+            elseif playerData.CurrentStand.Rank == 2 then
+                shardKey = "Shard_Shiny"
+            else 
+                shardKey = "Shard_Glowing"
+            end
             self:Give_Item(player, shardKey, 1)
 
             Knit.Services.PowersService:SetCurrentPower(player, {Power = "Standless"})
             Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
-            print("AFTER SELL STAND: DATA", playerData)
+            local itemDefs = require(Knit.Defs.ItemDefs)
+            local thisItem = itemDefs[shardKey]
+            local thisName = thisItem.Name
+
+            local notificationParams = {}
+            notificationParams.Icon = "Item"
+            notificationParams.Text = "You Got " .. thisName 
+            Knit.Services.GuiService:Update_Notifications(player, notificationParams)
 
             return
 
@@ -315,19 +323,33 @@ function InventoryService:SellStand(player, GUID)
     for index, standData in pairs(playerData.StandStorage.StoredStands) do
         if GUID == standData.GUID then
 
-            --self:Give_Currency(player, "SoulOrbs", standData.Xp, "SellStand")
-            local shardKey = "Shard_" .. standData.Rarity
+            local shardKey
+            if standData.Rank == 1 then
+                shardKey = "Shard_Dull"
+            elseif standData.Rank == 2 then
+                shardKey = "Shard_Shiny"
+            else 
+                shardKey = "Shard_Glowing"
+            end
             self:Give_Item(player, shardKey, 1)
 
             table.remove(playerData.StandStorage.StoredStands, index)
             Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+            local itemDefs = require(Knit.Defs.ItemDefs)
+            local thisItem = itemDefs[shardKey]
+            local thisName = thisItem.Name
+
+            local notificationParams = {}
+            notificationParams.Icon = "Item"
+            notificationParams.Text = "You Got " .. thisName 
+            Knit.Services.GuiService:Update_Notifications(player, notificationParams)
 
             return
 
         end
     end
 
-    --print("InventoryService:SellStand", player, GUID)
 end
 
 --// EquipStand ---------------------------------------------------------------------------------------------------------------------------
@@ -373,7 +395,7 @@ function InventoryService:EquipStand(player, GUID)
 
 end
 
-function InventoryService:UpgradeStandRarity(player, standGUID)
+function InventoryService:UpgradeStandRank(player, standGUID)
 
     -- return is GUID is nil
     if not standGUID then
@@ -398,7 +420,7 @@ function InventoryService:UpgradeStandRarity(player, standGUID)
 
         local currentExperience = playerData.CurrentStand.Xp
         local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
-        local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rarity]
+        local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
         
         if currentExperience < maxExperience then
             local result = "NoExperience"
@@ -411,13 +433,13 @@ function InventoryService:UpgradeStandRarity(player, standGUID)
             return result
         end
 
-        local newRarity
-        if playerData.CurrentStand.Rarity == "Common" then
-            newRarity = "Rare"
-        elseif playerData.CurrentStand.Rarity == "Rare" then
-            newRarity = "Legendary"
-        elseif playerData.CurrentStand.Rarity == "Legendary" then
-            result = "IsLegendary"
+        local newRank
+        if playerData.CurrentStand.Rank == 1 then
+            newRank = 2
+        elseif playerData.CurrentStand.Rank == 2 then
+            newRank = 3
+        elseif playerData.CurrentStand.Rank == 3 then
+            result = "IsRank3"
             return result
         end
 
@@ -425,7 +447,7 @@ function InventoryService:UpgradeStandRarity(player, standGUID)
 
         local standData = {}
         standData.Power = playerData.CurrentStand.Power
-        standData.Rarity = newRarity
+        standData.Rank = newRank
         standData.Xp = 0
         standData.GUID = playerData.CurrentStand.GUID
         Knit.Services.PowersService:SetCurrentPower(player, standData)
@@ -442,7 +464,7 @@ function InventoryService:UpgradeStandRarity(player, standGUID)
 
             local currentExperience = standData.Xp
             local powerModule = require(Knit.Powers[standData.Power])
-            local maxExperience = powerModule.Defs.MaxXp[standData.Rarity]
+            local maxExperience = powerModule.Defs.MaxXp[standData.Rank]
 
             if currentExperience < maxExperience then
                 local result = "NoExperience"
@@ -456,11 +478,11 @@ function InventoryService:UpgradeStandRarity(player, standGUID)
                 return result
             end
 
-            if standData.Rarity == "Common" then
-                standData.Rarity = "Rare"
-            elseif standData.Rarity == "Rare" then
-                standData.Rarity = "Legendary"
-            elseif standData.Rarity == "Legendary" then
+            if standData.Rank == "Common" then
+                standData.Rank = "Rare"
+            elseif standData.Rank == "Rare" then
+                standData.Rank = "Legendary"
+            elseif standData.Rank == "Legendary" then
                 result = "IsLegendary"
                 return result
             end
@@ -524,17 +546,21 @@ function InventoryService:NPCTransaction(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
 
+
+
     -- check if player has enough of the input
     local success = false
-    if inputKey == "Cash" or inputKey == "SoulOrbs"then
-        if playerData.Currency[inputKey] >= inputValue then
-            playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue
-            success = true
-        end
-    else
-        if playerData.ItemInventory[inputKey] >= inputValue then
-            playerData.ItemInventory[inputKey] = playerData.ItemInventory[inputKey] - inputValue
-            success = true
+    if playerData.ItemInventory[inputKey] ~= nil then
+        if inputKey == "Cash" or inputKey == "SoulOrbs"then
+            if playerData.Currency[inputKey] >= inputValue then
+                playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue
+                success = true
+            end
+        else
+            if playerData.ItemInventory[inputKey] >= inputValue then
+                playerData.ItemInventory[inputKey] = playerData.ItemInventory[inputKey] - inputValue
+                success = true
+            end
         end
     end
 
@@ -617,9 +643,9 @@ function InventoryService.Client:NPCTransaction(player, params)
     return success
 end
 
---// Client:UpgradeStandRarity
-function InventoryService.Client:UpgradeStandRarity(player, standGUID)
-    result = self.Server:UpgradeStandRarity(player, standGUID)
+--// Client:UpgradeStandRank
+function InventoryService.Client:UpgradeStandRank(player, standGUID)
+    result = self.Server:UpgradeStandRank(player, standGUID)
     return result
 end
 

@@ -5,7 +5,7 @@ return {
     Arrow = {
         Name = "Arrow",
         Type = "Arrow",
-        Description = "Use this arrow to gain a stand.<br /><u>You MUST be standless.</u><br /><br />95% Common<br />4.5% Rare<br />0.5% Legendary",
+        Description = "Use this arrow to gain a stand.<br /><u>You MUST be standless.</u><br /><br />95% 1-Star<br />4.5% 2-Star<br />0.5% 3-Star",
         LayoutOrder = 1,
     },
 
@@ -19,35 +19,35 @@ return {
     VirusBulb = {
         Name = "Virus Bulb",
         Type = "Collectable",
-        Description = "<b>BIOHAZARD!</b><br/>Please dispose of properly.<br/><br/>... or just sell the to Mista so he can deal with this mess.<br/>He's over on the ship somewhere.",
+        Description = "<b>BIOHAZARD!</b><br/>Please dispose of properly.<br/><br/>... or just sell them to the Six Shooter so he can deal with this mess.<br/>He's over on the ship somewhere.",
         LayoutOrder = 6
     },
 
-    Shard_Common = {
-        Name = "Shard: Common",
+    Shard_Dull = {
+        Name = "Shard: Dull",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a Common stand.<br /><br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a 1-star stand.<br /><br />You should save these up, you will need them.",
         LayoutOrder = 2,
     },
 
-    Shard_Rare = {
-        Name = "Shard: Rare",
+    Shard_Shiny = {
+        Name = "Shard: Shiny",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a Rare stand.<br /><br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a 2-star stand.<br /><br />You should save these up, you will need them.",
         LayoutOrder = 3,
     },
 
-    Shard_Legendary = {
-        Name = "Shard: Legendary",
+    Shard_Glowing = {
+        Name = "Shard: Glowing",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a Legendary stand.<br /><br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a 3-star stand.<br /><br />You should save these up, you will need them.",
         LayoutOrder = 4,
     },
 
     BrokenArrow = {
         Name = "Broken Arrow",
         Type = "Collectable",
-        Description = "The head has been broken off of this arrow. I wonder why?<br /><br />You can sell this to Akira at the Harbor, or maybe somebody else wants them too?",
+        Description = "The head has been broken off of this arrow. I wonder why?<br /><br />You can sell this to the Rock Star at the Harbor, or maybe somebody else wants them too?",
         LayoutOrder = 7
     },
 
@@ -61,7 +61,7 @@ return {
     Diamond = {
         Name = "Diamond",
         Type = "Collectable",
-        Description = "Diamonds are unbreakable, or so they say...<br/><br/>Some are for selling to Josuke, hes right by the park.",
+        Description = "Diamonds are unbreakable, or so they say...<br/><br/>Some are for selling to the Guy With Nice Hair, hes right by the park.",
         LayoutOrder = 9
     },
 

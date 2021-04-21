@@ -17,19 +17,19 @@ local TheWorld = {}
 TheWorld.Defs = {
     PowerName = "The World",
     MaxXp = {
-        Common = 10000,
-        Rare = 15000,
-        Legendary = 20000
+        [1] = 10000,
+        [2] = 15000,
+        [3] = 20000
     },
     DamageMultiplier = {
-        Common = 1,
-        Rare = 1.5,
-        Legendary = 2,
+        [1] = 1,
+        [2] = 1.5,
+        [3] = 2,
     },
     HealthModifier = {
-        Common = 10,
-        Rare = 30,
-        Legendary = 70
+        [1] = 10,
+        [2] = 30,
+        [3] = 70
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
@@ -64,16 +64,16 @@ TheWorld.Defs = {
 function TheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rarity], nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "TheWorld_Setup", TheWorld.Defs.DamageMultiplier[params.Rarity], nil)
+    --Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rank], nil)
+    --Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "TheWorld_Setup", TheWorld.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function TheWorld.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "TheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "TheWorld_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "TheWorld_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "TheWorld_Setup")
+    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "TheWorld_Setup")
+    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "TheWorld_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -113,9 +113,9 @@ TheWorld.Defs.Abilities.EquipStand = {
     Id = "EquipStand",
     Cooldown = 5,
     StandModels = {
-        Common = ReplicatedStorage.EffectParts.StandModels.TheWorld_Common,
-        Rare = ReplicatedStorage.EffectParts.StandModels.TheWorld_Rare,
-        Legendary = ReplicatedStorage.EffectParts.StandModels.TheWorld_Legendary,
+        [1] = ReplicatedStorage.EffectParts.StandModels.TheWorld_1,
+        [2] = ReplicatedStorage.EffectParts.StandModels.TheWorld_2,
+        [3] = ReplicatedStorage.EffectParts.StandModels.TheWorld_3,
     },
     Sounds = {
         Equip = ReplicatedStorage.Audio.StandSpecific.TheWorld.Summon,

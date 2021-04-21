@@ -150,7 +150,6 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "RightGui" then
-        print("optionalParams", optionalParams)
         self.Client.Event_Update_RightGui:Fire(player, GuiService.PvPToggles[player.UserId], optionalParams)
     end
 end

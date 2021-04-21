@@ -45,17 +45,20 @@ function PowersService:ActivatePower(player,params)
 
     -- sanity check
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData then return end
     if not playerData.CurrentStand.Power == params.PowerId then
         print("PlayerData doesn't match the PowerID sent")
         return
     end
+    params.PowerID = playerData.CurrentStand.Power
+    params.PowerRank = playerData.CurrentStand.Rank
 
     -- activate ability
     local powerModule = require(Knit.Powers[params.PowerID])
     params.SystemStage = "Activate"
     params.CanRun = false
     params.InitUserId = player.UserId -- reset this to the player who sent the remote
-    params = powerModule.Manager(params) -- pass the params in and in parmas.CanRun comes back true then we can move on
+    params = powerModule.Manager(params) -- pass the params in and in parmas. CanRun comes back true then we can move on
 
     -- if it returns CanRun, then fire all clients and set cooldowns
     if params.CanRun == true then
@@ -76,7 +79,7 @@ function PowersService:ForceRemoveStand(player)
         InputId = "Q",
         KeyState = "InputBegan",
         PowerID = playerData.CurrentStand.Power,
-        PowerRarity = playerData.CurrentStand.Rarity,
+        PowerRank = playerData.CurrentStand.Rank,
         SystemStage = "Initialize",
         ForceRemoveStand = true,
     }
@@ -109,7 +112,7 @@ function PowersService:SetCurrentPower(player, params)
     if Knit.Powers:FindFirstChild(params.Power) then
         local setupPowerModule = require(Knit.Powers[params.Power])
         local setupPowerParams = {} 
-        setupPowerParams.Rarity = params.Rarity
+        setupPowerParams.Rank = params.Rank
         if setupPowerModule.SetupPower then
             setupPowerModule.SetupPower(player, setupPowerParams)
         end
@@ -384,38 +387,6 @@ function PowersService:KnitInit()
         self:PlayerRemoving(player)
     end)
     
-
-    local standButtons2 = Workspace:FindFirstChild("StandButtons2", true)
-    for i,v in pairs (standButtons2:GetChildren()) do
-        if v:IsA("BasePart") then
-            local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
-            v.Touched:Connect(function(hit)
-
-                if dbValue.Value == false then
-                    dbValue.Value = true
-                    local humanoid = hit.Parent:FindFirstChild("Humanoid")
-                    if humanoid then
-                        local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
-                        if player then
-
-                            local params = {}
-                            params.Power = v.Power.Value
-                            params.Rarity = v.Rarity.Value
-                            params.Xp = 7800
-
-                            local HttpService = game:GetService("HttpService")
-                            params.GUID = HttpService:GenerateGUID(false)
-
-                            print("button goes beep")
-                            self:SetCurrentPower(player,params)    
-                        end
-                    end
-                    wait(5)
-                    dbValue.Value = false
-                end
-            end)
-        end
-    end
 end
 
 return PowersService

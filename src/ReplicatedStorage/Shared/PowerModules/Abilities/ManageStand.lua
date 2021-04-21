@@ -84,7 +84,7 @@ function ManageStand.Activate(params, abilityDefs)
 		end
 	else
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
-		local thisStand = abilityDefs.StandModels[params.PowerRarity]
+		local thisStand = abilityDefs.StandModels[params.PowerRank]
 		utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = powerStatusFolder, Value = thisStand}) -- this is a pointer to the un-cloned model in Replicated
 	end
 
@@ -126,7 +126,7 @@ function ManageStand.EquipStand(params, abilityDefs)
 	playerStandFolder:ClearAllChildren()
 
 	-- clone the stand
-	local thisStand = abilityDefs.StandModels[params.PowerRarity]
+	local thisStand = abilityDefs.StandModels[params.PowerRank]
 	local newStand = utils.EasyClone(thisStand, {Parent = playerStandFolder})
 
 	-- make it all invisible
@@ -272,8 +272,10 @@ function ManageStand.RemoveStand(params, abilityDefs)
 	end
 end
 
---// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. I also returns the stand
+--// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. It also returns the stand
 function ManageStand.QuickRender(params)
+
+	print("QUICK RENDER PARAMS: ", params)
 
 	-- be sure the player has an equipped stand, if not then just return
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
@@ -296,7 +298,7 @@ function ManageStand.QuickRender(params)
 	if params.StandModel then
 		thisStand = params.StandModel
 	else
-		thisStand = ReplicatedStorage.EffectParts.StandModels:FindFirstChild(params.PowerID .. "_" .. params.PowerRarity)
+		thisStand = ReplicatedStorage.EffectParts.StandModels:FindFirstChild(params.PowerID .. "_" .. params.PowerRank)
 	end
 
 	print("thisStand", thisStand)

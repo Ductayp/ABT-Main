@@ -8,7 +8,7 @@ function module.Initialize()
 end
 
 module.Shop = {
-    TenDiamonds= {
+    TenArrows= {
         Input = {
             Key = "BrokenArrow",
             Value = 10
@@ -18,7 +18,7 @@ module.Shop = {
             Value = 500
         }
     },
-    HundredDiamonds = {
+    HundredArrows = {
         Input = {
             Key = "BrokenArrow",
             Value = 100
@@ -33,14 +33,14 @@ module.Shop = {
 module.Stage = {}
 
 module.Stage.Start = {
-    IconName = "Icon_JAkira",
-    Title = "Guy With Nice Hair (don't make fun of it!)",
-    Body = "You new here too!? Lately so many weird people been showing up, seems like everyone is a stand user these days.<br/><br/><b>If you to get rid of your stand, visit Pucci's down the street.</b>",
+    IconName = "Icon_Akira",
+    Title = "Rock Star",
+    Body = "My stand is a remote type and it seems the Time Rift we are in means I lost control, it's been shooting and breaking arrows left and right!" ..
+        "<br/><br/>If I can get a bunch of those BROKEN ARROWS, Enrico promised me a Record Deal.",
     Choice_1 = {
         Display = true,
         Text = "BUY/SELL",
-        CustomProperties = {Size = UDim2.new(0.15, 0, 0.9, 0)},
-        CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
+        CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0), Size = UDim2.new(0.25, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
             Stage = "BuySell"
@@ -48,11 +48,11 @@ module.Stage.Start = {
     },
     Choice_2 = {
         Display = true,
-        Text = "Why are stand users showing up?",
+        Text = "What's up with this PINK WATER?",
         CustomProperties = {Size = UDim2.new(0.6, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
-            Stage = "Stage2"
+            Stage = "PinkWater"
         }
     },
     Choice_3 = {
@@ -60,10 +60,10 @@ module.Stage.Start = {
     },
 }
 
-module.Stage.Stage2 = {
-    IconName = "Icon_JAkira",
-    Title = "Guy With Nice Hair (don't make fun of it!)",
-    Body = "No idea whats going on, but things are getting very strange. It seems the whole island might be stuck in a time rift.<br/><br/>Maybe my nephew knows more. He's by the hotel.",
+module.Stage.PinkWater = {
+    IconName = "Icon_Akira",
+    Title = "Rock Star",
+    Body = "Weird isn't it? I don't think its actualy water at all!<br/><br/>When you fall in it's like your body is being torn apart, riped across the time continuum.",
     Choice_1 = {
         Display = true,
         Text = "BUY/SELL",
@@ -75,11 +75,7 @@ module.Stage.Stage2 = {
     },
 
     Choice_2 = {
-        Display = true,
-        Text = "Cool, thanks!",
-        Action = {
-            Type = "Close",
-        }
+        Display = false,
     },
 
     Choice_3 = {
@@ -88,26 +84,28 @@ module.Stage.Stage2 = {
 }
 
 module.Stage.BuySell = {
-    IconName = "Icon_JAkira",
-    Title = "Guy With Nice Hair (don't make fun of it!)",
-    Body = "Me and Okuyasu dying to eat at Tonio's place again but were BROKE! Bring me <b>DIAMONDS</b> and I can give you some of these <b>Soul Orbs</b>. Maybe you can use them." ..
-        "<br/><br/><b>10 Diamonds for 1500 Soul Orbs<br/>100 Diamonds for 20000 Soul Orbs</b>",
+    IconName = "Icon_Akira",
+    Title = "Rock Star",
+    Body = "Like I said, Enrico wants these <b>BROKEN ARROWS</b> for some reason. Who knows what hes gonna do and honestly I don't care!" ..
+        "<br/><br/><b>10 Broken Arrows for 500 Cash<br/>100 Broken Arrows for 6,000 Cash</b>",
     Choice_1 = {
         Display = true,
-        Text = "Sell 10 Diamonds",
+        Text = "Sell 10 Broken Arrows",
+        CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Shop",
-            ModuleName = "Josuke",
-            TransactionKey = "TenDiamonds"
+            ModuleName = "Akira",
+            TransactionKey = "TenArrows"
         }
     },
     Choice_2 = {
         Display = true,
-        Text = "Sell 100 Diamonds",
+        Text = "Sell 100 Broken Arrows",
+        CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Shop",
-            ModuleName = "Josuke",
-            TransactionKey = "HundredDiamonds"
+            ModuleName = "Akira",
+            TransactionKey = "HundredArrows"
         }
     },
     Choice_3 = {

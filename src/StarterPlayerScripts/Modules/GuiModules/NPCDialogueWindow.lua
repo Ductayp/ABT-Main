@@ -179,17 +179,15 @@ function NPCDialogue.RenderDialogueWindow()
         NPCDialogue.Button_Choice1.Active = true
         NPCDialogue.Button_Choice1.Text = stageDef.Choice_1.Text
 
+        for propName, propValue in pairs(defaultButtonProperties) do
+            NPCDialogue.Button_Choice1[propName] = propValue
+        end
+
         if stageDef.Choice_1.CustomProperties then
             for propName, propValue in pairs(stageDef.Choice_1.CustomProperties) do
                 NPCDialogue.Button_Choice1[propName] = propValue
             end
-        else
-            for propName, propValue in pairs(defaultButtonProperties) do
-                NPCDialogue.Button_Choice1[propName] = propValue
-            end
         end
-
-
     else
         NPCDialogue.Button_Choice1.Visible = false
         NPCDialogue.Button_Choice1.Active = false
@@ -200,12 +198,12 @@ function NPCDialogue.RenderDialogueWindow()
         NPCDialogue.Button_Choice2.Active = true
         NPCDialogue.Button_Choice2.Text = stageDef.Choice_2.Text
 
+        for propName, propValue in pairs(defaultButtonProperties) do
+            NPCDialogue.Button_Choice2[propName] = propValue
+        end
+
         if stageDef.Choice_2.CustomProperties then
             for propName, propValue in pairs(stageDef.Choice_2.CustomProperties) do
-                NPCDialogue.Button_Choice2[propName] = propValue
-            end
-        else
-            for propName, propValue in pairs(defaultButtonProperties) do
                 NPCDialogue.Button_Choice2[propName] = propValue
             end
         end
@@ -219,12 +217,13 @@ function NPCDialogue.RenderDialogueWindow()
         NPCDialogue.Button_Choice3.Visible = true
         NPCDialogue.Button_Choice3.Active = true
         NPCDialogue.Button_Choice3.Text = stageDef.Choice_3.Text
+
+        for propName, propValue in pairs(defaultButtonProperties) do
+            NPCDialogue.Button_Choice3[propName] = propValue
+        end
+
         if stageDef.Choice_3.CustomProperties then
             for propName, propValue in pairs(stageDef.Choice_3.CustomProperties) do
-                NPCDialogue.Button_Choice3[propName] = propValue
-            end
-        else
-            for propName, propValue in pairs(defaultButtonProperties) do
                 NPCDialogue.Button_Choice3[propName] = propValue
             end
         end

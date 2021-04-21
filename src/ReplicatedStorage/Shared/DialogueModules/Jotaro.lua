@@ -67,21 +67,16 @@ module.Stage.TimeRift = {
     Body = "Did you notie the water looks CRAZY PINK?<br/><br/>If you go into it, you die. You might want to talk to the guy at the end of the dock.",
     Choice_1 = {
         Display = true,
-        Text = "Aight thanks.",
-        Action = {
-            Type = "Close",
-        }
-    },
-
-    Choice_2 = {
-        Display = true,
-        Text = "Sell Arrows",
+        Text = "BUY/SELL",
+        CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
         Action = {
             Type = "ChangeStage",
             Stage = "SellArrows"
-        }
+        },
     },
-
+    Choice_2 = {
+        Display = false,
+    },
     Choice_3 = {
         Display = false,
     },

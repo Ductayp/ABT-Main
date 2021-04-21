@@ -246,11 +246,8 @@ end
 
 function BulletLaunch.BulletImpact(params)
 
-    print("BULLET DESTROY", params)
-
     local bulletPart = Workspace.RenderedEffects:FindFirstChild(params.BulletID)
     if bulletPart then
-        print("destroy: ", bulletPart)
         bulletPart:Destroy()
     end
 

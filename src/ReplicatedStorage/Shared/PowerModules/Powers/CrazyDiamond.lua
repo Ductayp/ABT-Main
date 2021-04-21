@@ -12,19 +12,19 @@ local CrazyDiamond = {}
 CrazyDiamond.Defs = {
     PowerName = "Crazy Diamond",
     MaxXp = {
-        Common = 10000,
-        Rare = 15000,
-        Legendary = 20000
+        [1] = 10000,
+        [2] = 15000,
+        [3] = 20000
     },
     DamageMultiplier = {
-        Common = 1,
-        Rare = 1.5,
-        Legendary = 2,
+        [1] = 1,
+        [2] = 1.5,
+        [3] = 2,
     },
     HealthModifier = {
-        Common = 10,
-        Rare = 30,
-        Legendary = 70
+        [1] = 10,
+        [2] = 30,
+        [3] = 70
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
@@ -58,15 +58,15 @@ CrazyDiamond.Defs = {
 --// SETUP - run this once when the stand is equipped
 function CrazyDiamond.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup", 2, nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rarity], nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rarity], nil)
+    --Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rank], nil)
+    --Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function CrazyDiamond.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CrazyDiamond_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup")
+    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CrazyDiamond_Setup")
+    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -104,9 +104,9 @@ CrazyDiamond.Defs.Abilities.EquipStand = {
     Id = "EquipStand",
     Cooldown = 5,
     StandModels = {
-        Common = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Common,
-        Rare = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Rare,
-        Legendary = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_Legendary,
+        [1] = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_1,
+        [2] = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_2,
+        [3] = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_3,
     },
     Sounds = {
         Equip = ReplicatedStorage.Audio.Abilities.StandSummon,

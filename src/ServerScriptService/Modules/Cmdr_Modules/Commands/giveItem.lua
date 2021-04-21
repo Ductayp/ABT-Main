@@ -10,7 +10,7 @@ return {
 			Description = "The player to give to";
 		},
 		{
-			Type = "string";
+			Type = "items";
 			Name = "Item Key";
 			Description = "Must be a VALID KEY"
 		},

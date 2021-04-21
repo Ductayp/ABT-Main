@@ -180,8 +180,27 @@ function ItemSpawnService:GiveItem(player, itemParams)
     elseif itemParams.DataCategory == "Currency" then
         Knit.Services.InventoryService:Give_Currency(player, itemParams.DataKey, value, "ItemSpawn")
 
+        local itemDefs = require(Knit.Defs.ItemDefs)
+        local thisItemDef = itemDefs[itemParams.DataKey]
+
+        local currencyName
+        local iconName
+        if itemParams.DataKey == "Cash" then
+            currencyName = "Cash"
+            iconName = "Cash"
+        elseif itemParams.DataKey == "SoulOrbs" then
+            currencyName = "Soul Orbs"
+            iconName = "Orbs"
+        end
+
+        -- update notifications
+        local notificationParams = {}
+        notificationParams.Icon = "Item"
+        notificationParams.Text = "Found Currency:<br/>" .. currencyName .. " x" .. tostring(value)
+        Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+
     elseif itemParams.DataCategory == "Item" then
-        Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, itemParams.Quantity)
+        Knit.Services.InventoryService:Give_Item(player, itemParams.DataKey, value)
 
         local itemDefs = require(Knit.Defs.ItemDefs)
         local thisItemDef = itemDefs[itemParams.DataKey]
@@ -189,7 +208,7 @@ function ItemSpawnService:GiveItem(player, itemParams)
         -- update notifications
         local notificationParams = {}
         notificationParams.Icon = "Item"
-        notificationParams.Text = "Found an Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemParams.Quantity)
+        notificationParams.Text = "Found an Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(value)
         Knit.Services.GuiService:Update_Notifications(player, notificationParams)
 
     elseif itemParams.DataCategory == "Boost" then

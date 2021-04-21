@@ -78,7 +78,6 @@ module.Stage.RemoveStand = {
     Choice_1 = {
         Display = true,
         Text = "Mobile Storage?",
-        --CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
             Stage = "MobileStorage"

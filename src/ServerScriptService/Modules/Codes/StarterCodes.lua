@@ -1,7 +1,7 @@
 return {
 
     {
-        CodeString = "test1",
+        CodeString = "testercash",
         ActionType = "GiveCurrency",
         Key = "Cash",
         Value = "1000",
@@ -10,7 +10,7 @@ return {
     },
 
     {
-        CodeString = "test2",
+        CodeString = "testerorbs",
         ActionType = "GiveCurrency",
         Key = "SoulOrbs",
         Value = "100",
@@ -19,34 +19,7 @@ return {
     },
 
     {
-        CodeString = "test3",
-        ActionType = "GiveCurrency",
-        Key = "SoulOrbs",
-        Value = "200",
-        Expiration = 1741217469,
-        Message = "200 Soul Orbs isn't bad!"
-    },
-
-    {
-        CodeString = "test4",
-        ActionType = "GiveCurrency",
-        Key = "Cash",
-        Value = "4000",
-        Expiration = 1741217469,
-        Message = "You got rich! 4,000 CASH HOMIE! - Sub 2 Planet Milo"
-    },
-
-    {
-        CodeString = "secrettestcode",
-        ActionType = "GiveCurrency",
-        Key = "Cash",
-        Value = "100000",
-        Expiration = 1741217469,
-        Message = "TESTING CODE ONLY"
-    },
-
-    {
-        CodeString = "starterarrow",
+        CodeString = "starterarrows",
         ActionType = "GiveItem",
         Key = "Arrow",
         Quantity = 3,
@@ -55,10 +28,10 @@ return {
     },
 
     {
-        CodeString = "testersaregods",
+        CodeString = "arrowrain",
         ActionType = "GiveItem",
         Key = "Arrow",
-        Quantity = 5,
+        Quantity = 20,
         Expiration = 1741217469,
         Message = "THANKS FOR HELPING TEST!"
     },
@@ -66,15 +39,7 @@ return {
     {
         CodeString = "sub2planetmilo",
         ActionType = "GiveItemFinder",
-        Duration = 12000,
-        Expiration = 1741217469,
-        Message = "You got Temporary Item Finder Access!"
-    },
-
-    {
-        CodeString = "finderboost",
-        ActionType = "GiveItemFinder",
-        Duration = 6000,
+        Duration = 1800,
         Expiration = 1741217469,
         Message = "You got Temporary Item Finder Access!"
     },

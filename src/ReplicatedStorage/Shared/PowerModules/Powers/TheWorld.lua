@@ -64,16 +64,16 @@ TheWorld.Defs = {
 function TheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "TheWorld_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
-    --Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rank], nil)
-    --Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "TheWorld_Setup", TheWorld.Defs.DamageMultiplier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "TheWorld_Setup", TheWorld.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function TheWorld.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "TheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "TheWorld_Setup")
-    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "TheWorld_Setup")
-    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "TheWorld_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "TheWorld_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "TheWorld_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -137,7 +137,7 @@ TheWorld.Defs.Abilities.Barrage = {
     Id = "Barrage",
     Duration = 5,
     Cooldown = 7,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 5}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
@@ -159,7 +159,7 @@ TheWorld.Defs.Abilities.TimeStop = {
     Duration = 8,
     Cooldown = 60,
     Range = 80,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}}, 
     Sounds = {
         TimeStop = ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop,
@@ -178,7 +178,7 @@ end
 TheWorld.Defs.Abilities.KnifeThrow = {
     Name = "Knife Throw",
     Id = "KnifeThrow",
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicProjectile.KnifeThrow
 }
 
@@ -195,7 +195,7 @@ TheWorld.Defs.Abilities.HeavyPunch = {
     Name = "Heavy Punch",
     Id = "HeavyPunch",
     Cooldown = 5,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
@@ -215,7 +215,7 @@ TheWorld.Defs.Abilities.BulletKick = {
     Name = "Bullet Kick",
     Id = "BulletKick",
     Cooldown = 5,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     AbilityMod = Knit.AbilityMods.TripleKick_BulletKick,
 }
 
@@ -232,7 +232,7 @@ TheWorld.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
     Cooldown = 3,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
 }
 
 function TheWorld.StandJump(params)

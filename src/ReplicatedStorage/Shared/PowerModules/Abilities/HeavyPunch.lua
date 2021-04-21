@@ -46,7 +46,6 @@ function HeavyPunch.Initialize(params, abilityDefs)
     end
 
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        print("stand wasnt on")
         params.CanRun = false
         return params
     end

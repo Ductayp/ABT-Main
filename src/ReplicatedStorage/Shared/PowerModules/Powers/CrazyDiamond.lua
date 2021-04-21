@@ -58,15 +58,15 @@ CrazyDiamond.Defs = {
 --// SETUP - run this once when the stand is equipped
 function CrazyDiamond.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup", 2, nil)
-    --Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rank], nil)
-    --Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function CrazyDiamond.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup")
-    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CrazyDiamond_Setup")
-    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CrazyDiamond_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -128,7 +128,7 @@ CrazyDiamond.Defs.Abilities.Barrage = {
     Id = "Barrage",
     Duration = 4,
     Cooldown = 7,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 3}},
     Sounds = {
         --Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
@@ -150,7 +150,7 @@ CrazyDiamond.Defs.Abilities.StonePunch = {
     Name = "Stone Punch",
     Id = "StonePunch",
     Cooldown = 10,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
@@ -170,7 +170,7 @@ CrazyDiamond.Defs.Abilities.BulletBarrage = {
     Name = "Bullet Barrage",
     Id = "BulletBarrage",
     Cooldown = 6,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 8}},
     --AbilityMod = Knit.Abilities.BasicProjectile.BulletBarrage,
 }
@@ -188,11 +188,11 @@ end
 CrazyDiamond.Defs.Abilities.WallBlast = {
     Name = "Wall Blast",
     Id = "WallBlast",
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     Cooldown = 6,
     Duration = 5,
     HitEffects = {Damage = {Damage = 20}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
 }
 
 function CrazyDiamond.WallBlast(params)
@@ -208,7 +208,7 @@ end
 CrazyDiamond.Defs.Abilities.RageBoost = {
     Name = "Rage Boost",
     Id = "RageBoost",
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     Cooldown = 90,
     Duration = 20,
     Multiplier = 2
@@ -227,7 +227,7 @@ CrazyDiamond.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
     Cooldown = 3,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
 }
 
 function CrazyDiamond.StandJump(params)

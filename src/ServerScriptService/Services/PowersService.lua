@@ -294,6 +294,8 @@ end
 --// CharacterAdded - run once when the player dies
 function PowersService:CharacterAdded(player)
 
+    repeat wait() until player.Character
+
     local thisPlayerFolder = ReplicatedStorage.PowerStatus:FindFirstChild(player.UserId)
     if thisPlayerFolder then
         local toggleFolder = thisPlayerFolder:FindFirstChild("Toggles")
@@ -319,6 +321,29 @@ function PowersService:CharacterAdded(player)
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
     local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
+
+    -- get the players current power: run remove then setup
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    local currentPowerModule = Knit.Powers:FindFirstChild(playerData.CurrentStand.Power)
+    if currentPowerModule then
+        local module = require(currentPowerModule)
+
+        local params = {}
+        params.Rank = playerData.CurrentStand.Rank
+
+        local removePowerParams = {} 
+        if module.RemovePower then
+            module.RemovePower(player, params)
+        end
+
+        local setupPowerParams = {} 
+        if module.SetupPower then
+            module.SetupPower(player, params)
+        end
+    else
+        print("no power exists with that name, cant run the REMOVE POWER function")
+        --return
+    end
 
 end
 

@@ -10,6 +10,8 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
+local statesFolder = ReplicatedStorage:FindFirstChild("StateService")
+
 -- Constants
 local DEFAULT_HEALTH = 100
 
@@ -19,12 +21,20 @@ local Health = {}
 function Health.Entry_Added(player, thisEntry, params, duplicateEntry)
 
     local newMaxHealth = DEFAULT_HEALTH -- start with the default and then add the modifers
-    for _,valueObject in pairs(thisEntry.Parent:GetChildren()) do
-        newMaxHealth = newMaxHealth + valueObject.Value
+    local playerFolder = statesFolder:FindFirstChild(player.UserId)
+    if playerFolder then
+        local healthFolder = playerFolder:FindFirstChild("Health")
+        for _,valueObject in pairs(healthFolder:GetChildren()) do
+            newMaxHealth = newMaxHealth + valueObject.Value
+        end
     end
+
 
     local humanoid = player.Character:WaitForChild("Humanoid")
     humanoid.MaxHealth = newMaxHealth
+    if humanoid.Health > humanoid.MaxHealth then
+        humanoid.Health = humanoid.MaxHealth
+    end
  
 end
 

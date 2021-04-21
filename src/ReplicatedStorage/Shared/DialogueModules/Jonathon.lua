@@ -8,9 +8,9 @@ function module.Initialize()
 end
 
 module.Shop = {
-    TenBulbs= {
+    TenFragments= {
         Input = {
-            Key = "VirusBulb",
+            Key = "MaskFragment",
             Value = 10
         },
         Output = {
@@ -18,9 +18,9 @@ module.Shop = {
             Value = 500
         }
     },
-    HundredBulbs = {
+    HundredFragments = {
         Input = {
-            Key = "VirusBulb",
+            Key = "MaskFragment",
             Value = 100
         },
         Output = {
@@ -33,10 +33,10 @@ module.Shop = {
 module.Stage = {}
 
 module.Stage.Start = {
-    IconName = "Icon_Mista",
-    Title = "Guido the Gunslinger",
-    Body = "This Time Rift has made a bunch of copies of Pannacotta and now he's in a RAGE again! He's a good guy at heart but his stand has gone out of controll." ..
-        "<br/><br/>This is REALLY BAD! His stand has been dropping <b>Virus Bulbs</b> all over town, find them and I will give you cash.",
+    IconName = "Icon_Jonathon",
+    Title = "Jonathon",
+    Body = "I thought the STONE MASK was destroyed, shattered into thousands of pieces. But Dio is after it again, trying to gether them up!" ..
+        "<br/><br/>They say these guys on the beach are a time-copied Pillar Man, whatever that means, get me the <b>MASK FRAGMENTS</b> and I will give you cash.",
     Choice_1 = {
         Display = true,
         Text = "BUY/SELL",
@@ -55,28 +55,28 @@ module.Stage.Start = {
 }
 
 module.Stage.BuySell = {
-    IconName = "Icon_Mista",
-    Title = "Guido the Gunslinger",
-    Body = "Find those <b>VIRUS BULBS</b> but BE CAREFUL! Get them here and I know how to get rid of them safely." ..
-        "<br/><br/><b>10 Virus Bulbs for 500 Cash<br/>100 Virus Bulbs for 6,000 Cash</b>",
+    IconName = "Icon_Jonathon",
+    Title = "Jonathon",
+    Body = "If you bring me <b>MASK FRAGMENTS</b> then I can be sure Dio cant make the STONE MASK again. That would be bad ..." ..
+        "<br/><br/><b>10 Mask Fragments for 500 Cash<br/>100 Mask Fragments for 6,000 Cash</b>",
     Choice_1 = {
         Display = true,
-        Text = "Sell 10 Virus Bulbs",
+        Text = "Sell 10 Mask Fragments",
         CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Shop",
-            ModuleName = "Mista",
-            TransactionKey = "TenBulbs"
+            ModuleName = "Jonathon",
+            TransactionKey = "TenFragments"
         }
     },
     Choice_2 = {
         Display = true,
-        Text = "Sell 100 Virus Bulbs",
+        Text = "Sell 100 Mask Fragments",
         CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Shop",
-            ModuleName = "Mista",
-            TransactionKey = "HundredBulbs"
+            ModuleName = "Jonathon",
+            TransactionKey = "HundredFragments"
         }
     },
     Choice_3 = {

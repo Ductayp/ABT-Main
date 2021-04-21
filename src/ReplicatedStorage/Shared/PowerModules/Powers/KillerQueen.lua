@@ -63,15 +63,15 @@ KillerQueen.Defs = {
 --// SETUP - run this once when the stand is equipped
 function KillerQueen.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "KillerQueen_Setup", 2, nil)
-    --Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "KillerQueen_Setup", KillerQueen.Defs.HealthModifier[params.Rank], nil)
-    --Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup", KillerQueen.Defs.DamageMultiplier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "KillerQueen_Setup", KillerQueen.Defs.HealthModifier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup", KillerQueen.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function KillerQueen.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "KillerQueen_Setup")
-    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "KillerQueen_Setup")
-    --Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "KillerQueen_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "KillerQueen_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -133,7 +133,7 @@ KillerQueen.Defs.Abilities.Barrage = {
     Id = "Barrage",
     Duration = 4,
     Cooldown = 7,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 3}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.KillerQueen.Barrage,
@@ -153,7 +153,7 @@ KillerQueen.Defs.Abilities.BombPunch = {
     Name = "Bomb Punch",
     Id = "BombPunch",
     Cooldown = 5,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
@@ -173,7 +173,7 @@ KillerQueen.Defs.Abilities.ExplosiveCoin = {
     Name = "Explosive Coin",
     Id = "ExplosiveCoin",
     Cooldown = 8,
-    --RequireToggle_On = {"StandEquipped"},
+    --RequireToggle_On = {"Q"},
     AbilityMod = Knit.AbilityMods.BasicGrenade_ExplosiveCoin,
 }
 
@@ -191,7 +191,7 @@ KillerQueen.Defs.Abilities.BitesTheDust = {
     Name = "Bites The Dust",
     Id = "BitesTheDust",
     Cooldown = 20,
-    --RequireToggle_On = {"StandEquipped"},
+    --RequireToggle_On = {"Q"},
 }
 
 function KillerQueen.BitesTheDust(params)
@@ -208,7 +208,7 @@ KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Name = "Sheer Heart Attack",
     Id = "SheerHeartAttack",
     Cooldown = 15,
-    --RequireToggle_On = {"StandEquipped"},
+    --RequireToggle_On = {"Q"},
     AbilityMod = Knit.AbilityMods.BasicSeeker_SheerHeartAttack,
 }
 
@@ -225,7 +225,7 @@ KillerQueen.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
     Cooldown = 3,
-    RequireToggle_On = {"StandEquipped"},
+    RequireToggle_On = {"Q"},
 }
 
 function KillerQueen.StandJump(params)

@@ -24,23 +24,23 @@ return {
     },
 
     Shard_Dull = {
-        Name = "Shard: Dull",
+        Name = "Soul Shard: Dull",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a 1-star stand.<br /><br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a 1-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
         LayoutOrder = 2,
     },
 
     Shard_Shiny = {
-        Name = "Shard: Shiny",
+        Name = "Soul Shard: Shiny",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a 2-star stand.<br /><br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a 2-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
         LayoutOrder = 3,
     },
 
     Shard_Glowing = {
-        Name = "Shard: Glowing",
+        Name = "Soul Shard: Glowing",
         Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a 3-star stand.<br /><br />You should save these up, you will need them.",
+        Description = "A Soul Shard received from SACRIFICING a 3-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
         LayoutOrder = 4,
     },
 

@@ -546,8 +546,6 @@ function InventoryService:NPCTransaction(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
 
-
-
     -- check if player has enough of the input
     local success = false
     if playerData.ItemInventory[inputKey] ~= nil then

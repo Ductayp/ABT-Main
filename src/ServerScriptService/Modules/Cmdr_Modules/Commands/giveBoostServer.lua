@@ -7,5 +7,5 @@ return function (_, player, boostName, timeSeconds)
 
 	Knit.Services.BoostService:AddBoost(player, boostName, timeSeconds)
 
-	return ("gave Boost")
+	return ("gave Stand")
 end

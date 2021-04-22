@@ -1,14 +1,14 @@
--- GoldExperience
+-- GoldExperienceRequiem
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
-local GoldExperience = {}
+local GoldExperienceRequiem = {}
 
-GoldExperience.Defs = {
-    PowerName = "Gold Experience",
+GoldExperienceRequiem.Defs = {
+    PowerName = "Gold Experience Requiem",
     MaxXp = {
         [1] = 10000,
         [2] = 15000,
@@ -33,19 +33,19 @@ GoldExperience.Defs = {
             AbilityName = "Barrage"
         },
         F = {
-            AbilityName = "7 Page Muda"
+            AbilityName = "Return to Zero"
         },
         T = {
-            AbilityName = "Tree Cage"
+            AbilityName = "Scorpion Beam"
         },
         R = {
             AbilityName = "Destabilizing Punch"
         },
         X = {
-            AbilityName = "Life Heal"
+            AbilityName = "Requiem Life Heal"
         },
         Z = {
-            AbilityName = "Stand Jump"
+            AbilityName = "Levitate"
         },
         C = {
             AbilityName = "Bug Barrage"
@@ -54,41 +54,41 @@ GoldExperience.Defs = {
 }
 
 --// SETUP - run this once when the stand is equipped
-function GoldExperience.SetupPower(initPlayer,params)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "GoldExperience_Setup", 2, nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "GoldExperience_Setup", GoldExperience.Defs.HealthModifier[params.Rank], nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "GoldExperience_Setup", GoldExperience.Defs.DamageMultiplier[params.Rank], nil)
+function GoldExperienceRequiem.SetupPower(initPlayer,params)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "GoldExperienceRequiem_Setup", 2, nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "GoldExperienceRequiem_Setup", GoldExperienceRequiem.Defs.HealthModifier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "GoldExperienceRequiem_Setup", GoldExperienceRequiem.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
-function GoldExperience.RemovePower(initPlayer,params)
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "GoldExperience_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "GoldExperience_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "GoldExperience_Setup")
+function GoldExperienceRequiem.RemovePower(initPlayer,params)
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "GoldExperienceRequiem_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "GoldExperienceRequiem_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "GoldExperienceRequiem_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
-function GoldExperience.Manager(params)
+function GoldExperienceRequiem.Manager(params)
 
     -- call the function
     if params.InputId == "Q" then
-        GoldExperience.EquipStand(params)
+        GoldExperienceRequiem.EquipStand(params)
     elseif params.InputId == "E" then
-        GoldExperience.Barrage(params)
+        GoldExperienceRequiem.Barrage(params)
     elseif params.InputId == "R" then
-        GoldExperience.DestabilizingPunch(params)
+        GoldExperienceRequiem.DestabilizingPunch(params)
     elseif params.InputId == "T" then
-        GoldExperience.TreeCage(params)
+        GoldExperienceRequiem.TreeCage(params)
     elseif params.InputId == "F" then
-        GoldExperience.SevenPageMuda(params)
+        GoldExperienceRequiem.SevenPageMuda(params)
     elseif params.InputId == "X" then
-        GoldExperience.LifeHeal(params)
+        GoldExperienceRequiem.LifeHeal(params)
     elseif params.InputId == "Z" then
-        GoldExperience.StandJump(params)
+        GoldExperienceRequiem.StandJump(params)
     elseif params.InputId == "C" then
-        GoldExperience.BugBarrage(params)
+        GoldExperienceRequiem.BugBarrage(params)
     elseif params.InputId == "Mouse1" then
-        GoldExperience.Punch(params)
+        GoldExperienceRequiem.Punch(params)
     end
 
     return params
@@ -100,14 +100,14 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.EquipStand = {
+GoldExperienceRequiem.Defs.Abilities.EquipStand = {
     Name = "Equip Stand",
     Id = "EquipStand",
     Cooldown = 5,
     StandModels = {
-        [1] = ReplicatedStorage.EffectParts.StandModels.GoldExperience_1,
-        [2] = ReplicatedStorage.EffectParts.StandModels.GoldExperience_2,
-        [3] = ReplicatedStorage.EffectParts.StandModels.GoldExperience_3,
+        [1] = ReplicatedStorage.EffectParts.StandModels.GoldExperienceRequiem_1,
+        [2] = ReplicatedStorage.EffectParts.StandModels.GoldExperienceRequiem_2,
+        [3] = ReplicatedStorage.EffectParts.StandModels.GoldExperienceRequiem_3,
     },
     Sounds = {
         Equip = ReplicatedStorage.Audio.Abilities.StandSummon,
@@ -115,8 +115,8 @@ GoldExperience.Defs.Abilities.EquipStand = {
     }
 }
 
-function GoldExperience.EquipStand(params)
-    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, GoldExperience.Defs.Abilities.EquipStand)
+function GoldExperienceRequiem.EquipStand(params)
+    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.EquipStand)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.Barrage = {
+GoldExperienceRequiem.Defs.Abilities.Barrage = {
     Name = "Barrage",
     Id = "Barrage",
     Duration = 10,
@@ -136,8 +136,8 @@ GoldExperience.Defs.Abilities.Barrage = {
     }
 }
 
-function GoldExperience.Barrage(params)
-    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, GoldExperience.Defs.Abilities.Barrage)
+function GoldExperienceRequiem.Barrage(params)
+    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.Barrage)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ end
 --------------------------------------------------------------------------------------------------
 
 --defs
-GoldExperience.Defs.Abilities.DestabilizingPunch = {
+GoldExperienceRequiem.Defs.Abilities.DestabilizingPunch = {
     Name = "Destabilizing Punch",
     Id = "DestabilizingPunch",
     Cooldown = 10,
@@ -156,8 +156,8 @@ GoldExperience.Defs.Abilities.DestabilizingPunch = {
     }
 }
 
-function GoldExperience.DestabilizingPunch(params)
-    --params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, GoldExperience.Defs.Abilities.StonePunch)
+function GoldExperienceRequiem.DestabilizingPunch(params)
+    --params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.StonePunch)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.TreeCage = {
+GoldExperienceRequiem.Defs.Abilities.TreeCage = {
     Name = "Tree Cage",
     Id = "TreeCage",
     Cooldown = 6,
@@ -173,8 +173,8 @@ GoldExperience.Defs.Abilities.TreeCage = {
     HitEffects = {Damage = {Damage = 8}},
 }
 
-function GoldExperience.TreeCage(params)
-    --params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, GoldExperience.Defs.Abilities.BulletBarrage)
+function GoldExperienceRequiem.TreeCage(params)
+    --params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.BulletBarrage)
 end
 
 
@@ -183,7 +183,7 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.SevenPageMuda = {
+GoldExperienceRequiem.Defs.Abilities.SevenPageMuda = {
     Name = " 7 Page Muda",
     Id = "SevenPageMuda",
     RequireToggle_On = {"Q"},
@@ -192,8 +192,8 @@ GoldExperience.Defs.Abilities.SevenPageMuda = {
     HitEffects = {Damage = {Damage = 20}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
 }
 
-function GoldExperience.SevenPageMuda(params)
-    --params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, GoldExperience.Defs.Abilities.WallBlast)
+function GoldExperienceRequiem.SevenPageMuda(params)
+    --params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.WallBlast)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.LifeHeal = {
+GoldExperienceRequiem.Defs.Abilities.LifeHeal = {
     Name = "Life Heal",
     Id = "LifeHeal",
     RequireToggle_On = {"Q"},
@@ -210,8 +210,8 @@ GoldExperience.Defs.Abilities.LifeHeal = {
     Multiplier = 2
 }
 
-function GoldExperience.LifeHeal(params)
-    --params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, GoldExperience.Defs.Abilities.RageBoost)
+function GoldExperienceRequiem.LifeHeal(params)
+    --params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.RageBoost)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -219,15 +219,15 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.StandJump = {
+GoldExperienceRequiem.Defs.Abilities.StandJump = {
     Name = "Stand Jump",
     Id = "StandJump",
     Cooldown = 3,
     RequireToggle_On = {"Q"},
 }
 
-function GoldExperience.StandJump(params)
-    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, GoldExperience.Defs.Abilities.StandJump)
+function GoldExperienceRequiem.StandJump(params)
+    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.StandJump)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -235,15 +235,15 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.BugBarrage = {
+GoldExperienceRequiem.Defs.Abilities.BugBarrage = {
     Name = "Bug Barrage",
     Id = "BugBarrage",
     Cooldown = 3,
     RequireToggle_On = {"Q"},
 }
 
-function GoldExperience.BugBarrage(params)
-    --params = require(Knit.Abilities.StandJump)[params.SystemStage](params, GoldExperience.Defs.Abilities.StandJump)
+function GoldExperienceRequiem.BugBarrage(params)
+    --params = require(Knit.Abilities.StandJump)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.StandJump)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -251,14 +251,14 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-GoldExperience.Defs.Abilities.Punch = {
+GoldExperienceRequiem.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
     HitEffects = {Damage = {Damage = 5}}
 }
 
-function GoldExperience.Punch(params)
-    params = require(Knit.Abilities.Punch)[params.SystemStage](params, GoldExperience.Defs.Abilities.Punch)
+function GoldExperienceRequiem.Punch(params)
+    params = require(Knit.Abilities.Punch)[params.SystemStage](params, GoldExperienceRequiem.Defs.Abilities.Punch)
 end
 
-return GoldExperience
+return GoldExperienceRequiem

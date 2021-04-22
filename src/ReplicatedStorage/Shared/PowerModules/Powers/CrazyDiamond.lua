@@ -1,11 +1,9 @@
 -- CrazyDiamond
 
--- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
---local utils = require(Knit.Shared.Utils)
 
 local CrazyDiamond = {}
 

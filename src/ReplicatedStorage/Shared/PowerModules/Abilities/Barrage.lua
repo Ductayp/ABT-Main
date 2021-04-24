@@ -168,7 +168,9 @@ function Barrage.CreateHitbox(params, abilityDefs)
 			wait(0.125)
 			newWeld.C1 =  CFrame.new(0, 0, 6.5)
 			wait(0.125)
-			newHitbox:HitStop()
+			if newHitbox then
+				newHitbox:HitStop()
+			end
 			wait()
 		end
 	end)
@@ -238,14 +240,20 @@ function Barrage.RunEffect(params, abilityDefs)
 
 	local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")
 
-	spawn(function()
-		while thisToggle.Value == true  do
+	local endTime = os.clock() + abilityDefs.Duration
+
+	while os.clock() < endTime do
+		local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")
+		if thisToggle.Value == true then
 			Barrage.ShootArm(initPlayer, effectArm)
 			wait(armSpawnRate)
+		else
+			Barrage.EndEffect(params, abilityDefs)
+			return
 		end
-		Barrage.EndEffect(params, abilityDefs)
-	end)
-
+	end
+	
+	Barrage.EndEffect(params, abilityDefs)
 end
 
 --// End Effect

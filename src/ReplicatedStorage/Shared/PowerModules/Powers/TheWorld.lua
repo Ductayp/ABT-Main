@@ -179,6 +179,7 @@ TheWorld.Defs.Abilities.KnifeThrow = {
     Name = "Knife Throw",
     Id = "KnifeThrow",
     RequireToggle_On = {"Q"},
+    Cooldown = 3,
     AbilityMod = Knit.Abilities.BasicProjectile.KnifeThrow
 }
 

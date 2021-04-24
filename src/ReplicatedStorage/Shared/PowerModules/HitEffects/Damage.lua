@@ -65,6 +65,22 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
         end
 
+        if effectParams.KnockBack then 
+            spawn(function()
+                local force = effectParams.KnockBack
+                local lookVector = CFrame.new(initPlayer.Character.HumanoidRootPart.Position, hitCharacter.HumanoidRootPart.Position).LookVector
+                print("KNOCKBACK TEST", lookVector)
+                local bodyVelocity = Instance.new("BodyVelocity")
+                bodyVelocity.Name = "DamageKnockBack"
+                bodyVelocity.MaxForce = Vector3.new(500000,500000,500000)
+                bodyVelocity.P = 1000000
+                bodyVelocity.Velocity =  Vector3.new(lookVector.X * force, lookVector.Y * force, lookVector.Z * force)
+                bodyVelocity.Parent = hitCharacter.HumanoidRootPart
+                wait(.1)
+                bodyVelocity:Destroy()
+            end)
+        end
+
         -- send the visual effects to all clients
         local renderParams = {}
         renderParams.Damage = actualDamage

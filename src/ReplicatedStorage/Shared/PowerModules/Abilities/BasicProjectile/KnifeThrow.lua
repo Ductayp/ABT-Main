@@ -7,7 +7,7 @@ local Debris = game:GetService("Debris")
 
 local KnifeThrowMod = {}
 
-KnifeThrowMod.Cooldown = 3
+--KnifeThrowMod.Cooldown = 3
 
 -- projectile origin
 KnifeThrowMod.CFrameOffest = CFrame.new(0, 0, -2) -- offset from the initPlayers HRP

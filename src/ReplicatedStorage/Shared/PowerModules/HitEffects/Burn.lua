@@ -1,8 +1,4 @@
--- Poison Effect
--- PDab
--- 12-4-2020
-
--- simply anchors the character in place and removes their key input for powers. Used in timestop or freeze attacks
+-- Burn
 
 --Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,14 +10,12 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
--- effect part
-local poisonParticle = ReplicatedStorage.EffectParts.Effects.Poison.PoisonParticle
+local Burn = {}
 
-local Poison = {}
+--// Server_ApplyEffect
+function Burn.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
-function Poison.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
-
-    --print("Poison.Server_ApplyEffect", effectParams, hitParams)
+    --print("Burn.Server_ApplyEffect", effectParams, hitParams)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
@@ -45,25 +39,30 @@ function Poison.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
     local renderParams = {}
     renderParams.HitCharacter = hitCharacter
     renderParams.Duration = effectParams.TickTime * effectParams.TickCount
-    Knit.Services.PowersService:RenderHitEffect_AllPlayers("Poison", renderParams)
+    renderParams.Color = effectParams.Color
+    Knit.Services.PowersService:RenderHitEffect_AllPlayers("Burn", renderParams)
 
 end
 
-function Poison.Client_RenderEffect(params)
-    
-    local newParticle = poisonParticle:Clone()
+--// Client_RenderEffect
+function Burn.Client_RenderEffect(params)
+
+    local particle = ReplicatedStorage.EffectParts.Effects.Burn:FindFirstChild("Orange") -- default color green
+    if params.Color then
+        particle = ReplicatedStorage.EffectParts.Effects.Burn:FindFirstChild(params.Color)
+    end
+
+    local newParticle = particle:Clone()
+
     newParticle.Parent = params.HitCharacter.HumanoidRootPart
 
     spawn(function()
-
         wait(params.Duration)
         newParticle.Rate = 0
         wait(5)
         newParticle:Destroy()
-    
     end)
 
 end
 
-
-return Poison
+return Burn

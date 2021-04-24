@@ -84,7 +84,7 @@ function HeavyPunch.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "HeavyPunch", 2)
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "HeavyPunch", 1)
 
     -- tween hitbox
     HeavyPunch.Run_HitBox(params, abilityDefs)

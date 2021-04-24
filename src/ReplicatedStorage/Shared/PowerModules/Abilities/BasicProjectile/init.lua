@@ -78,7 +78,7 @@ function BasicProjectile.Activate(params, abilityDefs)
     end
 
 	-- set cooldown
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityMod.Cooldown)
+    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", abilityMod.PlayerAnchorTime + 0.25)

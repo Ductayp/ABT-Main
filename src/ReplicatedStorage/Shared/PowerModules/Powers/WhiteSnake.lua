@@ -89,6 +89,7 @@ function WhiteSnake.Manager(params)
         WhiteSnake.Punch(params)
     end
 
+
     return params
 end
 
@@ -128,7 +129,7 @@ WhiteSnake.Defs.Abilities.Barrage = {
     Duration = 10,
     Cooldown = 7,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 6}},
+    HitEffects = {Damage = {Damage = 6, KnockBack = 20}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
     }
@@ -148,14 +149,14 @@ WhiteSnake.Defs.Abilities.BurnPunch = {
     Id = "BurnPunch",
     Cooldown = 10,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}},
+    HitEffects = {Damage = {Damage = 15}, Burn = {TickTime = 1, TickCount = 7, Damage = 7, Color = "GreenPurple"}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
     }
 }
 
 function WhiteSnake.BurnPunch(params)
-    --params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, WhiteSnake.Defs.Abilities.StonePunch)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, WhiteSnake.Defs.Abilities.BurnPunch)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -168,11 +169,11 @@ WhiteSnake.Defs.Abilities.StandSteal = {
     Id = "StandSteal",
     Cooldown = 6,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 8}},
+    AbilityMod = Knit.Abilities.RadiusAttack.StandSteal
 }
 
 function WhiteSnake.StandSteal(params)
-    --params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, WhiteSnake.Defs.Abilities.BulletBarrage)
+    params = require(Knit.Abilities.RadiusAttack)[params.SystemStage](params, WhiteSnake.Defs.Abilities.StandSteal)
 end
 
 

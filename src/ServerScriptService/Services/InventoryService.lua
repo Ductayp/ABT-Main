@@ -572,6 +572,7 @@ function InventoryService:NPCTransaction(player, params)
 
         Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
         Knit.Services.GuiService:Update_Gui(player, "Currency")
+        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
     end
 
     return success

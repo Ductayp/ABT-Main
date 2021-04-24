@@ -24,7 +24,7 @@ PowersService.Client.RenderAbilityEffect = RemoteEvent.new()
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
 
-    --print("PowersService:ActivatePower(player,params)", player, params)
+    print("PowersService:ActivatePower(player,params)", player, params)
     
     if not player.Character then return end
     if player.Character.Humanoid.Health < 1 then return end

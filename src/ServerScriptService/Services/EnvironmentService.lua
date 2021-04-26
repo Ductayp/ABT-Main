@@ -4,6 +4,7 @@
 
 -- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local TweenService = game:GetService("TweenService")
@@ -15,13 +16,13 @@ local EnvironmentService = Knit.CreateService { Name = "EnvironmentService", Cli
 -- modules
 local utils = require(Knit.Shared.Utils)
 
--- variables
+-- Lighting variables
 EnvironmentService.CurrentCycle = "Day"
-EnvironmentService.CycleTime = 600 -- 600 = 10 minutes in seconds
+EnvironmentService.CurrentCycleSetTime = os.time() -- this gets updated whenever the cycyle is changed
+EnvironmentService.DayCycleTime = 600 -- 600 = 10 minutes in seconds
 EnvironmentService.TransitionTime = 20
 EnvironmentService.DayTime = 14.6
 EnvironmentService.NightTime = 19.6
-
 local managedLights = {}
 local managedWindows = {}
 local managedNeonParts = {}
@@ -30,6 +31,32 @@ local manageWindow_On_Color = Color3.fromRGB(156, 144, 92)
 local manageWindow_On_Material = "Neon"
 local manageWindow_Off_Color = Color3.fromRGB(48, 48, 49)
 local manageWindow_Off_Material = "Glass"
+
+-- Swim variables
+EnvironmentService.PlayerSwimStates = {}
+EnvironmentService.SwimCheckTime = 1
+
+function EnvironmentService:EnvironmentClock()
+
+    local last_DayCycleTime = os.clock() + EnvironmentService.DayCycleTime
+    local last_SwimCheckTime = os.clock() + EnvironmentService.SwimCheckTime
+
+
+    spawn(function()
+        while game:GetService("RunService").Heartbeat:Wait() do
+            if os.clock() > last_SwimCheckTime then
+                last_SwimCheckTime = os.clock() + EnvironmentService.SwimCheckTime
+                self:SwimCheck()
+            end
+
+            if os.clock() > last_DayCycleTime then
+                last_DayCycleTime = os.clock() + EnvironmentService.DayCycleTime
+                self:DayNightCycle()
+            end
+        end
+    end)
+
+end
 
 --// TweenClockTime
 function EnvironmentService:TweenClockTime(time)
@@ -41,21 +68,18 @@ end
 --// DayNightCycle
 function EnvironmentService:DayNightCycle()
 
-    -- start the loop
-    spawn(function()
-        while true do
-            wait(EnvironmentService.CycleTime)
-            if EnvironmentService.CurrentCycle == "Day" then
-                EnvironmentService.CurrentCycle = "Night"
-                self:TweenClockTime(EnvironmentService.NightTime)
-                self:ManageLights("Night")
-            else
-                EnvironmentService.CurrentCycle = "Day"
-                self:TweenClockTime(EnvironmentService.DayTime)
-                self:ManageLights("Day")
-            end
-        end
-    end)
+    if EnvironmentService.CurrentCycle == "Day" then
+        EnvironmentService.CurrentCycle = "Night"
+        self:TweenClockTime(EnvironmentService.NightTime)
+        self:ManageLights("Night")
+    else
+        EnvironmentService.CurrentCycle = "Day"
+        self:TweenClockTime(EnvironmentService.DayTime)
+        self:ManageLights("Day")
+    end
+
+    EnvironmentService.CurrentCycleSetTime = os.time()
+
 end
 
 function EnvironmentService:ManageLights(cycleName)
@@ -110,14 +134,43 @@ function EnvironmentService:ManageLights(cycleName)
     end
 end
 
+--// swim check
+function EnvironmentService:SwimToggle(player, boolean)
+
+    if boolean == true then
+        EnvironmentService.PlayerSwimStates[player.userId].UpdateTime = os.clock()
+        EnvironmentService.PlayerSwimStates[player.userId].IsSwimming = true
+    else
+        EnvironmentService.PlayerSwimStates[player.userId].UpdateTime = os.clock() + 3
+        EnvironmentService.PlayerSwimStates[player.userId].IsSwimming = false
+    end
+
+end
+
+function EnvironmentService:SwimCheck()
+    for userId, settings in pairs(EnvironmentService.PlayerSwimStates) do
+        if settings.UpdateTime <= os.clock() then
+            if settings.IsSwimming then
+                local player = utils.GetPlayerByUserId(userId)
+                Knit.Services.PowersService:ForceRemoveStand(player)
+                require(Knit.PowerUtils.BlockInput).AddBlock(userId, "Swimming", 2)
+                player.Character.Humanoid:TakeDamage(settings.Damage)
+                settings.Damage = settings.Damage + 2
+            else
+                settings.Damage = 0
+            end
+        end
+    end
+end
+
 --// PlayerAdded
 function EnvironmentService:PlayerAdded(player)
-
+    EnvironmentService.PlayerSwimStates[player.userId] = {IsSwimming = false, UpdateTime = os.clock(), Damage = 0}
 end
 
 --// PlayerRemoved
 function EnvironmentService:PlayerRemoved(player)
-
+    EnvironmentService.PlayerSwimStates[player.userId] = nil
 end
 
 --// KnitStart
@@ -150,7 +203,9 @@ function EnvironmentService:KnitStart()
         end
     end
 
-    self:DayNightCycle()
+    self:EnvironmentClock()
+
+    --self:DayNightCycle()
     self:ManageLights(EnvironmentService.CurrentCycle)
 end
 

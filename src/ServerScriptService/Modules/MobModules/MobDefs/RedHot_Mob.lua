@@ -32,7 +32,7 @@ RedHot_Mob.Animations = {
 --/ Defs
 RedHot_Mob.Defs = {}
 RedHot_Mob.Defs.Name = "Hot Tamale"
-RedHot_Mob.Defs.XpValue = 150
+RedHot_Mob.Defs.XpValue = 250
 RedHot_Mob.Defs.Health = 200
 RedHot_Mob.Defs.WalkSpeed = 0
 RedHot_Mob.Defs.JumpPower = 50

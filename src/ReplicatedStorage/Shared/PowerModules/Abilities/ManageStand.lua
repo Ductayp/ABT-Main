@@ -56,10 +56,19 @@ function ManageStand.Activate(params, abilityDefs)
 	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand") -- this is a pointer to the un-cloned model in Replicated
 
 	if params.ForceRemoveStand then
-		
-		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-		params.CanRun = true
-		return params
+		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
+			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+			if equippedStand then
+				equippedStand:Destroy()
+			end
+			params.CanRun = true
+			params.EquipStand = false
+			return params
+		else
+			params.CanRun = false
+			return params
+		end
 	end
 
 	-- check KeyState
@@ -81,11 +90,13 @@ function ManageStand.Activate(params, abilityDefs)
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 		if equippedStand then
 			equippedStand:Destroy()
+			params.EquipStand = false
 		end
 	else
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
 		local thisStand = abilityDefs.StandModels[params.PowerRank]
 		utils.EasyInstance("ObjectValue",{Name = "EquippedStand",Parent = powerStatusFolder, Value = thisStand}) -- this is a pointer to the un-cloned model in Replicated
+		params.EquipStand = true
 	end
 
 	-- set cooldown
@@ -101,12 +112,20 @@ function ManageStand.Execute(params, abilityDefs)
 		return
 	end
 
+	if params.EquipStand then
+		ManageStand.EquipStand(params, abilityDefs)
+	else
+		ManageStand.RemoveStand(params, abilityDefs)
+	end
+
+	--[[
 	-- check the stands toggle and render effects
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 		ManageStand.EquipStand(params, abilityDefs)
 	else
 		ManageStand.RemoveStand(params, abilityDefs)
 	end
+	]]--
 end
 
 
@@ -116,6 +135,8 @@ end
 
 --// equips a stand for the target player
 function ManageStand.EquipStand(params, abilityDefs)
+
+	print("EquipStand", params, abilityDefs)
 
 	-- some setup and definitions
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -205,7 +226,7 @@ end
 --// removes the stand for the target player
 function ManageStand.RemoveStand(params, abilityDefs)
 
-	print("ManageStand.RemoveStand(params, abilityDefs)", params, abilityDefs)
+	print("RemoveStand", params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
@@ -341,7 +362,7 @@ function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 
 	local playerStandFolder = Workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-	if not targetStand then return end
+	--if not targetStand then return end
 	
 	-- run the animation
 	local animationLength

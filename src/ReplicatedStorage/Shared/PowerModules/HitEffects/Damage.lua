@@ -34,6 +34,7 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
                 Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage)
 
+                --[[
                 local defaultWalkspeed = hitCharacter:FindFirstChild("DefaultWalkSpeed")
                 if not defaultWalkspeed then
                     defaultWalkspeed = Instance.new("NumberValue")
@@ -49,6 +50,7 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
                         hitCharacter.Humanoid.WalkSpeed = defaultWalkspeed.Value
                     end
                 end)
+                ]]--
             end
         end
 

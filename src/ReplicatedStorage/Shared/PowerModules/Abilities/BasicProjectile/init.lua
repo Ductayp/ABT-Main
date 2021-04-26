@@ -121,6 +121,9 @@ function BasicProjectile.Run_Server(params, abilityDefs)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
+    --print("params CFrame", params.HRPOrigin)
+    --print("initPlayer CFrame", initPlayer.Character.HumanoidRootPart.CFrame)
+
     local abilityMod = require(abilityDefs.AbilityMod)
 
     -- setup ignore list
@@ -155,8 +158,6 @@ function BasicProjectile.Run_Server(params, abilityDefs)
     local resolutionY = abilityMod.HitBox_Resolution_Y
     local dataPoints = hitboxMod:GetSquarePoints(projectileOrigin, sizeX, sizeY, resolutionX, resolutionY)
 
-    -- build the WhiteList
-
     -- raycast data
     local projectileData = {}
     projectileData["Points"] = dataPoints
@@ -184,10 +185,10 @@ function BasicProjectile.Run_Server(params, abilityDefs)
             resultParams.AbilityDefs = abilityDefs
             Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "ProjectileImpact", resultParams)
 
-            if result.Instance.Parent:FindFirstChild("Humanoid") then
-                --print("HIT A HUMANOID", result.Instance.Parent)
-                Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
-            end
+            --if abilityMod.ProjectileHit then
+            abilityMod.HitBoxResult(initPlayer, abilityDefs, result, params)
+            --end
+
         end
     end
 
@@ -222,12 +223,20 @@ function BasicProjectile.Run_Client(params, abilityDefs)
     -- play the sound when it is fired
 	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityMod.FireSound)
 
-    local projectile = abilityMod.CosmeticProjectile:Clone()
+    local projectile
+    if abilityMod.SpawnProjectile then
+        projectile = abilityMod.SpawnProjectile(params.projectileOrigin)
+    else
+        projectile = abilityMod.CosmeticProjectile:Clone()
+    end
+
+    --local projectile = abilityMod.CosmeticProjectile:Clone()
     projectile.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
     projectile.BodyVelocity.P = abilityMod.Velocity
 
     projectile.BodyVelocity.Velocity = params.projectileOrigin.LookVector * abilityMod.Velocity
     projectile.CFrame = params.projectileOrigin
+    --print("CFRAME CHECK 1: ", projectile.CFrame, " 2: ", params.projectileOrigin)
     projectile.Name = params.projectileID
 
     projectile.Touched:Connect(function(hit)
@@ -240,26 +249,25 @@ function BasicProjectile.Run_Client(params, abilityDefs)
 
     spawn(function()
         wait(abilityMod.Lifetime)
-        projectile:Destroy()
+        --projectile:Destroy()
     end)
 
 end
 
 function BasicProjectile.ProjectileImpact(params)
 
-
-    local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
-    if projectilePart then
-        --print("destroy: ", projectilePart)
-        projectilePart:Destroy()
-    end
-
     local abilityMod = require(params.AbilityDefs.AbilityMod)
+    local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
-    if abilityMod.DestroyCosmetic then
-        abilityMod.DestroyCosmetic(params)
+    if projectilePart then
+        if abilityMod.DestroyCosmetic then
+            abilityMod.DestroyCosmetic(projectilePart, params)
+        else
+            projectilePart:Destroy()
+        end
     end
-    
+
 end
+
 
 return BasicProjectile

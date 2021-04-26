@@ -29,7 +29,7 @@ Santana_Mob.Animations = {
 
 Santana_Mob.Defs = {}
 Santana_Mob.Defs.Name = "Pillar Man"
-Santana_Mob.Defs.XpValue = 15
+Santana_Mob.Defs.XpValue = 113
 Santana_Mob.Defs.Health = 100
 Santana_Mob.Defs.WalkSpeed = 16
 Santana_Mob.Defs.JumpPower = 50

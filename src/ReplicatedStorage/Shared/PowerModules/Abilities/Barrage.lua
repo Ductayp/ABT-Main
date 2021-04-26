@@ -29,7 +29,7 @@ local Barrage = {}
 
 --// Initialize
 function Barrage.Initialize(params, abilityDefs)
-	
+
 
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
@@ -62,7 +62,6 @@ function Barrage.Activate(params, abilityDefs)
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
 
-		-- check cooldown
 		if not Cooldown.Server_IsCooled(params) then
 			params.CanRun = false
 			return params
@@ -73,41 +72,38 @@ function Barrage.Activate(params, abilityDefs)
 			return params
 		end
 
-		--print("acrivate barrage: BEGAN")
-
-		-- only operate if toggle is off
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
 
-			AbilityToggle.SetToggle(params.InitUserId, "Barrage", true)
+			AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
+			BlockInput.AddBlock(params.InitUserId, params.InputId, abilityDefs.Duration)
+
 			Barrage.CreateHitbox(params, abilityDefs)
+			params.BarrageOn = true
 
-			 -- block input for the duration of the barrage
-			 BlockInput.AddBlock(params.InitUserId, "Barrage", abilityDefs.Duration)
 
-			
-			-- spawn a function to kill the barrage if the duration expires
 			spawn(function()
 				wait(abilityDefs.Duration)
-				if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") then
-					AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
-					Barrage.DestroyHitbox(params, abilityDefs)
+				if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) then
+					AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 					Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-					BlockInput.RemoveBlock(params.InitUserId, "Barrage")
+					BlockInput.RemoveBlock(params.InitUserId, params.InputId)
+					Barrage.DestroyHitbox(params, abilityDefs)
+					params.BarrageOn = false
 				end
 			end)
+
 		end
 	end
 
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
 
-		--print("activate barrage: ENDED")
-
-		if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") == true then
-			AbilityToggle.SetToggle(params.InitUserId, "Barrage", false)
-			Barrage.DestroyHitbox(params)
+		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
+			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-			BlockInput.RemoveBlock(params.InitUserId, "Barrage")
+			BlockInput.RemoveBlock(params.InitUserId, params.InputId)
+			Barrage.DestroyHitbox(params)
+			params.BarrageOn = false
 		end
 	end
 
@@ -118,9 +114,7 @@ end
 --// Execute
 function Barrage.Execute(params, abilityDefs)
 
-	--print("Execute Barrage", params)
-
-	if AbilityToggle.GetToggleValue(params.InitUserId, "Barrage") == true then
+	if params.BarrageOn == true then
 		Barrage.RunEffect(params, abilityDefs)
 	else
 		Barrage.EndEffect(params, abilityDefs)
@@ -143,38 +137,31 @@ function Barrage.CreateHitbox(params, abilityDefs)
 	local hitPart = ReplicatedStorage.EffectParts.Abilities.Barrage.HitBox:Clone()
 	hitPart.Name = "Barrage"
 	hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
+	--hitPart.Transparency = .7
 
-	-- create a bool inside for the hitbox to run off
-	local newBool = utils.EasyInstance("BoolValue", {Name = "HitToggle", Parent = hitPart, Value = true})
-
-	-- weld it
 	local newWeld = Instance.new("Weld")
 	newWeld.C1 =  CFrame.new(0, 0, 6.5)
 	newWeld.Part0 = initPlayer.Character.HumanoidRootPart
 	newWeld.Part1 = hitPart
 	newWeld.Parent = hitPart
 
-	-- make a new hitbox
-	--local newHitbox = RaycastHitbox:Initialize(hitPart)
-	local newHitbox = RayHitbox.New(initPlayer, abilityDefs, hitPart, true)
-	wait()
-	--newHitbox:DebugMode(true)
+	hitPart.Touched:Connect(function() end)
 
-	-- cycle the hitbox
 	spawn(function()
-		while newBool.Value == true do
-			newWeld.C1 =  CFrame.new(0, 0, 5)
-			newHitbox:HitStart()
-			wait(0.125)
-			newWeld.C1 =  CFrame.new(0, 0, 6.5)
-			wait(0.125)
-			if newHitbox then
-				newHitbox:HitStop()
+		while hitPart.Parent == Workspace.ServerHitboxes[params.InitUserId] do
+			local hitParts = hitPart:GetTouchingParts()
+			local hitCharacters = {}
+			for _, part in pairs(hitParts) do
+				if part.Parent:FindFirstChild("Humanoid") then
+					hitCharacters[part.Parent] = true
+				end
 			end
-			wait()
+			for character, _ in pairs(hitCharacters) do
+				Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+			end
+			wait(.25)
 		end
 	end)
-
 end
 
 --// Server Destroy Hitbox
@@ -182,14 +169,7 @@ function Barrage.DestroyHitbox(params)
 	local playerHitboxFolder = workspace.ServerHitboxes[params.InitUserId]
 	local hitPart = playerHitboxFolder:FindFirstChild("Barrage")
 	if hitPart then
-		--local hitBox = RaycastHitbox:GetHitbox(hitPart)
-		local hitBox = RayHitbox.GetHitbox(hitPart)
-		hitBox:HitStop()
-		local hitToggle = hitPart:FindFirstChild("HitToggle")
-		if hitToggle then
-			hitPart.HitToggle.Value = false
-		end
-		Debris:AddItem(hitPart, 1)
+		hitPart:Destroy()
 	end
 end
 
@@ -219,6 +199,8 @@ end
 --// Run Effect
 function Barrage.RunEffect(params, abilityDefs)
 
+	--print("BARRAGE - RUN EFFECT", params, abilityDefs)
+
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer.Character.HumanoidRootPart then return end
 
@@ -237,14 +219,10 @@ function Barrage.RunEffect(params, abilityDefs)
 
 	-- spawn the arms shooter
 	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. tostring(params.PowerRank)]
-
-	local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")
-
 	local endTime = os.clock() + abilityDefs.Duration
-
 	while os.clock() < endTime do
-		local thisToggle = AbilityToggle.GetToggleObject(params.InitUserId, "Barrage")
-		if thisToggle.Value == true then
+		local thisToggle = AbilityToggle.GetToggleValue(params.InitUserId, params.InputId)
+		if thisToggle == true then
 			Barrage.ShootArm(initPlayer, effectArm)
 			wait(armSpawnRate)
 		else
@@ -258,6 +236,8 @@ end
 
 --// End Effect
 function Barrage.EndEffect(params, abilityDefs)
+
+	--print("BARRAGE - END EFFECT", params, abilityDefs)
 
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then

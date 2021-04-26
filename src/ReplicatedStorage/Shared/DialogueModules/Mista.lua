@@ -15,7 +15,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 500
+            Value = 750
         }
     },
     HundredBulbs = {
@@ -25,7 +25,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 6000
+            Value = 8000
         }
     },
 }
@@ -58,7 +58,7 @@ module.Stage.BuySell = {
     IconName = "Icon_Mista",
     Title = "Guido the Gunslinger",
     Body = "Find those <b>VIRUS BULBS</b> but BE CAREFUL! Get them here and I know how to get rid of them safely." ..
-        "<br/><br/><b>10 Virus Bulbs for 500 Cash<br/>100 Virus Bulbs for 6,000 Cash</b>",
+        "<br/><br/><b>10 Virus Bulbs for 750 Cash<br/>100 Virus Bulbs for 8,000 Cash</b>",
     Choice_1 = {
         Display = true,
         Text = "Sell 10 Virus Bulbs",

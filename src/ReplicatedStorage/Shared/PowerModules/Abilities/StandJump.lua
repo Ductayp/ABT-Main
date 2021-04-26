@@ -101,8 +101,12 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
+function StandJump.Setup(params, abilityDefs)
+
+end
+
 function StandJump.Run_Server(params, abilityDefs)
-    -- nothing
+
 end
 
 function StandJump.Run_Client(params, abilityDefs)

@@ -18,8 +18,8 @@ TheWorld.Defs = {
     PowerName = "The World",
     MaxXp = {
         [1] = 10000,
-        [2] = 15000,
-        [3] = 20000
+        [2] = 20000,
+        [3] = 30000
     },
     DamageMultiplier = {
         [1] = 1,
@@ -138,7 +138,7 @@ TheWorld.Defs.Abilities.Barrage = {
     Duration = 5,
     Cooldown = 7,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 5}},
+    HitEffects = {Damage = {Damage = 5, KnockBack = 10}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
     }
@@ -249,7 +249,7 @@ TheWorld.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
     Cooldown = 0.5,
-    HitEffects = {Damage = {Damage = 5}},
+    HitEffects = {Damage = {Damage = 5, KnockBack = 20}},
     --RequireToggle_On = {},
     --RequireToggle_Off = {"Mouse1"},
 }

@@ -1,6 +1,3 @@
--- Ping Service
--- PDab
--- 12/20/2020
 
 -- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -18,7 +15,6 @@ local utils = require(Knit.Shared.Utils)
 
 -- public variables
 PlayerUtilityService.PlayerAnimations = {}
-PlayerUtilityService.PlayerSwimStates = {}
 
 -- local variables
 local pingUpdateTime = 1
@@ -105,21 +101,6 @@ function PlayerUtilityService:HumanoidStateEvents(player)
 
 end
 
---// swim check
-function PlayerUtilityService:SwimToggle(player, boolean)
-
-    PlayerUtilityService.PlayerSwimStates[player.userId] = boolean
-    if boolean == true then
-        Knit.Services.PowersService:ForceRemoveStand(player)
-        spawn(function()
-            while PlayerUtilityService.PlayerSwimStates[player.userId] == true do
-                require(Knit.PowerUtils.BlockInput).AddBlock(player.UserId, "Swimming", 2)
-                player.Character.Humanoid:TakeDamage(5)
-                wait(1)
-            end
-        end)
-    end
-end
 
 --// PlayerAdded
 function PlayerUtilityService:PlayerAdded(player)
@@ -146,17 +127,12 @@ function PlayerUtilityService:PlayerAdded(player)
     -- run humanoid state detectors
     self:HumanoidStateEvents(player)
 
-    -- add player to PlayerSwimStates table
-    PlayerUtilityService.PlayerSwimStates[player.userId] = false
-
 end
 
 --// PlayerRemoved
 function PlayerUtilityService:PlayerRemoved(player)
-
     ReplicatedStorage.PlayerPings[player.UserId]:Destroy()
     PlayerUtilityService.PlayerAnimations[player.UserId] = nil
-    PlayerUtilityService.PlayerSwimStates[player.userId] = nil
 end
 
 --// CharacterAdded

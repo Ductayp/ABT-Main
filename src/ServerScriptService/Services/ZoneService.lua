@@ -75,12 +75,12 @@ function ZoneService:PlayerAdded(player)
 
     swimZone.playerEntered:Connect(function(player)
         --print(("%s entered the SWIM zone!"):format(player.Name))
-        Knit.Services.PlayerUtilityService:SwimToggle(player, true)
+        Knit.Services.EnvironmentService:SwimToggle(player, true)
     end)
     
     swimZone.playerExited:Connect(function(player)
         --print(("%s exited the SWIM zone!"):format(player.Name))
-        Knit.Services.PlayerUtilityService:SwimToggle(player, false)
+        Knit.Services.EnvironmentService:SwimToggle(player, false)
     end)
 
 end

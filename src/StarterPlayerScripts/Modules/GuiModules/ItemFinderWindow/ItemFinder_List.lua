@@ -18,17 +18,20 @@ return {
         LayoutOrder = 3
     },
 
+    --[[
     {
         Key = "XpToken",
         Name = "XP Token",
         LayoutOrder = 4
     },
 
-    {
+        {
         Key = "Boost",
         Name = "Boost",
         LayoutOrder = 5
     },
+    ]]--
+
 
     {
         Key = "MaskFragment",

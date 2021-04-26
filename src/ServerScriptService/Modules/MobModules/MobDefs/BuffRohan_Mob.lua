@@ -29,8 +29,8 @@ BuffRohan_Mob.Animations = {
 
 BuffRohan_Mob.Defs = {}
 BuffRohan_Mob.Defs.Name = "Buff Mangaka"
-BuffRohan_Mob.Defs.XpValue = 200
-BuffRohan_Mob.Defs.Health = 275
+BuffRohan_Mob.Defs.XpValue = 350
+BuffRohan_Mob.Defs.Health = 300
 BuffRohan_Mob.Defs.WalkSpeed = 16
 BuffRohan_Mob.Defs.JumpPower = 50
 BuffRohan_Mob.Defs.Aggressive = true

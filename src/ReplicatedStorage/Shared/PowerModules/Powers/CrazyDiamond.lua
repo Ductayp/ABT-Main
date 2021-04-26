@@ -11,8 +11,8 @@ CrazyDiamond.Defs = {
     PowerName = "Crazy Diamond",
     MaxXp = {
         [1] = 10000,
-        [2] = 15000,
-        [3] = 20000
+        [2] = 20000,
+        [3] = 30000
     },
     DamageMultiplier = {
         [1] = 1,
@@ -127,7 +127,7 @@ CrazyDiamond.Defs.Abilities.Barrage = {
     Duration = 4,
     Cooldown = 7,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 3}},
+    HitEffects = {Damage = {Damage = 3, KnockBack = 10}},
     Sounds = {
         --Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
         Barrage = ReplicatedStorage.Audio.StandSpecific.CrazyDiamond.DoraBarrage
@@ -240,7 +240,7 @@ end
 CrazyDiamond.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 5}}
+    HitEffects = {Damage = {Damage = 5, KnockBack = 10}}
 }
 
 function CrazyDiamond.Punch(params)

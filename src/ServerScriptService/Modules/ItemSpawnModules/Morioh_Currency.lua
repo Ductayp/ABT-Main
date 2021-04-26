@@ -31,8 +31,8 @@ Morioh_Cash.Items = {
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
-            MinValue = 1,
-            MaxValue = 3,
+            MinValue = 15,
+            MaxValue = 25,
         }
     },
 

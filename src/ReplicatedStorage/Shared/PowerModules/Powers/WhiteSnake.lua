@@ -11,8 +11,8 @@ WhiteSnake.Defs = {
     PowerName = "White Snake",
     MaxXp = {
         [1] = 10000,
-        [2] = 15000,
-        [3] = 20000
+        [2] = 20000,
+        [3] = 30000
     },
     DamageMultiplier = {
         [1] = 1,
@@ -109,7 +109,7 @@ WhiteSnake.Defs.Abilities.EquipStand = {
         [3] = ReplicatedStorage.EffectParts.StandModels.WhiteSnake_3,
     },
     Sounds = {
-        Equip = ReplicatedStorage.Audio.Abilities.StandSummon,
+        Equip = ReplicatedStorage.Audio.StandSpecific.WhiteSnake.Summon,
         Remove =  ReplicatedStorage.Audio.Abilities.StandSummon,
     }
 }
@@ -126,10 +126,10 @@ end
 WhiteSnake.Defs.Abilities.Barrage = {
     Name = "Barrage",
     Id = "Barrage",
-    Duration = 10,
-    Cooldown = 7,
+    Duration = 8,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 6, KnockBack = 20}},
+    HitEffects = {Damage = {Damage = 3, KnockBack = 10}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
     }
@@ -147,9 +147,9 @@ end
 WhiteSnake.Defs.Abilities.BurnPunch = {
     Name = "Burn Punch",
     Id = "BurnPunch",
-    Cooldown = 10,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 15}, Burn = {TickTime = 1, TickCount = 7, Damage = 7, Color = "GreenPurple"}},
+    HitEffects = {Damage = {Damage = 7}, Burn = {TickTime = 1, TickCount = 7, Damage = 4, Color = "GreenPurple"}},
     Sounds = {
         Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
     }
@@ -167,7 +167,7 @@ end
 WhiteSnake.Defs.Abilities.StandSteal = {
     Name = "Stand Steal",
     Id = "StandSteal",
-    Cooldown = 6,
+    Cooldown = 15,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.RadiusAttack.StandSteal
 }
@@ -186,14 +186,12 @@ WhiteSnake.Defs.Abilities.AcidShot = {
     Name = "Acid Shot",
     Id = "AcidShot",
     RequireToggle_On = {"Q"},
-    Cooldown = 6,
-    Duration = 5,
-    HitEffects = {Damage = {Damage = 20}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
-    RequireToggle_On = {"Q"},
+    Cooldown = 8,
+    AbilityMod = Knit.Abilities.BasicProjectile.AcidShot
 }
 
 function WhiteSnake.AcidShot(params)
-    --params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, WhiteSnake.Defs.Abilities.WallBlast)
+    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, WhiteSnake.Defs.Abilities.AcidShot)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -220,7 +218,7 @@ end
 WhiteSnake.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 5}}
+    HitEffects = {Damage = {Damage = 5, KnockBack = 20}}
 }
 
 function WhiteSnake.Punch(params)

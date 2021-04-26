@@ -29,7 +29,7 @@ Fugo_Mob.Animations = {
 
 Fugo_Mob.Defs = {}
 Fugo_Mob.Defs.Name = "Pannacota"
-Fugo_Mob.Defs.XpValue = 100
+Fugo_Mob.Defs.XpValue = 200
 Fugo_Mob.Defs.Health = 200
 Fugo_Mob.Defs.WalkSpeed = 16
 Fugo_Mob.Defs.JumpPower = 50

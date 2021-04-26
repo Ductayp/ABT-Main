@@ -427,7 +427,7 @@ function InventoryService:UpgradeStandRank(player, standGUID)
             return result
         end
 
-        if playerData.Currency.SoulOrbs < 250 then
+        if playerData.Currency.SoulOrbs < 200 then
             print("cant afford to upgarde stand")
             result = "CantAfford"
             return result
@@ -443,7 +443,7 @@ function InventoryService:UpgradeStandRank(player, standGUID)
             return result
         end
 
-        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - 250
+        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - 200
 
         local standData = {}
         standData.Power = playerData.CurrentStand.Power

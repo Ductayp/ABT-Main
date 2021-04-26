@@ -55,6 +55,8 @@ end
 --// Activate
 function RadiusAttack.Activate(params, abilityDefs)
 
+    local abilityMod = require(abilityDefs.AbilityMod)
+
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
 		params.CanRun = true
@@ -78,7 +80,7 @@ function RadiusAttack.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "RadiusAttack", 1.25)
+    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "RadiusAttack", abilityMod.InputBlockTime)
 
     -- tween hitbox
     RadiusAttack.Run_Server(params, abilityDefs)
@@ -99,25 +101,24 @@ end
 --// --------------------------------------------------------------------
 
 function RadiusAttack.Setup(params, abilityDefs)
-    print("BEEP 1")
+
 end
 
 function RadiusAttack.Run_Server(params, abilityDefs)
 
-    print("BEEP 2")
-
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-    print("initPlayer", initPlayer)
+    --print("initPlayer", initPlayer)
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
     if abilityMod.HitDelay then wait(abilityMod.HitDelay) end
     
+    local hitCharacters = {}
     -- hit all players in range, subject to immunity
     for _, player in pairs(game.Players:GetPlayers()) do
         if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityMod.Range then
             if player ~= initPlayer then
-                Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, abilityMod.HitEffects)
+                table.insert(hitCharacters, player.Character)
             end
         end
     end
@@ -125,13 +126,76 @@ function RadiusAttack.Run_Server(params, abilityDefs)
     -- hit all Mobs in range
     for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
         if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityMod.Range then
-            Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, abilityMod.HitEffects)
+            table.insert(hitCharacters, mob.Model)
         end
     end
+
+    -- hit all dummies
+    for _, dummy in pairs(Workspace.Dummies:GetChildren()) do
+        if initPlayer:DistanceFromCharacter(dummy.HumanoidRootPart.Position) <= abilityMod.Range then
+            table.insert(hitCharacters, dummy)
+        end
+    end
+
+    params.HitCharacters = hitCharacters
+    --params.Test = true
+
+    spawn(function()
+
+        if abilityMod.Server_Start then
+            params, abilityDefs = abilityMod.Server_Start(params, abilityDefs, initPlayer)
+        end
+    
+        for count = 1, abilityMod.TickCount do
+            wait(abilityMod.TickTime)
+            if abilityMod.Server_Tick then
+                params, abilityDefs = abilityMod.Server_Tick(params, abilityDefs, initPlayer)
+            end
+        end
+    
+        if abilityMod.Server_End then
+            params, abilityDefs = abilityMod.Server_End(params, abilityDefs, initPlayer)
+        end
+
+    end)
 
 end
 
 function RadiusAttack.Run_Client(params, abilityDefs)
+
+    print("YESSS!", params, abilityDefs)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then
+        return
+    end
+
+    -- setup the stand, if its not there then make it
+	abilityDefs.TargetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+	if not abilityDefs.TargetStand then
+		abilityDefs.TargetStand = ManageStand.QuickRender(params)
+    end
+
+    local abilityMod = require(abilityDefs.AbilityMod)
+
+    if abilityMod.HitDelay then wait(abilityMod.HitDelay) end
+
+    if abilityMod.Server_Start then
+        abilityMod.Client_Start(params, abilityDefs, initPlayer)
+    end
+
+    for count = 1, abilityMod.TickCount do
+        wait(abilityMod.TickTime)
+        if abilityMod.Server_Tick then
+            abilityMod.Client_Tick(params, abilityDefs, initPlayer, hitCharacters)
+        end
+    end
+
+    if abilityMod.Server_End then
+        abilityMod.Client_End(params, abilityDefs, initPlayer, hitCharacters)
+    end
+
+
 
 end
 

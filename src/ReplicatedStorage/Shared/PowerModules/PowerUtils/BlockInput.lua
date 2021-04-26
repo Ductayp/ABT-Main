@@ -19,6 +19,7 @@ local BlockInput = {}
 
 function BlockInput.AddBlock(userId, name, duration)
 
+    if not ReplicatedStorage.PowerStatus[userId] then return end
     local inputBlockFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("InputBlocks")
     if not inputBlockFolder then
         inputBlockFolder = utils.EasyInstance("Folder",{Name = "InputBlocks", Parent = ReplicatedStorage.PowerStatus[userId]})

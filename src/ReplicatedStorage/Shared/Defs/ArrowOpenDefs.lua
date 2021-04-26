@@ -3,9 +3,9 @@
 
 return {
     TheWorld = 1,
-    KillerQueen = 2,
+    KillerQueen = 3,
     --GoldExperience = 1,
-    --WhiteSnake = 1,
+    WhiteSnake = 1,
     CrazyDiamond = 3,
     --TheHand = 1,
 }

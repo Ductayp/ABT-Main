@@ -24,7 +24,7 @@ PowersService.Client.RenderAbilityEffect = RemoteEvent.new()
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player,params)
 
-    print("PowersService:ActivatePower(player,params)", player, params)
+    --print("PowersService:ActivatePower(player,params)", player, params)
     
     if not player.Character then return end
     if player.Character.Humanoid.Health < 1 then return end
@@ -159,7 +159,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    -- print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     -- setup some variables
     local canHit = false
@@ -205,7 +205,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
    
     -- do hitEffects if canHit is true
     if canHit == true then
-        for effect,effectParams in pairs(abilityDefs.HitEffects) do
+        for effect, effectParams in pairs(abilityDefs.HitEffects) do
             require(Knit.HitEffects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
         end
     end

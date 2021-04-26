@@ -15,7 +15,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 500
+            Value = 2250
         }
     },
     HundredPages = {
@@ -25,7 +25,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 6000
+            Value = 25000
         }
     },
 }
@@ -117,7 +117,7 @@ module.Stage.BuySell = {
     IconName = "Icon_Rohan",
     Title = "Famous Mangaka",
     Body = "Help me get this chapter finished. Bring me <b>BLANK PAGES</b> and I can pay you in <b>CASH</b>. Besides, we don't want Dio to get any of these, I guess." ..
-        "<br/><br/><b>10 Blank Pages for 500 CASH<br/>100 Blank Pages for 6,000 CASH</b>",
+        "<br/><br/><b>10 Blank Pages for 2,250 CASH<br/>100 Blank Pages for 25,000 CASH</b>",
     Choice_1 = {
         Display = true,
         Text = "Sell 10 Blank Pages",

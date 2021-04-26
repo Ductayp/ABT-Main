@@ -36,6 +36,7 @@ return {
         Message = "THANKS FOR HELPING TEST!"
     },
 
+    --[[
     {
         CodeString = "sub2planetmilo",
         ActionType = "GiveItemFinder",
@@ -43,5 +44,6 @@ return {
         Expiration = 1741217469,
         Message = "You got Temporary Item Finder Access!"
     },
+    ]]--
 
 }

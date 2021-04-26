@@ -11,21 +11,21 @@ module.Shop = {
     TenDiamonds= {
         Input = {
             Key = "Diamond",
-            Value = 10
+            Value = 1
         },
         Output = {
             Key = "Cash",
-            Value = 500
+            Value = 700
         }
     },
     HundredDiamonds = {
         Input = {
             Key = "Diamond",
-            Value = 100
+            Value = 10
         },
         Output = {
             Key = "Cash",
-            Value = 6000
+            Value = 8000
         }
     },
 }
@@ -91,10 +91,10 @@ module.Stage.BuySell = {
     IconName = "Icon_Josuke",
     Title = "Guy With Nice Hair (don't make fun of it!)",
     Body = "Me and Okuyasu dying to eat at Tonio's place again but bro wants Diamonds for the secret menu items! Bring me <b>DIAMONDS</b> and I can give you some <b>CASH</b>" ..
-        "<br/><br/><b>10 Diamonds for 500 CASH<br/>100 Diamonds for 6000 CASH</b>",
+        "<br/><br/><b>1 Diamonds for 700 CASH<br/>10 Diamonds for 8,000 CASH</b>",
     Choice_1 = {
         Display = true,
-        Text = "Sell 10 Diamonds",
+        Text = "Sell 1 Diamonds",
         Action = {
             Type = "Shop",
             ModuleName = "Josuke",
@@ -103,7 +103,7 @@ module.Stage.BuySell = {
     },
     Choice_2 = {
         Display = true,
-        Text = "Sell 100 Diamonds",
+        Text = "Sell 10 Diamonds",
         Action = {
             Type = "Shop",
             ModuleName = "Josuke",

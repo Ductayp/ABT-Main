@@ -18,8 +18,8 @@ KillerQueen.Defs = {
     PowerName = "Killer Queen",
     MaxXp = {
         [1] = 10000,
-        [2] = 15000,
-        [3] = 20000
+        [2] = 20000,
+        [3] = 30000
     },
     DamageMultiplier = {
         [1] = 1,
@@ -134,7 +134,7 @@ KillerQueen.Defs.Abilities.Barrage = {
     Duration = 4,
     Cooldown = 7,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 3}},
+    HitEffects = {Damage = {Damage = 3, KnockBack = 10}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.KillerQueen.Barrage,
     }
@@ -240,7 +240,7 @@ end
 KillerQueen.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 5}}
+    HitEffects = {Damage = {Damage = 5, KnockBack = 20}}
 }
 
 function KillerQueen.Punch(params)

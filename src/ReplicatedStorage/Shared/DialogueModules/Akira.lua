@@ -15,7 +15,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 500
+            Value = 2250
         }
     },
     HundredArrows = {
@@ -25,7 +25,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 6000
+            Value = 25000
         }
     },
 }
@@ -87,7 +87,7 @@ module.Stage.BuySell = {
     IconName = "Icon_Akira",
     Title = "Rock Star",
     Body = "Like I said, Enrico wants these <b>BROKEN ARROWS</b> for some reason. Who knows what hes gonna do and honestly I don't care!" ..
-        "<br/><br/><b>10 Broken Arrows for 500 Cash<br/>100 Broken Arrows for 6,000 Cash</b>",
+        "<br/><br/><b>10 Broken Arrows for 2,250 Cash<br/>100 Broken Arrows for 25,000 Cash</b>",
     Choice_1 = {
         Display = true,
         Text = "Sell 10 Broken Arrows",

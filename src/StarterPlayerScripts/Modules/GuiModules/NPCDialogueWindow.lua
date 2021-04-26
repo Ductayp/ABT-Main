@@ -38,7 +38,8 @@ local currentStageName
 local disableChoiceButtons = false
 local defaultButtonProperties = {
     Size = UDim2.new(0.3, 0, 0.9, 0),
-    BackgroundColor3 = Color3.fromRGB(59,59,59)
+    BackgroundColor3 = Color3.fromRGB(59,59,59),
+    TextColor3 = Color3.fromRGB(255,255,255),
 }
 
 
@@ -256,7 +257,6 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
         shopParams.TransactionKey = stageDef[choiceName].Action.TransactionKey
 
         local shopSuccess = InventoryService:NPCTransaction(shopParams)
-        print("shopSuccess", shopSuccess)
 
         local originalText = button.Text
         local originalTextColor = button.TextColor3

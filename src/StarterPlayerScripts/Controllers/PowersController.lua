@@ -76,6 +76,7 @@ end
 
 --// RenderAbilityEffect
 function PowersController:RenderAbilityEffect(abilityModule, functionName, params)
+    print("abilityModule, functionName, params", abilityModule, functionName, params)
     local thisModule = require(abilityModule)
     thisModule[functionName](params)
 end
@@ -83,6 +84,7 @@ end
 --// RenderExistingStands
 function PowersController:RenderExistingStands()
     
+    print("RenderExisting-PowersController")
     for _, folder in pairs(ReplicatedStorage.PowerStatus:GetChildren()) do
 
         -- only run this on other players
@@ -102,18 +104,21 @@ function PowersController:RenderExistingStands()
     end
 end 
 
+function PowersController:PlayerAdded(player)
+    repeat wait() until player.character
+    self:RenderExistingStands()
+
+end
+
+function PowersController:CharacterAdded(player)
+
+
+end
+
 --// KnitStart
 function PowersController:KnitStart()
 
-    -- redner existing stands on join
-    spawn(function()
-        self:RenderExistingStands()
-        wait(10)
-        self:RenderExistingStands()
-        wait(60)
-        self:RenderExistingStands()
-    end)
-    
+
     PowersService.ExecutePower:Connect(function(initPlayer,params)
         self:ExecutePower(initPlayer,params)
     end)
@@ -125,6 +130,31 @@ function PowersController:KnitStart()
     PowersService.RenderAbilityEffect:Connect(function(abilityModule, functionName, params)
         self:RenderAbilityEffect(abilityModule, functionName, params)
     end)
+
+    Players.PlayerAdded:Connect(function(player)
+        self:PlayerAdded(player)
+
+        player.CharacterAdded:Connect(function(character)
+            self:CharacterAdded(player)
+    
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                -- empty for now
+            end)
+        end)
+    end)
+
+    -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
+    for _, player in ipairs(Players:GetPlayers()) do
+        self:PlayerAdded(player)
+        
+        player.CharacterAdded:Connect(function(character)
+            self:CharacterAdded(player)
+    
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                -- empty for now
+            end)
+        end)
+    end
 
 end
 

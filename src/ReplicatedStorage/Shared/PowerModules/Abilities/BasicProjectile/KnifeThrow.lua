@@ -4,6 +4,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
+local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 local KnifeThrowMod = {}
 
@@ -44,8 +45,15 @@ KnifeThrowMod.CosmeticProjectile = ReplicatedStorage.EffectParts.Abilities.Basic
 -- hit effects
 KnifeThrowMod.HitEffects = {Damage = {Damage = 20}}
 
+function KnifeThrowMod.HitBoxResult(initPlayer, abilityDefs, result, params)
+    if result.Instance.Parent:FindFirstChild("Humanoid") then
+        --print("HIT A HUMANOID", result.Instance.Parent)
+        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+    end
+end
+
 -- destroy cosmetic
-function KnifeThrowMod.DestroyCosmetic(params)
+function KnifeThrowMod.DestroyCosmetic(projectilePart, params)
 
     local newBurst = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Burst:Clone()
     newBurst.Position = params.Position
@@ -59,6 +67,7 @@ function KnifeThrowMod.DestroyCosmetic(params)
     transparencyTween:Play()
 
     newBurst.Part.ParticleEmitter:Emit(400)
+    projectilePart:Destroy()
 
 end
 

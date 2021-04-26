@@ -15,7 +15,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 500
+            Value = 750
         }
     },
     HundredFragments = {
@@ -25,7 +25,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 6000
+            Value = 8000
         }
     },
 }
@@ -58,7 +58,7 @@ module.Stage.BuySell = {
     IconName = "Icon_Jonathon",
     Title = "Jonathon",
     Body = "If you bring me <b>MASK FRAGMENTS</b> then I can be sure Dio cant make the STONE MASK again. That would be bad ..." ..
-        "<br/><br/><b>10 Mask Fragments for 500 Cash<br/>100 Mask Fragments for 6,000 Cash</b>",
+        "<br/><br/><b>10 Mask Fragments for 750 Cash<br/>100 Mask Fragments for 8,000 Cash</b>",
     Choice_1 = {
         Display = true,
         Text = "Sell 10 Mask Fragments",

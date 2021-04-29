@@ -55,6 +55,7 @@ MoneyPlatinum.Defs = {
 
 --// SETUP - run this once when the stand is equipped
 function MoneyPlatinum.SetupPower(initPlayer,params)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "MoneyPlatinum_Setup", 2, {TimeStop = true})
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "MoneyPlatinum_Setup", 10, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "MoneyPlatinum_Setup", MoneyPlatinum.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "MoneyPlatinum_Setup", MoneyPlatinum.Defs.DamageMultiplier[params.Rank], nil)
@@ -62,6 +63,7 @@ end
 
 --// REMOVE - run this once when the stand is un-equipped
 function MoneyPlatinum.RemovePower(initPlayer,params)
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "MoneyPlatinum_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "MoneyPlatinum_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "MoneyPlatinum_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "MoneyPlatinum_Setup")

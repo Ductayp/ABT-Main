@@ -134,6 +134,9 @@ end
 --// Has_Boost
 function BoostService:Has_Boost(player, boostName)
 
+    if not player then return end
+    --print("BoostService:Has_Boost(player, boostName)", player, boostName)
+
     local hasBoost = false
     
     local thisBoostDef = BoostService.PlayerTimers[player.UserId][boostName]

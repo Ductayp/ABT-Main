@@ -39,7 +39,7 @@ module.Stage.Start = {
         "<br/><br/>They say these guys on the beach are a time-copied Pillar Man, whatever that means, get me the <b>MASK FRAGMENTS</b> and I will give you cash.",
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0), Size = UDim2.new(0.25, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",

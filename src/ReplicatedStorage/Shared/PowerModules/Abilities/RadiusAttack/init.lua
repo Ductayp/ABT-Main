@@ -118,7 +118,9 @@ function RadiusAttack.Run_Server(params, abilityDefs)
     for _, player in pairs(game.Players:GetPlayers()) do
         if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityMod.Range then
             if player ~= initPlayer then
-                table.insert(hitCharacters, player.Character)
+                if not require(Knit.StateModules.Invulnerable).IsInvulnerable(player) then
+                    table.insert(hitCharacters, player.Character)
+                end
             end
         end
     end

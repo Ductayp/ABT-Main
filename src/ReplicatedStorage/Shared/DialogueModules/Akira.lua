@@ -39,7 +39,7 @@ module.Stage.Start = {
         "<br/><br/>If I can get a bunch of those BROKEN ARROWS, Enrico promised me a Record Deal.",
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0), Size = UDim2.new(0.25, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
@@ -66,7 +66,7 @@ module.Stage.PinkWater = {
     Body = "Weird isn't it? I don't think its actualy water at all!<br/><br/>When you fall in it's like your body is being torn apart, riped across the time continuum.",
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0), Size = UDim2.new(0.25, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",

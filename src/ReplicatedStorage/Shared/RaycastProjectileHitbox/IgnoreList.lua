@@ -1,10 +1,23 @@
+local folderNames = {
+    "RenderedEffects",
+    "Spawners_Morioh",
+    "Spawners_Morioh",
+    "Spawners_PvPArena",
+    "ProjectileIgnore",
+    "ProjectilePassTrough",
+    "ItemSpawnService",
+    "ZoneServiceGroups",
+    "SpawnedItems",
+}
+
+local ignoreFolders = {}
+for _, name in pairs(folderNames) do
+    local newIgnore = workspace:FindFirstChild(name, true)
+    table.insert(ignoreFolders, newIgnore)
+end
+
+
 return {
-    workspace.RenderedEffects,
-    workspace.GameMaps.Timeline4.ProjectileIgnore,
-    workspace.GameMaps.Timeline4.Spawns,
-    workspace.GameMaps.Timeline4.ProjectilePassTrough,
-    workspace.GameMaps.Timeline4.ItemSpawnService,
-    workspace.ZoneServiceGroups,
-    workspace.SpawnedItems,
+    ignoreFolders
 }
 

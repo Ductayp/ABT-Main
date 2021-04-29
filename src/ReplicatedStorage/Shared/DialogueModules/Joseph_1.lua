@@ -7,6 +7,16 @@ function module.Initialize()
     -- print("BEEEP BEEP!")
 end
 
+module.DungeonTravel = {
+    SkeletonHeelStone = {
+        Input = {
+            Key = "Cash",
+            Value = 5000
+        },
+        Destination = "SkeletonHeelStone"
+    },
+}
+
 
 module.Stage = {}
 
@@ -32,7 +42,13 @@ module.Stage.Start = {
         }
     },
     Choice_3 = {
-        Display = false,
+        Display = true,
+        Text = "DUNGEON",
+        CustomProperties = {BackgroundColor3 = Color3.fromRGB(85, 85, 255), Size = UDim2.new(0.25, 0, 0.9, 0)},
+        Action = {
+            Type = "ChangeStage",
+            Stage = "ArenaDungeon"
+        }
     },
 }
 
@@ -47,6 +63,29 @@ module.Stage.Arena = {
         Action = {
             Type = "ChangeStage",
             Stage = "SafeZone"
+        }
+    },
+    Choice_2 = {
+        Display = false,
+    },
+    Choice_3 = {
+        Display = false,
+    },
+}
+
+module.Stage.ArenaDungeon = {
+    IconName = "Icon_Joseph",
+    Title = "Joseph",
+    Body = "Back when I was younger, YADDA YADDA YADDA. I can get you there, bt stabilzing this Time Rift to fly us there will cost you." ..
+        "<br/><br/>5,000 CASH to go the The Arena.",
+    Choice_1 = {
+        Display = true,
+        Text = "Pay 5,000 to go to ARENA",
+        CustomProperties = {Size = UDim2.new(0.6, 0, 0.9, 0)},
+        Action = {
+            Type = "DungeonTravel",
+            ModuleName = "Joseph_1",
+            TransactionKey = "SkeletonHeelStone",
         }
     },
     Choice_2 = {

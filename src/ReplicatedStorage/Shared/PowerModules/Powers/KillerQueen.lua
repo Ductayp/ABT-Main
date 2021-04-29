@@ -209,7 +209,7 @@ KillerQueen.Defs.Abilities.SheerHeartAttack = {
     Id = "SheerHeartAttack",
     Cooldown = 15,
     --RequireToggle_On = {"Q"},
-    AbilityMod = Knit.AbilityMods.BasicSeeker_SheerHeartAttack,
+    AbilityMod = Knit.Abilities.BasicSeeker.SheerHeartAttack,
 }
 
 function KillerQueen.SheerHeartAttack(params)

@@ -46,7 +46,6 @@ function RightGui.Setup()
 
     -- item finder button
     RightGui.ItemFinder_Button.MouseButton1Down:Connect(function()
-        print("Beep")
         if not Knit.Controllers.GuiController.InDialogue then
             if Knit.Controllers.GuiController.CurrentWindow == "ItemFinderWindow" then
                 Knit.Controllers.GuiController.ItemFinderWindow.Close()

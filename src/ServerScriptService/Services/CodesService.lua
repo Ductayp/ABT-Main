@@ -87,7 +87,7 @@ function CodesService:RedeemCode(player, code)
         end
         
         if codeDef.ActionType == "GiveItemFinder" then
-            --Knit.Services.BoostService:AddBoost(player, "ItemFinderAccess", codeDef.Duration)
+            Knit.Services.BoostService:AddBoost(player, "ItemFinder", codeDef.Duration)
         end
 
         returnMessage = codeDef.Message

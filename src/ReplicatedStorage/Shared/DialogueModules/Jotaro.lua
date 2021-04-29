@@ -39,7 +39,7 @@ module.Stage.Start = {
     
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
         Action = {
             Type = "ChangeStage",
@@ -67,7 +67,7 @@ module.Stage.TimeRift = {
     Body = "Did you notice the water looks CRAZY PINK? If you go into it, you die. <br/><br/>You might want to talk to the Gang Star at the end of the dock to see what he knows about it.",
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
         Action = {
             Type = "ChangeStage",

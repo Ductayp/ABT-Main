@@ -58,11 +58,13 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
         if hitPlayer then
             if not Players:FindFirstChild(hitPlayer.Name) then return end
 
-            local rand = math.random(1,2)
-            if rand == 1 then
-                Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_1:Play()
-            else
-                Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_2:Play()
+            if Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId] then
+                local rand = math.random(1,2)
+                if rand == 1 then
+                    Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_1:Play()
+                else
+                    Knit.Services.PlayerUtilityService.PlayerAnimations[hitPlayer.UserId].Damage_2:Play()
+                end
             end
 
         end
@@ -71,7 +73,6 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
             spawn(function()
                 local force = effectParams.KnockBack
                 local lookVector = CFrame.new(initPlayer.Character.HumanoidRootPart.Position, hitCharacter.HumanoidRootPart.Position).LookVector
-                print("KNOCKBACK TEST", lookVector)
                 local bodyVelocity = Instance.new("BodyVelocity")
                 bodyVelocity.Name = "DamageKnockBack"
                 bodyVelocity.MaxForce = Vector3.new(500000,500000,500000)

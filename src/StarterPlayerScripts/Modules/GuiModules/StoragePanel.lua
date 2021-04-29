@@ -63,6 +63,10 @@ StoragePanel.Stand_Card = StoragePanel.Panel:FindFirstChild("Stand_Card", true)
 StoragePanel.Frame_XP = StoragePanel.Panel:FindFirstChild("Frame_XP", true)
 StoragePanel.Xp_Bar = StoragePanel.Panel:FindFirstChild("Xp_Bar", true)
 StoragePanel.Xp_Text = StoragePanel.Panel:FindFirstChild("Xp_Text", true)
+StoragePanel.Star_1 = StoragePanel.Panel:FindFirstChild("star_1", true)
+StoragePanel.Star_2 = StoragePanel.Panel:FindFirstChild("star_2", true)
+StoragePanel.Star_3 = StoragePanel.Panel:FindFirstChild("star_3", true)
+
 
 -- evolve panel stuff
 StoragePanel.Frame_Evolve = StoragePanel.Panel:FindFirstChild("Frame_Evolve", true)
@@ -100,7 +104,7 @@ function StoragePanel.Setup()
         local thisGuiSlot = StoragePanel.Frame_StorageGrid:FindFirstChild("StandSlot_" .. slotNumber, true)
         local lockedIcon = thisGuiSlot.Frame_Icon:FindFirstChild("Icon_Locked", true)
         local convertNumber = utils.CommaValue(slotCost)
-        lockedIcon.TextLabel_SlotCost.Text = convertNumber .. "<br/>Cash"
+        lockedIcon.TextLabel_SlotCost.Text = convertNumber .. "<br/>Soul Orbs"
         thisGuiSlot:SetAttribute("SlotId", slotNumber)
 
         thisGuiSlot.MouseButton1Down:Connect(function()
@@ -356,17 +360,17 @@ function StoragePanel.UpdateStandCard()
 
     StoragePanel.Stand_Card.Stand_Name.Text = powerModule.Defs.PowerName
     if selectedStandData.Rank == 1 then
-        StoragePanel.Stand_Card.Stand_Rank.star_1.Visible = true
-        StoragePanel.Stand_Card.Stand_Rank.star_2.Visible = false
-        StoragePanel.Stand_Card.Stand_Rank.star_3.Visible = false
+        StoragePanel.Star_1.Visible = true
+        StoragePanel.Star_2.Visible = false
+        StoragePanel.Star_3.Visible = false
     elseif selectedStandData.Rank == 2 then
-        StoragePanel.Stand_Card.Stand_Rank.star_1.Visible = true
-        StoragePanel.Stand_Card.Stand_Rank.star_2.Visible = true
-        StoragePanel.Stand_Card.Stand_Rank.star_3.Visible = false
+        StoragePanel.Star_1.Visible = true
+        StoragePanel.Star_2.Visible = true
+        StoragePanel.Star_3.Visible = false
     elseif selectedStandData.Rank == 3 then
-        StoragePanel.Stand_Card.Stand_Rank.star_1.Visible = true
-        StoragePanel.Stand_Card.Stand_Rank.star_2.Visible = true
-        StoragePanel.Stand_Card.Stand_Rank.star_3.Visible = true
+        StoragePanel.Star_1.Visible = true
+        StoragePanel.Star_2.Visible = true
+        StoragePanel.Star_3.Visible = true
     end
 
 

@@ -25,16 +25,18 @@ Morioh_Cash.Items = {
         }
     },
 
+    --[[
     {
         Weight = 1,
         Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
-            MinValue = 15,
-            MaxValue = 25,
+            MinValue = 1,
+            MaxValue = 3,
         }
     },
+    ]]--
 
     {
         Weight = 10,

@@ -213,7 +213,11 @@ function WallBlast.Run_Effects(params, abilityDefs)
 
     -- play the sound when it is fired
     WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.ARFire)
-	WeldedSound.NewSound(baseParticle, ReplicatedStorage.Audio.General.RocksFalling)
+	WeldedSound.NewSound(baseParticle, ReplicatedStorage.Audio.General.CrashRocks)
+    spawn(function()
+        wait(1.1)
+        WeldedSound.StopSound(baseParticle, "CrashRocks", .5)
+    end)
 
     -- shake wall into place
     local renderCount = 0
@@ -351,7 +355,7 @@ function WallBlast.Run_Effects(params, abilityDefs)
             TransparencyTween = {
                 Tween_Info = TweenInfo.new(4),
                 Tween_Params = {Transparency = 1},
-                Delay = 0
+                Delay = 1
             },
         }
     }

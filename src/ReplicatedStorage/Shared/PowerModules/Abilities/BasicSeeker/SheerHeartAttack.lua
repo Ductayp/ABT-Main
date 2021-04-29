@@ -52,7 +52,11 @@ function SheerHeartAttack.PlayAnimations(initPlayer, abilityDefs)
     Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].CoinFlip:Play()
 end
 
-function SheerHeartAttack.AquireTarget(initPlayer, seeker)
+function SheerHeartAttack.AquireTarget(initPlayer, seeker, abilityDefs)
+
+    if not initPlayer then
+        SheerHeartAttack.DestroySeeker(initPlayer, seeker, abilityDefs)
+    end
 
     -- target table is an array where each entry is another array that contains the mob.Model or player.Character and its magnitude from initPlayer
     local targetTable = {}
@@ -69,7 +73,11 @@ function SheerHeartAttack.AquireTarget(initPlayer, seeker)
     -- put all players in targetTable
     for _, player in pairs(game.Players:GetPlayers()) do
         if player ~= initPlayer then
-            targetTable[#targetTable + 1] = {player.Character, (player.Character.HumanoidRootPart.Position -  initPlayer.Character.HumanoidRootPart.Position).Magnitude}
+            if not require(Knit.StateModules.Invulnerable).IsInvulnerable(player) then
+                if player.Character and player.Character.HumanoidRootPart then
+                    targetTable[#targetTable + 1] = {player.Character, (player.Character.HumanoidRootPart.Position -  initPlayer.Character.HumanoidRootPart.Position).Magnitude}
+                end
+            end
         end
     end
 

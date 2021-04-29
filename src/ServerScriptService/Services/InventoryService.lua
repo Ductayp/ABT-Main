@@ -292,6 +292,7 @@ function InventoryService:SellStand(player, GUID)
     if playerData.CurrentStand.Power ~= "Standless" then
         if GUID == playerData.CurrentStand.GUID then
 
+            --[[
             local shardKey
             if playerData.CurrentStand.Rank == 1 then
                 shardKey = "Shard_Dull"
@@ -301,10 +302,7 @@ function InventoryService:SellStand(player, GUID)
                 shardKey = "Shard_Glowing"
             end
             self:Give_Item(player, shardKey, 1)
-
-            Knit.Services.PowersService:SetCurrentPower(player, {Power = "Standless"})
-            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-
+            
             local itemDefs = require(Knit.Defs.ItemDefs)
             local thisItem = itemDefs[shardKey]
             local thisName = thisItem.Name
@@ -313,6 +311,10 @@ function InventoryService:SellStand(player, GUID)
             notificationParams.Icon = "Item"
             notificationParams.Text = "You Got " .. thisName 
             Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+            ]]--
+
+            Knit.Services.PowersService:SetCurrentPower(player, {Power = "Standless"})
+            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
             return
 
@@ -323,6 +325,7 @@ function InventoryService:SellStand(player, GUID)
     for index, standData in pairs(playerData.StandStorage.StoredStands) do
         if GUID == standData.GUID then
 
+            --[[
             local shardKey
             if standData.Rank == 1 then
                 shardKey = "Shard_Dull"
@@ -333,9 +336,6 @@ function InventoryService:SellStand(player, GUID)
             end
             self:Give_Item(player, shardKey, 1)
 
-            table.remove(playerData.StandStorage.StoredStands, index)
-            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-
             local itemDefs = require(Knit.Defs.ItemDefs)
             local thisItem = itemDefs[shardKey]
             local thisName = thisItem.Name
@@ -344,6 +344,10 @@ function InventoryService:SellStand(player, GUID)
             notificationParams.Icon = "Item"
             notificationParams.Text = "You Got " .. thisName 
             Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+            ]]--
+
+            table.remove(playerData.StandStorage.StoredStands, index)
+            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
             return
 
@@ -427,7 +431,7 @@ function InventoryService:UpgradeStandRank(player, standGUID)
             return result
         end
 
-        if playerData.Currency.SoulOrbs < 200 then
+        if playerData.Currency.SoulOrbs < 100 then
             print("cant afford to upgarde stand")
             result = "CantAfford"
             return result
@@ -443,7 +447,7 @@ function InventoryService:UpgradeStandRank(player, standGUID)
             return result
         end
 
-        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - 200
+        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - 100
 
         local standData = {}
         standData.Power = playerData.CurrentStand.Power
@@ -514,8 +518,8 @@ function InventoryService:BuyStorage(player)
     local nextSlotCost = standStorageDefs.SlotCosts[nextSlotId]
 
     local results
-    if playerData.Currency.Cash >= nextSlotCost then
-        playerData.Currency.Cash = playerData.Currency.Cash - nextSlotCost
+    if playerData.Currency.SoulOrbs >= nextSlotCost then
+        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - nextSlotCost
         playerData.StandStorage.SlotsUnlocked += 1
         Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
         Knit.Services.GuiService:Update_Gui(player, "Currency")

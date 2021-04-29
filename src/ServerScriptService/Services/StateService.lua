@@ -99,8 +99,6 @@ end
 --// PlayerJoining
 function StateService:PlayerAdded(player)
 
-    print("StateService:PlayerJoined")
-
     -- create a folder for the player
     local playerFolder = utils.EasyInstance("Folder",{Name = player.UserId, Parent = ReplicatedStorage.StateService})
 

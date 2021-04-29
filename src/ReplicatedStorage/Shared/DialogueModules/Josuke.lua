@@ -38,7 +38,7 @@ module.Stage.Start = {
     Body = "You new here too!? Lately so many weird people been showing up, seems like everyone is a stand user these days.<br/><br/><b>If you need to get rid of your stand, visit STAND STORAGE down the street.</b>",
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {Size = UDim2.new(0.15, 0, 0.9, 0)},
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
         Action = {
@@ -66,7 +66,7 @@ module.Stage.Stage2 = {
     Body = "No idea whats going on, but things are getting very strange. It seems the whole island might be stuck in a time rift.<br/><br/>Maybe my nephew knows more. He's by the hotel.",
     Choice_1 = {
         Display = true,
-        Text = "BUY/SELL",
+        Text = "TRADE",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0), Size = UDim2.new(0.25, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",

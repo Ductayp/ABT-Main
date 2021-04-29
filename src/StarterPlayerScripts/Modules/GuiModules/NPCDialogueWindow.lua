@@ -6,13 +6,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local SoundService = game:GetService("SoundService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiService = Knit.GetService("GuiService")
 local InventoryService = Knit.GetService("InventoryService")
+local DunegonService = Knit.GetService("DunegonService")
 local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
@@ -270,6 +269,41 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
                 button.TextColor3 = originalTextColor
                 disableChoiceButtons = false
             end)
+        else
+            spawn(function()
+                button.Text = "FAILURE"
+                button.TextColor3 = Color3.fromRGB(255, 0, 0)
+                disableChoiceButtons = true
+                wait(2)
+                button.Text = originalText
+                button.TextColor3 = originalTextColor
+                disableChoiceButtons = false
+            end)
+        end
+
+    end
+
+    if stageDef[choiceName].Action.Type == "DungeonTravel" then
+        print("YES!")
+
+        local travelParams = {}
+        travelParams.ModuleName = stageDef[choiceName].Action.ModuleName
+        travelParams.TransactionKey = stageDef[choiceName].Action.TransactionKey
+
+        local travelSuccess = DunegonService:BuyAccess(travelParams)
+        
+        local originalText = button.Text
+        local originalTextColor = button.TextColor3
+        if travelSuccess then
+            button.Text = "SUCCESS"
+            button.TextColor3 = Color3.fromRGB(0, 255, 0)
+            Knit.Controllers.GuiController:ToggleDialogue(false)
+            wait(1)
+            disableChoiceButtons = true
+            NPCDialogue.Frame.Visible = false
+            button.Text = originalText
+            button.TextColor3 = originalTextColor
+            disableChoiceButtons = false
         else
             spawn(function()
                 button.Text = "FAILURE"

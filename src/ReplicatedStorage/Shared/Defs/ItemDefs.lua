@@ -23,6 +23,7 @@ return {
         LayoutOrder = 6
     },
 
+    --[[
     Shard_Dull = {
         Name = "Soul Shard: Dull",
         Type = "Shard",
@@ -43,6 +44,7 @@ return {
         Description = "A Soul Shard received from SACRIFICING a 3-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
         LayoutOrder = 4,
     },
+    ]]--
 
     BrokenArrow = {
         Name = "Broken Arrow",

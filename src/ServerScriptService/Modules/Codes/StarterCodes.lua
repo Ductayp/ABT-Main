@@ -36,6 +36,14 @@ return {
         Message = "THANKS FOR HELPING TEST!"
     },
 
+    {
+        CodeString = "alphatest1",
+        ActionType = "GiveItemFinder",
+        Duration = 3600,
+        Expiration = 1741217469,
+        Message = "You got Temporary Item Finder Access!"
+    },
+
     --[[
     {
         CodeString = "sub2planetmilo",

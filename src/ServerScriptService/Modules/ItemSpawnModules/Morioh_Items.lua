@@ -15,7 +15,7 @@ Morioh_Items.TotalSpawned = 0
 Morioh_Items.Items = {
 
     {
-        Weight = 1,
+        Weight = 6,
         Model = ReplicatedStorage.SpawnItems.VirusBulb,
         Params = {
             DataKey = "VirusBulb",
@@ -25,7 +25,7 @@ Morioh_Items.Items = {
     },
 
     {
-        Weight = 1,
+        Weight = 6,
         Model = ReplicatedStorage.SpawnItems.MaskFragment,
         Params = {
             DataKey = "MaskFragment",
@@ -35,7 +35,7 @@ Morioh_Items.Items = {
     },
 
     {
-        Weight = 1,
+        Weight = 2,
         Model = ReplicatedStorage.SpawnItems.BrokenArrow,
         Params = {
             DataKey = "BrokenArrow",
@@ -45,7 +45,7 @@ Morioh_Items.Items = {
     },
 
     {
-        Weight = 1,
+        Weight = 2,
         Model = ReplicatedStorage.SpawnItems.BlankPage,
         Params = {
             DataKey = "BlankPage",

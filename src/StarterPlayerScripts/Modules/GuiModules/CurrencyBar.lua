@@ -10,7 +10,6 @@ local Players = game:GetService("Players")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
-local NumberSpinner = require(Knit.Shared.NumberSpinner)
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui
@@ -27,29 +26,10 @@ CurrencyBar.Text_SoulOrbs = CurrencyBar.Frame:FindFirstChild("Text_SoulOrbs", tr
 --// Setup ------------------------------------------------------------
 function CurrencyBar.Setup()
 
-    --[[
-    CurrencyBar.CashSpinner = NumberSpinner.fromGuiObject(CurrencyBar.Text_Cash)
-    CurrencyBar.OrbsSpinner = NumberSpinner.fromGuiObject(CurrencyBar.Text_SoulOrbs)
-
-    CurrencyBar.CashSpinner.Prefix = ""
-    CurrencyBar.CashSpinner.Decimals = 0
-    CurrencyBar.CashSpinner.Duration = .5
-    CurrencyBar.CashSpinner.Commas = true
-
-    CurrencyBar.Text_Cash.Visible = false
-    CurrencyBar.Text_SoulOrbs.Visible = false
-    ]]--
-
 end
 
 --// Update ------------------------------------------------------------
 function CurrencyBar.Update(data)
-
-    --[[
-    --CurrencyBar.CashSpinner.Value = data.Cash
-    --CurrencyBar.OrbsSpinner.Value = data.SoulOrbs
-    ]]--
-
 
     if utils.CommaValue(data.Cash) ~= CurrencyBar.Text_Cash.Text then
         if data.Cash < 1 then

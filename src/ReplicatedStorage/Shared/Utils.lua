@@ -24,6 +24,16 @@ function module.GetPlayerFromCharacter(character)
 	end
 end
 
+function module.LookAt(eye, target)
+	local forwardVector = (target - eye).Unit
+	local upVector = Vector3.new(0, 1, 0)
+	-- You have to remember the right hand rule or google search to get this right
+	local rightVector = forwardVector:Cross(upVector)
+	local upVector2 = rightVector:Cross(forwardVector)
+	
+	return CFrame.fromMatrix(eye, rightVector, upVector2)
+end
+
 --// ConvertToHMS - cpmbverts seconds to HH:MM:SS
 function module.ConvertToHMS(s)
 	return string.format("%02i:%02i:%02i", s/60^2, s/60%60, s%60)

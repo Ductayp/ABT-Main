@@ -85,6 +85,7 @@ local storageDefs = require(Knit.Defs.StandStorageDefs)
 local slotData
 local selectedStandData
 local canManageStands
+local manageButtonsEnabaled = true
 
 --// Setup ------------------------------------------------------------
 function StoragePanel.Setup()
@@ -121,27 +122,63 @@ function StoragePanel.Setup()
        
     -- setup stand manage buttons
     StoragePanel.Button_Equip.MouseButton1Down:Connect(function()
-        if not canManageStands then return end
-        if selectedStandData.GUID then
-            InventoryService:EquipStand(selectedStandData.GUID)
+        if manageButtonsEnabaled then
+            if not canManageStands then 
+                manageButtonsEnabaled = false
+                local originalText = StoragePanel.Button_Equip.Text
+                StoragePanel.Button_Equip.Text = "GO TO STORAGE"
+                wait(3)
+                StoragePanel.Button_Equip.Text = originalText
+                manageButtonsEnabaled = true
+                return
+            end
+
+            if selectedStandData.GUID then
+                InventoryService:EquipStand(selectedStandData.GUID)
+            end
         end
     end)
 
     StoragePanel.Button_Evolve.MouseButton1Down:Connect(function()
-        if not canManageStands then return end
-        StoragePanel.Frame_Evolve.Visible = true
-        StoragePanel.Frame_ConfirmEvolve.Visible = true
-        StoragePanel.Frame_StorageGrid.Visible = false
+        if manageButtonsEnabaled then
+            if not canManageStands then 
+                manageButtonsEnabaled = false
+                local originalText = StoragePanel.Button_Evolve.Text
+                StoragePanel.Button_Evolve.Text = "GO TO STORAGE"
+                wait(3)
+                StoragePanel.Button_Evolve.Text = originalText
+                manageButtonsEnabaled = true
+                return
+            end
+
+            StoragePanel.Frame_Evolve.Visible = true
+            StoragePanel.Frame_ConfirmEvolve.Visible = true
+            StoragePanel.Frame_StorageGrid.Visible = false
+        end
+
     end)
 
     StoragePanel.Button_Store.MouseButton1Down:Connect(function()
-        if not canManageStands then return end
-        InventoryService:StoreStand()
+        if manageButtonsEnabaled then
+            if not canManageStands then 
+                manageButtonsEnabaled = false
+                local originalText = StoragePanel.Button_Store.Text
+                StoragePanel.Button_Store.Text = "GO TO STORAGE"
+                wait(3)
+                StoragePanel.Button_Store.Text = originalText
+                manageButtonsEnabaled = true
+                return 
+            end
+            InventoryService:StoreStand()
+        end
+
     end)
 
     StoragePanel.Button_Sell.MouseButton1Down:Connect(function()
-        if not canManageStands then return end
-        StoragePanel.Frame_ConfirmSell.Visible = true
+         if manageButtonsEnabaled then
+            --if not canManageStands then return end
+            StoragePanel.Frame_ConfirmSell.Visible = true
+         end
     end)
 
     -- setup evolution options
@@ -193,6 +230,7 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
     StoragePanel.Frame_StorageGrid.Visible = true
     StoragePanel.Frame_ConfirmEvolve.Visible = false
     StoragePanel.Frame_ConfirmSell.Visible = false
+    StoragePanel.Frame_ManageStands_Cover.Visible = false
 
     StoragePanel.UpdateStandCard()
 
@@ -243,16 +281,18 @@ function StoragePanel.Update_Access(hasGamePass, isInZone)
 
     if hasGamePass or isInZone then
         canManageStands = true
-        StoragePanel.Frame_ManageStands_Cover.Visible = false
+        --StoragePanel.Frame_ManageStands_Cover.Visible = false
     else
         canManageStands = false
-        StoragePanel.Frame_ManageStands_Cover.Visible = true
+        --StoragePanel.Frame_ManageStands_Cover.Visible = false
     end
 
 end
 
 --// SlotClicked
 function StoragePanel.SlotClicked(thisSlot)
+
+    manageButtonsEnabaled = true
 
     -- start wth the card hidden
     StoragePanel.Stand_Card.Visible = false

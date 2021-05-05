@@ -69,11 +69,21 @@ end
 function EnvironmentService:DayNightCycle()
 
     if EnvironmentService.CurrentCycle == "Day" then
-        EnvironmentService.CurrentCycle = "Night"
+
+        spawn(function()
+            wait(EnvironmentService.TransitionTime / 2)
+            EnvironmentService.CurrentCycle = "Night"
+        end)
+        
         self:TweenClockTime(EnvironmentService.NightTime)
         self:ManageLights("Night")
     else
-        EnvironmentService.CurrentCycle = "Day"
+        
+        spawn(function()
+            wait(EnvironmentService.TransitionTime / 2)
+            EnvironmentService.CurrentCycle = "Day"
+        end)
+
         self:TweenClockTime(EnvironmentService.DayTime)
         self:ManageLights("Day")
     end

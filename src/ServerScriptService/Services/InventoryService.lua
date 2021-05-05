@@ -146,13 +146,10 @@ function InventoryService:UseItem(player, key)
     print(player, " is trying to use: ", key)
 end
 
---// Client:UseItem
-function InventoryService.Client:UseItem(player, key)
-    self.Server:UseItem(player, key)
-end
+--// UseSpecial
+function InventoryService:UseSpecial(player, key)
 
---// UseArrow ---------------------------------------------------------------------------------------------------------------------------
-function InventoryService:UseArrow(player)
+    print(player, " is trying to use SPECIAL!!! : ", key)
 
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -162,19 +159,52 @@ function InventoryService:UseArrow(player)
     if playerData.CurrentStand.Power == "Standless" then
         -- yes we can get a new stand!
     else
-        print("you must be standless to use an arrow!")
+        print("you must be standless to use a special!")
         return
     end
 
-    -- check if the player has an arrow to use
-    if playerData.ItemInventory.Arrow == nil or playerData.ItemInventory.Arrow < 1 then
-        print("tried to use arrow but there is no arrow in the players data")
+    -- check if the player has the item to use
+    if playerData.ItemInventory[key] == nil or playerData.ItemInventory[key] < 1 then
+        print("tried to use special but there is item in the players data")
         return
     end
 
-    -- remove arrow and update GUI to remove arrow
-    playerData.ItemInventory.Arrow = playerData.ItemInventory.Arrow - 1
+    -- remove itm and update gui
+    playerData.ItemInventory[key] = playerData.ItemInventory[key] - 1
     Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+
+    local itemDefs = require(Knit.Defs.ItemDefs)
+    local thisItem = itemDefs[key]
+
+    if not thisItem.GivePower then return end
+    if thisItem.GivePower == "Stand" then
+        self:GenerateNewStand(player)
+        return
+    else
+        self:GiveSpecialPower(player, thisItem.GivePower)
+        return
+    end
+
+
+end
+
+function InventoryService:GiveSpecialPower(player, key)
+
+    print("GIVE SPECIAL", player, key)
+
+    local newParams = {}
+    newParams.Power = key
+    newParams.Rank = 1
+    newParams.Xp = 0
+    newParams.GUID = HttpService:GenerateGUID(false)
+
+    -- set the current power
+    Knit.Services.PowersService:SetCurrentPower(player, newParams)
+
+end
+
+--// GenerateNewStand
+function InventoryService:GenerateNewStand(player)
 
     -- get the arrow defs
     local arrowOpenDefs = require(Knit.Defs.ArrowOpenDefs)
@@ -227,7 +257,10 @@ function InventoryService:UseArrow(player)
     Knit.Services.PowersService:SetCurrentPower(player, newParams)
 
     -- fire Show_StandReveal to the player
-    Knit.Services.GuiService:Update_Gui(player, "StandReveal")
+    revealParams = {}
+    revealParams.AllStands = arrowOpenDefs
+    revealParams.RevealDelay = 3
+    Knit.Services.GuiService:Update_Gui(player, "StandReveal", revealParams)
 
 end
 
@@ -274,6 +307,7 @@ function InventoryService:SellStand(player, GUID)
         return
     end
 
+    --[[ -- we dont check if player has pass for this, even though they should. The client blocks its use but a hacer could cheat here. I guess thats ok
     -- sanity check to see if player has access
     local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
     local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
@@ -283,6 +317,7 @@ function InventoryService:SellStand(player, GUID)
         print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
         return
     end
+    ]]--
 
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -571,6 +606,9 @@ function InventoryService:NPCTransaction(player, params)
         if outputKey == "Cash" or outputKey == "SoulOrbs"then
             playerData.Currency[outputKey] = playerData.Currency[outputKey] + outputValue
         else
+            if playerData.ItemInventory[outputKey] == nil then
+                playerData.ItemInventory[outputKey] = 0
+            end
             playerData.ItemInventory[outputKey] = playerData.ItemInventory[outputKey] + outputValue
         end
 
@@ -601,6 +639,16 @@ end
 ---------------------------------------------------------------------------------------------
 --// CLIENT METHODS
 ---------------------------------------------------------------------------------------------
+
+--// Client:UseItem
+function InventoryService.Client:UseSpecial(player, key)
+    self.Server:UseSpecial(player, key)
+end
+
+--// Client:UseItem
+function InventoryService.Client:UseItem(player, key)
+    self.Server:UseItem(player, key)
+end
 
 --// Client:StoreStand
 function InventoryService.Client:StoreStand(player)

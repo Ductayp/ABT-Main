@@ -24,6 +24,7 @@ Knit.GuiModules = StarterPlayer.StarterPlayerScripts.GameFiles.Modules.GuiModule
 Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
 Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
+Knit.CutScenes = ReplicatedStorage.GameFiles.Shared.CutScenes
 
 -- Load all controllers:
 for _,v in ipairs(script.Parent.Controllers:GetDescendants()) do

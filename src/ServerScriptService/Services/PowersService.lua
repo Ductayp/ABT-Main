@@ -22,7 +22,7 @@ PowersService.Client.RenderHitEffect = RemoteEvent.new()
 PowersService.Client.RenderAbilityEffect = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
-function PowersService:ActivatePower(player,params)
+function PowersService:ActivatePower(player, params)
 
     --print("PowersService:ActivatePower(player,params)", player, params)
     
@@ -37,8 +37,10 @@ function PowersService:ActivatePower(player,params)
     -- check if the players input is block
     if not params.ForceRemoveStand then
         if BlockInput.IsBlocked(player.UserId) then
-            if params.KeyState == "InputBegan" then
-                return
+            if not params.BypassInputBlock then
+                if params.KeyState == "InputBegan" then
+                    return
+                end
             end
         end
     end
@@ -93,7 +95,7 @@ end
 --// SetPower -- sets the players current power
 function PowersService:SetCurrentPower(player, params)
 
-    --print("PowersService:SetCurrentPower(player,params)", player,params)
+    print("PowersService:SetCurrentPower(player,params)", player,params)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)

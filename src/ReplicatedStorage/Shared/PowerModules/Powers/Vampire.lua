@@ -1,14 +1,14 @@
--- CrazyDiamond
+-- Vampire
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
-local CrazyDiamond = {}
+local Vampire = {}
 
-CrazyDiamond.Defs = {
-    PowerName = "Crazy Diamond",
+Vampire.Defs = {
+    PowerName = "Vampire",
     MaxXp = {
         [1] = 10000,
         [2] = 20000,
@@ -20,32 +20,32 @@ CrazyDiamond.Defs = {
         [3] = 2,
     },
     HealthModifier = {
-        [1] = 10,
-        [2] = 30,
-        [3] = 70
+        [1] = 30,
+        [2] = 50,
+        [3] = 100
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
         Q = {
-            AbilityName = "Summon Stand"
+            AbilityName = "Vampiric Rage"
         },
         E = {
             AbilityName = "Barrage"
         },
         F = {
-            AbilityName = "Wall Blast"
+            AbilityName = "Laser Eyes"
         },
         T = {
-            AbilityName = "Bullet Barrage"
+            AbilityName = "Zombie Summon"
         },
         R = {
-            AbilityName = "Stone Punch"
+            AbilityName = "Freeze Punch"
         },
         X = {
-            AbilityName = "Rage Boost"
+            AbilityName = "-"
         },
         Z = {
-            AbilityName = "Stand Jump"
+            AbilityName = "Power Jump"
         },
         C = {
             AbilityName = "-"
@@ -53,40 +53,41 @@ CrazyDiamond.Defs = {
     }
 }
 
+--[[
+for keyName, table in pairs(Vampire.Defs.Abilities) do
+    local abilityName = table.Name
+    local thisMap = 
+        keyName = {"AbilityName" = abilityName}
+ 
+    table.insert(Vampire.Defs.KeyMap, thisMap)
+end
+]]--
+
 --// SETUP - run this once when the stand is equipped
-function CrazyDiamond.SetupPower(initPlayer,params)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup", 2, nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rank], nil)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rank], nil)
+function Vampire.SetupPower(initPlayer,params)
+    print("SETUP VAMPIRE")
+    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "Vampire_Setup", 2, nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "Vampire_Setup", Vampire.Defs.HealthModifier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "Vampire_Setup", Vampire.Defs.DamageMultiplier[params.Rank], nil)
+    Knit.Services.PlayerUtilityService:SetHealthStatus(initPlayer, {Enabled = true, RegenDay = 0, RegenNight = 3})
 end
 
 --// REMOVE - run this once when the stand is un-equipped
-function CrazyDiamond.RemovePower(initPlayer,params)
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CrazyDiamond_Setup")
-    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup")
+function Vampire.RemovePower(initPlayer,params)
+    print("REMOVE VAMPIRE")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "Vampire_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "Vampire_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "Vampire_Setup")
+    Knit.Services.PlayerUtilityService:SetHealthStatus(initPlayer, {DefaultValues = true})
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
-function CrazyDiamond.Manager(params)
+function Vampire.Manager(params)
 
-    -- call the function
-    if params.InputId == "Q" then
-        CrazyDiamond.EquipStand(params)
-    elseif params.InputId == "E" then
-        CrazyDiamond.Barrage(params)
-    elseif params.InputId == "R" then
-        CrazyDiamond.StonePunch(params)
-    elseif params.InputId == "T" then
-        CrazyDiamond.BulletBarrage(params)
-    elseif params.InputId == "F" then
-        CrazyDiamond.WallBlast(params)
-    elseif params.InputId == "X" then
-        CrazyDiamond.RageBoost(params)
-    elseif params.InputId == "Z" then
-        CrazyDiamond.StandJump(params)
-    elseif params.InputId == "Mouse1" then
-        CrazyDiamond.Punch(params)
+    if params.InputId == "Mouse1" then
+        Vampire.Punch(params)
+    else
+        Vampire[params.InputId](params)
     end
 
     return params
@@ -97,23 +98,15 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.EquipStand = {
-    Name = "Equip Stand",
-    Id = "EquipStand",
+Vampire.Defs.Abilities.Q = {
+    Id = "VampiricRage",
     Cooldown = 5,
-    StandModels = {
-        [1] = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_1,
-        [2] = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_2,
-        [3] = ReplicatedStorage.EffectParts.StandModels.CrazyDiamond_3,
-    },
-    Sounds = {
-        Equip = ReplicatedStorage.Audio.Abilities.StandSummon,
-        Remove =  ReplicatedStorage.Audio.Abilities.StandSummon,
-    }
+    AbilityMod = Knit.Abilities.BasicToggle.VampiricRage,
 }
 
-function CrazyDiamond.EquipStand(params)
-    params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.EquipStand)
+function Vampire.Q(params)
+    print("Vampire Q")
+    params = require(Knit.Abilities.BasicToggle)[params.SystemStage](params, Vampire.Defs.Abilities.Q)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -121,22 +114,16 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.Barrage = {
-    Name = "Barrage",
+Vampire.Defs.Abilities.E = {
     Id = "Barrage",
-    Duration = 4,
-    Cooldown = 7,
-    RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 3, KnockBack = 10}},
-    Sounds = {
-        --Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
-        Barrage = ReplicatedStorage.Audio.StandSpecific.CrazyDiamond.DoraBarrage
-
-    }
+    Duration = 6,
+    Cooldown = 5,
+    HitEffects = {Damage = {Damage = 3, KnockBack = 10}, LifeSteal = {Quantity = 3}},
 }
 
-function CrazyDiamond.Barrage(params)
-    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.Barrage)
+function Vampire.E(params)
+    print("Vampire E", params)
+    params = require(Knit.Abilities.Barrage_Spec)[params.SystemStage](params, Vampire.Defs.Abilities.E)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -144,19 +131,16 @@ end
 --------------------------------------------------------------------------------------------------
 
 --defs
-CrazyDiamond.Defs.Abilities.StonePunch = {
-    Name = "Stone Punch",
-    Id = "StonePunch",
+Vampire.Defs.Abilities.R = {
+    Id = "FreezePunch",
     Cooldown = 10,
-    RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}},
-    Sounds = {
-        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
-    }
+    HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, IceBlock = {Duration = 5}},
+    Sound = ReplicatedStorage.Audio.General.GenericWhoosh_Slow
 }
 
-function CrazyDiamond.StonePunch(params)
-    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.StonePunch)
+function Vampire.R(params)
+    print("Vampire R")
+    params = require(Knit.Abilities.HeavyPunch_Spec)[params.SystemStage](params, Vampire.Defs.Abilities.R)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -164,8 +148,7 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.BulletBarrage = {
-    Name = "Bullet Barrage",
+Vampire.Defs.Abilities.T = {
     Id = "BulletBarrage",
     Cooldown = 4,
     RequireToggle_On = {"Q"},
@@ -173,8 +156,9 @@ CrazyDiamond.Defs.Abilities.BulletBarrage = {
     --AbilityMod = Knit.Abilities.BasicProjectile.BulletBarrage,
 }
 
-function CrazyDiamond.BulletBarrage(params)
-    params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.BulletBarrage)
+function Vampire.T(params)
+    print("Vampire T")
+    --params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, Vampire.Defs.Abilities.BulletBarrage)
 end
 
 
@@ -183,18 +167,15 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.WallBlast = {
-    Name = "Wall Blast",
-    Id = "WallBlast",
-    RequireToggle_On = {"Q"},
-    Cooldown = 6,
-    Duration = 3,
-    HitEffects = {Damage = {Damage = 30}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
-    RequireToggle_On = {"Q"},
+Vampire.Defs.Abilities.F = {
+    Id = "LaserEyes",
+    Cooldown = 2,
+    AbilityMod = Knit.Abilities.BasicProjectile.LaserEyes,
 }
 
-function CrazyDiamond.WallBlast(params)
-    params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.WallBlast)
+function Vampire.F(params)
+    print("F")
+    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, Vampire.Defs.Abilities.F)
 end
 
 
@@ -203,17 +184,17 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.RageBoost = {
+Vampire.Defs.Abilities.X = {
     Name = "Rage Boost",
     Id = "RageBoost",
-    RequireToggle_On = {"Q"},
     Cooldown = 90,
     Duration = 20,
     Multiplier = 2
 }
 
-function CrazyDiamond.RageBoost(params)
-    params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.RageBoost)
+function Vampire.X(params)
+    print("Vampire X")
+    --params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, Vampire.Defs.Abilities.RageBoost)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -221,15 +202,14 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.StandJump = {
+Vampire.Defs.Abilities.Z = {
     Name = "Stand Jump",
     Id = "StandJump",
     Cooldown = 3,
-    RequireToggle_On = {"Q"},
 }
 
-function CrazyDiamond.StandJump(params)
-    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.StandJump)
+function Vampire.Z(params)
+    params = require(Knit.Abilities.StandJump_Spec)[params.SystemStage](params, Vampire.Defs.Abilities.Z)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -237,14 +217,14 @@ end
 --------------------------------------------------------------------------------------------------
 
 -- defs
-CrazyDiamond.Defs.Abilities.Punch = {
+Vampire.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 5, KnockBack = 10}}
+    HitEffects = {Damage = {Damage = 10, KnockBack = 10,}, LifeSteal = {Quantity = 15}}
 }
 
-function CrazyDiamond.Punch(params)
-    params = require(Knit.Abilities.Punch)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.Punch)
+function Vampire.Punch(params)
+    params = require(Knit.Abilities.Punch)[params.SystemStage](params, Vampire.Defs.Abilities.Punch)
 end
 
-return CrazyDiamond
+return Vampire

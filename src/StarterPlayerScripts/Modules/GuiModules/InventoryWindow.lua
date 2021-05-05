@@ -57,15 +57,20 @@ function InventoryWindow.Setup()
 end
 
 --// Open ------------------------------------------------------------
-function InventoryWindow.Open()
+function InventoryWindow.Open(targetPanel)
 
     -- make sure all panels are off
     for _,panel in pairs(allPanels) do
         panel.Visible = false
     end
 
-    -- open the default panel
-    DEFAULT_PANEL.Visible = true
+    if targetPanel then
+        InventoryWindow[targetPanel].Visible = true
+    else
+        DEFAULT_PANEL.Visible = true
+    end
+
+   
 
     -- show it
     InventoryWindow.Window.Visible = true

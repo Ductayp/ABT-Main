@@ -71,16 +71,19 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
         if effectParams.KnockBack then 
             spawn(function()
-                local force = effectParams.KnockBack
-                local lookVector = CFrame.new(initPlayer.Character.HumanoidRootPart.Position, hitCharacter.HumanoidRootPart.Position).LookVector
-                local bodyVelocity = Instance.new("BodyVelocity")
-                bodyVelocity.Name = "DamageKnockBack"
-                bodyVelocity.MaxForce = Vector3.new(500000,500000,500000)
-                bodyVelocity.P = 1000000
-                bodyVelocity.Velocity =  Vector3.new(lookVector.X * force, lookVector.Y * force, lookVector.Z * force)
-                bodyVelocity.Parent = hitCharacter.HumanoidRootPart
-                wait(.1)
-                bodyVelocity:Destroy()
+                local existingVelocity = hitCharacter.HumanoidRootPart:FindFirstChild("DamageKnockBack")
+                if not existingVelocity then
+                    local force = effectParams.KnockBack
+                    local lookVector = CFrame.new(initPlayer.Character.HumanoidRootPart.Position, hitCharacter.HumanoidRootPart.Position).LookVector
+                    local bodyVelocity = Instance.new("BodyVelocity")
+                    bodyVelocity.Name = "DamageKnockBack"
+                    bodyVelocity.MaxForce = Vector3.new(500000,500000,500000)
+                    bodyVelocity.P = 1000000
+                    bodyVelocity.Velocity =  Vector3.new(lookVector.X * force, lookVector.Y * force, lookVector.Z * force)
+                    bodyVelocity.Parent = hitCharacter.HumanoidRootPart
+                    wait(.1)
+                    bodyVelocity:Destroy()
+                end
             end)
         end
 

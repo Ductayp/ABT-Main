@@ -76,7 +76,7 @@ end
 
 --// RenderAbilityEffect
 function PowersController:RenderAbilityEffect(abilityModule, functionName, params)
-    print("abilityModule, functionName, params", abilityModule, functionName, params)
+    --print("abilityModule, functionName, params", abilityModule, functionName, params)
     local thisModule = require(abilityModule)
     thisModule[functionName](params)
 end

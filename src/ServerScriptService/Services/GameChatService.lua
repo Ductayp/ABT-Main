@@ -38,7 +38,8 @@ function GameChatService:SpeakerAdded(speakerName)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-
+    if not playerData then return end
+    
     if playerData.Admin.Muted then
         local allChannel = ChatService:GetChannel("ALL")
         allChannel:MuteSpeaker(speakerName)

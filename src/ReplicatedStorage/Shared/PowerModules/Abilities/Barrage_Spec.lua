@@ -1,4 +1,4 @@
--- Barrage Effect Script
+-- Barrage_Spec Effect Script
 
 -- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,20 +16,16 @@ local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
 
--- local variables
-local armSpawnRate = .05
-local armDebrisTime = .15
-local damageLoopTime = 0.25
-
-local Barrage = {}
+local Barrage_Spec = {}
 
 --// --------------------------------------------------------------------
 --// Handler Functions
 --// --------------------------------------------------------------------
 
 --// Initialize
-function Barrage.Initialize(params, abilityDefs)
+function Barrage_Spec.Initialize(params, abilityDefs)
 
+print(" Barrage_Spec INIT")
 
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
@@ -40,9 +36,11 @@ function Barrage.Initialize(params, abilityDefs)
 			return params
 		end
 
-		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-			params.CanRun = false
-			return params
+		if abilityDefs.RequireToggle_On then
+			if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+				params.CanRun = false
+				return params
+			end
 		end
 
 		params.CanRun = true
@@ -57,7 +55,9 @@ function Barrage.Initialize(params, abilityDefs)
 end
 
 --// Activate
-function Barrage.Activate(params, abilityDefs)
+function Barrage_Spec.Activate(params, abilityDefs)
+
+	print("Barrage_Spec ACTIVATE")
 
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
@@ -67,9 +67,11 @@ function Barrage.Activate(params, abilityDefs)
 			return params
 		end
 
-		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-			params.CanRun = false
-			return params
+		if abilityDefs.RequireToggle_On then
+			if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+				params.CanRun = false
+				return params
+			end
 		end
 
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == false then
@@ -77,8 +79,8 @@ function Barrage.Activate(params, abilityDefs)
 			AbilityToggle.SetToggle(params.InitUserId, params.InputId, true)
 			BlockInput.AddBlock(params.InitUserId, params.InputId, abilityDefs.Duration)
 
-			Barrage.CreateHitbox(params, abilityDefs)
-			params.BarrageOn = true
+			Barrage_Spec.RunServer(params, abilityDefs)
+			params.Barrage_SpecOn = true
 
 
 			spawn(function()
@@ -87,8 +89,8 @@ function Barrage.Activate(params, abilityDefs)
 					AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 					Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 					BlockInput.RemoveBlock(params.InitUserId, params.InputId)
-					Barrage.DestroyHitbox(params, abilityDefs)
-					params.BarrageOn = false
+					Barrage_Spec.EndServer(params, abilityDefs)
+					params.Barrage_SpecOn = false
 				end
 			end)
 
@@ -102,8 +104,8 @@ function Barrage.Activate(params, abilityDefs)
 			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
 			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 			BlockInput.RemoveBlock(params.InitUserId, params.InputId)
-			Barrage.DestroyHitbox(params)
-			params.BarrageOn = false
+			Barrage_Spec.EndServer(params)
+			params.Barrage_SpecOn = false
 		end
 	end
 
@@ -112,12 +114,12 @@ function Barrage.Activate(params, abilityDefs)
 end
 
 --// Execute
-function Barrage.Execute(params, abilityDefs)
+function Barrage_Spec.Execute(params, abilityDefs)
 
-	if params.BarrageOn == true then
-		Barrage.RunEffect(params, abilityDefs)
+	if params.Barrage_SpecOn == true then
+		Barrage_Spec.RunClient(params, abilityDefs)
 	else
-		Barrage.EndEffect(params, abilityDefs)
+		Barrage_Spec.EndClient(params, abilityDefs)
 	end
 
 end
@@ -127,20 +129,25 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
---// Server Create Hitbox -- we have a unique hitbox for Barrage
-function Barrage.CreateHitbox(params, abilityDefs)
+--// Server Create Hitbox -- we have a unique hitbox for Barrage_Spec
+function Barrage_Spec.RunServer(params, abilityDefs)
 
-	-- get initPlayer
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	if not initPlayer then return end
+
+	Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Barrage_Spec:Play()
 
 	-- clone out a new hitpart
-	local hitPart = ReplicatedStorage.EffectParts.Abilities.Barrage.HitBox:Clone()
-	hitPart.Name = "Barrage"
+	local hitPart = Instance.new("Part")
+	hitPart.Size = Vector3.new(5,5,3)
+	hitPart.CanCollide = false
+	hitPart.Transparency = 1
+	hitPart.Name = "Barrage_Spec"
 	hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]
-	--hitPart.Transparency = .7
+	
 
 	local newWeld = Instance.new("Weld")
-	newWeld.C1 =  CFrame.new(0, 0, 6.5)
+	newWeld.C1 =  CFrame.new(0, 0, 3)
 	newWeld.Part0 = initPlayer.Character.HumanoidRootPart
 	newWeld.Part1 = hitPart
 	newWeld.Parent = hitPart
@@ -168,92 +175,45 @@ function Barrage.CreateHitbox(params, abilityDefs)
 end
 
 --// Server Destroy Hitbox
-function Barrage.DestroyHitbox(params)
+function Barrage_Spec.EndServer(params)
+
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	if not initPlayer then return end
+
+	Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Barrage_Spec:Stop()
+
 	local playerHitboxFolder = workspace.ServerHitboxes[params.InitUserId]
-	local hitPart = playerHitboxFolder:FindFirstChild("Barrage")
+	local hitPart = playerHitboxFolder:FindFirstChild("Barrage_Spec")
 	if hitPart then
 		hitPart:Destroy()
 	end
 end
 
---// Shoot Arm 
-function Barrage.ShootArm(initPlayer, effectArm)
-
-	if not initPlayer.Character.HumanoidRootPart then return end
-
-	-- clone a single arm and parent it, add it to the Debris
-	local newArm = effectArm:Clone()
-	newArm.Parent = Workspace.RenderedEffects
-	Debris:AddItem(newArm, armDebrisTime)
-
-	-- set up random position and set the goals
-	local posX = math.random(-2.5,2.5)
-	local posY = 0.5 * math.random(-1.5, 3.5)
-	newArm.CFrame = initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(posX, posY, -3)
-	local armGoal =  initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(posX, posY, -6) --newArm.CFrame:ToWorldSpace(CFrame.new(0,0,-3))
-
-	-- add in the body movers and let it go!
-	newArm.BodyPosition.Position = armGoal.Position
-	newArm.BodyPosition.D = 300
-	newArm.BodyPosition.P = 20000
-	newArm.BodyPosition.MaxForce = Vector3.new(2000,2000,2000)
-end
-
 --// Run Effect
-function Barrage.RunEffect(params, abilityDefs)
-
-	--print("BARRAGE - RUN EFFECT", params, abilityDefs)
+function Barrage_Spec.RunClient(params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer.Character.HumanoidRootPart then return end
 
-	-- setup the stand, if its not there then dont run return
-	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-	if not targetStand then
-		ManageStand.QuickRender(params)
-	end
+	local barrageSound = ReplicatedStorage.Audio.Abilities.GenericBarrage
+	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, barrageSound, {SpeakerProperties = {Name = "Barrage_Spec"}, SoundProperties = {Looped = true}})
 
-	-- move stand and play Barrage animation
-	ManageStand.PlayAnimation(params, "Barrage")
-	ManageStand.MoveStand(params, "Front")
-
-	-- play the sound
-	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Barrage, {SpeakerProperties = {Name = "Barrage"}, SoundProperties = {Looped = true}})
-
-	-- spawn the arms shooter
-	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. tostring(params.PowerRank)]
 	local endTime = os.clock() + abilityDefs.Duration
 	while os.clock() < endTime do
-		local thisToggle = AbilityToggle.GetToggleValue(params.InitUserId, params.InputId)
-		if thisToggle == true then
-			Barrage.ShootArm(initPlayer, effectArm)
-			wait(armSpawnRate)
-		else
-			Barrage.EndEffect(params, abilityDefs)
-			return
-		end
+		wait()
 	end
 	
-	Barrage.EndEffect(params, abilityDefs)
+	Barrage_Spec.EndClient(params, abilityDefs)
 end
 
 --// End Effect
-function Barrage.EndEffect(params, abilityDefs)
+function Barrage_Spec.EndClient(params, abilityDefs)
 
-	--print("BARRAGE - END EFFECT", params, abilityDefs)
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	if not initPlayer.Character.HumanoidRootPart then return end
 
-	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-	if not targetStand then
-		return
-	end
-
-	-- stop animation and move stand to Idle
-	ManageStand.StopAnimation(params, "Barrage")
-	ManageStand.MoveStand(params, "Idle")
-
-	-- stop the sound
-	WeldedSound.StopSound(targetStand.HumanoidRootPart, "Barrage", 1)
+	WeldedSound.StopSound(initPlayer.Character.HumanoidRootPart, "Barrage_Spec", 1)
 end
 
 
-return Barrage
+return Barrage_Spec

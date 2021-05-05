@@ -46,6 +46,11 @@ function WallBlast.Initialize(params, abilityDefs)
 		return
     end
 
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
+
     WallBlast.Setup(params, abilityDefs)
     
 end
@@ -65,6 +70,11 @@ function WallBlast.Activate(params, abilityDefs)
 	if not Cooldown.Client_IsCooled(params) then
 		params.CanRun = false
 		return
+    end
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
     end
 
 	-- set cooldown

@@ -43,6 +43,11 @@ function RageBoost.Initialize(params, abilityDefs)
 		params.CanRun = false
 		return
     end
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
+    end
     
 end
 
@@ -61,6 +66,11 @@ function RageBoost.Activate(params, abilityDefs)
 	if not Cooldown.Client_IsCooled(params) then
 		params.CanRun = false
 		return
+    end
+
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+        params.CanRun = false
+        return params
     end
 
 	-- set cooldown
@@ -120,7 +130,7 @@ function RageBoost.Run_Effects(params, abilityDefs)
     
     -- play the sound when it is fired
 	--WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.AgressiveYell)
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.CrazyDiamond.JosukeScream)
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.CrazyDiamond.JosukeScream)
     
     local rageText = ReplicatedStorage.EffectParts.Abilities.RageBoost.RageText:Clone()
     rageText.Parent = character.Head

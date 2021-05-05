@@ -13,10 +13,10 @@ local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
-local ManageStand = require(Knit.Abilities.ManageStand)
+--local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
-local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+--local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
 
 local projectileSerial = 1 -- incremented ever time e fire a projectile
@@ -44,9 +44,11 @@ function BasicProjectile.Initialize(params, abilityDefs)
 		return
     end
 
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
 
     BasicProjectile.Setup(params, abilityDefs)
@@ -72,17 +74,21 @@ function BasicProjectile.Activate(params, abilityDefs)
         return params
     end
     
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
 
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", abilityMod.PlayerAnchorTime + 0.25)
-
+    if abilityMod.PlayerAnchorTime > 0 then
+        require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", abilityMod.PlayerAnchorTime)
+    end
+    
     -- run server
     BasicProjectile.Run_Server(params, abilityDefs)
 
@@ -107,11 +113,13 @@ function BasicProjectile.Setup(params, abilityDefs)
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
-    local lockParams = {}
-    lockParams.Duration = abilityMod.PlayerAnchorTime
-    lockParams.ShiftLock_NoSpin = true
-    lockParams.AnchorCharacter = true
-    MobilityLock.Client_AddLock(lockParams)
+    if abilityMod.PlayerAnchorTime > 0 then
+        local lockParams = {}
+        lockParams.Duration = abilityMod.PlayerAnchorTime
+        lockParams.ShiftLock_NoSpin = true
+        lockParams.AnchorCharacter = true
+        MobilityLock.Client_AddLock(lockParams)
+    end
 
     params.HRPOrigin = initPlayer.Character.HumanoidRootPart.CFrame
 
@@ -120,10 +128,6 @@ end
 function BasicProjectile.Run_Server(params, abilityDefs)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-
-    --print("params CFrame", params.HRPOrigin)
-    --print("initPlayer CFrame", initPlayer.Character.HumanoidRootPart.CFrame)
-
     local abilityMod = require(abilityDefs.AbilityMod)
 
     -- setup ignore list
@@ -165,7 +169,7 @@ function BasicProjectile.Run_Server(params, abilityDefs)
     projectileData["Velocity"] = abilityMod.Velocity
     projectileData["Lifetime"] = abilityMod.Lifetime
     projectileData["Iterations"] = abilityMod.Iterations
-    projectileData["Visualize"] = false
+    --projectileData["Visualize"] = true
     projectileData["Ignore"] = ignoreList
     projectileData["BreakOnHit"] = abilityMod.BreakOnHit
     projectileData["BreakifNotHuman"] = abilityMod.BreakifNotHuman
@@ -176,19 +180,17 @@ function BasicProjectile.Run_Server(params, abilityDefs)
     abilityDefs.HitEffects = abilityMod.HitEffects
     
     -- raycast result handling
+    local hitCharacters = {}
     projectileData["Function"] = function(result)
         if result.Instance.Parent then
 
-            local resultParams = {}
-            resultParams.Position = result.Position
-            resultParams.ProjectileID = projectileID
-            resultParams.AbilityDefs = abilityDefs
-            Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "ProjectileImpact", resultParams)
-
-            --if abilityMod.ProjectileHit then
-            abilityMod.HitBoxResult(initPlayer, abilityDefs, result, params)
-            --end
-
+            if not hitCharacters[result.Instance.Parent] then
+                abilityMod.HitBoxResult(initPlayer, params, abilityDefs, result)
+            end
+            
+            if result.Instance.Parent:FindFirstChild("Humanoid") then
+                hitCharacters[result.Instance.Parent] = true
+            end
         end
     end
 
@@ -200,74 +202,24 @@ function BasicProjectile.Run_Client(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-
-    -- setup the stand, if its not there then dont run return
-	local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-	if not targetStand then
-		targetStand = ManageStand.QuickRender(params)
-    end
-
     local abilityMod = require(abilityDefs.AbilityMod)
 
-    -- run animations, stand position
-    spawn(function()
-        ManageStand.MoveStand(params, abilityMod.StandPostion)
-        ManageStand.PlayAnimation(params, abilityMod.StandAnimation)
-        ManageStand.Aura_On(params)
-        wait(abilityMod.PlayerAnchorTime)
-        ManageStand.MoveStand(params, "Idle")
-        ManageStand.StopAnimation(params, abilityMod.StandAnimation)
-        ManageStand.Aura_Off(params)
-    end)
- 
-    -- play the sound when it is fired
-	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityMod.FireSound)
-
-    local projectile
-    if abilityMod.SpawnProjectile then
-        projectile = abilityMod.SpawnProjectile(params.projectileOrigin)
-    else
-        projectile = abilityMod.CosmeticProjectile:Clone()
+    -- setup cosmetic projectile
+    local projectile = abilityMod.SetupCosmetic(initPlayer, params, abilityDefs)
+  
+    -- run effects
+    if abilityMod.FireEffects then
+        abilityMod.FireEffects(initPlayer, projectile, params, abilityDefs)
     end
 
-    --local projectile = abilityMod.CosmeticProjectile:Clone()
+    -- shoot it
     projectile.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
     projectile.BodyVelocity.P = abilityMod.Velocity
-
     projectile.BodyVelocity.Velocity = params.projectileOrigin.LookVector * abilityMod.Velocity
     projectile.CFrame = params.projectileOrigin
-    --print("CFRAME CHECK 1: ", projectile.CFrame, " 2: ", params.projectileOrigin)
     projectile.Name = params.projectileID
-
-    projectile.Touched:Connect(function(hit)
-        if hit.Parent.Name == "RenderedEffects_BlockAbility" then
-            projectile:Destroy()
-        end
-    end)
-
     projectile.Parent = Workspace.RenderedEffects
 
-    spawn(function()
-        wait(abilityMod.Lifetime)
-        --projectile:Destroy()
-    end)
-
 end
-
-function BasicProjectile.ProjectileImpact(params)
-
-    local abilityMod = require(params.AbilityDefs.AbilityMod)
-    local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
-
-    if projectilePart then
-        if abilityMod.DestroyCosmetic then
-            abilityMod.DestroyCosmetic(projectilePart, params)
-        else
-            projectilePart:Destroy()
-        end
-    end
-
-end
-
 
 return BasicProjectile

@@ -42,9 +42,11 @@ function StandJump.Initialize(params, abilityDefs)
 		return
     end
 
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
     
     -- check cooldown
@@ -72,10 +74,11 @@ function StandJump.Activate(params, abilityDefs)
 		return
     end
     
-
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+            params.CanRun = false
+            return params
+        end
     end
 
 	-- set cooldown
@@ -118,24 +121,8 @@ function StandJump.Run_Client(params, abilityDefs)
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
-    -- setup the stand, if its not there then dont run return
-	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-	if not targetStand then
-		targetStand = ManageStand.QuickRender(params)
-    end
-
     -- play the sound
     WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.Abilities.StandLeap)
-
-
-    --move the stand and do animations
-    spawn(function() 
-        ManageStand.PlayAnimation(params, "StandJump")
-        ManageStand.MoveStand(params, "StandJump")
-        wait(1.5)
-        ManageStand.StopAnimation(params, "StandJump")
-        ManageStand.MoveStand(params, "Idle")
-    end)
 
     -- pop the part effects
     local groundShock = ReplicatedStorage.EffectParts.Abilities.StandJump.GroundShock:Clone()
@@ -192,26 +179,6 @@ function StandJump.Run_Client(params, abilityDefs)
         bodyPosition:Destroy()
 
     end
-
-    --[[ -- trails commented out because they didnt look great, but im leaving them here justin case :)
-    -- add some trails
-    local locations = {"Head","UpperTorso","LeftLowerLeg","RightLowerLeg","LeftHand","RightHand"}
-    for count = 1, 6 do
-        local newTrail = ReplicatedStorage.EffectParts.Abilities.StandJump.StandJumpTrail:Clone()
-        local thisLocation = locations[count]
-        newTrail.CFrame = initPlayer.Character[thisLocation].CFrame
-        newTrail.Parent = initPlayer.Character[thisLocation]
-        utils.EasyWeld(newTrail,initPlayer.Character[thisLocation],newTrail)
-        spawn(function()
-            wait(.1)
-            newTrail.Trail.MaxLength = 0
-            wait(1)
-            newTrail:Destroy()
-        end)
-    end
-    ]]--
-
-
 end
 
 return StandJump

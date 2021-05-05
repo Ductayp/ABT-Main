@@ -23,6 +23,7 @@ local ItemPanel = {}
 
 -- local variables
 local currentItemKey -- used to store the key of the active info card.
+local currentItemType -- store the item type of tha active item card
 
 -- references
 ItemPanel.Panel = mainGui.Windows:FindFirstChild("Item_Panel", true)
@@ -60,11 +61,13 @@ function ItemPanel.Setup()
         end
 
         -- we need to acti diffeently depending on the key inside currentItemKey
-        if currentItemKey == "Arrow" then
+        if currentItemType == "Special" then
+
+            print("CHECK THIS", currentItemKey, currentItemType)
 
             local currentPowerData = PowersService:GetCurrentPower()
             if currentPowerData.Power == "Standless" then
-                InventoryService:UseArrow()
+                InventoryService:UseSpecial(currentItemKey)
                 Knit.Controllers.GuiController:CloseAllWindows()
             else
                 --print("USE ARROW BUTTON: You Must Be Standless")
@@ -130,6 +133,7 @@ function ItemPanel.Update_ItemList(inventoryData)
 
         newListItem.MouseButton1Down:Connect(function()
             currentItemKey = itemDefKey
+            currentItemType = itemDefTable.Type
             ItemPanel.Update_InfoCard(itemDefKey, itemDefTable, quantityOwned) -- pass the key and the quantity the player owns
         end)
     end
@@ -156,7 +160,7 @@ function ItemPanel.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
     ItemPanel.Item_Card.Visible = true
 
     -- if the type is ARROW
-    if itemDefTable.Type == "Arrow" then
+    if itemDefTable.Type == "Special" then
         ItemPanel.Item_Card_Button_Use.Visible = true
         ItemPanel.Item_Card_Button_Use.Active = true
         ItemPanel.Item_Card_Cant_Use.Visible = false

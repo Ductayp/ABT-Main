@@ -40,10 +40,10 @@ TheWorld.Defs = {
             AbilityName = "Barrage"
         },
         F = {
-            AbilityName = "Time Stop"
+            AbilityName = "Knife Throw"
         },
         T = {
-            AbilityName = "Knife Throw"
+            AbilityName = "Time Stop"
         },
         R = {
             AbilityName = "Time Punch"
@@ -87,9 +87,9 @@ function TheWorld.Manager(params)
     elseif params.InputId == "E" then
         TheWorld.Barrage(params)
     elseif params.InputId == "F" then
-        TheWorld.TimeStop(params)
-    elseif params.InputId == "T" then
         TheWorld.KnifeThrow(params)
+    elseif params.InputId == "T" then
+            TheWorld.TimeStop(params)
     elseif params.InputId == "R" then
         TheWorld.HeavyPunch(params)
     elseif params.InputId == "X" then

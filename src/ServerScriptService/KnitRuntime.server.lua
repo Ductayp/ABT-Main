@@ -24,6 +24,7 @@ Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs
 Knit.MobModules = ServerScriptService.GameFiles.Modules.MobModules
+Knit.CutScenes = ReplicatedStorage.GameFiles.Shared.CutScenes
 
 -- Load all services:
 for _,v in ipairs(script.Parent.Services:GetDescendants()) do

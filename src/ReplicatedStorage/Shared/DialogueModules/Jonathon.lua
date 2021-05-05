@@ -28,6 +28,16 @@ module.Shop = {
             Value = 8000
         }
     },
+    StoneMask = {
+        Input = {
+            Key = "MaskFragment",
+            Value = 100
+        },
+        Output = {
+            Key = "StoneMask",
+            Value = 1
+        }
+    },
 }
 
 module.Stage = {}
@@ -36,7 +46,7 @@ module.Stage.Start = {
     IconName = "Icon_Jonathon",
     Title = "Jonathon",
     Body = "I thought the STONE MASK was destroyed, shattered into thousands of pieces. But Dio is after it again, trying to gether them up!" ..
-        "<br/><br/>They say these guys on the beach are a time-copied Pillar Man, whatever that means, get me the <b>MASK FRAGMENTS</b> and I will give you cash.",
+        "<br/><br/>If I can create a mask before Dio, maybe I can figure out a way to stop him this time around. These Pillar Men on the beach have <b>MASK FRAGMENTS</b>, get them for me!",
     Choice_1 = {
         Display = true,
         Text = "TRADE",
@@ -57,11 +67,11 @@ module.Stage.Start = {
 module.Stage.BuySell = {
     IconName = "Icon_Jonathon",
     Title = "Jonathon",
-    Body = "If you bring me <b>MASK FRAGMENTS</b> then I can be sure Dio cant make the STONE MASK again. That would be bad ..." ..
-        "<br/><br/><b>10 Mask Fragments for 750 Cash<br/>100 Mask Fragments for 8,000 Cash</b>",
+    Body = "I am collecting <b>MASK FRAGMENTS</b> to re-create the STONE MASK again. I am buying them or if you have 100 I can craft the mask." ..
+        "<br/><br/><b>10 Mask Fragments for 750 Cash<br/>100 Mask Fragments for STONE MASK</b>",
     Choice_1 = {
         Display = true,
-        Text = "Sell 10 Mask Fragments",
+        Text = "Sell 10 Fragments",
         CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Shop",
@@ -71,14 +81,26 @@ module.Stage.BuySell = {
     },
     Choice_2 = {
         Display = true,
-        Text = "Sell 100 Mask Fragments",
+        --Text = "Craft Stone Mask",
+        Text = "Craft [COMING SOON]",
+        CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
+        Action = {
+            Type = "Close",
+        }
+    },
+    --[[
+    Choice_2 = {
+        Display = true,
+        --Text = "Craft Stone Mask",
+        Text = "Craft [COMING SOON]",
         CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "Shop",
             ModuleName = "Jonathon",
-            TransactionKey = "HundredFragments"
+            TransactionKey = "StoneMask"
         }
     },
+    ]]--
     Choice_3 = {
         Display = false,
     },

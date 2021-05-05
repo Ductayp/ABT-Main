@@ -47,7 +47,7 @@ function hitboxModule:CastProjectileHitbox(Data)
 	local BreakOnBlockAbility = Data.BreakOnBlockAbility
 	
 	if Data.BreakOnHit == nil then BreakOnHit = true end
-	if Data.BreakifNotHuman == nil then BreakifNotHuman = false end
+	--if Data.BreakifNotHuman == nil then BreakifNotHuman = false end
 	if Data.BreakifHuman == nil then BreakifHuman = false end
 	local Function = Data.Function or function()
 		warn("There was no function provided for projectile hitbox")
@@ -93,35 +93,24 @@ function hitboxModule:CastProjectileHitbox(Data)
 						
 						Function(Result)
 						if BreakOnHit == true then
+							--print("RAY - BREAK ON HIT")
 							Interception = true
 							break
 						end
 						
-						if BreakOnHit == false and BreakifNotHuman == true  then
-							
-							if Result.Instance  and  not Result.Instance.Parent  then
-								Interception = true
-								break
-							end
-							
-							if Result.Instance.Parent and Result.Instance.Parent:FindFirstChild("HumanoidRootPart") == nil then
-								Interception = true
-								break
-							end
-
-						end
-
 						if BreakOnHit == false and BreakifHuman == true  then
-							
+
 							if Result.Instance.Parent and Result.Instance.Parent:FindFirstChild("HumanoidRootPart") then
+								--print("RAY - BREAK IF HUMAN")
 								Interception = true
 								break
 							end
 						end
 
 						if BreakOnHit == false and BreakOnBlockAbility == true  then
-							
+
 							if Result.Instance.Parent and Result.Instance.Parent.Name == "RenderedEffects_BlockAbility" then
+								--print("RAY - BREAK ON BLOCK ABILITY")
 								Interception = true
 								break
 							end

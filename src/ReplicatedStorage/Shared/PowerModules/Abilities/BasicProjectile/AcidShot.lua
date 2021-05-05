@@ -5,6 +5,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local ManageStand = require(Knit.Abilities.ManageStand)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local AcidShotMod = {}
 
@@ -19,10 +21,9 @@ AcidShotMod.HitBox_Resolution_Y = 1 -- having this larger than the Y size will m
 
 -- ray data
 AcidShotMod.Velocity = 300
-AcidShotMod.Lifetime = 5
+AcidShotMod.Lifetime = 3
 AcidShotMod.Iterations = 500
 AcidShotMod.BreakOnHit = true
---AcidShotMod.BreakifNotHuman = false
 --AcidShotMod.BreakifHuman = true
 --AcidShotMod.BreakOnBlockAbility = true
 
@@ -31,14 +32,9 @@ AcidShotMod.CustomIgnoreList = {}
 
 -- animation stuff
 AcidShotMod.PlayerAnchorTime = .5
-AcidShotMod.StandPostion = "Front"
-AcidShotMod.StandAnimation = "Point"
 
 -- pin/camera duration
 AcidShotMod.PinDuration = 5
-
--- audio
-AcidShotMod.FireSound = ReplicatedStorage.Audio.General.GenericWhoosh_Fast
 
 -- cosmetic projectile
 AcidShotMod.CosmeticProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.Projectile
@@ -46,7 +42,35 @@ AcidShotMod.CosmeticProjectile = ReplicatedStorage.EffectParts.Abilities.BasicPr
 -- hit effects
 AcidShotMod.HitEffects = {Damage = {Damage = 20}}
 
-function AcidShotMod.HitBoxResult(initPlayer, abilityDefs, result, params)
+function AcidShotMod.FireEffects(initPlayer, projectile, params, abilityDefs)
+
+    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+    if not targetStand then
+        targetStand = ManageStand.QuickRender(params)
+    end
+
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
+
+    spawn(function()
+        ManageStand.MoveStand(params, "Front")
+        ManageStand.PlayAnimation(params, "Point")
+        ManageStand.Aura_On(params)
+        wait(AcidShotMod.PlayerAnchorTime)
+        ManageStand.MoveStand(params, "Idle")
+        ManageStand.StopAnimation(params, "Point")
+        ManageStand.Aura_Off(params)
+    end)
+end
+
+function AcidShotMod.HitBoxResult(initPlayer, params, abilityDefs, result)
+
+    -- destroy the cosmetic
+    local abilityScript = script.Parent
+    local resultParams = {}
+    resultParams.Position = result.Position
+    resultParams.ProjectileID = params.projectileID
+    resultParams.AbilityMod = abilityDefs.AbilityMod
+    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "DestroyCosmetic", resultParams)
 
     local hitCharacters = {}
     -- hit all players in range, subject to immunity
@@ -91,16 +115,15 @@ function AcidShotMod.HitBoxResult(initPlayer, abilityDefs, result, params)
         wait(AcidShotMod.PinDuration)
         newParticle.Enabled = false
     end
-
 end
 
-function AcidShotMod.SpawnProjectile(spawnCFrame)
+function AcidShotMod.SetupCosmetic(initPlayer, params, abilityDefs)
 
     local newProjectile = AcidShotMod.CosmeticProjectile:Clone()
-    newProjectile.CFrame = spawnCFrame
+    newProjectile.CFrame = params.projectileOrigin
     for _, v in pairs(newProjectile:GetDescendants()) do
         if v:IsA("BasePart") then
-            v.CFrame = spawnCFrame
+            v.CFrame = params.projectileOrigin
             local newWeld = Instance.new("Weld")
             newWeld.C1 =  CFrame.new(0,0,0)
             newWeld.Part0 = newProjectile
@@ -109,11 +132,18 @@ function AcidShotMod.SpawnProjectile(spawnCFrame)
         end
     end
 
+    spawn(function()
+        wait(AcidShotMod.Lifetime)
+        newProjectile:Destroy()
+    end)
+
     return newProjectile
 end
 
 -- destroy cosmetic
-function AcidShotMod.DestroyCosmetic(projectilePart, params)
+function AcidShotMod.DestroyCosmetic(params)
+
+    local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
     projectilePart.Anchored = true
     Debris:AddItem(projectilePart, 10)

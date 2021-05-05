@@ -4,9 +4,19 @@ return {
 
     Arrow = {
         Name = "Arrow",
-        Type = "Arrow",
+        Type = "Special",
+        GivePower = "Stand",
         Description = "Use this arrow to gain a stand.<br /><u>You MUST be standless.</u><br /><br />95% 1-Star<br />4.5% 2-Star<br />0.5% 3-Star",
         LayoutOrder = 1,
+    },
+
+    
+    StoneMask = {
+        Name = "Stone Mask",
+        Type = "Special",
+        GivePower = "Vampire",
+        Description = "<b>VAMPIRIC!</b><br/>Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they impbue mere humans with such great power?",
+        LayoutOrder = 2
     },
 
     MaskFragment = {

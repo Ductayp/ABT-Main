@@ -114,7 +114,7 @@ function BottomGui.Setup()
 end
 
 --// Update ------------------------------------------------------------
-function BottomGui.Update(data)
+function BottomGui.Update(data, params)
     
     --print("BottomGui.Update", data)
 
@@ -199,10 +199,17 @@ end
 
 function BottomGui.HideStand()
     BottomGui.Frame_Stand.Visible = false
+    for _, name in pairs(BottomGui.AbilityNames) do
+        name.Visible = false
+    end
+
 end
 
 function BottomGui.ShowStand()
     BottomGui.Frame_Stand.Visible = true
+    for _, name in pairs(BottomGui.AbilityNames) do
+        name.Visible = true
+    end
 end
 
 

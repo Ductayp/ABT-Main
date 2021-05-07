@@ -130,12 +130,12 @@ function GuiController:KnitStart()
         GuiController.CurrencyBar.Update(data)
     end)
 
-    GuiService.Event_Update_BottomGUI:Connect(function(data)
-        GuiController.BottomGui.Update(data)
+    GuiService.Event_Update_BottomGUI:Connect(function(data, params)
+        GuiController.BottomGui.Update(data, params)
     end)
 
-    GuiService.Event_Update_StandReveal:Connect(function(data, params)
-        GuiController.StandReveal.Update(data, params)
+    GuiService.Event_Update_StandReveal:Connect(function(standData, params)
+        GuiController.StandReveal.Update(standData, params)
     end)
 
     GuiService.Event_Update_StoragePanel:Connect(function(currentStand, storageData, hasGamePass, isInZone)

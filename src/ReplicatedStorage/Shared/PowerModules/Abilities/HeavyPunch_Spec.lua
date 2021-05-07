@@ -101,8 +101,9 @@ function HeavyPunch.Run_Server(params, abilityDefs)
     
 	-- clone out a new hitpart
 	local hitPart = Instance.new("Part")
-	hitPart.Size = Vector3.new(5,5,6)
-	hitPart.CanCollide = false
+    hitPart.CanCollide = false
+    hitPart.Massless = true
+	hitPart.Size = Vector3.new(5,5,7)
 	hitPart.Transparency = 1
 	hitPart.Name = "HeavyPunch_Spec"
 	hitPart.Parent = Workspace.ServerHitboxes[params.InitUserId]

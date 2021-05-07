@@ -8,7 +8,7 @@ local Morioh_Items = {}
 
 Morioh_Items.SpawnGroupId = "Morioh_Arrows"
 Morioh_Items.Region = "Morioh"
-Morioh_Items.MaxSpawned = 3
+Morioh_Items.MaxSpawned = 6
 Morioh_Items.TotalSpawned = 0
 
 Morioh_Items.Items = {

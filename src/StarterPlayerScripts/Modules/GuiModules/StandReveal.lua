@@ -42,7 +42,7 @@ local elements = {
     StandReveal.Main_Frame,
     StandReveal.Button_Frame,
     StandReveal.Stand_Name,
-    StandReveal.Stand_Rank,
+    --StandReveal.Stand_Rank,
 }
 
 local revealedStandData 
@@ -52,7 +52,6 @@ local buttonsEnabled = true
 
 --// Setup_StandReveal ------------------------------------------------------------
 function StandReveal.Setup()
-
 
     -- turn off all elements
     for _,element in pairs(elements) do
@@ -81,7 +80,7 @@ function StandReveal.ActivateClose()
     end
 
     -- show the stand in BottomGui when we close this
-    require(Knit.GuiModules.BottomGui).ShowStand()
+    --require(Knit.GuiModules.BottomGui).ShowStand()
 
     local sceneParams = {}
     sceneParams.Stage = "End"
@@ -90,26 +89,21 @@ function StandReveal.ActivateClose()
 end
 
 --// Update ------------------------------------------------------------
-function StandReveal.Update(data, params)
+function StandReveal.Update(standData, params)
 
-    print("STAND REVEAL UDATE", data, params)
+    print("STAND REVEAL UPDATE", data, params)
+
+    -- hide the current stand text until after the reveal
+    --require(Knit.GuiModules.BottomGui).HideStand()
 
     StandReveal.Equip_Button.Visible = false
     StandReveal.Store_Button.Visible = false
     buttonsEnabled = false
 
-    local sceneParams = {}
-    sceneParams.Stage = "Run"
-    sceneParams.SceneName = "UseArrow"
-    CutSceneService:LoadScene_SinglePlayer(sceneParams)
-
-    revealedStandData = data
-
-    -- hide the current stand text until after the reveal
-    require(Knit.GuiModules.BottomGui).HideStand()
+    revealedStandData = standData
     
     -- get the module for the stand that just got revealed, also the players CurrentStand, we need this to get the actual name
-    local currentPowerModule = Knit.Powers:FindFirstChild(data.Power)
+    local currentPowerModule = Knit.Powers:FindFirstChild(standData.Power)
     local powerModule = require(currentPowerModule)
 
     local allStandNames = {}
@@ -120,6 +114,12 @@ function StandReveal.Update(data, params)
         -- turn on all elements
     for _,element in pairs(elements) do
         element.Visible = true
+    end
+
+    if params.HasArrowPass then
+        StandReveal.Stand_Rank.Visible = true
+    else
+        StandReveal.Stand_Rank.Visible = false
     end
 
     local iterations = 20
@@ -154,15 +154,15 @@ function StandReveal.Update(data, params)
 
     -- set things based on Rank
     StandReveal.Stand_Name.Text = powerModule.Defs.PowerName
-    if data.Rank == 1 then
+    if standData.Rank == 1 then
         StandReveal.Stand_Rank.star_1.Visible = true
         StandReveal.Stand_Rank.star_2.Visible = false
         StandReveal.Stand_Rank.star_3.Visible = false
-    elseif data.Rank == 2 then
+    elseif standData.Rank == 2 then
         StandReveal.Stand_Rank.star_1.Visible = true
         StandReveal.Stand_Rank.star_2.Visible = true
         StandReveal.Stand_Rank.star_3.Visible = false
-    elseif data.Rank == 3 then
+    elseif standData.Rank == 3 then
         StandReveal.Stand_Rank.star_1.Visible = true
         StandReveal.Stand_Rank.star_2.Visible = true
         StandReveal.Stand_Rank.star_3.Visible = true

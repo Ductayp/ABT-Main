@@ -139,6 +139,7 @@ function RageBoost.Run_Effects(params, abilityDefs)
     rageParticle.Parent = character.Head
 
     --wait(abilityDefs.Duration)
+    --[[
     local originalStudsOffest = rageText.StudsOffset
     local endTime = os.clock() + abilityDefs.Duration
     local offset = 5
@@ -147,6 +148,7 @@ function RageBoost.Run_Effects(params, abilityDefs)
         rageText.StudsOffset = originalStudsOffest + newOffset
         wait()
     end
+    ]]--
 
     rageText:Destroy()
     rageParticle:Destroy()

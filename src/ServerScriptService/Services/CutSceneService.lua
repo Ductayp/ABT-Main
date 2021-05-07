@@ -17,6 +17,8 @@ CutSceneService.Client.Event_LoadScene = RemoteEvent.new()
 --// LoadScene_SinglePlayer
 function CutSceneService:LoadScene_SinglePlayer(player, params)
 
+    --print("CUTSCENE SERVICE", player, params)
+
     local findModule = Knit.CutScenes:FindFirstChild(params.SceneName)
     if not findModule then return end
 
@@ -33,7 +35,18 @@ end
 
 --// LoadScene_AllPlayers
 function CutSceneService:LoadScene_AllPlayers(params)
-    --self.Client.Event_LoadScene:FireAllClients(player, params)
+
+    local findModule = Knit.CutScenes:FindFirstChild(params.SceneName)
+    if not findModule then return end
+
+    params.CanRun = false
+    local functionName = "Server_" .. params.Stage
+    local params = require(findModule)[functionName](params)
+
+    if params.CanRun == true then
+        self.Client.Event_LoadScene:FireAll(params)
+    end
+
 end
 
 ---------------------------------------------------------------------------------------------
@@ -47,7 +60,7 @@ end
 
 --// Client:LoadScene_AllPlayers
 function CutSceneService.Client:LoadScene_AllPlayers(player, params)
-    --self.Server:LoadScene_AllPlayers(player)
+    self.Server:LoadScene_AllPlayers(player)
 end
 
 ---------------------------------------------------------------------------------------------

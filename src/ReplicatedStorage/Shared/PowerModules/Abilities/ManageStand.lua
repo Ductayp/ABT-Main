@@ -362,7 +362,7 @@ function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 
 	local playerStandFolder = Workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-	--if not targetStand then return end
+	if not targetStand then return end
 	
 	-- run the animation
 	local animationLength

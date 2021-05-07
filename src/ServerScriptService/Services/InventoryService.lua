@@ -181,24 +181,28 @@ function InventoryService:UseSpecial(player, key)
         self:GenerateNewStand(player)
         return
     else
-        self:GiveSpecialPower(player, thisItem.GivePower)
+        self:GiveSpecialPower(player, thisItem)
         return
     end
 
 
 end
 
-function InventoryService:GiveSpecialPower(player, key)
+function InventoryService:GiveSpecialPower(player, itemDef)
 
-    print("GIVE SPECIAL", player, key)
+    print("GIVE SPECIAL", player, itemDef)
+
+    local sceneParams = {}
+    sceneParams.TargetPlayer = player
+    sceneParams.Stage = "Run"
+    sceneParams.SceneName = itemDef.CutScene
+    Knit.Services.CutSceneService:LoadScene_AllPlayers(sceneParams)
 
     local newParams = {}
-    newParams.Power = key
+    newParams.Power = itemDef.GivePower
     newParams.Rank = 1
     newParams.Xp = 0
     newParams.GUID = HttpService:GenerateGUID(false)
-
-    -- set the current power
     Knit.Services.PowersService:SetCurrentPower(player, newParams)
 
 end
@@ -225,35 +229,28 @@ function InventoryService:GenerateNewStand(player)
     local thisRank
     local rand = math.random(1, 1000) / 10
     if Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck") then
-        --print("YES: arrow luck pass")
-        if rand <= 90 then
+        if rand <= 85 then
             thisRank = 1 -- the default
-        elseif rand <= 99 then
+        elseif rand <= 97 then
             thisRank = 2
         else
             thisRank = 3
         end
     else
-        --print("NO: arrow luck pass")
-        if rand <= 95 then
-            thisRank = 1 -- the default
-        elseif rand <= 99.5 then
-            thisRank = 2
-        else
-            thisRank = 3
-        end
+        thisRank = 1 -- the default
     end
 
-    print("RAND: ", rand)
-    print("thisRank", thisRank)
+    -- set the current power
+    local sceneParams = {}
+    sceneParams.Stage = "Run"
+    sceneParams.SceneName = "UseArrow"
+    Knit.Services.CutSceneService:LoadScene_SinglePlayer(player, sceneParams)
 
     local newParams = {}
     newParams.Power = pickedStand
     newParams.Rank = thisRank
     newParams.Xp = 0
     newParams.GUID = HttpService:GenerateGUID(false)
-
-    -- set the current power
     Knit.Services.PowersService:SetCurrentPower(player, newParams)
 
     -- fire Show_StandReveal to the player
@@ -302,6 +299,7 @@ end
 --// SellStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:SellStand(player, GUID)
 
+    print("SELL STAND", player, GUID)
     -- return is GUID is nil
     if not GUID then
         return

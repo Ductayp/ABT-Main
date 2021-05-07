@@ -15,6 +15,7 @@ return {
         Name = "Stone Mask",
         Type = "Special",
         GivePower = "Vampire",
+        CutScene = "StoneMask",
         Description = "<b>VAMPIRIC!</b><br/>Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they impbue mere humans with such great power?",
         LayoutOrder = 2
     },

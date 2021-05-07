@@ -187,10 +187,11 @@ function BasicProjectile.Run_Server(params, abilityDefs)
             if not hitCharacters[result.Instance.Parent] then
                 abilityMod.HitBoxResult(initPlayer, params, abilityDefs, result)
             end
-            
+
             if result.Instance.Parent:FindFirstChild("Humanoid") then
                 hitCharacters[result.Instance.Parent] = true
             end
+            
         end
     end
 

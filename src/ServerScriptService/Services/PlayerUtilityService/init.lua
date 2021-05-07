@@ -9,17 +9,28 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local PlayerUtilityService = Knit.CreateService { Name = "PlayerUtilityService", Client = {}}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
+-- events
+PlayerUtilityService.Client.Event_PlayerUtility = RemoteEvent.new()
+
 -- modules
 local pingTime = require(Knit.Shared.PingTime)
 local utils = require(Knit.Shared.Utils)
 
 -- public variables
 PlayerUtilityService.PlayerAnimations = {}
-PlayerUtilityService.PlayerHealthStatus = {}
+PlayerUtilityService.PlayerRegenStatus = {}
+PlayerUtilityService.PlayerDamageStatus = {}
 
 -- local variables
 local updatePlayerTime = 1
-local defautHealthValues = {Enabled = true, RegenDay = 2, RegenNight = 2}
+
+local regenProfiles = {}
+regenProfiles.Default = {Day = 1, Night = 1}
+regenProfiles.Vampire = {Day = 0, Night = 1}
+
+local damageProfiles = {}
+damageProfiles.Default = {Day = 0, Night = 0}
+damageProfiles.VampiricRage = {Day = -2, Night = -2}
 
 function PlayerUtilityService:GetPing(player)
     return pingTime[player]
@@ -38,23 +49,39 @@ function PlayerUtilityService:UpdatePlayerLoop()
                     --print("PING: ",player.Name, pingTime[player])
                 end
 
-                local playerHealthDef = PlayerUtilityService.PlayerHealthStatus[player.UserId]
-                local healthDef
-                if playerHealthDef then
-                    healthDef = PlayerUtilityService.PlayerHealthStatus[player.UserId]
-                else
-                    healthDef = defautHealthValues
+                local healthFactor = 0
+
+                local regenDef = PlayerUtilityService.PlayerRegenStatus[player.UserId]
+                if regenDef then
+                    --print("REGEN", regenDef)
+                    local profile = regenProfiles[regenDef.Profile]
+                    if regenDef.Enabled then
+                        if Knit.Services.EnvironmentService.CurrentCycle == "Day" then
+                            
+                            healthFactor += profile.Day
+                        else
+                            healthFactor += profile.Night
+                        end
+                    end
+                end
+
+
+                local damageDef = PlayerUtilityService.PlayerDamageStatus[player.UserId]
+                if damageDef then
+                    --print("DAMAGE", damageDef)
+                    local profile = damageProfiles[damageDef.Profile]
+                    if damageDef.Enabled then
+                        if Knit.Services.EnvironmentService.CurrentCycle == "Day" then
+                            healthFactor += profile.Day
+                        else
+                            healthFactor += profile.Night
+                        end
+                    end
                 end
 
                 local character = player.Character
                 if character and character.Humanoid then
-                    if Knit.Services.EnvironmentService.CurrentCycle == "Day" then
-                        character.Humanoid.Health += healthDef.RegenDay
-                        --print("regen day: ", healthDef.RegenDay, Knit.Services.EnvironmentService.CurrentCycle)
-                    else
-                        character.Humanoid.Health += healthDef.RegenNight
-                        --print("regen night: ", healthDef.RegenNight, Knit.Services.EnvironmentService.CurrentCycle)
-                    end
+                    character.Humanoid.Health += healthFactor
                 end
             end
 
@@ -63,29 +90,26 @@ function PlayerUtilityService:UpdatePlayerLoop()
     end) 
 end
 
-function PlayerUtilityService:SetHealthStatus(player, params)
+function PlayerUtilityService:SetRegenStatus(player, params)
 
     if not player or not params then return end
 
-    if params.DefaultValues then
-        PlayerUtilityService.PlayerHealthStatus[player.UserId] = defautHealthValues
-    else
-        PlayerUtilityService.PlayerHealthStatus[player.UserId] = params
-    end
+    repeat wait() until PlayerUtilityService.PlayerRegenStatus[player.UserId] ~= nil
+    PlayerUtilityService.PlayerRegenStatus[player.UserId] = params
+
+    print("SetRegenStatus 1", params)
+    print("SetRegenStatus 2", PlayerUtilityService.PlayerRegenStatus[player.UserId])
 
 end
 
-function PlayerUtilityService:ToggleRegen(player, bool)
 
-    if not player or not bool then return end
+function PlayerUtilityService:SetDamageStatus(player, params)
 
-    if PlayerUtilityService.PlayerHealthStatus[player.UserId] == nil then
-        PlayerUtilityService.PlayerHealthStatus[player.UserId] = defautHealthValues
-    end
-
-    PlayerUtilityService.PlayerHealthStatus[player.UserId].Enabled = bool
+    if not player or not params then return end
+    PlayerUtilityService.PlayerDamageStatus[player.UserId] = params
 
 end
+
 
 
 --// LoadAnimations
@@ -105,10 +129,13 @@ end
 --// PlayerAdded
 function PlayerUtilityService:PlayerAdded(player)
 
+    PlayerUtilityService.PlayerRegenStatus[player.UserId] = {Enabled = true, Profile = "Default"}
+
     -- wait for the character
     repeat wait() until player.Character
     self:CharacterAdded(player)
     
+
     -- setup the ping tracker
     local pingFolder = ReplicatedStorage:FindFirstChild("PlayerPings")
     if not pingFolder then
@@ -121,20 +148,14 @@ function PlayerUtilityService:PlayerAdded(player)
     playerValue.Parent = pingFolder
     playerValue.Value = 0
 
-    -- load animations
-    self:LoadAnimations(player)
-
-    -- health regen setup
-    --print("DEFAULT REGEN")
-    --PlayerUtilityService.PlayerHealthStatus[player.UserId] = {}
-
 end
 
 --// PlayerRemoved
 function PlayerUtilityService:PlayerRemoved(player)
     ReplicatedStorage.PlayerPings[player.UserId]:Destroy()
     PlayerUtilityService.PlayerAnimations[player.UserId] = nil
-    PlayerUtilityService.PlayerHealthStatus[player.UserId] = nil
+    PlayerUtilityService.PlayerRegenStatus[player.UserId] = nil
+    PlayerUtilityService.PlayerDamageStatus[player.UserId] = nil
 end
 
 --// CharacterAdded
@@ -142,7 +163,8 @@ function PlayerUtilityService:CharacterAdded(player)
 
     -- wait for the character
     repeat wait() until player.Character
-    
+    PlayerUtilityService.PlayerDamageStatus[player.UserId] = {Enabled = true, Profile = "Default"}
+
     self:LoadAnimations(player)
 
 end

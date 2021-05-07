@@ -15,8 +15,8 @@ local LaserEyesMod = {}
 LaserEyesMod.CFrameOffest = CFrame.new(0, 1.5, 0) -- offset from the initPlayers HRP
 
 -- hitbox data points
-LaserEyesMod.HitBox_Size_X = 2
-LaserEyesMod.HitBox_Size_Y = 2
+LaserEyesMod.HitBox_Size_X = 2.5
+LaserEyesMod.HitBox_Size_Y = 2.5
 LaserEyesMod.HitBox_Resolution_X = .5
 LaserEyesMod.HitBox_Resolution_Y = 1 -- having this larger than the Y size will make it a flat plane
 

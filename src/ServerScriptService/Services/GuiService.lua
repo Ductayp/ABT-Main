@@ -116,10 +116,11 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         data.CurrentStand = playerData.CurrentStand
         data.CurrentHealth = player.Character.Humanoid.Health
         data.MaxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
-        self.Client.Event_Update_BottomGUI:Fire(player, data)
+        self.Client.Event_Update_BottomGUI:Fire(player, data, optionalParams)
     end
 
     if requestName == "StandReveal" then
+        optionalParams.HasArrowPass = Knit.Services.GamePassService:Has_GamePass(player, "ArrowLuck")
         self.Client.Event_Update_StandReveal:Fire(player, playerData.CurrentStand, optionalParams)
     end
 

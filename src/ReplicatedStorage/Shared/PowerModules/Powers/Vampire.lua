@@ -27,7 +27,7 @@ Vampire.Defs = {
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
         Q = {
-            AbilityName = "Vampiric Rage"
+            AbilityName = "Vampiric Sacrifice"
         },
         E = {
             AbilityName = "Barrage"
@@ -53,32 +53,40 @@ Vampire.Defs = {
     }
 }
 
---[[
-for keyName, table in pairs(Vampire.Defs.Abilities) do
-    local abilityName = table.Name
-    local thisMap = 
-        keyName = {"AbilityName" = abilityName}
- 
-    table.insert(Vampire.Defs.KeyMap, thisMap)
-end
-]]--
-
 --// SETUP - run this once when the stand is equipped
 function Vampire.SetupPower(initPlayer,params)
-    print("SETUP VAMPIRE")
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "Vampire_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "Vampire_Setup", Vampire.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "Vampire_Setup", Vampire.Defs.DamageMultiplier[params.Rank], nil)
-    Knit.Services.PlayerUtilityService:SetHealthStatus(initPlayer, {Enabled = true, RegenDay = 0, RegenNight = 3})
+    Knit.Services.PlayerUtilityService:SetRegenStatus(initPlayer, {Enabled = true, Profile = "Vampire"})
+
+    local newFistAura_1 = ReplicatedStorage.EffectParts.Specs.Vampire.VampireFistAura:Clone()
+    local newFistAura_2 = ReplicatedStorage.EffectParts.Specs.Vampire.VampireFistAura:Clone()
+
+    repeat wait() until initPlayer.Character
+
+    newFistAura_1.Parent = initPlayer.Character.RightHand
+    newFistAura_2.Parent = initPlayer.Character.LeftHand
 end
 
 --// REMOVE - run this once when the stand is un-equipped
 function Vampire.RemovePower(initPlayer,params)
-    print("REMOVE VAMPIRE")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "Vampire_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "Vampire_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "Vampire_Setup")
-    Knit.Services.PlayerUtilityService:SetHealthStatus(initPlayer, {DefaultValues = true})
+    Knit.Services.PlayerUtilityService:SetRegenStatus(initPlayer, {Enabled = true, Profile = "Default"})
+
+    repeat wait() until initPlayer.Character
+
+    local rightFist = initPlayer.Character.RightHand:FindFirstChild("VampireFistAura")
+    if rightFist then
+        rightFist:Destroy()
+    end
+
+    local leftFist = initPlayer.Character.LeftHand:FindFirstChild("VampireFistAura")
+    if leftFist then
+        leftFist:Destroy()
+    end
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -94,7 +102,7 @@ function Vampire.Manager(params)
 end
 
 --------------------------------------------------------------------------------------------------
---// EQUIP STAND - Q //-------------------------------------------------------------------------------
+--// Q //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -105,12 +113,11 @@ Vampire.Defs.Abilities.Q = {
 }
 
 function Vampire.Q(params)
-    print("Vampire Q")
     params = require(Knit.Abilities.BasicToggle)[params.SystemStage](params, Vampire.Defs.Abilities.Q)
 end
 
 --------------------------------------------------------------------------------------------------
---// BARRAGE - E //----------------------------------------------------------------------------------
+--// E //----------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -122,12 +129,11 @@ Vampire.Defs.Abilities.E = {
 }
 
 function Vampire.E(params)
-    print("Vampire E", params)
     params = require(Knit.Abilities.Barrage_Spec)[params.SystemStage](params, Vampire.Defs.Abilities.E)
 end
 
 --------------------------------------------------------------------------------------------------
---// Stone Punch - R//------------------------------------------------------------------------------
+--// R //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 --defs
@@ -139,31 +145,27 @@ Vampire.Defs.Abilities.R = {
 }
 
 function Vampire.R(params)
-    print("Vampire R")
     params = require(Knit.Abilities.HeavyPunch_Spec)[params.SystemStage](params, Vampire.Defs.Abilities.R)
 end
 
 --------------------------------------------------------------------------------------------------
---// Bullet Launch - T //-------------------------------------------------------------------------------
+--// T //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
 Vampire.Defs.Abilities.T = {
-    Id = "BulletBarrage",
-    Cooldown = 4,
-    RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 10}},
-    --AbilityMod = Knit.Abilities.BasicProjectile.BulletBarrage,
+    Id = "ZombieSummon",
+    Cooldown = 10,
+    AbilityMod = Knit.Abilities.SummonMinion.VampireZombies,
 }
 
 function Vampire.T(params)
-    print("Vampire T")
-    --params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, Vampire.Defs.Abilities.BulletBarrage)
+    params = require(Knit.Abilities.SummonMinion)[params.SystemStage](params, Vampire.Defs.Abilities.T)
 end
 
 
 --------------------------------------------------------------------------------------------------
---// Wall Blast - F //---------------------------------------------------------------------------------
+--// F //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -174,13 +176,12 @@ Vampire.Defs.Abilities.F = {
 }
 
 function Vampire.F(params)
-    print("F")
     params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, Vampire.Defs.Abilities.F)
 end
 
 
 --------------------------------------------------------------------------------------------------
---// Rage Boost - X //------------------------------------------------------------------------------
+--// X //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -193,12 +194,11 @@ Vampire.Defs.Abilities.X = {
 }
 
 function Vampire.X(params)
-    print("Vampire X")
     --params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, Vampire.Defs.Abilities.RageBoost)
 end
 
 --------------------------------------------------------------------------------------------------
---// STAND JUMP - Z //------------------------------------------------------------------------------
+--// Z //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
@@ -213,7 +213,7 @@ function Vampire.Z(params)
 end
 
 --------------------------------------------------------------------------------------------------
---// PUNCH - Mouse1 //------------------------------------------------------------------------------
+--// Mouse1 //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs

@@ -10,7 +10,7 @@ local UseArrow = {}
 --// Server_Run
 function UseArrow.Server_Run(params)
 
-    print("UseArrow.Server_Run", params)
+    --print("UseArrow.Server_Run", params)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(params.TargetPlayer)
     if not playerData then return end
@@ -69,11 +69,13 @@ end
 --// Client_Run
 function UseArrow.Client_Run(params)
 
-    print("UseArrow.Client_Run", params)
+    --print("UseArrow.Client_Run", params)
 
     if not Players.LocalPlayer.Character then return end
 
-    print("MODULE RUN SCENE", params)
+    require(Knit.GuiModules.BottomGui).HideStand()
+
+    --print("MODULE RUN SCENE", params)
     local camera = Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Scriptable
 
@@ -91,6 +93,7 @@ end
 function UseArrow.Client_End(params)
     local camera = Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Custom 
+    require(Knit.GuiModules.BottomGui).ShowStand()
 end
 
 

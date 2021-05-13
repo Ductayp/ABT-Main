@@ -36,31 +36,4 @@ return {
         Message = "THANKS FOR HELPING TEST!"
     },
 
-    {
-        CodeString = "alphatest1",
-        ActionType = "GiveItemFinder",
-        Duration = 3600,
-        Expiration = 1741217469,
-        Message = "You got Temporary Item Finder Access!"
-    },
-
-    --[[
-    {
-        CodeString = "thanksforlikes",
-        ActionType = "GiveCurrency",
-        Key = "SoulOrbs",
-        Value = "100",
-        Expiration = 1622448128,
-        Message = "100 Soul Orbs! POG - Sub 2 Planet Milo"
-    },
-
-    {
-        CodeString = "sub2planetmilo",
-        ActionType = "GiveItemFinder",
-        Duration = 1800,
-        Expiration = 1741217469,
-        Message = "You got Temporary Item Finder Access!"
-    },
-    ]]--
-
 }

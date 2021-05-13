@@ -41,6 +41,39 @@ function PlayerSpawnService:SetPlayerSpawn(player, spawnName, respawn)
 
 end
 
+--// TransportToSpawn - SERVER ONLY!!!! Can take a player to any spawners
+function PlayerSpawnService:TransportToSpawn(player, spawnName)
+
+    if not require(Knit.Defs.SpawnGroups)[spawnName] then 
+        print("NOPE")
+        return 
+    end
+
+    print("YEP")
+
+    local spawnerGroup = require(Knit.Defs.SpawnGroups)[spawnName]:GetChildren()
+    local randPick = math.random(1, #spawnerGroup)
+    local targetSpawner = spawnerGroup[randPick]
+
+    wait(1)
+
+    if not player then return end
+    player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
+end
+
+--// TransportHome - Soewhat safe for the client, can only take a player back to Default Spawn
+function PlayerSpawnService:TransportHome(player)
+
+    local spawnerGroup = require(Knit.Defs.SpawnGroups)["Morioh"]:GetChildren()
+    local randPick = math.random(1, #spawnerGroup)
+    local targetSpawner = spawnerGroup[randPick]
+
+    wait(1)
+
+    if not player then return end
+    player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
+end
+
 --// CustomSpawn
 function PlayerSpawnService:CustomSpawn(player)
 
@@ -51,13 +84,25 @@ function PlayerSpawnService:CustomSpawn(player)
 
     wait(respawnDelay)
 
-    if not player then return end
-
-    player:LoadCharacter()
-    player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
+    if player then
+        player:LoadCharacter()
+        player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
+    end
 
 end
 
+----------------------------------------------------------------------------------------------------------
+-- CLIENT METHODS
+----------------------------------------------------------------------------------------------------------
+
+
+function PlayerSpawnService.Client:TransportHome(player, spawnName)
+    self.Server:TransportHome(player, spawnName)
+end
+
+----------------------------------------------------------------------------------------------------------
+-- PLAYER MANAGEMENT
+----------------------------------------------------------------------------------------------------------
 
 --// CharacterAdded
 function PlayerSpawnService:CharacterAdded(player)

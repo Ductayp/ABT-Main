@@ -17,6 +17,7 @@ local utils = require(Knit.Shared.Utils)
 local TAG_DEFS = {
     ["Owner"] = {TagText = "DEV", TagColor = Color3.fromRGB(255, 0, 255)},
     ["Admin"] = {TagText = "DEV", TagColor = Color3.fromRGB(255, 0, 255)},
+    ["Mod"] = {TagText = "MOD", TagColor = Color3.fromRGB(170, 0, 255)},
     ["Tester"] = {TagText = "TESTER", TagColor = Color3.fromRGB(85, 255, 255)},
     --["Guest"] = {TagText = "GUEST", TagColor = Color3.new(1, 0, 0)},
 }

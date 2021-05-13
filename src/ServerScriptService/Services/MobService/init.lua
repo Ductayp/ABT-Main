@@ -20,7 +20,7 @@ MobService.Client.RenderAttack = RemoteEvent.new()
 
 -- modules
 local utils = require(Knit.Shared.Utils)
-local config = require(Knit.MobModules.Config)
+local config = require(script.Config)
 
 
 local mobStorage = ReplicatedStorage.Mobs
@@ -57,19 +57,9 @@ function MobService:MobBrain()
 
                         --// STATES ---------------------------------------------
                         
-                        -- BRAIN STATE: Post_Attack
-                        if mobData.BrainState == "Post_Attack" then
-
-                            mobData.MoveTarget = nil
-
-                            if mobData.StateTime < os.clock() - 1 then
-                                mobData.BrainState = "Wait"
-                                mobData.StateTime = os.clock()
-                            end 
-                        end
-
                         -- BRAIN STATE: Attack
                         if mobData.BrainState == "Attack" then
+
                             if mobData.LastAttack < os.clock() - mobData.Defs.AttackSpeed then
 
                                 -- run attack function
@@ -78,7 +68,7 @@ function MobService:MobBrain()
                                 -- brain settings
                                 mobData.AttackTarget = nil
                                 mobData.LastAttack = os.clock()
-                                mobData.BrainState = "Post_Attack"
+                                mobData.BrainState = "Wait"
                                 mobData.StateTime = os.clock()
                             else
                                 mobData.BrainState = "Chase"
@@ -92,18 +82,27 @@ function MobService:MobBrain()
                             mobData.MoveTarget = nil
 
                             -- set chase if we have a target
-                            if mobData.AttackTarget ~= nil then
+                            if mobData.AttackTarget then
                                 mobData.BrainState = "Chase"
                                 mobData.StateTime = os.clock()
                             end
 
-                            -- if we get too far away, return to the spawner (overrides the chase set above)
+                            -- if we get too far away or we have not attack target then return to the spawner (overrides the chase set above)
                             local spawnerMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.Position).Magnitude
                             if spawnerMagnitude > mobData.Defs.ChaseRange then
                                 mobData.BrainState = "Return"
                                 mobData.AttackTarget = nil
                                 mobData.StateTime = os.clock()
                             end
+
+                        end
+
+                        if mobData.BrainState == "Home" then
+
+                            -- set move
+                            mobData.MoveTarget = nil
+                            mobData.AttackTarget = nil
+
 
                         end
 
@@ -251,7 +250,6 @@ function MobService:MobBrain()
                             mobData.IsDead = true
                             mobData.DeadTime = os.clock()
                             mobData.PlayerDamage = {} -- delete all player damage
-                            self:KillMob(mobData)
                         end
 
                     end
@@ -298,9 +296,18 @@ function MobService:DamageMob(player, mobId, damage)
         return
     end
 
+    --[[
+    print("DAMAGE MOB", player, thisMob)
+    print("MOB TABLE")
+    for i, v in pairs(thisMob) do
+        print("I, V: ", i,v)
+    end
+    ]]--
+
     -- apply player damage counts only if the mob is not dead
     if thisMob.BrainState ~= "Dead" then
         -- apply damage to the mobData table
+        
         if thisMob.PlayerDamage[player] == nil then
             thisMob.PlayerDamage[player] = damage
         else
@@ -392,7 +399,7 @@ function MobService:PauseAnimations(mobId, duration)
 
 end
 
-
+--[[
 --// NewMob
 function MobService:NewMob(mobDefs)
 
@@ -402,13 +409,6 @@ function MobService:NewMob(mobDefs)
 
     -- clone a new mob
     newMob.Model = mobDefs.Model:Clone()
-
-   -- un-anchor
-    for _,object in pairs(newMob.Model:GetDescendants()) do
-        if object:IsA("BasePart") then
-            object.Anchored = false
-        end
-    end
 
     -- Property Updates
     newMob.Model.Humanoid.MaxHealth = mobDefs.Defs.Health;
@@ -455,6 +455,7 @@ function MobService:NewMob(mobDefs)
 
     return newMob
 end
+]]--
 
 --// SpawnLoop
 function MobService:SpawnLoop()
@@ -495,7 +496,9 @@ function MobService:SpawnLoop()
                     local pickedSpawner = openSpawners[rand]
 
                     -- create a new mobData object and add soem values
-                    local mobData = self:NewMob(spawnGroup.Defs)
+                    --local mobData = self:NewMob(spawnGroup.Defs)
+                    local mobData = require(script.NewMob).Create(spawnGroup.Defs)
+
 
                     -- set the spawner this mob is owned by
                     mobData.Spawner = pickedSpawner
@@ -529,6 +532,20 @@ function MobService:SpawnLoop()
                     -- spawn the mob into the world
                     mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
                     mobData.Model.Parent = pickedSpawner
+
+                    for _,object in pairs(mobData.Model:GetDescendants()) do
+                        if object:IsA("BasePart") then
+                            object.Anchored = false
+                        end
+                    end
+
+                    if config.NetworkOwner_Server then
+                        for _,object in pairs(mobData.Model:GetDescendants()) do
+                            if object:IsA("BasePart") then
+                                object:SetNetworkOwner(nil)
+                            end
+                        end
+                    end
 
                     -- run the post-spawn setup
                     spawnGroup.Defs.Post_Spawn(mobData)
@@ -565,9 +582,12 @@ function MobService:PlayerAdded(player)
 
     -- set players collision group according to Config
     if config.PlayerCollide == false then
+
         local character = player.Character or player.CharacterAdded:Wait()
 		self:SetCollisionGroup(character, "Mob_NoCollide");
-		player.CharacterAdded:Connect(function(Character)
+
+		player.CharacterAdded:Connect(function(character)
+
 			self:SetCollisionGroup(character, "Mob_NoCollide");
 		end)
     end
@@ -597,13 +617,14 @@ function MobService:KnitInit()
 
     -- find all spawner, build a data table for each, also make the spawners invis
     for _,instance in pairs(Workspace:GetDescendants()) do
-        if instance.Name == "MobService" then
+        if instance.Name == "MobService_Spawners" then
             for _,folder in pairs(instance:GetChildren()) do
 
                 -- make a spawn group table
                 thisGroup = {}
                 thisGroup.Name = folder.Name
-                thisGroup.Defs = require(Knit.MobModules.MobDefs[folder.Name])
+                --thisGroup.Defs = require(Knit.MobModules.MobDefs[folder.Name])
+                thisGroup.Defs = require(script.MobModules[folder.Name])
                 thisGroup.RespawnClock = os.clock()
                 thisGroup.Spawners = folder:GetChildren()
 

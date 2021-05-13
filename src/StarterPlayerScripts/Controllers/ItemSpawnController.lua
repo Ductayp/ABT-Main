@@ -10,7 +10,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local ItemSpawnController = Knit.CreateController { Name = "ItemSpawnController" }
 local ItemSpawnService = Knit.GetService("ItemSpawnService")
 local GamePassService = Knit.GetService("GamePassService")
-local BoostService = Knit.GetService("BoostService")
+--local BoostService = Knit.GetService("BoostService")
 local utils = require(Knit.Shared.Utils)
 
 -- local variables
@@ -19,8 +19,17 @@ local spawnedItemsFolder = Workspace:WaitForChild("SpawnedItems")
 --// UpdateItemFinder
 function ItemSpawnController:UpdateItemFinder()
 
+    --[[
     local hasFinder
     if GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
+        hasFinder = true
+    else
+        hasFinder = false
+    end
+    ]]--
+
+    local hasFinder
+    if GamePassService:Has_GamePass("ItemFinder") then
         hasFinder = true
     else
         hasFinder = false

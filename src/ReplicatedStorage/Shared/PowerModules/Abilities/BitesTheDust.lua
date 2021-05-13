@@ -181,9 +181,12 @@ function BitesTheDust.HitCharacter(initPlayer, hitCharacter, abilityDefs)
                 aura_2:Destroy()
                 newCountdown:Destroy()
         
-                -- apply hiteffects to the originally it character
-                abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = hitCharacter.HumanoidRootPart.CFrame.UpVector}}
-                Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+                -- apply hiteffects to the originally hit character
+                if hitCharacter:FindFirstChild("HumanoidRootPart") then
+                    abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = hitCharacter.HumanoidRootPart.CFrame.UpVector}}
+                    Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+                end
+                
         
                 local targetTable = {}
         
@@ -200,8 +203,10 @@ function BitesTheDust.HitCharacter(initPlayer, hitCharacter, abilityDefs)
         
                 -- put all players in targetTable
                 for _, player in pairs(game.Players:GetPlayers()) do
-                    if (hitCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude < blastRange then
-                        table.insert(targetTable, player.Character)
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        if (hitCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude < blastRange then
+                            table.insert(targetTable, player.Character)
+                        end
                     end
                 end
         

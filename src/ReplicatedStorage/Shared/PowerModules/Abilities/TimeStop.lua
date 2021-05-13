@@ -126,17 +126,21 @@ function TimeStop.Run_Server(params, abilityDefs)
 
     -- hit all players in range, subject to immunity
     for _, player in pairs(game.Players:GetPlayers()) do
-        if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
-            if player ~= initPlayer then
-                Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, abilityDefs)
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityDefs.Range then
+                if player ~= initPlayer then
+                    Knit.Services.PowersService:RegisterHit(initPlayer, player.Character, abilityDefs)
+                end
             end
         end
     end
 
     -- hit all Mobs in range
     for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-        if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityDefs.Range then
-            Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, abilityDefs)
+        if mob.Model:FindFirstChild("Humanoid") then
+            if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityDefs.Range then
+                Knit.Services.PowersService:RegisterHit(initPlayer, mob.Model, abilityDefs)
+            end
         end
     end
 

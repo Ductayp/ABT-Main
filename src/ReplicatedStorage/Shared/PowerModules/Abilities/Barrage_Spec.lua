@@ -25,7 +25,6 @@ local Barrage_Spec = {}
 --// Initialize
 function Barrage_Spec.Initialize(params, abilityDefs)
 
-print(" Barrage_Spec INIT")
 
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
@@ -56,8 +55,6 @@ end
 
 --// Activate
 function Barrage_Spec.Activate(params, abilityDefs)
-
-	print("Barrage_Spec ACTIVATE")
 
 	-- InputBegan
 	if params.KeyState == "InputBegan" then

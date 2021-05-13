@@ -32,9 +32,11 @@ GuiService.Client.Event_Update_RightGui = RemoteEvent.new()
 GuiService.DialogueLocked = {}
 GuiService.PvPToggles = {}
 
+--[[
 function GuiService:PvpToggle(player)
     --return GuiService.PvPToggles[player.UserId]
 end
+]]--
 
 function GuiService:TogglePvP(player)
 
@@ -43,19 +45,17 @@ function GuiService:TogglePvP(player)
     if isInSafezone then
         print("IN SAFE ZONE")
         canToggle = true
+        print("1", GuiService.PvPToggles[player.UserId])
         if  GuiService.PvPToggles[player.UserId] == true then
             GuiService.PvPToggles[player.UserId] = false
             Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "GuiService", true)
             Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Experience", "GuiService")
-            --Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Cash", "GuiService")
-            --Knit.Services.StateService:RemoveEntryFromState(player, "Multiplier_Orbs", "GuiService")
         else
             GuiService.PvPToggles[player.UserId] = true
             Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
             Knit.Services.StateService:AddEntryToState(player, "Multiplier_Experience", "GuiService", 2)
-            --Knit.Services.StateService:AddEntryToState(player, "Multiplier_Cash", "GuiService", 2)
-            --Knit.Services.StateService:AddEntryToState(player, "Multiplier_Orbs", "GuiService", 2)
         end
+        print("2", GuiService.PvPToggles[player.UserId])
     end
 
     local params = {CanToggle = canToggle}
@@ -142,8 +142,8 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
 
     if requestName == "ItemFinderWindow" then 
         local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "ItemFinder")
-        local hasBoost, expirationTime = Knit.Services.BoostService:Has_Boost(player, "ItemFinder")
-        self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass, hasBoost, expirationTime)
+        --local hasBoost, expirationTime = Knit.Services.BoostService:Has_Boost(player, "ItemFinder")
+        self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass)
     end
 
     if requestName == "BoostPanel" then
@@ -173,7 +173,14 @@ end
 --// PlayerAdded
 function GuiService:PlayerAdded(player)
     GuiService.DialogueLocked[player.UserId] = false
+
     GuiService.PvPToggles[player.UserId] = true
+    Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
+    Knit.Services.StateService:AddEntryToState(player, "Multiplier_Experience", "GuiService", 2)
+
+    local params = {CanToggle = canToggle}
+    self:Update_Gui(player, "RightGui", params)
+
 end
 
 function GuiService:PlayerRemoved(player)

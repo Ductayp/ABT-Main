@@ -53,7 +53,9 @@ function PlayerDataService:Connect(player)
         -- when a player leaves the game it will be released
         profile:ListenToRelease(function()
             profiles[player] = nil
+
             -- The profile could've been loaded on another Roblox server:
+            print("PlayersDataStore - Kick: profle nil 1")
             player:Kick()
         end)
 
@@ -68,11 +70,13 @@ function PlayerDataService:Connect(player)
 
         else
             -- This will release/unlock the profile if there was a netowrk issue
+            print("release because player was missing")
             profile:Release()
         end
 
     else
         -- We get here if another server is trying to load the profile at exactly the same time
+        print("PlayersDataStore - Kick: profle nil 2")
         player:Kick()
     end
 
@@ -135,8 +139,7 @@ end
 
 function PlayerDataService:PlayerRemoved(player)
 
-    -- update BoostService, we do it here to be sure it runs before the profile is released
-    Knit.Services.BoostService:FinalSaveOnLeave(player)
+    self:Disconnect(player)
 
     -- destroy player data boolean
     local mainStatusFolder = ReplicatedStorage:FindFirstChild("PlayerDataLoaded")
@@ -147,7 +150,7 @@ function PlayerDataService:PlayerRemoved(player)
         end
     end
 
-    self:Disconnect(player)
+    
 end
 
 function PlayerDataService:KnitStart()

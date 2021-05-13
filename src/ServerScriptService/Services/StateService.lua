@@ -97,6 +97,33 @@ function StateService:RemoveEntryFromState(player, stateName, entryName, params)
 end
 
 --// PlayerJoining
+function StateService:CharacterAdded(character)
+
+    --print("STATE SERVICE: CHARACTER ADDED", character)
+
+end
+
+--// PlayerJoining
+function StateService:CharacterDied(player, character)
+
+    --print("STATE SERVICE: CHARACTER DIED", player, character)
+    
+    local playerFolder = ReplicatedStorage.StateService:FindFirstChild(player.UserId)
+    if not playerFolder then return end
+
+    for _, state in pairs(playerFolder:GetChildren()) do
+        for _, stateEntry in pairs(state:GetChildren()) do
+            for _, stateParam in pairs(stateEntry:GetChildren()) do
+                if stateParam.Name == "RemoveOnDeath" and stateParam.Value == true then
+                    self:RemoveEntryFromState(player, state.Name, stateEntry.Name)
+                end
+            end
+        end
+    end
+
+end
+
+--// PlayerJoining
 function StateService:PlayerAdded(player)
 
     -- create a folder for the player
@@ -128,14 +155,29 @@ function StateService:KnitInit()
     -- create a folder to hold all the states
     local mainFolder = utils.EasyInstance("Folder",{Name = "StateService", Parent = ReplicatedStorage})
 
-    -- Player Added event
     Players.PlayerAdded:Connect(function(player)
         self:PlayerAdded(player)
+
+        player.CharacterAdded:Connect(function(character)
+            self:CharacterAdded(player)
+    
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                self:CharacterDied(player, character)
+            end)
+        end)
     end)
 
     -- Player Added event for studio tesing, catches when a player has joined before the server fully starts
     for _, player in ipairs(Players:GetPlayers()) do
         self:PlayerAdded(player)
+        
+        player.CharacterAdded:Connect(function(character)
+            self:CharacterAdded(player)
+    
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                self:CharacterDied(player, character)
+            end)
+        end)
     end
 
     -- Player Removing event

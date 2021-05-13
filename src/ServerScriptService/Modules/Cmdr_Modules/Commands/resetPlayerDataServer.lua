@@ -5,8 +5,8 @@ return function (_, player, boostName, timeSeconds)
 
 	
 	local playerData = Knit.Services.PlayerDataService:ResetPlayerData(player)
-	wait(3)
-	player:Kick()
+	--wait(3)
+	--player:Kick()
 
 	return ("reset player data: " .. player.Name)
 end

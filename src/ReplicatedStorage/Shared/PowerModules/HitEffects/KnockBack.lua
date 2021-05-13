@@ -18,46 +18,48 @@ local KnockBack = {}
 
 function KnockBack.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
+    print("KB params", params)
+
     -- just a final check to be sure were hitting a humanoid
-    if hitCharacter:FindFirstChild("Humanoid") then
+    if  not hitCharacter:FindFirstChild("Humanoid") then return end
 
-        -- body mover settings
-        local velocityX
-        local velocityZ
-        local velocityY
-        if params.LookVector then
-            velocityX = params.LookVector.X * params.Force
-            velocityZ = params.LookVector.Z * params.Force
-        else
-            local baseCFrame = initPlayer.Character.HumanoidRootPart.CFrame
-            velocityX = baseCFrame.LookVector.X * params.Force
-            velocityZ = baseCFrame.LookVector.Z * params.Force
+    -- body mover settings
+    local velocityX
+    local velocityZ
+    local velocityY
+    if params.LookVector then
+        velocityX = params.LookVector.X * params.Force
+        velocityZ = params.LookVector.Z * params.Force
+    else
+        local baseCFrame = initPlayer.Character.HumanoidRootPart.CFrame
+        velocityX = baseCFrame.LookVector.X * params.Force
+        velocityZ = baseCFrame.LookVector.Z * params.Force
 
-        end
-        if params.ForceY then
-            velocityY = params.ForceY
-        else
-            velocityY = 20
-        end
-
-        -- add the body mover
-        local newBodyVelocity = Instance.new("BodyVelocity")
-        newBodyVelocity.MaxForce = Vector3.new(500000,500000,500000)
-        newBodyVelocity.P = 1000000
-        newBodyVelocity.Velocity =  Vector3.new(velocityX,velocityY,velocityZ)
-        newBodyVelocity.Parent = hitCharacter.HumanoidRootPart
-
-        if params.Duration then
-            Debris:AddItem(newBodyVelocity,params.Duration)
-        else
-            Debris:AddItem(newBodyVelocity, 0.2)
-        end
-        
-        
-        -- send the visual effects to all clients
-        params.HitCharacter = hitCharacter
-        Knit.Services.PowersService:RenderHitEffect_AllPlayers("KnockBack",params)
     end
+    if params.ForceY then
+        velocityY = params.ForceY
+    else
+        velocityY = 20
+    end
+
+    -- add the body mover
+    local newBodyVelocity = Instance.new("BodyVelocity")
+    newBodyVelocity.MaxForce = Vector3.new(500000,500000,500000)
+    newBodyVelocity.P = 1000000
+    newBodyVelocity.Velocity =  Vector3.new(velocityX,velocityY,velocityZ)
+    newBodyVelocity.Parent = hitCharacter.HumanoidRootPart
+
+    if params.Duration then
+        Debris:AddItem(newBodyVelocity,params.Duration)
+    else
+        Debris:AddItem(newBodyVelocity, 0.2)
+    end
+    
+    
+    -- send the visual effects to all clients
+    params.HitCharacter = hitCharacter
+    Knit.Services.PowersService:RenderHitEffect_AllPlayers("KnockBack",params)
+
 
 end
 

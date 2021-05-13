@@ -157,9 +157,11 @@ function SheerHeartAttack.DestroySeeker(initPlayer, seeker, abilityDefs, hitChar
     -- hit all mobs in range
     for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
         if mob.Model ~= hitCharacter then
-            if (mob.Model.HumanoidRootPart.Position - seeker.MainPart.Position).Magnitude < SheerHeartAttack.BlastRadius then
-                local abilityDefs = {}
-                SheerHeartAttack.Server_Hit(initPlayer, seeker, mob.Model, abilityDefs)
+            if mob.Model:FindFirstChild("Humanoid") then
+                if (mob.Model.HumanoidRootPart.Position - seeker.MainPart.Position).Magnitude < SheerHeartAttack.BlastRadius then
+                    local abilityDefs = {}
+                    SheerHeartAttack.Server_Hit(initPlayer, seeker, mob.Model, abilityDefs)
+                end
             end
         end
     end
@@ -167,9 +169,11 @@ function SheerHeartAttack.DestroySeeker(initPlayer, seeker, abilityDefs, hitChar
     -- hit all players in ange
     for _, player in pairs(game.Players:GetPlayers()) do
         if player.Character ~= hitCharacter then
-            if (player.Character.HumanoidRootPart.Position - seeker.MainPart.Position).Magnitude < SheerHeartAttack.BlastRadius then
-                local abilityDefs = {}
-                SheerHeartAttack.Server_Hit(initPlayer, seeker, player.Character, abilityDefs)
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                if (player.Character.HumanoidRootPart.Position - seeker.MainPart.Position).Magnitude < SheerHeartAttack.BlastRadius then
+                    local abilityDefs = {}
+                    SheerHeartAttack.Server_Hit(initPlayer, seeker, player.Character, abilityDefs)
+                end
             end
         end
     end

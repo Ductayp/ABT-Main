@@ -76,7 +76,7 @@ end
 
 function RightGui.Update(pvpToggle, params)
 
-    --print("RIGHT GUI Update", pvpToggle, params)
+    print("RIGHT GUI Update", pvpToggle, params)
 
     if pvpToggle == true then
         RightGui.PVP_TOGGLE_TEXT.Text = "ON"

@@ -19,6 +19,8 @@ local Damage = {}
 
 function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
+    print("damage", initPlayer, hitCharacter, effectParams, hitParams)
+
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
@@ -31,26 +33,7 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
         -- if it is a mob
         if hitParams.IsMob then
             if hitCharacter.Humanoid then 
-
                 Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage)
-
-                --[[
-                local defaultWalkspeed = hitCharacter:FindFirstChild("DefaultWalkSpeed")
-                if not defaultWalkspeed then
-                    defaultWalkspeed = Instance.new("NumberValue")
-                    defaultWalkspeed.Name = "DefaultWalkSpeed"
-                    defaultWalkspeed.Value = 16
-                    defaultWalkspeed.Parent = hitCharacter
-                end
-
-                spawn(function()
-                    hitCharacter.Humanoid.WalkSpeed = 8
-                    wait(1.5)
-                    if hitCharacter:FindFirstChild("Humanoid") then
-                        hitCharacter.Humanoid.WalkSpeed = defaultWalkspeed.Value
-                    end
-                end)
-                ]]--
             end
         end
 

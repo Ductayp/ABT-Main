@@ -64,13 +64,11 @@ function ZoneService:PlayerAdded(player)
     storageZone.playerEntered:Connect(function(player)
         --print(("%s entered the zone!"):format(player.Name))
         Knit.Services.GuiService:Update_Gui(player, "StoragePanel_Access")
-        Knit.Services.StateService:AddEntryToState(player, "Invulnerable", "ZoneService", true)
     end)
     
     storageZone.playerExited:Connect(function(player)
         --print(("%s exited the zone!"):format(player.Name))
         Knit.Services.GuiService:Update_Gui(player, "StoragePanel_Access")
-        Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "ZoneService", true)
     end)
 
     swimZone.playerEntered:Connect(function(player)

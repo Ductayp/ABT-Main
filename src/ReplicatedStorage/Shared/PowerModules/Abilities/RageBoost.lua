@@ -100,7 +100,7 @@ function RageBoost.Run_Server(params, abilityDefs)
 
     spawn(function()
         local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_RageBoost", abilityDefs.Multiplier, nil)
+        Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_RageBoost", abilityDefs.Multiplier,  {RemoveOnDeath = true})
         wait(abilityDefs.Duration)
         Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_RageBoost")
     end)

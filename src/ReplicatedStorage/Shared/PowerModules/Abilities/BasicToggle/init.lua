@@ -21,6 +21,11 @@ local BasicToggle = {}
 --// Initialize
 function BasicToggle.Initialize(params, abilityDefs)
 
+	if params.ForceRemoveStand then
+		params.CanRun = false
+		return
+	end
+
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
 		params.CanRun = true
@@ -41,6 +46,11 @@ end
 function BasicToggle.Activate(params, abilityDefs)
 
 	--print("BasicToggle.Activate(params, abilityDefs)", params, abilityDefs)
+
+	if params.ForceRemoveStand then
+		params.CanRun = false
+		return
+	end
 
 
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]

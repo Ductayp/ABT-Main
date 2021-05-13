@@ -113,12 +113,12 @@ function ItemFinder.Setup()
 end
 
 --// Update ------------------------------------------------------------
-function ItemFinder.Update(hasGamePass, hasBoost, expirationTime)
+function ItemFinder.Update(hasGamePass)
 
-    if hasGamePass or hasBoost then
+    if hasGamePass then
         ItemFinder.Frame_Blocker.Visible = false
         ItemFinder.HasAccess = true
-        ItemFinder.Time_Left_Text.Text = "TIME LEFT - INF."
+        --ItemFinder.Time_Left_Text.Text = "TIME LEFT - INF."
     else
         ItemFinder.Frame_Blocker.Visible = true
         ItemFinder.HasAccess = false

@@ -162,6 +162,9 @@ end
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
     --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    if not characterHit then return end
+    if not characterHit:FindFirstChild("Humanoid") then return end
+    if characterHit.Humanoid.Health <= 0 then return end
 
     -- setup some variables
     local canHit = false

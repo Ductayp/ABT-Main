@@ -30,6 +30,8 @@ local BasicProjectile = {}
 --// Initialize
 function BasicProjectile.Initialize(params, abilityDefs)
 
+    params.RenderRange = 700
+
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
 		params.CanRun = true
@@ -186,11 +188,14 @@ function BasicProjectile.Run_Server(params, abilityDefs)
 
             if not hitCharacters[result.Instance.Parent] then
                 abilityMod.HitBoxResult(initPlayer, params, abilityDefs, result)
+
+                if result.Instance.Parent:FindFirstChild("Humanoid") then
+                    hitCharacters[result.Instance.Parent] = true
+                end
+                
             end
 
-            if result.Instance.Parent:FindFirstChild("Humanoid") then
-                hitCharacters[result.Instance.Parent] = true
-            end
+
             
         end
     end

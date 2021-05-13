@@ -218,7 +218,7 @@ function Barrage.RunEffect(params, abilityDefs)
 	ManageStand.MoveStand(params, "Front")
 
 	-- play the sound
-	WeldedSound.NewSound(targetStand.HumanoidRootPart, abilityDefs.Sounds.Barrage, {SpeakerProperties = {Name = "Barrage"}, SoundProperties = {Looped = true}})
+	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityDefs.Sounds.Barrage, {SpeakerProperties = {Name = "Barrage"}, SoundProperties = {Looped = true}})
 
 	-- spawn the arms shooter
 	local effectArm = ReplicatedStorage.EffectParts.Abilities.Barrage[params.PowerID .. "_" .. tostring(params.PowerRank)]
@@ -242,17 +242,22 @@ function Barrage.EndEffect(params, abilityDefs)
 
 	--print("BARRAGE - END EFFECT", params, abilityDefs)
 
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	if not initPlayer.Character.HumanoidRootPart then return end
+
+	--[[
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
 		return
 	end
+	]]--
 
 	-- stop animation and move stand to Idle
 	ManageStand.StopAnimation(params, "Barrage")
 	ManageStand.MoveStand(params, "Idle")
 
 	-- stop the sound
-	WeldedSound.StopSound(targetStand.HumanoidRootPart, "Barrage", 1)
+	WeldedSound.StopSound(initPlayer.Character.HumanoidRootPart, "Barrage", 1)
 end
 
 

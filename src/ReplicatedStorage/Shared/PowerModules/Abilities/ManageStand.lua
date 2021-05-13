@@ -29,6 +29,13 @@ local ManageStand = {}
 --// Initialize
 function ManageStand.Initialize(params, abilityDefs)
 
+	params.RenderRange = 999999 -- force it!
+
+	if params.ForceRemoveStand then
+		params.CanRun = true
+		return
+	end
+
 	-- check KeyState
 	if params.KeyState == "InputBegan" then
 		params.CanRun = true
@@ -451,16 +458,20 @@ end
 -- Move Stand
 function ManageStand.MoveStand(params, anchorName)
 
+	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+	if not initPlayer then return end
+	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
+
+	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
+	if not targetStand then return end
+
+
 	local moveTime = .175
 	if params.MoveTime ~= nil then
 		moveTime = params.MoveTime
 	end
-
-	-- some definitions
-	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
-	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
-	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
+	
 	local standWeld = targetStand:FindFirstChild("StandWeld", true)
 
 	-- if the stand or weld is gone, for example from death, just return

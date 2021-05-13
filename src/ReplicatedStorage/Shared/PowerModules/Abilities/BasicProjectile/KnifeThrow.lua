@@ -99,7 +99,10 @@ function KnifeThrowMod.DestroyCosmetic(params)
     transparencyTween:Play()
 
     newBurst.Part.ParticleEmitter:Emit(100)
-    projectilePart:Destroy()
+    if projectilePart then
+        projectilePart:Destroy()
+    end
+    
 
 end
 

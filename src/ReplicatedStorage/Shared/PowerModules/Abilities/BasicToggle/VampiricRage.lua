@@ -2,6 +2,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local utils = require(Knit.Shared.Utils)
 
 local VampiricRage = {}
@@ -15,7 +16,9 @@ function VampiricRage.Server_AbilityOn(params, abilityDefs)
 	if not initPlayer then return end
 
     Knit.Services.PlayerUtilityService:SetDamageStatus(initPlayer, {Enabled = true, Profile = "VampiricRage"})
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "VampiricRage", 2, nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "VampiricRage", 2, {RemoveOnDeath = true})
+
+    Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Rage:Play()
 
 end
 
@@ -48,9 +51,10 @@ function VampiricRage.Client_AbilityOn(params, abilityDefs)
             newAura.Speed = NumberRange.new(.2, .2)
         end)
         
-
         local newText = ReplicatedStorage.EffectParts.Specs.Vampire.RageText:Clone()
         newText.Parent = initPlayer.Character.Head
+
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.Wry)
     end
 
 end

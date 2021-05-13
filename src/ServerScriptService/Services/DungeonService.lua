@@ -1,4 +1,4 @@
--- DunegonService
+-- DungeonService
 
 -- services
 local Workspace = game:GetService("Workspace")
@@ -7,14 +7,15 @@ local Players = game:GetService("Players")
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-local DunegonService = Knit.CreateService { Name = "DunegonService", Client = {}}
+local DungeonService = Knit.CreateService { Name = "DungeonService", Client = {}}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
 
 --// BuyAccess
-function DunegonService:BuyAccess(player, params)
+function DungeonService:BuyAccess(player, params)
+
     print("DUNEGON SERVICE", player, params)
       
     local dialogueModule = require(Knit.DialogueModules[params.ModuleName])
@@ -24,7 +25,7 @@ function DunegonService:BuyAccess(player, params)
 
     local inputKey = transactionDef.Input.Key
     local inputValue = transactionDef.Input.Value
-    local destination = transactionDef.Destination
+    local spawnName = transactionDef.Destination
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
@@ -47,52 +48,46 @@ function DunegonService:BuyAccess(player, params)
     if success then
         Knit.Services.GuiService:Update_Gui(player, "Currency")
         Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
-        self:TravelIntoDunegon(player, destination)
+
+        Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, spawnName, false)
+        Knit.Services.PlayerSpawnService:TransportToSpawn(player, spawnName)
     end
 
     return success
 
 end
 
---// TravelIntoDunegon
-function DunegonService:TravelIntoDunegon(player, destination)
-    print("YOU CAN TRAVEL HOMES!", player, destination)
-    Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, destination, false)
+function DungeonService:LeaveDungeon(player, params)
 
-    local spawners = require(Knit.Defs.SpawnGroups)
+    Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, "Morioh", false)
+    Knit.Services.PlayerSpawnService:TransportToSpawn(player, "Morioh")
 
-    print("1",destination)
-    print("2",require(Knit.Defs.SpawnGroups))
-
-    local spawnerGroup = require(Knit.Defs.SpawnGroups)[destination]:GetChildren()
-    local randPick = math.random(1, #spawnerGroup)
-    local targetSpawner = spawnerGroup[randPick]
-
-    wait(1)
-
-    if not player then return end
-
-    player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
-
+    local success = true
+    return success
 end
+
 
 ---------------------------------------------------------------------------------------------
 --// CLIENT METHODS
 ---------------------------------------------------------------------------------------------
 
 --// Client:StoreStand
-function DunegonService.Client:BuyAccess(player, params)
+function DungeonService.Client:BuyAccess(player, params)
     local results = self.Server:BuyAccess(player, params)
     return results
 end
 
-
+--// Client:LeaveDungeon
+function DungeonService.Client:LeaveDungeon(player, params)
+    local results = self.Server:LeaveDungeon(player, params)
+    return results
+end
 ----------------------------------------------------------------------------------------------------------
 -- PLAYER/CHARACTER EVENTS
 ----------------------------------------------------------------------------------------------------------
 
 --// CharacterAdded
-function DunegonService:CharacterAdded(player)
+function DungeonService:CharacterAdded(player)
     repeat wait() until player.Character
     player.Character:WaitForChild("Humanoid").Died:Connect(function()
         -- nothign yet
@@ -100,14 +95,14 @@ function DunegonService:CharacterAdded(player)
 end
 
 --// PlayerAdded
-function DunegonService:PlayerAdded(player)
+function DungeonService:PlayerAdded(player)
 
     repeat wait() until player.Character
     self:CharacterAdded(player)
 end
  
 --// PlayerRemoved
-function DunegonService:PlayerRemoved(player)
+function DungeonService:PlayerRemoved(player)
     --nothign yet
 end
 
@@ -116,7 +111,7 @@ end
 ----------------------------------------------------------------------------------------------------------
 
 --// KnitStart
-function DunegonService:KnitStart()
+function DungeonService:KnitStart()
 
         -- Player Added event
         Players.PlayerAdded:Connect(function(player)
@@ -144,8 +139,8 @@ function DunegonService:KnitStart()
 end
 
 --// KnitInit
-function DunegonService:KnitInit()
+function DungeonService:KnitInit()
 
 end
 
-return DunegonService
+return DungeonService

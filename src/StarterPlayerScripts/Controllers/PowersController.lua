@@ -24,6 +24,9 @@ local PowersService = Knit.GetService("PowersService")
 local BlockInput = require(Knit.PowerUtils.BlockInput)
 local utils = require(Knit.Shared.Utils)
 
+-- this is the default render distance for effects. Only works if the sent effect has position data in its params
+local defaultRenderDistance = 350
+
 --// InitializePower
 function PowersController:InitializePower(params)
 
@@ -63,6 +66,29 @@ end
 
 --// ExecutePower
 function PowersController:ExecutePower(params)
+
+    --print("execut power", params)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then return end
+
+    local initCharacter = initPlayer.Character
+    if not initCharacter then return end
+
+    local thisCharacter = Players.LocalPlayer.Character
+    if not thisCharacter then return end
+
+    local distance = (initCharacter.HumanoidRootPart.Position - thisCharacter.HumanoidRootPart.Position).magnitude
+
+    local effectRange
+    if params.RenderRange then
+        effectRange = params.RenderRange
+    else
+        effectRange = defaultRenderDistance
+    end
+
+    if distance > effectRange then return end
+
     local powerModule = require((Knit.Powers[params.PowerID]))
     params.SystemStage = "Execute"
     powerModule.Manager(params)
@@ -77,6 +103,25 @@ end
 --// RenderAbilityEffect
 function PowersController:RenderAbilityEffect(abilityModule, functionName, params)
     --print("abilityModule, functionName, params", abilityModule, functionName, params)
+
+    if not Players.LocalPlayer.Character then return end
+
+    -- render distance check
+    if params.Position then
+        local effectRange
+        if params.RenderRange then
+            effectRange = params.RenderRange
+        else
+            effectRange = defaultRenderDistance
+        end
+
+
+        local distance = (Players.LocalPlayer.Character.HumanoidRootPart.Position - params.Position).magnitude
+        if distance > effectRange then 
+            return
+        end
+    end
+
     local thisModule = require(abilityModule)
     thisModule[functionName](params)
 end

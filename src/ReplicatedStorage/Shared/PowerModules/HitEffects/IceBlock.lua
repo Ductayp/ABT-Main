@@ -9,6 +9,7 @@ local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local utils = require(Knit.Shared.Utils)
 
 local AngeloRock = {}
@@ -26,34 +27,31 @@ end
 
 function AngeloRock.Client_RenderEffect(params)
 
-    if not params.HitCharacter then
+    if not params.HitCharacter and params.HitCharacter.HumanoidRootPart then
         return
     end
 
-    spawn(function()
-        
-        local icePart = ReplicatedStorage.EffectParts.Effects.IceBlock.Ice:Clone()
-        icePart.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
-        icePart.Parent = Workspace.RenderedEffects
-        icePart.CanCollide = false
+    WeldedSound.NewSound(params.HitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.General.Freeze)
+    
+    local icePart = ReplicatedStorage.EffectParts.Effects.IceBlock.Ice:Clone()
+    icePart.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
+    icePart.Parent = Workspace.RenderedEffects
+    icePart.CanCollide = false
 
-        icePart.BurstEmitter:Emit(100)
-        
-        icePart.Transparency = 1
-        local tweenIn_1 = TweenService:Create(icePart, TweenInfo.new(.5),{Transparency = .6})
-        tweenIn_1:Play()
+    icePart.BurstEmitter:Emit(100)
+    
+    icePart.Transparency = 1
+    local tweenIn_1 = TweenService:Create(icePart, TweenInfo.new(.5),{Transparency = .6})
+    tweenIn_1:Play()
 
-        wait(params.Duration)
-        icePart.Anchored = true
-        local tweenOut_1 = TweenService:Create(icePart, TweenInfo.new(1),{Size = Vector3.new(2,2,2)})
-        local tweenOut_2 = TweenService:Create(icePart, TweenInfo.new(1),{Position = icePart.Position + Vector3.new(0,-10,0)})
-        tweenOut_1:Play()
-        tweenOut_2:Play()
-        wait(2)
-        icePart:Destroy()
-
-    end)
- 
+    wait(params.Duration)
+    icePart.Anchored = true
+    local tweenOut_1 = TweenService:Create(icePart, TweenInfo.new(1),{Size = Vector3.new(2,2,2)})
+    local tweenOut_2 = TweenService:Create(icePart, TweenInfo.new(1),{Position = icePart.Position + Vector3.new(0,-10,0)})
+    tweenOut_1:Play()
+    tweenOut_2:Play()
+    wait(2)
+    icePart:Destroy()
 
 end
 

@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local PlayerGui = Players.LocalPlayer.PlayerGui
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -97,6 +98,16 @@ function InputController:KeyboardSetup()
     end)
 end
 
+function InputController:MobileSetup()
+
+    PlayerGui.MainGui.MobileRight.Frame.Visible = true
+
+    PlayerGui.MainGui.MobileRight.Frame.PunchButton.MouseButton1Down:Connect(function()
+        --print("MobileClicked", buttonInstance.Name)
+        self:SendToPowersService({InputId = "Mouse1", KeyState = "InputBegan"})
+    end)
+
+end
 
 
 function InputController:CharacterAdded(newCharacter)
@@ -116,6 +127,10 @@ function InputController:KnitStart()
     localPlayer.CharacterAdded:connect(function(newCharacter)
         self:CharacterAdded(newCharacter)
     end)
+
+    if UserInputService.TouchEnabled then
+        self:MobileSetup()
+    end
 
 end
 

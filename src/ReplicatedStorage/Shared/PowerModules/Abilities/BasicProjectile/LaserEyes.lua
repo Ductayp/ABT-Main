@@ -40,15 +40,15 @@ LaserEyesMod.HitEffects = {Damage = {Damage = 15}}
 function LaserEyesMod.HitBoxResult(initPlayer, params, abilityDefs, result)
 
     --print("HIT A HUMANOID", result.Instance.Parent)
-    Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+    if result.Instance.Parent:FindFirstChild("Humanoid") then
+        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+    end
 
     local abilityScript = script.Parent
     local resultParams = {}
     resultParams.Position = result.Position
     resultParams.ProjectileID = params.projectileID
-    --resultParams.AbilityMod = abilityDefs.AbilityMod
 
-    --Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "ProjectileImpact", resultParams)
     Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "ParticlePop", resultParams)
 
 end

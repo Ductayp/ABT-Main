@@ -4,13 +4,14 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local utils = require(Knit.Shared.Utils)
 
 local targetRange = 50
 local zombieLifetime = 10
 local detonateRange = 2
 local blastRange = 10
-
+local zombieBlastDamage = 20
 
 local VampireZombies = {}
 
@@ -74,6 +75,10 @@ function VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
     local allZombies = ReplicatedStorage.EffectParts.Abilities.SummonMinion.VampireZombies.ZombieModels:GetChildren()
     local pickZombie = math.random(1, #allZombies)
     local newZombie = allZombies[pickZombie]:Clone()
+
+    newZombie.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+    newZombie.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+
     newZombie.Parent = Workspace.RenderedEffects
     local studsOffset = 6
     local randX = math.random(-studsOffset * 100, studsOffset * 100)
@@ -81,9 +86,9 @@ function VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
     newZombie.HumanoidRootPart.CFrame = initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(randX / 100, 2, randZ / 100)
     newZombie.HumanoidRootPart.Anchored = false
 
-    newZombie.Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-    newZombie.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-
+    newZombie.HumanoidRootPart.Blood:Emit(200)
+    newZombie.HumanoidRootPart.Mist:Emit(200)
+   
     local animator = Instance.new("Animator")
     animator.Parent = newZombie.Humanoid
 
@@ -93,10 +98,27 @@ function VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
     walkAnimation:Destroy()
     loadedAnimation:Play()
 
+    WeldedSound.NewSound(newZombie.HumanoidRootPart, ReplicatedStorage.Audio.General.ZombieBreatheLabored, {Looped = true, Volume = 3})
+    WeldedSound.NewSound(newZombie.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicBoom)
+
     spawn(function()
+
         local endTime = os.clock() + zombieLifetime
+
         while os.clock() < endTime do
-            newZombie.Humanoid:MoveTo(target.HumanoidRootPart.Position)
+
+            if target then
+                if target:FindFirstChild("HumanoidRootPart") then
+                    newZombie.Humanoid:MoveTo(target.HumanoidRootPart.Position)
+                else
+                    VampireZombies.BlastZombie(initPlayer, target, newZombie, abilityDefs)
+                    return
+                end
+            else
+                VampireZombies.BlastZombie(initPlayer, target, newZombie, abilityDefs)
+                return
+            end
+
             local distance = (newZombie.HumanoidRootPart.Position - target.HumanoidRootPart.Position).magnitude
             if distance <= detonateRange then
                 VampireZombies.BlastZombie(initPlayer, target, newZombie, abilityDefs)
@@ -143,12 +165,11 @@ function VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
             end
         end
 
-        print("BOOM!", zombie)
         for _, character in pairs(hitCharacters) do
 
             local newLookVector = (character.HumanoidRootPart.Position - zombie.HumanoidRootPart.Position).unit
-            abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
-            --abilityDefs.HitEffects = {Damage = {Damage = 35}}
+            --abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
+            abilityDefs.HitEffects = {Damage = {Damage = zombieBlastDamage}}
             Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
         end
 
@@ -226,6 +247,13 @@ function VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
             end
         end
 
+        WeldedSound.NewSound(zombie.Head, ReplicatedStorage.Audio.General.HeadBurstSound)
+
+        zombie.HumanoidRootPart.Blood.LockedToPart = false
+        zombie.HumanoidRootPart.Mist.LockedToPart = false
+
+        zombie.HumanoidRootPart.Blood:Emit(200)
+        zombie.HumanoidRootPart.Mist:Emit(200)
         zombie:BreakJoints()
 
         wait(5)

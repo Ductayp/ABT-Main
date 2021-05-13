@@ -11,7 +11,7 @@ local Players = game:GetService("Players")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiService = Knit.GetService("GuiService")
 local InventoryService = Knit.GetService("InventoryService")
-local DunegonService = Knit.GetService("DunegonService")
+local DungeonService = Knit.GetService("DungeonService")
 local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
@@ -84,7 +84,6 @@ function NPCDialogue.Setup()
             end
         end
     end
-
 
 end
 
@@ -284,13 +283,12 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
     end
 
     if stageDef[choiceName].Action.Type == "DungeonTravel" then
-        print("YES!")
-
+        
         local travelParams = {}
         travelParams.ModuleName = stageDef[choiceName].Action.ModuleName
         travelParams.TransactionKey = stageDef[choiceName].Action.TransactionKey
 
-        local travelSuccess = DunegonService:BuyAccess(travelParams)
+        local travelSuccess = DungeonService:BuyAccess(travelParams)
         
         local originalText = button.Text
         local originalTextColor = button.TextColor3
@@ -316,11 +314,28 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
             end)
         end
 
+        NPCDialogue.Close()
+
     end
 
-    
+    if stageDef[choiceName].Action.Type == "LeaveDungeon" then
 
+        local originalText = button.Text
+        local originalTextColor = button.TextColor3
 
+        button.Text = "SUCCESS"
+        button.TextColor3 = Color3.fromRGB(0, 255, 0)
+        Knit.Controllers.GuiController:ToggleDialogue(false)
+        wait(1)
+        disableChoiceButtons = true
+        NPCDialogue.Frame.Visible = false
+        button.Text = originalText
+        button.TextColor3 = originalTextColor
+        disableChoiceButtons = false
+
+        DungeonService:LeaveDungeon(Players.LocalPlayer)
+        NPCDialogue.Close()
+    end
 
 end
 

@@ -145,19 +145,20 @@ function AcidShotMod.DestroyCosmetic(params)
 
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
-    projectilePart.Anchored = true
-    Debris:AddItem(projectilePart, 10)
-    projectilePart.Transparency = 1
-    for i,v in pairs(projectilePart:GetDescendants()) do
-        if v:IsA("BasePart") then
-            v.Transparency = 1
-        end
-        if v:IsA("ParticleEmitter") then
-            v.Enabled = false
+    if projectilePart then
+        projectilePart.Anchored = true
+        Debris:AddItem(projectilePart, 10)
+        projectilePart.Transparency = 1
+        for i,v in pairs(projectilePart:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Transparency = 1
+            end
+            if v:IsA("ParticleEmitter") then
+                v.Enabled = false
+            end
         end
     end
 
-    
     local newBurst = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.Burst:Clone()
     newBurst.Position = params.Position
     newBurst.Parent = Workspace.RenderedEffects

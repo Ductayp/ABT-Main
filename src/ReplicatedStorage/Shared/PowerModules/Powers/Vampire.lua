@@ -125,7 +125,7 @@ Vampire.Defs.Abilities.E = {
     Id = "Barrage",
     Duration = 6,
     Cooldown = 5,
-    HitEffects = {Damage = {Damage = 3, KnockBack = 10}, LifeSteal = {Quantity = 3}},
+    HitEffects = {Damage = {Damage = 3, KnockBack = 15}, LifeSteal = {Quantity = 1.5}},
 }
 
 function Vampire.E(params)
@@ -155,7 +155,7 @@ end
 -- defs
 Vampire.Defs.Abilities.T = {
     Id = "ZombieSummon",
-    Cooldown = 10,
+    Cooldown = 20,
     AbilityMod = Knit.Abilities.SummonMinion.VampireZombies,
 }
 
@@ -220,7 +220,7 @@ end
 Vampire.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 10, KnockBack = 10,}, LifeSteal = {Quantity = 15}}
+    HitEffects = {Damage = {Damage = 10, KnockBack = 10,}, LifeSteal = {Quantity = 8}}
 }
 
 function Vampire.Punch(params)

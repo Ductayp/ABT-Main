@@ -10,14 +10,27 @@ return {
         LayoutOrder = 1,
     },
 
-    
+    SoulKey = {
+        Name = "Soul Key",
+        Type = "Evolution",
+        Description = "Unlocks the potential of a stand/spec.<br /><br />Simply use this item when your XP bar is full to rank the stand/spec up to a max of rank 3.",
+        LayoutOrder = 2,
+    },
+
     StoneMask = {
         Name = "Stone Mask",
         Type = "Special",
         GivePower = "Vampire",
         CutScene = "StoneMask",
         Description = "<b>VAMPIRIC!</b><br/>Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they impbue mere humans with such great power?",
-        LayoutOrder = 2
+        LayoutOrder = 3
+    },
+
+    Antidote = {
+        Name = "Antidote",
+        Type = "Collectable",
+        Description = "Hidden inside the nose ring of Wham is an antidote. Infused with the power of the Pillar Men, it glows softly.<br/><br/>Bring this to Cesar in the Arena, he will buy them for a good price.",
+        LayoutOrder = 4
     },
 
     MaskFragment = {
@@ -34,28 +47,7 @@ return {
         LayoutOrder = 6
     },
 
-    --[[
-    Shard_Dull = {
-        Name = "Soul Shard: Dull",
-        Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a 1-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
-        LayoutOrder = 2,
-    },
 
-    Shard_Shiny = {
-        Name = "Soul Shard: Shiny",
-        Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a 2-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
-        LayoutOrder = 3,
-    },
-
-    Shard_Glowing = {
-        Name = "Soul Shard: Glowing",
-        Type = "Shard",
-        Description = "A Soul Shard received from SACRIFICING a 3-star stand.<br /><br />You should save these up, you will need them to unlock DUNGEONS in future updates.",
-        LayoutOrder = 4,
-    },
-    ]]--
 
     BrokenArrow = {
         Name = "Broken Arrow",

@@ -8,7 +8,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local TheHand = {}
 
 TheHand.Defs = {
-    PowerName = "TheHand",
+    PowerName = "Gold Experience",
     MaxXp = {
         [1] = 10000,
         [2] = 15000,
@@ -70,14 +70,28 @@ end
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
 function TheHand.Manager(params)
 
-    if params.InputId == "Mouse1" then
+    -- call the function
+    if params.InputId == "Q" then
+        TheHand.EquipStand(params)
+    elseif params.InputId == "E" then
+        TheHand.Barrage(params)
+    elseif params.InputId == "R" then
+        TheHand.ScrapePunch(params)
+    elseif params.InputId == "T" then
+        TheHand.FlowerPotBarrage(params)
+    elseif params.InputId == "F" then
+        TheHand.ScrapeBarrage(params)
+    elseif params.InputId == "X" then
+        TheHand.ScrapeAway(params)
+    elseif params.InputId == "Z" then
+        TheHand.StandJump(params)
+    elseif params.InputId == "Mouse1" then
         TheHand.Punch(params)
-    else
-        TheHand[params.InputId](params)
     end
 
     return params
 end
+
 
 --------------------------------------------------------------------------------------------------
 --// Q //-------------------------------------------------------------------------------
@@ -99,134 +113,146 @@ TheHand.Defs.Abilities.Q = {
     }
 }
 
-function TheHand.Q(params)
+function TheHand.EquipStand(params)
     params = require(Knit.Abilities.ManageStand)[params.SystemStage](params, TheHand.Defs.Abilities.Q)
 end
 
 --------------------------------------------------------------------------------------------------
---// E //----------------------------------------------------------------------------------
+--// BARRAGE - E //----------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
-TheHand.Defs.Abilities.E = {
+TheHand.Defs.Abilities.Barrage = {
+    Name = "Barrage",
     Id = "Barrage",
-    Duration = 4,
-    Cooldown = 4,
+    Duration = 10,
+    Cooldown = 7,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 6, KnockBack = 15}},
+    HitEffects = {Damage = {Damage = 6}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
     }
 }
 
-function TheHand.E(params)
-    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheHand.Defs.Abilities.E)
+function TheHand.Barrage(params)
+    params = require(Knit.Abilities.Barrage)[params.SystemStage](params, TheHand.Defs.Abilities.Barrage)
 end
 
 --------------------------------------------------------------------------------------------------
---// R //------------------------------------------------------------------------------
+--// ScrapePunch - R//------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 --defs
-TheHand.Defs.Abilities.R = {
-    Id = "ScrapePunch",
-    Cooldown = 1,
+TheHand.Defs.Abilities.ScrapePunch = {
+    Name = "ScrapePunch",
+    Id = "ScrapePunchh",
+    Cooldown = 10,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("ScrapePunch", true),
+    HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}},
+    Sounds = {
+        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
+    }
 }
 
-function TheHand.R(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, TheHand.Defs.Abilities.R)
+function TheHand.ScrapePunch(params)
+    --params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, TheHand.Defs.Abilities.StonePunch)
 end
 
 --------------------------------------------------------------------------------------------------
---// T //-------------------------------------------------------------------------------
+--// FlowerPotBarrage - T //-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
-TheHand.Defs.Abilities.T = {
-    Id = "BlackHole",
-    Cooldown = 20,
-    RequireToggle_On = {"Q"},
-}
-
-function TheHand.T(params)
-    --params = require(Knit.Abilities.SummonMinion)[params.SystemStage](params, TheHand.Defs.Abilities.T)
-end
-
-
---------------------------------------------------------------------------------------------------
---// F //---------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------
-
--- defs
-TheHand.Defs.Abilities.F = {
+TheHand.Defs.Abilities.TreeCage = {
+    Name = "FlowerPotBarrage",
     Id = "FlowerPotBarrage",
-    Cooldown = 2,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
-    --AbilityMod = Knit.Abilities.BasicProjectile.LaserEyes,
+    HitEffects = {Damage = {Damage = 8}},
 }
 
-function TheHand.F(params)
-    --params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheHand.Defs.Abilities.F)
+function TheHand.FlowerPotBarrage(params)
+    --params = require(Knit.Abilities.BulletBarrage)[params.SystemStage](params, TheHand.Defs.Abilities.BulletBarrage)
 end
 
 
 --------------------------------------------------------------------------------------------------
---// X //------------------------------------------------------------------------------
+--// ScrapeBarrage - F //---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
-TheHand.Defs.Abilities.X = {
+TheHand.Defs.Abilities.ScrapeBarrage = {
+    Name = "ScrapeBarrage",
+    Id = "ScrapeBarrage",
+    RequireToggle_On = {"Q"},
+    Cooldown = 6,
+    Duration = 5,
+    HitEffects = {Damage = {Damage = 20}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
+}
+
+function TheHand.ScrapeBarrage(params)
+    --params = require(Knit.Abilities.WallBlast)[params.SystemStage](params, TheHand.Defs.Abilities.WallBlast)
+end
+
+--------------------------------------------------------------------------------------------------
+--// ScrapeAway - X //------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
+-- defs
+TheHand.Defs.Abilities.ScrapeAway = {
+    Name = "ScrapeAway",
     Id = "ScrapeAway",
+    RequireToggle_On = {"Q"},
     Cooldown = 90,
-    RequireToggle_On = {"Q"},
+    Duration = 20,
+    Multiplier = 2
 }
 
-function TheHand.X(params)
-    --params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, TheHand.Defs.Abilities.RageBoost)
+function TheHand.ScrapeAway(params)
+    params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, TheHand.Defs.Abilities.RageBoost)
 end
 
 --------------------------------------------------------------------------------------------------
---// C //------------------------------------------------------------------------------
+--// STAND JUMP - Z //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
-TheHand.Defs.Abilities.C = {
-    Id = "VoidPull",
-    Cooldown = 1,
-    RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("VoidPull", true),
-}
-
-function TheHand.C(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, TheHand.Defs.Abilities.C)
-end
-
---------------------------------------------------------------------------------------------------
---// Z //------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------
-
--- defs
-TheHand.Defs.Abilities.Z = {
+TheHand.Defs.Abilities.StandJump = {
+    Name = "Stand Jump",
     Id = "StandJump",
     Cooldown = 3,
     RequireToggle_On = {"Q"},
 }
 
-function TheHand.Z(params)
-    params = require(Knit.Abilities.StandJump_Spec)[params.SystemStage](params, TheHand.Defs.Abilities.Z)
+function TheHand.StandJump(params)
+    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, TheHand.Defs.Abilities.StandJump)
 end
 
 --------------------------------------------------------------------------------------------------
---// Mouse1 //------------------------------------------------------------------------------
+--// Teleport - C //------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
+-- defs
+TheHand.Defs.Abilities.Teleport = {
+    Name = "Teleport",
+    Id = "Teleport",
+    Cooldown = 3,
+    RequireToggle_On = {"Q"},
+}
+
+function TheHand.Teleport(params)
+    --params = require(Knit.Abilities.StandJump)[params.SystemStage](params, GoldExperience.Defs.Abilities.StandJump)
+end
+
+--------------------------------------------------------------------------------------------------
+--// PUNCH - Mouse1 //------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
 -- defs
 TheHand.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 10, KnockBack = 10,}}
+    HitEffects = {Damage = {Damage = 5}}
 }
 
 function TheHand.Punch(params)

@@ -15,7 +15,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 1000
+            Value = 900
         }
     },
     HundredArrows = {
@@ -25,7 +25,7 @@ module.Shop = {
         },
         Output = {
             Key = "Cash",
-            Value = 11000
+            Value = 9000
         }
     },
 }
@@ -35,7 +35,7 @@ module.Stage = {}
 module.Stage.Start = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
-    Body = "Seems like the whole island is stuck in a TIME RIFT and suddenly all these stands users show up.<br/><br/>Dio must be up to soemthign again, theres arrows all over the place! If you have any of those arows, I will buy them.",
+    Body = "Seems like the whole island is stuck in a TIME RIFT and suddenly all these stands users show up.<br/><br/>Dio must be up to something again, theres arrows all over the place! If you have any of those arows, I will buy them.",
     
     Choice_1 = {
         Display = true,
@@ -85,7 +85,7 @@ module.Stage.TimeRift = {
 module.Stage.SellArrows = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
-    Body = "If I can get rid of the arrows making people into Stand Users, maybe we can fix this.<br/><b><br/>10 Arrows for 1000 Cash<br/>100 Arrows for 11000 Cash</b>",
+    Body = "If I can get rid of the arrows making people into Stand Users, maybe we can fix this.<br/><b><br/>10 Arrows for 900 Cash<br/>100 Arrows for 9000 Cash</b>",
     Choice_1 = {
         Display = true,
         Text = "Sell 10 Arrows",

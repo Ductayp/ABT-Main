@@ -60,35 +60,32 @@ function ItemPanel.Setup()
             return
         end
 
-        -- we need to acti diffeently depending on the key inside currentItemKey
-        if currentItemType == "Special" then
+        local returnMessage = InventoryService:UseItem(currentItemKey)
 
-            print("CHECK THIS", currentItemKey, currentItemType)
+        if returnMessage then
 
-            local currentPowerData = PowersService:GetCurrentPower()
-            if currentPowerData.Power == "Standless" then
-                InventoryService:UseSpecial(currentItemKey)
+            print("BEEEEEEP 1")
+            if returnMessage == "Used Arrow" then 
+                print("BEEEEEEP 2")
                 Knit.Controllers.GuiController:CloseAllWindows()
-            else
-                --print("USE ARROW BUTTON: You Must Be Standless")
-                spawn(function()
-                    ItemPanel.Item_Card_Button_Use.Visible = false
-                    ItemPanel.Item_Card_Button_Use.Active = false
-                    ItemPanel.Item_Card_Standless.Visible = true
-
-                    wait(2)
-
-                    ItemPanel.Item_Card_Button_Use.Visible = true
-                    ItemPanel.Item_Card_Button_Use.Active = true
-                    ItemPanel.Item_Card_Standless.Visible = false
-
-                end)
             end
 
-        else
-            InventoryService:UseItem(currentItemKey)
-        end
+            spawn(function()
 
+                ItemPanel.Item_Card_Button_Use.Text = returnMessage
+                if returnMessage ~= "Success!" then
+                    ItemPanel.Item_Card_Button_Use.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                end
+                ItemPanel.Item_Card_Button_Use.Active = false
+                
+                wait(2)
+    
+                ItemPanel.Item_Card_Button_Use.Text = "USE ITEM"
+                ItemPanel.Item_Card_Button_Use.BackgroundColor3 = Color3.fromRGB(0, 209, 0)
+                ItemPanel.Item_Card_Button_Use.Active = true
+    
+            end)
+        end
     end)
 end
 
@@ -173,11 +170,11 @@ function ItemPanel.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
         ItemPanel.Item_Card_Cant_Use.Visible = true
     end
 
-    -- if the type is COLLECTABLE
-    if itemDefTable.Type == "Shard" then
-        ItemPanel.Item_Card_Button_Use.Visible = false
-        ItemPanel.Item_Card_Button_Use.Active = false
-        ItemPanel.Item_Card_Cant_Use.Visible = true
+    -- if the type is EVOLUTION
+    if itemDefTable.Type == "Evolution" then
+        ItemPanel.Item_Card_Button_Use.Visible = true
+        ItemPanel.Item_Card_Button_Use.Active = true
+        ItemPanel.Item_Card_Cant_Use.Visible = false
     end
 end
 

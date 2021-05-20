@@ -18,7 +18,7 @@ Santana_Mob.Model = ReplicatedStorage.Mobs.Santana
 Santana_Mob.RespawnTime = 10
 Santana_Mob.RandomPlacement = true
 Santana_Mob.Spawn_Z_Offset = 5
-Santana_Mob.Max_Spawned = 4
+Santana_Mob.Max_Spawned = 7
 
 --/ Animations
 Santana_Mob.Animations = {

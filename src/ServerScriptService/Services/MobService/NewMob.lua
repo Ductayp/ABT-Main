@@ -1,3 +1,7 @@
+-- MobService - NewMob
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local config = require(script.Parent.Config)
 
 local NewMob = {}
@@ -25,11 +29,11 @@ function NewMob.Create(mobDefs)
 
     -- set collision
     if config.MobCollide == false then
-		self:SetCollisionGroup(newMob.Model, "Mob_NoCollide")
+		Knit.Services.MobService:SetCollisionGroup(newMob.Model, "Mob_NoCollide")
     end
 
     if mobDefs.CanCollide == false then
-		self:SetCollisionGroup(newMob.Model, "Mob_NoCollide")
+		Knit.Services.MobService:SetCollisionGroup(newMob.Model, "Mob_NoCollide")
     end
     
     -- Set States For Optimization
@@ -57,5 +61,6 @@ function NewMob.Create(mobDefs)
     return newMob
 
 end
+
 
 return NewMob

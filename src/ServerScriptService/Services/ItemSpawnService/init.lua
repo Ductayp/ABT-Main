@@ -32,7 +32,7 @@ ItemSpawnService.Spawners = {} -- an array that holds all spawners
 function ItemSpawnService:DoSpawns()
 
 
-    for _, spawnerModule in pairs(Knit.ItemSpawnTables:GetChildren()) do
+    for _, spawnerModule in pairs(script.ItemSpawnModules:GetChildren()) do
 
         -- reuqire this module
         local thisSpawnerModule = require(spawnerModule)
@@ -119,7 +119,7 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs)
 
                 spawner:SetAttribute("ItemSpawned", false)
 
-                local spawnGroupModule = require(Knit.ItemSpawnTables[spawner:GetAttribute("SpawnGroupId")])
+                local spawnGroupModule = require(script.ItemSpawnModules[spawner:GetAttribute("SpawnGroupId")])
                 spawnGroupModule.TotalSpawned = spawnGroupModule.TotalSpawned - 1
 
             end

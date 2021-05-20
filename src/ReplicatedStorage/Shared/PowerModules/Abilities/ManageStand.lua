@@ -370,11 +370,14 @@ function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 	local playerStandFolder = Workspace.PlayerStands:FindFirstChild(params.InitUserId)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	if not targetStand then return end
+
+
 	
 	-- run the animation
 	local animationLength
 	local animationController = targetStand:FindFirstChild("AnimationController")
 	if animationController then
+
 		local thisAnimation = ReplicatedStorage.StandAnimations:FindFirstChild(animationName)
 		if thisAnimation then
 			local newTrack = animationController:LoadAnimation(thisAnimation)

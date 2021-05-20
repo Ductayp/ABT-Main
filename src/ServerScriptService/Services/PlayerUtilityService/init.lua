@@ -97,8 +97,8 @@ function PlayerUtilityService:SetRegenStatus(player, params)
     repeat wait() until PlayerUtilityService.PlayerRegenStatus[player.UserId] ~= nil
     PlayerUtilityService.PlayerRegenStatus[player.UserId] = params
 
-    print("SetRegenStatus 1", params)
-    print("SetRegenStatus 2", PlayerUtilityService.PlayerRegenStatus[player.UserId])
+    --print("SetRegenStatus 1", params)
+    --print("SetRegenStatus 2", PlayerUtilityService.PlayerRegenStatus[player.UserId])
 
 end
 

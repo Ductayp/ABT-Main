@@ -19,7 +19,7 @@ local Damage = {}
 
 function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
-    print("damage", initPlayer, hitCharacter, effectParams, hitParams)
+    --print("damage", initPlayer, hitCharacter, effectParams, hitParams)
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then

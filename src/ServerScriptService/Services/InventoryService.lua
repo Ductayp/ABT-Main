@@ -143,49 +143,117 @@ end
 
 --// USeItem
 function InventoryService:UseItem(player, key)
-    print(player, " is trying to use: ", key)
-end
 
---// UseSpecial
-function InventoryService:UseSpecial(player, key)
+    --print(player, " is trying to use: ", key)
 
-    print(player, " is trying to use SPECIAL!!! : ", key)
+    local returnMessage
 
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
 
-    -- check in player is standless
-    if playerData.CurrentStand.Power == "Standless" then
-        -- yes we can get a new stand!
-    else
-        print("you must be standless to use a special!")
-        return
-    end
-
     -- check if the player has the item to use
     if playerData.ItemInventory[key] == nil or playerData.ItemInventory[key] < 1 then
-        print("tried to use special but there is item in the players data")
-        return
+        print(player, ": tried to use special but there is item in the players data")
+        local returnMessage = "None Owned"
+        return returnMessage
     end
-
-    -- remove itm and update gui
-    playerData.ItemInventory[key] = playerData.ItemInventory[key] - 1
-    Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
 
     local itemDefs = require(Knit.Defs.ItemDefs)
     local thisItem = itemDefs[key]
-
-    if not thisItem.GivePower then return end
-    if thisItem.GivePower == "Stand" then
-        self:GenerateNewStand(player)
-        return
-    else
-        self:GiveSpecialPower(player, thisItem)
-        return
+    if not thisItem then
+        local returnMessage = "ItemDoesntExist"
+        return returnMessage
     end
 
+    if thisItem.Type == "Collectable" then
+        print(player, ": Collectabe items cant be used")
+        local returnMessage = "Can't Use This"
+        return returnMessage
+    end
 
+    if thisItem.Type == "Special" then
+        print(player, ": SPECIAL!")
+
+        -- check in player is standless
+        if playerData.CurrentStand.Power ~= "Standless" then
+            local returnMessage = "Must Be Standless"
+            return returnMessage
+        end
+
+        if not thisItem.GivePower then 
+            local returnMessage = "Can't Use This"
+            return returnMessage
+        end
+
+        spawn(function()
+            if thisItem.GivePower == "Stand" then
+                self:GenerateNewStand(player)
+                return
+            else
+                self:GiveSpecialPower(player, thisItem)
+                return
+            end
+        end)
+
+        playerData.ItemInventory[key] += - 1
+
+        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+
+        local returnMessage = "Used Arrow"
+        return returnMessage
+
+    end
+
+    if thisItem.Type == "Evolution" then
+
+        if key == "SoulKey" then
+
+            if playerData.CurrentStand.Power == "Standless" then
+                local returnMessage = "You are Standless"
+                return returnMessage
+            end
+
+            local currentExperience = playerData.CurrentStand.Xp
+            local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
+            local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
+            
+            if currentExperience < maxExperience then
+                local returnMessage = "Not Enough Experience"
+                return returnMessage
+            end
+
+            local newRank
+            if playerData.CurrentStand.Rank == 1 then
+                newRank = 2
+            elseif playerData.CurrentStand.Rank == 2 then
+                newRank = 3
+            elseif playerData.CurrentStand.Rank == 3 then
+                returnMessage = "Already Max Rank"
+                return returnMessage
+            end
+
+            playerData.ItemInventory.SoulKey += -1
+    
+            local standData = {}
+            standData.Power = playerData.CurrentStand.Power
+            standData.Rank = newRank
+            standData.Xp = 0
+            standData.GUID = playerData.CurrentStand.GUID
+            Knit.Services.PowersService:SetCurrentPower(player, standData)
+            Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+            returnMessage = "Success!"
+            return returnMessage
+
+        else
+
+            -- actual evolution items go here
+            print(player, ": Evolution item, not ready yet!")
+            local returnMessage = "Evolution"
+            return returnMessage
+
+        end
+    end
 end
 
 function InventoryService:GiveSpecialPower(player, itemDef)
@@ -305,18 +373,6 @@ function InventoryService:SellStand(player, GUID)
         return
     end
 
-    --[[ -- we dont check if player has pass for this, even though they should. The client blocks its use but a hacer could cheat here. I guess thats ok
-    -- sanity check to see if player has access
-    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
-    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
-    if hasGamePass or isInZone then
-        print("You can manage the stands, homie!")
-    else
-        print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
-        return
-    end
-    ]]--
-
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
@@ -325,32 +381,10 @@ function InventoryService:SellStand(player, GUID)
     if playerData.CurrentStand.Power ~= "Standless" then
         if GUID == playerData.CurrentStand.GUID then
 
-            --[[
-            local shardKey
-            if playerData.CurrentStand.Rank == 1 then
-                shardKey = "Shard_Dull"
-            elseif playerData.CurrentStand.Rank == 2 then
-                shardKey = "Shard_Shiny"
-            else 
-                shardKey = "Shard_Glowing"
-            end
-            self:Give_Item(player, shardKey, 1)
-            
-            local itemDefs = require(Knit.Defs.ItemDefs)
-            local thisItem = itemDefs[shardKey]
-            local thisName = thisItem.Name
-
-            local notificationParams = {}
-            notificationParams.Icon = "Item"
-            notificationParams.Text = "You Got " .. thisName 
-            Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-            ]]--
-
             Knit.Services.PowersService:SetCurrentPower(player, {Power = "Standless"})
             Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
             return
-
         end
     end
 
@@ -358,32 +392,10 @@ function InventoryService:SellStand(player, GUID)
     for index, standData in pairs(playerData.StandStorage.StoredStands) do
         if GUID == standData.GUID then
 
-            --[[
-            local shardKey
-            if standData.Rank == 1 then
-                shardKey = "Shard_Dull"
-            elseif standData.Rank == 2 then
-                shardKey = "Shard_Shiny"
-            else 
-                shardKey = "Shard_Glowing"
-            end
-            self:Give_Item(player, shardKey, 1)
-
-            local itemDefs = require(Knit.Defs.ItemDefs)
-            local thisItem = itemDefs[shardKey]
-            local thisName = thisItem.Name
-
-            local notificationParams = {}
-            notificationParams.Icon = "Item"
-            notificationParams.Text = "You Got " .. thisName 
-            Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-            ]]--
-
             table.remove(playerData.StandStorage.StoredStands, index)
             Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
             return
-
         end
     end
 
@@ -432,108 +444,6 @@ function InventoryService:EquipStand(player, GUID)
 
 end
 
-function InventoryService:UpgradeStandRank(player, standGUID)
-
-    -- return is GUID is nil
-    if not standGUID then
-        return
-    end
-
-    -- sanity check to see if player has access
-    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
-    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
-    if hasGamePass or isInZone then
-        --print("You can manage the stands, homie!")
-    else
-        --print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
-        return
-    end
-
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if not playerData then return end
-
-    -- if the stand is the CurrentStand
-    if standGUID == playerData.CurrentStand.GUID then
-
-        local currentExperience = playerData.CurrentStand.Xp
-        local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
-        local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
-        
-        if currentExperience < maxExperience then
-            local result = "NoExperience"
-            return result
-        end
-
-        if playerData.Currency.SoulOrbs < 100 then
-            print("cant afford to upgarde stand")
-            result = "CantAfford"
-            return result
-        end
-
-        local newRank
-        if playerData.CurrentStand.Rank == 1 then
-            newRank = 2
-        elseif playerData.CurrentStand.Rank == 2 then
-            newRank = 3
-        elseif playerData.CurrentStand.Rank == 3 then
-            result = "IsRank3"
-            return result
-        end
-
-        playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - 100
-
-        local standData = {}
-        standData.Power = playerData.CurrentStand.Power
-        standData.Rank = newRank
-        standData.Xp = 0
-        standData.GUID = playerData.CurrentStand.GUID
-        Knit.Services.PowersService:SetCurrentPower(player, standData)
-        Knit.Services.GuiService:Update_Gui(player, "Currency")
-        result = "Success"
-        return result
-    end
-
-    -- if the stand is in storage
-    for index, standData in pairs(playerData.StandStorage.StoredStands) do
-        if standGUID == standData.GUID then
-
-            print("beep", standData)
-
-            local currentExperience = standData.Xp
-            local powerModule = require(Knit.Powers[standData.Power])
-            local maxExperience = powerModule.Defs.MaxXp[standData.Rank]
-
-            if currentExperience < maxExperience then
-                local result = "NoExperience"
-                return result
-            end
-
-
-            if playerData.Currency.SoulOrbs < 250 then
-                print("cant afford to upgarde stand")
-                result = "CantAfford"
-                return result
-            end
-
-            if standData.Rank == "Common" then
-                standData.Rank = "Rare"
-            elseif standData.Rank == "Rare" then
-                standData.Rank = "Legendary"
-            elseif standData.Rank == "Legendary" then
-                result = "IsLegendary"
-                return result
-            end
-
-            playerData.Currency.SoulOrbs = playerData.Currency.SoulOrbs - 250
-            standData.Xp = 0
-            Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-            Knit.Services.GuiService:Update_Gui(player, "Currency")
-            result = "Success"
-            return result
- 
-        end
-    end
-end
 
 --// BuyStorage ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:BuyStorage(player)
@@ -568,7 +478,7 @@ end
 --// NPCTransaction
 function InventoryService:NPCTransaction(player, params)
 
-    --print("InventoryService:NPCTransaction", player, params)
+    print("InventoryService:NPCTransaction", player, params)
 
     local dialogueModule = require(Knit.DialogueModules[params.ModuleName])
     if not dialogueModule then return end
@@ -583,15 +493,17 @@ function InventoryService:NPCTransaction(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
 
+    print("YEET", player, params)
+
     -- check if player has enough of the input
     local success = false
-    if playerData.ItemInventory[inputKey] ~= nil then
-        if inputKey == "Cash" or inputKey == "SoulOrbs"then
-            if playerData.Currency[inputKey] >= inputValue then
-                playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue
-                success = true
-            end
-        else
+    if inputKey == "Cash" or inputKey == "SoulOrbs"then
+        if playerData.Currency[inputKey] >= inputValue then
+            playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue
+            success = true
+        end
+    else
+        if playerData.ItemInventory[inputKey] ~= nil then
             if playerData.ItemInventory[inputKey] >= inputValue then
                 playerData.ItemInventory[inputKey] = playerData.ItemInventory[inputKey] - inputValue
                 success = true
@@ -645,7 +557,8 @@ end
 
 --// Client:UseItem
 function InventoryService.Client:UseItem(player, key)
-    self.Server:UseItem(player, key)
+    local returnMessage = self.Server:UseItem(player, key)
+    return returnMessage
 end
 
 --// Client:StoreStand

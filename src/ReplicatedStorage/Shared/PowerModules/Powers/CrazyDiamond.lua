@@ -145,18 +145,14 @@ end
 
 --defs
 CrazyDiamond.Defs.Abilities.StonePunch = {
-    Name = "Stone Punch",
     Id = "StonePunch",
     Cooldown = 10,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}},
-    Sounds = {
-        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
-    }
+    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("StonePunch", true),
 }
 
 function CrazyDiamond.StonePunch(params)
-    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.StonePunch)
+    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.StonePunch)
 end
 
 --------------------------------------------------------------------------------------------------

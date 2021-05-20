@@ -20,9 +20,9 @@ MoneyPlatinum.Defs = {
         [3] = 2,
     },
     HealthModifier = {
-        [1] = 10,
-        [2] = 30,
-        [3] = 70
+        [1] = 999,
+        [2] = 999,
+        [3] = 999,
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
@@ -56,7 +56,7 @@ MoneyPlatinum.Defs = {
 --// SETUP - run this once when the stand is equipped
 function MoneyPlatinum.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "MoneyPlatinum_Setup", 2, {TimeStop = true})
-    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "MoneyPlatinum_Setup", 10, nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "MoneyPlatinum_Setup", 15, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "MoneyPlatinum_Setup", MoneyPlatinum.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "MoneyPlatinum_Setup", MoneyPlatinum.Defs.DamageMultiplier[params.Rank], nil)
 end

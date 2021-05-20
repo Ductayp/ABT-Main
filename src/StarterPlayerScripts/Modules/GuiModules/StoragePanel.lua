@@ -31,7 +31,6 @@ local TOGGLE_COLOR = {
     Off = Color3.fromRGB(86, 86, 86),
     Fail = Color3.fromRGB(195, 0, 0),
 }
-local evolveRank_DefaultText = "UPGRADE RANK"
 
 local StoragePanel = {}
 
@@ -52,7 +51,6 @@ StoragePanel.Icon_Locked = StoragePanel.Panel:FindFirstChild("Icon_Locked", true
 StoragePanel.Button_Equip = StoragePanel.Panel:FindFirstChild("Button_Equip", true)
 StoragePanel.Button_Sell = StoragePanel.Panel:FindFirstChild("Button_Sell", true)
 StoragePanel.Button_Store = StoragePanel.Panel:FindFirstChild("Button_Store", true)
-StoragePanel.Button_Evolve = StoragePanel.Panel:FindFirstChild("Button_Evolve", true)
 
 -- mobile storage stuff
 StoragePanel.Button_Buy_MobileStorage = StoragePanel.Panel:FindFirstChild("Button_Buy_MobileStorage", true)
@@ -66,14 +64,6 @@ StoragePanel.Xp_Text = StoragePanel.Panel:FindFirstChild("Xp_Text", true)
 StoragePanel.Star_1 = StoragePanel.Panel:FindFirstChild("star_1", true)
 StoragePanel.Star_2 = StoragePanel.Panel:FindFirstChild("star_2", true)
 StoragePanel.Star_3 = StoragePanel.Panel:FindFirstChild("star_3", true)
-
-
--- evolve panel stuff
-StoragePanel.Frame_Evolve = StoragePanel.Panel:FindFirstChild("Frame_Evolve", true)
-StoragePanel.Frame_ConfirmEvolve = StoragePanel.Panel:FindFirstChild("Frame_ConfirmEvolve", true)
-StoragePanel.Button_ConfirmEvolve_Yes = StoragePanel.Panel:FindFirstChild("Button_ConfirmEvolve_Yes", true)
-StoragePanel.Button_ConfirmEvolve_No = StoragePanel.Panel:FindFirstChild("Button_ConfirmEvolve_No", true)
-StoragePanel.Button_RankUpgrade = StoragePanel.Panel:FindFirstChild("Button_RankUpgrade", true)
 
 -- confirm sell stuff
 StoragePanel.Frame_ConfirmSell = StoragePanel.Panel:FindFirstChild("Frame_ConfirmSell", true)
@@ -97,8 +87,6 @@ function StoragePanel.Setup()
     StoragePanel.Button_Store.Visible = false
     StoragePanel.Stand_Card.Visible = false
     StoragePanel.Frame_ConfirmSell.Visible = false
-    StoragePanel.Frame_Evolve.Visible = false
-    StoragePanel.Frame_ConfirmEvolve.Visible = false
 
     -- setup the storage slots
     for slotNumber, slotCost in pairs(storageDefs.SlotCosts) do
@@ -139,25 +127,6 @@ function StoragePanel.Setup()
         end
     end)
 
-    StoragePanel.Button_Evolve.MouseButton1Down:Connect(function()
-        if manageButtonsEnabaled then
-            if not canManageStands then 
-                manageButtonsEnabaled = false
-                local originalText = StoragePanel.Button_Evolve.Text
-                StoragePanel.Button_Evolve.Text = "GO TO STORAGE"
-                wait(3)
-                StoragePanel.Button_Evolve.Text = originalText
-                manageButtonsEnabaled = true
-                return
-            end
-
-            StoragePanel.Frame_Evolve.Visible = true
-            StoragePanel.Frame_ConfirmEvolve.Visible = true
-            StoragePanel.Frame_StorageGrid.Visible = false
-        end
-
-    end)
-
     StoragePanel.Button_Store.MouseButton1Down:Connect(function()
         if manageButtonsEnabaled then
             if not canManageStands then 
@@ -179,20 +148,6 @@ function StoragePanel.Setup()
             --if not canManageStands then return end
             StoragePanel.Frame_ConfirmSell.Visible = true
          end
-    end)
-
-    -- setup evolution options
-    StoragePanel.Button_RankUpgrade.MouseButton1Down:Connect(function()
-        StoragePanel.SetEvolutionAction("RankUpgrade", StoragePanel.Button_RankUpgrade)
-    end)
-
-    -- setup evolution confirms
-    StoragePanel.Button_ConfirmEvolve_Yes.MouseButton1Down:Connect(function()
-        StoragePanel.ConfirmEvolutionAction()
-    end)
-
-    StoragePanel.Button_ConfirmEvolve_No.MouseButton1Down:Connect(function()
-        StoragePanel.CancelEvolutionAction()
     end)
 
     -- setup sell confirmation
@@ -226,9 +181,9 @@ function StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
 
     StoragePanel.Update_Access(hasGamePass, isInZone)
 
-    StoragePanel.Frame_Evolve.Visible = false
+    --StoragePanel.Frame_Evolve.Visible = false
     StoragePanel.Frame_StorageGrid.Visible = true
-    StoragePanel.Frame_ConfirmEvolve.Visible = false
+    --StoragePanel.Frame_ConfirmEvolve.Visible = false
     StoragePanel.Frame_ConfirmSell.Visible = false
     StoragePanel.Frame_ManageStands_Cover.Visible = false
 
@@ -346,14 +301,14 @@ function StoragePanel.SlotClicked(thisSlot)
     if slotId == "Equipped" then
         StoragePanel.Button_Equip.Visible = false
         StoragePanel.Button_Store.Visible = true
-        StoragePanel.Button_Evolve.Visible = true
+        --StoragePanel.Button_Evolve.Visible = true
         StoragePanel.Button_Sell.Visible = true
         selectedStandData = slotData.CurrentStand
     else
         local convertedSlotId = tonumber(slotId)
         StoragePanel.Button_Equip.Visible = true
         StoragePanel.Button_Store.Visible = false
-        StoragePanel.Button_Evolve.Visible = true
+        --StoragePanel.Button_Evolve.Visible = true
         StoragePanel.Button_Sell.Visible = true
         selectedStandData = slotData.StorageData.StoredStands[convertedSlotId]
     end
@@ -431,65 +386,6 @@ function StoragePanel.UpdateStandCard()
     StoragePanel.Xp_Text.Text = selectedStandData.Xp .. " / " .. maxExperience
     local percent = selectedStandData.Xp / maxExperience
     StoragePanel.Xp_Bar.Size = UDim2.new(percent, StoragePanel.Xp_Bar.Size.X.Offset, StoragePanel.Xp_Bar.Size.Y.Scale, StoragePanel.Xp_Bar.Size.Y.Offset)
-
-end
-
-
---// SetEvolutionAction
-function StoragePanel.SetEvolutionAction(actionName, buttonObject)
-
-    if buttonObject.BackgroundColor3 == TOGGLE_COLOR.On then
-        buttonObject.BackgroundColor3 = TOGGLE_COLOR.Off
-        StoragePanel.EvolutionAction = nil
-    else
-        buttonObject.BackgroundColor3 = TOGGLE_COLOR.On
-        StoragePanel.EvolutionAction = actionName
-    end
-end
-
---// ConfirmEvolutionAction
-function StoragePanel.ConfirmEvolutionAction()
-    local result
-    if selectedStandData.GUID and StoragePanel.EvolutionAction then
-        if StoragePanel.EvolutionAction == "RankUpgrade" then
-            result = InventoryService:UpgradeStandRank(selectedStandData.GUID)
-        end
-    end
-
-    if result == "NoExperience" then
-        StoragePanel.Button_RankUpgrade.Text = "Not Enough XP"
-        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Fail
-        wait(3)
-        StoragePanel.Button_RankUpgrade.Text = evolveRank_DefaultText
-        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
-        StoragePanel.EvolutionAction = nil
-        return
-    end
-
-    if result == "CantAfford" then
-        StoragePanel.Button_RankUpgrade.Text = "Not Enough Soul Orbs"
-        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Fail
-        wait(3)
-        StoragePanel.Button_RankUpgrade.Text = evolveRank_DefaultText
-        StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
-        StoragePanel.EvolutionAction = nil
-        return
-    end
-
-    StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
-    StoragePanel.EvolutionAction = nil
-
-end
-
---// CancelEvolutionAction
-function StoragePanel.CancelEvolutionAction()
-
-    StoragePanel.Frame_Evolve.Visible = false
-    StoragePanel.Frame_ConfirmEvolve.Visible = false
-    StoragePanel.Frame_StorageGrid.Visible = true
-
-    StoragePanel.Button_RankUpgrade.BackgroundColor3 = TOGGLE_COLOR.Off
-    StoragePanel.EvolutionAction = nil
 
 end
 

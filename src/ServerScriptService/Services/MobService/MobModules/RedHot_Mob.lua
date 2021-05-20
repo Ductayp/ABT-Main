@@ -18,7 +18,7 @@ RedHot_Mob.Model = ReplicatedStorage.Mobs.RHCP_Model
 
 --/ Spawn
 RedHot_Mob.RespawnTime = 5
-RedHot_Mob.RandomPlacement = true
+RedHot_Mob.RandomPlacement = false
 RedHot_Mob.Spawn_Z_Offset = 0
 RedHot_Mob.Max_Spawned = 1
 

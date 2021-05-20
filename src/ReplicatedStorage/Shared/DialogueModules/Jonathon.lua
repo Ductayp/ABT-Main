@@ -44,8 +44,8 @@ module.Stage = {}
 
 module.Stage.Start = {
     IconName = "Icon_Jonathon",
-    Title = "Jonathon",
-    Body = "I thought the STONE MASK was destroyed, shattered into thousands of pieces. But Dio is after it again, trying to gether them up!" ..
+    Title = "Jonathan",
+    Body = "I thought the STONE MASK was destroyed, shattered into thousands of pieces. But Dio is after it again, trying to gather them up!" ..
         "<br/><br/>If I can create a mask before Dio, maybe I can figure out a way to stop him this time around. These Pillar Men on the beach have <b>MASK FRAGMENTS</b>, get them for me!",
     Choice_1 = {
         Display = true,

@@ -36,27 +36,61 @@ local manageWindow_Off_Material = "Glass"
 EnvironmentService.PlayerSwimStates = {}
 EnvironmentService.SwimCheckTime = 1
 
+-- Load all zone:
+local EnvironmentZones = {}
+for _, module in ipairs(script.EnvironmentZones:GetDescendants()) do
+    if (module:IsA("ModuleScript")) then
+        EnvironmentZones[module.Name] = require(module)
+    end
+end
+
 function EnvironmentService:EnvironmentClock()
 
     local last_DayCycleTime = os.clock() + EnvironmentService.DayCycleTime
     local last_SwimCheckTime = os.clock() + EnvironmentService.SwimCheckTime
 
-
     spawn(function()
         while game:GetService("RunService").Heartbeat:Wait() do
+
+            -- swim checks
             if os.clock() > last_SwimCheckTime then
                 last_SwimCheckTime = os.clock() + EnvironmentService.SwimCheckTime
                 self:SwimCheck()
             end
 
+            -- day/night cycle
             if os.clock() > last_DayCycleTime then
                 last_DayCycleTime = os.clock() + EnvironmentService.DayCycleTime
                 self:DayNightCycle()
             end
+
+            -- environment modules
+            for moduleName, requiredModule in pairs(EnvironmentZones) do
+                requiredModule.Tick()
+            end
+
         end
     end)
 
 end
+
+function EnvironmentService:TogglePlayerInZone(player, zoneName, toggle)
+
+    if not player then return end
+
+    local zoneModule = require(script.EnvironmentZones[zoneName])
+    if not zoneModule then return end
+
+    print("TOGGLE CHECK", player)
+
+    if toggle == true then
+        zoneModule.EnterZone(player)
+    else
+        zoneModule.LeaveZone(player)
+    end
+    
+end
+
 
 --// TweenClockTime
 function EnvironmentService:TweenClockTime(time)
@@ -176,11 +210,21 @@ end
 --// PlayerAdded
 function EnvironmentService:PlayerAdded(player)
     EnvironmentService.PlayerSwimStates[player.userId] = {IsSwimming = false, UpdateTime = os.clock(), Damage = 0}
+
+    for moduleName, requiredModule in pairs(EnvironmentZones) do
+        requiredModule.PlayerJoin(player)
+    end
+
 end
 
 --// PlayerRemoved
 function EnvironmentService:PlayerRemoved(player)
     EnvironmentService.PlayerSwimStates[player.userId] = nil
+
+    for moduleName, requiredModule in pairs(EnvironmentZones) do
+        requiredModule.PlayerLeave(player)
+    end
+
 end
 
 --// KnitStart

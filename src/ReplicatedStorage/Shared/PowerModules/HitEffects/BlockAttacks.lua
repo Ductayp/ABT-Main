@@ -20,17 +20,9 @@ function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, 
 
     if not hitCharacter.HumanoidRootPart then return end
 
-    local newAnchor = Instance.new("Part")
-    newAnchor.Transparency = 1
-    newAnchor.Parent = hitCharacter.HumanoidRootPart
-    utils.EasyWeld(newAnchor, hitCharacter.HumanoidRootPart, newAnchor)
-    newAnchor.Anchored = true
-    newAnchor.Name = "PinCharacter"
-
     local newBool = Instance.new("Part")
     newBool.Name = "BlockAttacks"
     newBool.Parent = hitCharacter.HumanoidRootPart
-
 
     -- if this is a mob, then stop its animation here
     if hitParams.IsMob then
@@ -41,14 +33,11 @@ function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, 
 
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitPlayer then
-        print("hitPlayer", hitPlayer)
-        Knit.Services.PowersService:RenderHitEffect_SinglePlayer(hitPlayer, "PinCharacter", effectParams)
+        hitCharacter.Humanoid.WalkSpeed = 0
         require(Knit.PowerUtils.BlockInput).AddBlock(hitPlayer.UserId, "PinCharacter", effectParams.Duration)
     end
 
     spawn(function()
-        wait(effectParams.Duration)
-        newAnchor:Destroy()
         newBool:Destroy()
     end)
 
@@ -56,15 +45,7 @@ end
 
 function PinCharacter.Client_RenderEffect(params)
 
-    -- Stop all playing animations
-    for i, track in pairs (Players.LocalPlayer.Character.Humanoid.Animator:GetPlayingAnimationTracks()) do
-        local originalSpeed = track.Speed
-        track:AdjustSpeed(0)
-        spawn(function()
-            wait(params.Duration)
-            track:AdjustSpeed(originalSpeed)
-        end)
-    end
+
 end
 
 return PinCharacter

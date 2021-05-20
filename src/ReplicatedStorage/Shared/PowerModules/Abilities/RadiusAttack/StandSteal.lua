@@ -48,8 +48,6 @@ function StandSteal.Server_Tick(params, abilityDefs, initPlayer)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(initPlayer)
     if not playerData then return end
 
-    print("PLAYER",playerData)
-
     local multiplier
     local rank = playerData.CurrentStand.Rank
     if rank == 3 then

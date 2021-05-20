@@ -176,7 +176,6 @@ end
 
 -- defs
 TheWorld.Defs.Abilities.KnifeThrow = {
-    Name = "Knife Throw",
     Id = "KnifeThrow",
     RequireToggle_On = {"Q"},
     Cooldown = 3,
@@ -193,18 +192,14 @@ end
 
 --defs
 TheWorld.Defs.Abilities.HeavyPunch = {
-    Name = "Heavy Punch",
-    Id = "HeavyPunch",
+    Id = "TimePunch",
     Cooldown = 5,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 10}, ColorShift = {Duration = 3}, PinCharacter = {Duration = 3}, SphereFields = {Size = 7, Duration = 3,RandomColor = true, Repeat = 1}},
-    Sounds = {
-        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
-    }
+    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("TimePunch", true),
 }
 
 function TheWorld.HeavyPunch(params)
-    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, TheWorld.Defs.Abilities.HeavyPunch)
+    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, TheWorld.Defs.Abilities.HeavyPunch)
 end
 
 --------------------------------------------------------------------------------------------------

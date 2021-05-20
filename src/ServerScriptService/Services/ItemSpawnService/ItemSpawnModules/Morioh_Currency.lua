@@ -1,18 +1,18 @@
--- Morioh_Cash Spawn Table
+-- Arena_A Spawn Table
 -- PDab
 -- 12/14/2020
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Morioh_Cash = {}
+local Arena_A = {}
 
-Morioh_Cash.SpawnGroupId = "Morioh_Currency"
-Morioh_Cash.Region = "Morioh"
-Morioh_Cash.MaxSpawned = 10
-Morioh_Cash.TotalSpawned = 0
+Arena_A.SpawnGroupId = "Arena_A"
+Arena_A.Region = "Arena"
+Arena_A.MaxSpawned = 2
+Arena_A.TotalSpawned = 0
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
-Morioh_Cash.Items = {
+Arena_A.Items = {
 
     {
         Weight = 1,
@@ -25,27 +25,14 @@ Morioh_Cash.Items = {
         }
     },
 
-    --[[
-    {
-        Weight = 1,
-        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
-        Params = {
-            DataKey = "SoulOrbs",
-            DataCategory = "Currency",
-            MinValue = 1,
-            MaxValue = 3,
-        }
-    },
-    ]]--
-
     {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",
             DataCategory = "Currency",
-            MinValue = 5,
-            MaxValue = 50,
+            MinValue = 20,
+            MaxValue = 100,
         }
     },
 
@@ -62,4 +49,4 @@ Morioh_Cash.Items = {
 }
 
 
-return Morioh_Cash
+return Arena_A

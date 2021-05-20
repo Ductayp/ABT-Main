@@ -145,18 +145,14 @@ end
 
 --defs
 WhiteSnake.Defs.Abilities.BurnPunch = {
-    Name = "Burn Punch",
     Id = "BurnPunch",
     Cooldown = 6,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 7}, Burn = {TickTime = 1, TickCount = 7, Damage = 4, Color = "GreenPurple"}},
-    Sounds = {
-        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
-    }
+    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("BurnPunch", true),
 }
 
 function WhiteSnake.BurnPunch(params)
-    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, WhiteSnake.Defs.Abilities.BurnPunch)
+    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, WhiteSnake.Defs.Abilities.BurnPunch)
 end
 
 --------------------------------------------------------------------------------------------------

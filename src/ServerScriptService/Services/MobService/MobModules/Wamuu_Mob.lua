@@ -25,18 +25,18 @@ Wamuu_Mob.Animations = {
 }
 
 Wamuu_Mob.Defs = {}
-Wamuu_Mob.Defs.Name = "Wamuu"
+Wamuu_Mob.Defs.Name = "Wham"
 Wamuu_Mob.Defs.XpValue = 450
 Wamuu_Mob.Defs.Health = 350
-Wamuu_Mob.Defs.WalkSpeed = 20
+Wamuu_Mob.Defs.WalkSpeed = 18
 Wamuu_Mob.Defs.JumpPower = 50
 Wamuu_Mob.Defs.Aggressive = true
 Wamuu_Mob.Defs.AttackSpeed = 2
 Wamuu_Mob.Defs.AttackRange = 5
-Wamuu_Mob.Defs.SeekRange = 60 -- In Studs
+Wamuu_Mob.Defs.SeekRange = 70 -- In Studs
 Wamuu_Mob.Defs.ChaseRange = 80 -- In Studs
 Wamuu_Mob.Defs.IsMobile = true
-Wamuu_Mob.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
+Wamuu_Mob.Defs.LifeSpan = 600 -- number of seconds it will live, get killed when the time is up
 
 --/ Spawn Function
 function Wamuu_Mob.Pre_Spawn(mobData)
@@ -131,6 +131,7 @@ function  Wamuu_Mob.Attack(mobData)
 
 
         if not mobData.AttackTarget then return end
+        if not mobData.AttackTarget.Character then return end
 
         local targetHRP = mobData.AttackTarget.Character:FindFirstChild("HumanoidRootPart")
         if not targetHRP then return end
@@ -180,7 +181,7 @@ function  Wamuu_Mob.Attack(mobData)
             local rand = math.random(1, #mobData.Animations.Attack)
             mobData.Animations.Attack[rand]:Play()
 
-            local HitEffects_Attack = {Damage = {Damage = 30}}
+            local HitEffects_Attack = {Damage = {Damage = 20}}
             Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack)
         end
 
@@ -214,10 +215,10 @@ function Wamuu_Mob.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
-    local itemDropPercent = 25
+    local itemDropPercent = 75
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        rewards.Items["MaskFragment"] = 1
+        rewards.Items["Antidote"] = 1
     end
 
     rewards.XP = Wamuu_Mob.Defs.XpValue

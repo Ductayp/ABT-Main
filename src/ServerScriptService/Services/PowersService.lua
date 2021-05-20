@@ -162,9 +162,12 @@ end
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
     --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end
     if characterHit.Humanoid.Health <= 0 then return end
+
+    if characterHit:FindFirstChild("Invulnerable_HitEffect", true) then return end
 
     -- setup some variables
     local canHit = false
@@ -249,6 +252,10 @@ end
 function PowersService:PlayerSetup(player)
 
     repeat wait() until player.Character
+
+    if player.Character.Humanoid then
+        player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
+    end
 
     local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes, ReplicatedStorage.PowerStatus}
     for _,location in pairs(cleanupLocations) do

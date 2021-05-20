@@ -150,18 +150,14 @@ end
 
 --defs
 KillerQueen.Defs.Abilities.BombPunch = {
-    Name = "Bomb Punch",
     Id = "BombPunch",
     Cooldown = 5,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
-    Sounds = {
-        Punch = ReplicatedStorage.Audio.StandSpecific.TheWorld.HeavyPunch,
-    }
+    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("BombPunch", true),
 }
 
 function KillerQueen.BombPunch(params)
-    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
+    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
 end
 
 --------------------------------------------------------------------------------------------------

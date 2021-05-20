@@ -109,6 +109,28 @@ function MobService:KillMob(mobData)
 
 end
 
+function MobService:PinMob(mobId, duration)
+
+    self:PauseAnimations(mobId, duration)
+
+    local thisMob 
+    for _, mobData in pairs(MobService.SpawnedMobs) do
+        if mobData.MobId == mobId then
+            thisMob = mobData
+            break
+        end
+    end
+
+    if thisMob and thisMob.Model.Humanoid then
+        spawn(function()
+            thisMob.Model.Humanoid.WalkSpeed = 0
+            wait(duration)
+            thisMob.Model.Humanoid.WalkSpeed = thisMob.Defs.WalkSpeed
+        end)
+    end
+
+end
+
 
 --// PauseAnimations
 function MobService:PauseAnimations(mobId, duration)
@@ -123,10 +145,17 @@ function MobService:PauseAnimations(mobId, duration)
 
     if thisMob then
         spawn(function()
-            local originalSpeed = thisMob.Animations.Walk.Speed
-            thisMob.Animations.Walk:AdjustSpeed(0)
+
+            for _, animation in pairs(thisMob.Animations) do
+                if animation.IsPlaying then
+                    animation:Stop()
+                end
+            end
+
+            thisMob.DisableAnimations = true
             wait(duration)
-            thisMob.Animations.Walk:AdjustSpeed(originalSpeed)
+            thisMob.DisableAnimations = false
+
         end)
     end
 

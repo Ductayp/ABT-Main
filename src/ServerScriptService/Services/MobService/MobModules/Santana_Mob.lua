@@ -127,9 +127,14 @@ end
 function  Santana_Mob.Attack(mobData)
 
     spawn(function()
+
+        if not mobData.DisableAnimations then
+            local rand = math.random(1, #mobData.Animations.Attack)
+            mobData.Animations.Attack[rand]:Play()
+        end
+
         mobData.Model.Humanoid.WalkSpeed = 2
         local rand = math.random(1, #mobData.Animations.Attack)
-        mobData.Animations.Attack[rand]:Play()
         wait(.25)
         mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
 

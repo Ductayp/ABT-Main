@@ -59,8 +59,12 @@ function MobBrain.Run()
                                 mobData.Model.Humanoid:MoveTo(mobData.MoveTarget)
 
                                 -- handle animations
-                                if not mobData.Animations.Walk.IsPlaying then mobData.Animations.Walk:Play() end
-                                mobData.Animations.Idle:Stop()
+                                if mobData.DisableAnimations then
+                                    mobData.Animations.Walk:Stop()
+                                else
+                                    if not mobData.Animations.Walk.IsPlaying then mobData.Animations.Walk:Play() end
+                                    mobData.Animations.Idle:Stop()
+                                end
 
                             else
                                 -- stop movement

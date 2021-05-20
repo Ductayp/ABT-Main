@@ -149,9 +149,12 @@ function  Wamuu_Mob.Attack(mobData)
             local abilityScript = Knit.Shared.MobEffects.WamuuEffects
 
 
-            mobData.Animations.SpinArmsAttack:Play()
-            mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed + 10
+            if not mobData.DisableAnimations then
+                mobData.Animations.SpinArmsAttack:Play()
+                mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed + 10
+            end
 
+            
             for count = 1, 4 do
 
                 local effectParams = {}
@@ -178,8 +181,11 @@ function  Wamuu_Mob.Attack(mobData)
 
         else
 
-            local rand = math.random(1, #mobData.Animations.Attack)
-            mobData.Animations.Attack[rand]:Play()
+            if not mobData.DisableAnimations then
+                local rand = math.random(1, #mobData.Animations.Attack)
+                mobData.Animations.Attack[rand]:Play()
+            end
+
 
             local HitEffects_Attack = {Damage = {Damage = 20}}
             Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack)

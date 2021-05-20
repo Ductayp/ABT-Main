@@ -55,10 +55,20 @@ function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter,
 
     spawn(function()
 
-        local offset = CFrame.new(0, 0, 15)
-        hitCharacter.HumanoidRootPart.Position = params.TargetPosition
+        
 
-        --wait()
+        local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
+        if not hitPlayer then
+
+            local orginalParent = hitCharacter.Parent
+            if orginalParent == ReplicatedStorage then return end
+
+            hitCharacter.Parent = ReplicatedStorage
+            hitCharacter.HumanoidRootPart.Position = params.TargetPosition
+            hitCharacter.Parent = orginalParent
+        else
+            hitCharacter.HumanoidRootPart.Position = params.TargetPosition
+        end
 
         abilityDefs.HitEffects = {Damage = {Damage = damage}, PinCharacter = {Duration = pinTime}}
         Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)

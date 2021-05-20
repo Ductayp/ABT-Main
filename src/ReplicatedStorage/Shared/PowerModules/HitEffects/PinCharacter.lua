@@ -16,41 +16,48 @@ local utils = require(Knit.Shared.Utils)
 
 local PinCharacter = {}
 
-function PinCharacter.Server_ApplyEffect(initPlayer,hitCharacter, effectParams, hitParams)
+function PinCharacter.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
     if not hitCharacter.HumanoidRootPart then return end
-
-    local newAnchor = Instance.new("Part")
-    newAnchor.Transparency = 1
-    newAnchor.Parent = hitCharacter.HumanoidRootPart
-    utils.EasyWeld(newAnchor, hitCharacter.HumanoidRootPart, newAnchor)
-    newAnchor.Anchored = true
-    newAnchor.Name = "PinCharacter"
-
-    local newBool = Instance.new("Part")
-    newBool.Name = "BlockAttacks"
-    newBool.Parent = hitCharacter.HumanoidRootPart
-
 
     -- if this is a mob, then stop its animation here
     if hitParams.IsMob then
         if hitCharacter.Humanoid then
-            Knit.Services.MobService:PauseAnimations(hitParams.MobId, effectParams.Duration)
+            
+            Knit.Services.MobService:PinMob(hitParams.MobId, effectParams.Duration)
+            local blockAttackBool = Instance.new("Part")
+            blockAttackBool.Name = "BlockAttacks"
+            blockAttackBool.Parent = hitCharacter.HumanoidRootPart
+
+            spawn(function()
+                wait(effectParams.Duration)
+                blockAttackBool:Destroy()
+            end)
         end
     end
 
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
-    if hitPlayer then
-        print("hitPlayer", hitPlayer)
+    if hitPlayer and hitPlayer.Character then
+
+        local newAnchor = Instance.new("Part")
+        newAnchor.Transparency = 1
+        newAnchor.Parent = hitCharacter.HumanoidRootPart
+        utils.EasyWeld(newAnchor, hitCharacter.HumanoidRootPart, newAnchor)
+        newAnchor.Anchored = true
+        newAnchor.Name = "PinCharacter"
+
         Knit.Services.PowersService:RenderHitEffect_SinglePlayer(hitPlayer, "PinCharacter", effectParams)
         require(Knit.PowerUtils.BlockInput).AddBlock(hitPlayer.UserId, "PinCharacter", effectParams.Duration)
+
+        spawn(function()
+            hitCharacter.Humanoid.WalkSpeed = 0
+            wait(effectParams.Duration)
+            newAnchor:Destroy()
+            hitCharacter.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+        end)
     end
 
-    spawn(function()
-        wait(effectParams.Duration)
-        newAnchor:Destroy()
-        newBool:Destroy()
-    end)
+
 
 end
 

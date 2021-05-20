@@ -111,6 +111,7 @@ function  RedHot_Mob.Attack(mobData)
     spawn(function()
 
         -- play attack animation
+        
         local rand = math.random(1, #mobData.Animations.Attack)
         mobData.Animations.Attack[rand]:Play()
 

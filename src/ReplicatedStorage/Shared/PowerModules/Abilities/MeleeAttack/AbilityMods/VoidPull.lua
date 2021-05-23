@@ -27,9 +27,9 @@ ScrapePunch.HitDelay = 0.4
 ScrapePunch.InputBlockTime = 0.5
 
 -- hitbox
-ScrapePunch.HitboxSize = Vector3.new(8, 6, 40)
-ScrapePunch.HitboxOffset = CFrame.new(0, 0, 20)
-ScrapePunch.HitboxDestroyTime = 2
+ScrapePunch.HitboxSize = Vector3.new(6, 5, 50)
+ScrapePunch.HitboxOffset = CFrame.new(0, 0, 25)
+ScrapePunch.HitboxDestroyTime = .4
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 
@@ -55,20 +55,8 @@ function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter,
 
     spawn(function()
 
-        
-
-        local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
-        if not hitPlayer then
-
-            local orginalParent = hitCharacter.Parent
-            if orginalParent == ReplicatedStorage then return end
-
-            hitCharacter.Parent = ReplicatedStorage
-            hitCharacter.HumanoidRootPart.Position = params.TargetPosition
-            hitCharacter.Parent = orginalParent
-        else
-            hitCharacter.HumanoidRootPart.Position = params.TargetPosition
-        end
+        abilityDefs.HitEffects = {Teleport = {TargetPosition = params.TargetPosition}}
+        Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
         abilityDefs.HitEffects = {Damage = {Damage = damage}, PinCharacter = {Duration = pinTime}}
         Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
@@ -91,17 +79,14 @@ function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
 
     --move the stand and do animations
     spawn(function()
-        --local moveTime = ManageStand.MoveStand(params, "Front")
+        local moveTime = ManageStand.MoveStand(params, "Front")
         ManageStand.PlayAnimation(params, "HandSwipe")
         ManageStand.Aura_On(params)
         wait(.4)
-        --ManageStand.MoveStand(params, "Idle")
+        ManageStand.MoveStand(params, "Idle")
         wait(.5)
         ManageStand.Aura_Off(params)
     end)
-
-    wait(ScrapePunch.HitDelay)
-
 
 end
 
@@ -109,56 +94,72 @@ function ScrapePunch.RenderPull(params)
 
     WeldedSound.NewSound(params.Hitbox, punchSound)
 
-    spawn(function()
-        local rodParts = {}
-        rodParts.greenRods = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Green:Clone()
-        rodParts.blueRods = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Blue:Clone()
-        rodParts.whiteRods = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.White:Clone()
-    
-        for _, mainPart in pairs(rodParts) do
-            mainPart.CFrame = params.HitboxCFrame
-            mainPart.Parent = Workspace.RenderedEffects
-            Debris:AddItem(mainPart, 3)
-    
-            for _, subPart in pairs(mainPart:GetChildren()) do
-                if subPart:IsA("BasePart") then
-                    local tween = TweenService:Create(subPart, TweenInfo.new(1), {Transparency = 1, Size = Vector3.new(.7,.7,.7)})
-                    tween:Play()
-                    tween:Destroy()
-                end
-            end
-        end
-    end)
+    local hitBoxSize_X = params.Hitbox.Size.X
+    local hitBoxSize_Y = params.Hitbox.Size.Y
+    local hitBoxSize_Z = params.Hitbox.Size.Z
+
+    local colors = {
+        [1] = Color3.fromRGB(0, 85, 255),
+        [2] = Color3.fromRGB(255, 255, 255),
+        [3] = Color3.fromRGB(0, 255, 127),
+    }
+
+    local rodCount = 20
+    local rodThickness = 0.3
+    local rodOffset = 5
+    local rodLength = hitBoxSize_Z - rodOffset
+
+
+
+    for count = 1, rodCount do
+
+        local rand_X = math.random(  (-hitBoxSize_X * 100), (hitBoxSize_X * 100) ) / 100
+        local rand_Y = math.random( (-hitBoxSize_Y * 100), (hitBoxSize_Y * 100) ) / 100
+        local randColor = math.random(1,3)
+
+
+        local newRod = Instance.new("Part")
+        newRod.Anchored = true
+        newRod.CanCollide = false
+        newRod.CanTouch = false
+        newRod.Transparency = .5
+        newRod.Color = colors[randColor]
+        newRod.Size = Vector3.new(rodThickness, rodThickness, rodLength)
+        newRod.CFrame = params.Hitbox.CFrame:ToWorldSpace(CFrame.new(rand_X, rand_Y, -rodOffset))
+        newRod.Parent = Workspace.RenderedEffects
+        Debris:AddItem(newRod, 3)
+
+        local tweenInfo = TweenInfo.new(.5)
+        local tweenParams = {
+            Transparency = 1,
+            Size = Vector3.new(rodThickness, rodThickness, rodLength / 10),
+            CFrame = params.Hitbox.CFrame:ToWorldSpace(CFrame.new(rand_X, rand_Y, rodLength / 3 ))
+        }
+
+        local tween = TweenService:Create(newRod, tweenInfo, tweenParams)
+        tween:Play()
+        tween:Destroy()
+
+    end
 
     local burstParts = {}
     burstParts.burstBlue = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Burst_Blue:Clone()
-    --burstParts.burstWhite = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Burst_White:Clone()
-    --burstParts.ballGreen = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Ball_Green:Clone()
     burstParts.ballBlack = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Ball_Black:Clone()
 
     for _, v in pairs(burstParts) do
         v.Position = params.TargetPosition
         v.Parent = Workspace.RenderedEffects
-        --Debris:AddItem(v, 10)
-
     end
 
     burstParts.ballBlack.Particle:Emit(20)
 
     local burstTween1 = TweenService:Create(burstParts.burstBlue, TweenInfo.new(.5), {Transparency = 1, Size = burstParts.burstBlue.Size + Vector3.new(3,3,3)})
-    --local burstTween2 = TweenService:Create(burstParts.burstWhite, TweenInfo.new(1), {Transparency = 1, Size = burstParts.burstWhite.Size + Vector3.new(6,6,6)})
-
-    --local ballTween1 = TweenService:Create(burstParts.ballGreen, TweenInfo.new(.5), {Transparency = 1, Size = burstParts.ballGreen.Size + Vector3.new(3,3,3)})
     local ballTween2 = TweenService:Create(burstParts.ballBlack, TweenInfo.new(1), {Transparency = 1, Size = Vector3.new(1,1,1)})
 
     burstTween1:Play()
-    --burstTween2:Play()
-    --ballTween1:Play()
     ballTween2:Play()
 
     burstTween1:Destroy()
-    --burstTween2:Destroy()
-    --ballTween1:Destroy()
     ballTween2:Destroy()
 
     wait(3)
@@ -167,9 +168,7 @@ function ScrapePunch.RenderPull(params)
     burstParts.ballBlack:Destroy()
 
 
-    
-    
-
+ 
 
 end
 

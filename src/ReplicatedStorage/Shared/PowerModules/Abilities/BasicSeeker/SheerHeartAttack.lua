@@ -13,6 +13,7 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
 local SheerHeartAttack = {}
 
@@ -58,6 +59,7 @@ function SheerHeartAttack.AquireTarget(initPlayer, seeker, abilityDefs)
         SheerHeartAttack.DestroySeeker(initPlayer, seeker, abilityDefs)
     end
 
+    --[[
     -- target table is an array where each entry is another array that contains the mob.Model or player.Character and its magnitude from initPlayer
     local targetTable = {}
 
@@ -79,6 +81,16 @@ function SheerHeartAttack.AquireTarget(initPlayer, seeker, abilityDefs)
                 end
             end
         end
+    end
+    ]]--
+
+    local targetTable = {}
+
+    local targets = TargetByZone.GetAll(initPlayer, true)
+
+    for _, hitCharacter in pairs(targets) do
+        local distance = (hitCharacter.HumanoidRootPart.Position -  initPlayer.Character.HumanoidRootPart.Position).Magnitude
+        targetTable[#targetTable + 1] = {hitCharacter, distance}
     end
 
     -- sort table by magnitude value, smallest magnitude gets into position 1

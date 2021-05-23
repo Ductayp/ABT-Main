@@ -26,8 +26,6 @@ function MobBrain.Run()
                             mobData.Model.Head.StateText.TextLabel.Visible = true
                             mobData.Model.Head.StateText.TextLabel.Text = mobData.BrainState
                         end
-                    else
-                        mobData.Model.Head.StateText.TextLabel.Visible = false
                     end
                     
                     -- test print
@@ -55,15 +53,20 @@ function MobBrain.Run()
                         if mobData.Defs.IsMobile then
                             if mobData.MoveTarget then
 
-                                -- do the move
-                                mobData.Model.Humanoid:MoveTo(mobData.MoveTarget)
+                                local isPinned = mobData.Model.HumanoidRootPart:FindFirstChild("IsPinned")
+                                if not isPinned then
 
-                                -- handle animations
-                                if mobData.DisableAnimations then
-                                    mobData.Animations.Walk:Stop()
-                                else
-                                    if not mobData.Animations.Walk.IsPlaying then mobData.Animations.Walk:Play() end
-                                    mobData.Animations.Idle:Stop()
+                                    -- do the move
+                                    mobData.Model.Humanoid:MoveTo(mobData.MoveTarget)
+
+                                    -- handle animations
+                                    if mobData.DisableAnimations then
+                                        mobData.Animations.Walk:Stop()
+                                    else
+                                        if not mobData.Animations.Walk.IsPlaying then mobData.Animations.Walk:Play() end
+                                        mobData.Animations.Idle:Stop()
+                                    end
+
                                 end
 
                             else
@@ -82,44 +85,52 @@ function MobBrain.Run()
                         --// EVENTS ---------------------------------------------
 
                         -- BRAIN EVENT: Set Target
-                        for _,player in pairs(Players:GetPlayers()) do
+                        if not mobData.TargetTime then mobData.TargetTime = os.clock() end
+                        if os.clock() >  mobData.TargetTime then
 
-                            -- get a table of player within range
-                            local inRange = {}
-                            if player:DistanceFromCharacter(mobData.Spawner.Position) <= mobData.Defs.SeekRange then
-                                table.insert(inRange, player)
-                            end
+                            mobData.TargetTime = os.clock() + .5
 
-                            if #inRange > 0 then
-                                if mobData.Defs.Aggressive == true then
-                                    local rand = math.random(1, #inRange)
-                                    mobData.AttackTarget = inRange[rand]
-                                else
-                                    if mobData.PlayerDamage ~= nil then
-
-                                        -- gat a table of players who have done damage AND are in range
-                                        local attackList = {} 
-                                        for damagePlayer, damage in pairs(mobData.PlayerDamage) do
-                                            for _,inRangePlayer in pairs(inRange) do
-                                                if damagePlayer == inRangePlayer then
-                                                    attackList[damagePlayer] = damage
+                            local playersInZone = Knit.Services.PlayerUtilityService:GetPlayersInMapZone(mobData.Defs.MapZone)
+                            for _, player in pairs(playersInZone) do
+    
+                                -- get a table of player within range
+                                local inRange = {}
+                                if player:DistanceFromCharacter(mobData.Spawner.Position) <= mobData.Defs.SeekRange then
+                                    table.insert(inRange, player)
+                                end
+    
+                                if #inRange > 0 then
+                                    if mobData.Defs.Aggressive == true then
+                                        local rand = math.random(1, #inRange)
+                                        mobData.AttackTarget = inRange[rand]
+                                    else
+                                        if mobData.PlayerDamage ~= nil then
+    
+                                            -- gat a table of players who have done damage AND are in range
+                                            local attackList = {} 
+                                            for damagePlayer, damage in pairs(mobData.PlayerDamage) do
+                                                for _,inRangePlayer in pairs(inRange) do
+                                                    if damagePlayer == inRangePlayer then
+                                                        attackList[damagePlayer] = damage
+                                                    end
                                                 end
                                             end
-                                        end
-
-                                        -- attack the player with the highest damage
-                                        local highestDamage = 0
-                                        for player, damage in pairs(attackList) do
-                                            if damage > highestDamage then
-                                                highestDamage = damage
-                                                mobData.AttackTarget = player
+    
+                                            -- attack the player with the highest damage
+                                            local highestDamage = 0
+                                            for player, damage in pairs(attackList) do
+                                                if damage > highestDamage then
+                                                    highestDamage = damage
+                                                    mobData.AttackTarget = player
+                                                end
                                             end
+    
                                         end
-
                                     end
                                 end
                             end
                         end
+
 
                         -- BRAIN EVENT: Is Mob Dead? -- check if mob is dead, handle death
                         if mobData.Model.Humanoid.Health <= 0 then
@@ -137,16 +148,9 @@ function MobBrain.Run()
                             mobData.IsDead = true
                             mobData.DeadTime = os.clock()
                             mobData.PlayerDamage = {} -- delete all player damage
+                            Knit.Services.MobService:KillMob(mobData)
                         end
 
-                    end
-
-                    -- DEAD: cleanup the dead mobs
-                    if mobData.IsDead == true then 
-                        if os.clock() > mobData.DeadTime + 5 then
-                            mobData.Model:Destroy()
-                            table.remove(Knit.Services.MobService.SpawnedMobs, index)
-                        end
                     end
                 end
 
@@ -163,19 +167,20 @@ function MobBrain.State_Attack(mobData)
     if mobData.LastAttack < os.clock() - mobData.Defs.AttackSpeed then
 
         if not mobData.Model.HumanoidRootPart:FindFirstChild("BlockAttacks") then
-        -- run attack function
+
+            -- run attack function
             mobData.Functions.Attack(mobData)
  
             -- brain settings
-            mobData.AttackTarget = nil
+            --mobData.AttackTarget = nil
             mobData.LastAttack = os.clock()
-            mobData.BrainState = "Wait"
+            mobData.BrainState = "Chase"
             mobData.StateTime = os.clock()
         end
 
-
     else
         mobData.BrainState = "Chase"
+        mobData.StateTime = os.clock()
     end
 
 end
@@ -190,6 +195,7 @@ function MobBrain.State_Wait(mobData)
     if mobData.AttackTarget then
         mobData.BrainState = "Chase"
         mobData.StateTime = os.clock()
+        return
     end
 
     -- if we get too far away or we have not attack target then return to the spawner (overrides the chase set above)
@@ -198,16 +204,41 @@ function MobBrain.State_Wait(mobData)
         mobData.BrainState = "Return"
         mobData.AttackTarget = nil
         mobData.StateTime = os.clock()
+        return
     end
+
+    -- if theres no attack target and we are inside the chase range, give 1 second then send the mob back to spawner
+    if spawnerMagnitude < mobData.Defs.ChaseRange then
+        if mobData.StateTime < os.clock() + 1 then
+
+            mobData.BrainState = "Return"
+            mobData.AttackTarget = nil
+            mobData.StateTime = os.clock()
+            return
+        end
+    end
+
+    print("WAIT DEAD")
 
 end
 
 --// State_Home
 function MobBrain.State_Home(mobData)
 
-    -- set move
-    mobData.MoveTarget = nil
-    mobData.AttackTarget = nil
+    if not mobData.Model.HumanoidRootPart then return end
+    mobData.Model.HumanoidRootPart.Anchored = true
+
+    --mobData.Animations.Idle:Play()
+
+    -- set chase if we have a target
+    if mobData.AttackTarget then
+        mobData.Model.HumanoidRootPart.Anchored = false
+        mobData.Model.HumanoidRootPart:SetNetworkOwner(nil)
+        mobData.BrainState = "Chase"
+        mobData.StateTime = os.clock()
+        return
+    end
+
 end
 
 --// State_Return
@@ -219,8 +250,9 @@ function MobBrain.State_Return(mobData)
     -- check if we are too far from Home
     local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.Position).Magnitude
     if rangeMagnitude < 5 then 
-        mobData.BrainState = "Wait"
+        mobData.BrainState = "Home"
         mobData.AttackTarget = nil
+        mobData.MoveTarget = nil
         mobData.StateTime = os.clock()
     end
 

@@ -160,7 +160,7 @@ TheWorld.Defs.Abilities.TimeStop = {
     Cooldown = 60,
     Range = 80,
     RequireToggle_On = {"Q"},
-    HitEffects = {PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}}, 
+    HitEffects = {Damage = {Damage = 1}, PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}}, 
     Sounds = {
         TimeStop = ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop,
     }

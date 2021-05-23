@@ -13,7 +13,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- local variables
 local PlayerGui = Players.LocalPlayer.PlayerGui
-local mainGui = PlayerGui:WaitForChild("MainGui", 120)
+local mainGui = PlayerGui:WaitForChild("MainGui_OLD", 120)
 local color_DeSelect = Color3.fromRGB(63, 63, 63)
 local color_Select = Color3.fromRGB(0, 117, 0)
 

@@ -14,7 +14,7 @@ local GamePassService = Knit.GetService("GamePassService")
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui
-local mainGui = PlayerGui:WaitForChild("MainGui", 120)
+local mainGui = PlayerGui:WaitForChild("MainGui_OLD", 120)
 
 local ShopWindow_LootPanel = {}
 

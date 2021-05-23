@@ -6,51 +6,35 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 local utils = require(Knit.Shared.Utils)
 local config = require(script.Parent.Config)
+
+local spawnLoopCycleTime = 1
 local serialNumber = 1 -- this starts at one and goes up for every mob spawned, used as a unique ID for each mob
+
+local activeMob_Modules = {
+    script.Parent.MobModules.Santana,
+    script.Parent.MobModules.RedHot,
+    script.Parent.MobModules.Wamuu,
+}
 
 local SpawnLoop = {}
 
+--// SpawnLoop
 function SpawnLoop.Run()
-
-    local allSpawners = {}
-
-    -- find all spawner, build a data table for each, also make the spawners invis
-    for _,instance in pairs(Workspace:GetDescendants()) do
-        if instance.Name == "MobService_Spawners" then
-            for _,folder in pairs(instance:GetChildren()) do
-
-                -- make a spawn group table
-                local thisGroup = {}
-                thisGroup.Name = folder.Name
-                --thisGroup.Defs = require(Knit.MobModules.MobDefs[folder.Name])
-                thisGroup.Defs = require(script.Parent.MobModules[folder.Name])
-                thisGroup.RespawnClock = os.clock()
-                thisGroup.Spawners = folder:GetChildren()
-
-                -- make spawner part transparent
-                for _,spawnerPart in pairs(thisGroup.Spawners) do
-                    spawnerPart.Transparency = 1
-                end
-
-                -- insert the spawner group into the 
-                table.insert(allSpawners, thisGroup)
-            end
-        end
-    end
 
     wait(5) -- initial wait
 
-    while wait(1) do -- basic spawn loop time
+    while game:GetService("RunService").Heartbeat:Wait() do -- basic spawn loop time
 
-        for _, spawnGroup in pairs(allSpawners) do
+        for _, mobModule in pairs(activeMob_Modules) do
 
-            -- only spawn if the respawn cooldown is up
-            if spawnGroup.RespawnClock < os.clock() - spawnGroup.Defs.RespawnTime then
-                spawnGroup.RespawnClock = os.clock()
+            local thisModule = require(mobModule)
+            if thisModule.RespawnClock < os.clock() - thisModule.RespawnTime then
+                thisModule.RespawnClock = os.clock()
 
-                -- count all mobs spawned in this group, across all spawners
+                -- count all mobs spawned across all spawners. allows for multiple mobs per spawner
                 local spawnCount = 0
-                for _,spawner in pairs(spawnGroup.Spawners) do
+                local spawners = thisModule.SpawnersFolder:GetChildren()
+                for _, spawner in pairs(spawners) do
                     local thisCount = 0
                     for _,mob in pairs(spawner:GetChildren()) do
                         thisCount += 1
@@ -59,11 +43,11 @@ function SpawnLoop.Run()
                 end
 
                 -- if we are less than Max_Spawned across the whole spawner group
-                if spawnCount < spawnGroup.Defs.Max_Spawned then
+                if spawnCount < thisModule.Max_Spawned then
 
                     -- build a table of open spawners
                     local openSpawners = {}
-                    for _, spawner in pairs(spawnGroup.Spawners) do
+                    for _, spawner in pairs(spawners) do
                         if #spawner:GetChildren() == 0 then
                             table.insert(openSpawners, spawner)
                         end
@@ -73,8 +57,8 @@ function SpawnLoop.Run()
                     local rand = math.random(1, #openSpawners)
                     local pickedSpawner = openSpawners[rand]
 
-                    -- create a new mobData object
-                    local mobData = require(script.Parent.NewMob).Create(spawnGroup.Defs)
+                        -- create a new mobData object
+                    local mobData = require(script.Parent.NewMob).Create(thisModule)
 
                     -- set the spawner this mob is owned by
                     mobData.Spawner = pickedSpawner
@@ -83,27 +67,21 @@ function SpawnLoop.Run()
                     utils.NewValueObject("MobId", serialNumber, mobData.Model)
                     mobData.MobId = serialNumber
                     serialNumber += 1
-                    
 
-                    -- spawn it out
+                    -- Set spawn CFrame
                     local offsetX
                     local offsetZ
-                    if spawnGroup.Defs.RandomPlacement then
-                        offsetX = math.random(-pickedSpawner.Size.X / 2, pickedSpawner.Size.X / 2)
-                        offsetX = math.random(-pickedSpawner.Size.Z / 2, pickedSpawner.Size.Z / 2)
+                    if thisModule.RandomPlacement then
+                        offsetX = math.random(-mobData.Spawner.Size.X / 2, mobData.Spawner.Size.X / 2)
+                        offsetX = math.random(-mobData.Spawner.Size.Z / 2, mobData.Spawner.Size.Z / 2)
                     else
                         offsetX = 0
                         offsetX = 0
                     end
-
-                    -- insert the mob in the MobService.SpawnedMobs table, will be actively running from here unless Pre_Spawn_Setup as has its Active value to false
-                    table.insert(Knit.Services.MobService.SpawnedMobs, mobData)
-
-                    -- set the mobs SpawnCFrame to the spawner part CFrame (we can change this in the Pre_Spawn function before spawn)
-                    mobData.SpawnCFrame = pickedSpawner.CFrame * CFrame.new(offsetX, spawnGroup.Defs.Spawn_Z_Offset, offsetZ)
+                    mobData.SpawnCFrame = pickedSpawner.CFrame * CFrame.new(offsetX, thisModule.Spawn_Y_Offset, offsetZ)
 
                     -- run the pre-spawn setup
-                    spawnGroup.Defs.Pre_Spawn(mobData)
+                    thisModule.Pre_Spawn(mobData)
 
                     -- spawn the mob into the world
                     mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
@@ -123,21 +101,24 @@ function SpawnLoop.Run()
                         end
                     end
 
+                    Knit.Services.MobService.SpawnedMobs[mobData.MobId] = mobData
+
                     -- run the post-spawn setup
-                    spawnGroup.Defs.Post_Spawn(mobData)
+                    thisModule.Post_Spawn(mobData)
 
                     -- setup functions
-                    spawnGroup.Defs.Setup_Animations(mobData)
-                    spawnGroup.Defs.Setup_Attack(mobData)
-                    spawnGroup.Defs.Setup_Death(mobData)
-                    spawnGroup.Defs.Setup_Drop(mobData)
-                    
+                    thisModule.Setup_Animations(mobData)
+                    thisModule.Setup_Attack(mobData)
+                    thisModule.Setup_Death(mobData)
+                    thisModule.Setup_Drop(mobData)
+
                 end
             end
         end
-    end 
+
+        wait(spawnLoopCycleTime)
+    end
 
 end
-
 
 return SpawnLoop

@@ -5,6 +5,7 @@ local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 local utils = require(Knit.Shared.Utils)
 
 local targetRange = 50
@@ -22,8 +23,11 @@ function VampireZombies.RunServer(params, abilityDefs)
 
     local targetTable = VampireZombies.AquireTargets(initPlayer)
     for count = 1, 3 do
-        local target = targetTable[count][1]
-        VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
+        if targetTable[count] then
+            local target = targetTable[count][1]
+            VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
+        end
+        
     end
     
 end
@@ -39,30 +43,18 @@ function VampireZombies.AquireTargets(initPlayer)
 
     local targetTable = {}
 
-    -- put all mobs in targetTable
-    for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-        if mob.Model:FindFirstChild("Humanoid") then
-            if mob.Model.Humanoid.Health > 0 then
-                targetTable[#targetTable + 1] = {mob.Model, (mob.Model.HumanoidRootPart.Position -  initPlayer.Character.HumanoidRootPart.Position).Magnitude}
-            end
-        end
-    end
+    local targets = TargetByZone.GetAll(initPlayer, true)
 
-    -- put all players in targetTable
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= initPlayer then
-            if not require(Knit.StateModules.Invulnerable).IsInvulnerable(player) then
-                if player.Character and player.Character.HumanoidRootPart then
-                    targetTable[#targetTable + 1] = {player.Character, (player.Character.HumanoidRootPart.Position -  initPlayer.Character.HumanoidRootPart.Position).Magnitude}
-                end
-            end
-        end
+    for _, hitCharacter in pairs(targets) do
+        local distance = (hitCharacter.HumanoidRootPart.Position -  initPlayer.Character.HumanoidRootPart.Position).Magnitude
+        targetTable[#targetTable + 1] = {hitCharacter, distance}
     end
 
     -- sort table by magnitude value, smallest magnitude gets into position 1
     table.sort(targetTable, function(a, b)
         return a[2] < b[2]
     end)
+
 
     return targetTable
 
@@ -134,36 +126,8 @@ function VampireZombies.SpawnZombie(initPlayer, target, abilityDefs)
     --// BlastZombie
     function VampireZombies.BlastZombie(initPlayer, target, zombie, abilityDefs)
 
-        local hitCharacters = {}
-        -- hit all players in range, subject to immunity
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player.Character then
-                local distance = (player.Character.HumanoidRootPart.Position - zombie.HumanoidRootPart.Position).magnitude
-                if distance <= blastRange then
-                    --if player ~= initPlayer then
-                        if not require(Knit.StateModules.Invulnerable).IsInvulnerable(player) then
-                            table.insert(hitCharacters, player.Character)
-                        end
-                   -- end
-                end
-            end
-        end
-    
-        -- hit all Mobs in range
-        for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-            local distance = (mob.Model.HumanoidRootPart.Position - zombie.HumanoidRootPart.Position).magnitude
-            if distance <= blastRange then
-                table.insert(hitCharacters, mob.Model)
-            end
-        end
-    
-        -- hit all dummies
-        for _, dummy in pairs(Workspace.Dummies:GetChildren()) do
-            local distance = (dummy.HumanoidRootPart.Position - zombie.HumanoidRootPart.Position).magnitude
-            if distance <= blastRange then
-                table.insert(hitCharacters, dummy)
-            end
-        end
+        local origin = zombie.HumanoidRootPart.Position
+        local hitCharacters = TargetByZone.GetAllInRange(initPlayer, origin, blastRange, false)
 
         for _, character in pairs(hitCharacters) do
 

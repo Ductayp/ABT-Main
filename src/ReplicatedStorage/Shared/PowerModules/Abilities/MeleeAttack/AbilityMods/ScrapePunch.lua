@@ -18,15 +18,16 @@ ScrapePunch.InputBlockTime = 1
 ScrapePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
 
 -- hitbox
-ScrapePunch.HitboxSize = Vector3.new(6, 6, 12)
+ScrapePunch.HitboxSize = Vector3.new(5, 5, 12)
 ScrapePunch.HitboxOffset = CFrame.new(0, 0, 6)
-ScrapePunch.HitboxDestroyTime = 2
+ScrapePunch.HitboxDestroyTime = .6
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 
 --// HitCharacter
 function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
+    local blackHolePosition = hitCharacter.HumanoidRootPart.Position
     abilityDefs.HitEffects = {Damage = {Damage = 15}, PinCharacter = {Duration = 5.5}, BlackHole = {Duration = 5}, Invulnerable = {Duration = 5}}
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 

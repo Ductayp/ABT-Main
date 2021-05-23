@@ -17,7 +17,7 @@ local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
 local PlayerGui = Players.LocalPlayer.PlayerGui
-local mainGui = PlayerGui:WaitForChild("MainGui", 120)
+local mainGui = PlayerGui:WaitForChild("MainGui_OLD", 120)
 
 -- Constants
 local GUI_COLOR = {

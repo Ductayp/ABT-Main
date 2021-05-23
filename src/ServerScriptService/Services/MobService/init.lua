@@ -17,8 +17,24 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local config = require(script.Config)
 MobService.SpawnedMobs = {} -- table of all spawned mobs
 
-MobService.DebugMode = true
+MobService.DebugMode = false
 
+function MobService:GetMobById(sentMobId)
+
+    return MobService.SpawnedMobs[sentMobId]
+end
+
+function MobService:GetMobsInMapZone(sentMapZone)
+
+    local mobs = {}
+    for mobId, mobData in pairs(MobService.SpawnedMobs) do
+        if mobData.Defs.MapZone == sentMapZone then
+            mobs[mobId] = mobData
+        end
+    end
+
+    return mobs
+end
 
 --// HitPlayer
 function MobService:HitPlayer(player, hitEffects)
@@ -34,15 +50,7 @@ function MobService:DamageMob(player, mobId, damage)
     if not player then return end
     if not Players:FindFirstChild(player.Name) then return end
         
-    -- get the mob form all MobService.SpawnedMobs using the MobId
-    local thisMob 
-    for _, mobData in pairs(MobService.SpawnedMobs) do
-        if mobData.MobId == mobId then
-            thisMob = mobData
-            break
-        end
-    end
-
+    local thisMob = MobService.SpawnedMobs[mobId]
     if not thisMob then return end
 
     -- apply player damage counts only if the mob is not dead
@@ -102,6 +110,14 @@ function MobService:KillMob(mobData)
                 end
             end
         end
+
+        spawn(function()
+            wait(5)
+            mobData.Model:Destroy()
+            MobService.SpawnedMobs[mobData.MobId] = nil
+        end)
+
+
     end
 
     -- run the models death function
@@ -111,23 +127,28 @@ end
 
 function MobService:PinMob(mobId, duration)
 
-    self:PauseAnimations(mobId, duration)
-
-    local thisMob 
-    for _, mobData in pairs(MobService.SpawnedMobs) do
-        if mobData.MobId == mobId then
-            thisMob = mobData
-            break
-        end
-    end
+    local thisMob = MobService.SpawnedMobs[mobId]
+    if not thisMob then return end
 
     if thisMob and thisMob.Model.Humanoid then
+
+        thisMob.Model.Humanoid:MoveTo(thisMob.Model.HumanoidRootPart.Position)
+
+        local newValueObject = Instance.new("BoolValue")
+        newValueObject.Name = "IsPinned"
+        newValueObject.Value = true
+        newValueObject.Parent = thisMob.Model.HumanoidRootPart
+
         spawn(function()
-            thisMob.Model.Humanoid.WalkSpeed = 0
             wait(duration)
-            thisMob.Model.Humanoid.WalkSpeed = thisMob.Defs.WalkSpeed
+            newValueObject:Destroy()
         end)
+
+        self:PauseAnimations(mobId, duration)
+
     end
+
+
 
 end
 

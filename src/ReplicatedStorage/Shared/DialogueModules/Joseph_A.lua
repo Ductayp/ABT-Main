@@ -13,7 +13,8 @@ module.DungeonTravel = {
             Key = "Cash",
             Value = 3000
         },
-        Destination = "SkeletonHeelStone"
+        SpawnName = "SkeletonHeelStone",
+        MapZone = "SkeletonHeelStone",
     },
 }
 

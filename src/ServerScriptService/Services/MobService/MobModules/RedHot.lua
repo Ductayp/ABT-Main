@@ -13,10 +13,14 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 local RedHot_Mob = {}
 
+--/ Spawners
+RedHot_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_RedHot", true)
+
 --/ Model
 RedHot_Mob.Model = ReplicatedStorage.Mobs.RHCP_Model
 
 --/ Spawn
+RedHot_Mob.RespawnClock = os.clock()
 RedHot_Mob.RespawnTime = 5
 RedHot_Mob.RandomPlacement = false
 RedHot_Mob.Spawn_Z_Offset = 0
@@ -32,6 +36,7 @@ RedHot_Mob.Animations = {
 --/ Defs
 RedHot_Mob.Defs = {}
 RedHot_Mob.Defs.Name = "Hot Tamale"
+RedHot_Mob.Defs.MapZone = "DuwangHarbor"
 RedHot_Mob.Defs.XpValue = 250
 RedHot_Mob.Defs.Health = 200
 RedHot_Mob.Defs.WalkSpeed = 0

@@ -18,9 +18,9 @@ TimePunch.InputBlockTime = 1
 TimePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
 
 -- hitbox
-TimePunch.HitboxSize = Vector3.new(6, 6, 12)
+TimePunch.HitboxSize = Vector3.new(5, 5, 12)
 TimePunch.HitboxOffset = CFrame.new(0, 0, 6)
-TimePunch.HitboxDestroyTime = 2
+TimePunch.HitboxDestroyTime = .6
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 

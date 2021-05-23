@@ -15,6 +15,7 @@ local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
+local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
@@ -107,44 +108,15 @@ end
 function RadiusAttack.Run_Server(params, abilityDefs)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-    --print("initPlayer", initPlayer)
+    if not initPlayer then return end
 
     local abilityMod = require(abilityDefs.AbilityMod)
-
     if abilityMod.HitDelay then wait(abilityMod.HitDelay) end
-    
-    local hitCharacters = {}
-    -- hit all players in range, subject to immunity
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            if player:DistanceFromCharacter(initPlayer.Character.Head.Position) <= abilityMod.Range then
-                if player ~= initPlayer then
-                    if not require(Knit.StateModules.Invulnerable).IsInvulnerable(player) then
-                        table.insert(hitCharacters, player.Character)
-                    end
-                end
-            end
-        end
-    end
 
-    -- hit all Mobs in range
-    for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-        if mob.Model:FindFirstChild("Humanoid") then
-            if initPlayer:DistanceFromCharacter(mob.Model.HumanoidRootPart.Position) <= abilityMod.Range then
-                table.insert(hitCharacters, mob.Model)
-            end
-        end
-    end
-
-    -- hit all dummies
-    for _, dummy in pairs(Workspace.Dummies:GetChildren()) do
-        if initPlayer:DistanceFromCharacter(dummy.HumanoidRootPart.Position) <= abilityMod.Range then
-            table.insert(hitCharacters, dummy)
-        end
-    end
+    local origin = initPlayer.Character.HumanoidRootPart.Position
+    local hitCharacters = TargetByZone.GetAllInRange(initPlayer, origin, abilityMod.Range, true)
 
     params.HitCharacters = hitCharacters
-    --params.Test = true
 
     spawn(function()
 

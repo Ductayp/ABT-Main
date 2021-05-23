@@ -293,7 +293,7 @@ function ItemSpawnService:KnitInit()
             for _, groupFolder in pairs(instance:GetChildren()) do
                 for _, spawner in pairs(groupFolder:GetChildren()) do
                     if spawner:IsA("Part") then
-                        spawner.Transparency = 1
+                        --spawner.Transparency = 1
                         spawner:SetAttribute("SpawnGroupId", groupFolder.Name)
                         spawner:SetAttribute("ItemSpawned", false)
                         table.insert(ItemSpawnService.Spawners, spawner)

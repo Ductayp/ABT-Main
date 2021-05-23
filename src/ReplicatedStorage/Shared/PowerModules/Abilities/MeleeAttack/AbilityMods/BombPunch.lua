@@ -18,7 +18,7 @@ ScrapePunch.InputBlockTime = 1
 ScrapePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
 
 -- hitbox
-ScrapePunch.HitboxSize = Vector3.new(6, 6, 12)
+ScrapePunch.HitboxSize = Vector3.new(5, 5, 12)
 ScrapePunch.HitboxOffset = CFrame.new(0, 0, 6)
 ScrapePunch.HitboxDestroyTime = 2
 

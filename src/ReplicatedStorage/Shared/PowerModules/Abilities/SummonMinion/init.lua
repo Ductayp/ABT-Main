@@ -13,13 +13,8 @@ local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
---local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
---local WeldedSound = require(Knit.PowerUtils.WeldedSound)
-local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
-
-local projectileSerial = 1 -- incremented ever time e fire a projectile
 
 local SummonMinion = {}
 

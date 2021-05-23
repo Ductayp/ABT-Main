@@ -1,6 +1,4 @@
 -- GUI controller
--- PDab
--- 12 / 15/ 2020
 
 -- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -41,7 +39,7 @@ GuiController.InDialogue = false -- this is a variable we can check from anywher
 GuiController.CurrentWindow = nil
 
 -- Gui Defs
-local mainGui = PlayerGui:WaitForChild("MainGui", 120)
+local mainGui = PlayerGui:WaitForChild("MainGui_OLD", 120)
 
 --// ToggleDialogue
 function GuiController:ToggleDialogue(boolean)

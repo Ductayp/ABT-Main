@@ -107,6 +107,15 @@ function MeleeAttack.Activate(params, abilityDefs)
             end
         end
 
+        hitBox.Touched:Connect(function(part)
+            if part.Parent:FindFirstChild("Humanoid") then
+                if not hitCharacters[part.Parent] then
+                    hitCharacters[part.Parent] = true
+                    abilityMod.HitCharacter(params, abilityDefs, initPlayer, part.Parent, hitBox)
+                end
+            end
+        end)
+
         wait(abilityMod.HitboxDestroyTime)
         hitBox:Destroy()
 

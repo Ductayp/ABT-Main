@@ -23,12 +23,17 @@ function DungeonService:BuyAccess(player, params)
     local transactionDef = dialogueModule.DungeonTravel[params.TransactionKey]
     if not transactionDef then return end
 
+    print("beep 1")
+
     local inputKey = transactionDef.Input.Key
     local inputValue = transactionDef.Input.Value
-    local spawnName = transactionDef.Destination
+    local spawnName = transactionDef.SpawnName
+    local mapZoneId = transactionDef.MapZone
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
+
+    print("beep 2")
 
     -- check if player has enough of the input
     local success = false
@@ -51,6 +56,10 @@ function DungeonService:BuyAccess(player, params)
 
         Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, spawnName, false)
         Knit.Services.PlayerSpawnService:TransportToSpawn(player, spawnName)
+
+        local mapZoneParams = {}
+        mapZoneParams.MapZone = mapZoneId
+        Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, mapZoneParams)
     end
 
     return success
@@ -61,6 +70,10 @@ function DungeonService:LeaveDungeon(player, params)
 
     Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, "Morioh", false)
     Knit.Services.PlayerSpawnService:TransportToSpawn(player, "Morioh")
+
+    local mapZoneParmas = {}
+    mapZoneParmas.MapZone = "Morioh"
+    Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, params)
 
     local success = true
     return success

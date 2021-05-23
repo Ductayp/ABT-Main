@@ -7,10 +7,14 @@ local utils = require(Knit.Shared.Utils)
 
 local Wamuu_Mob = {}
 
+--/ Spawners
+Wamuu_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Wamuu", true)
+
 --/ Model
 Wamuu_Mob.Model = ReplicatedStorage.Mobs.Wamuu
 
 --/ Spawn
+Wamuu_Mob.RespawnClock = os.clock()
 Wamuu_Mob.RespawnTime = 10
 Wamuu_Mob.RandomPlacement = true
 Wamuu_Mob.Spawn_Z_Offset = 5
@@ -26,6 +30,7 @@ Wamuu_Mob.Animations = {
 
 Wamuu_Mob.Defs = {}
 Wamuu_Mob.Defs.Name = "Wham"
+Wamuu_Mob.Defs.MapZone = "SkeletonHeelStone"
 Wamuu_Mob.Defs.XpValue = 450
 Wamuu_Mob.Defs.Health = 350
 Wamuu_Mob.Defs.WalkSpeed = 18

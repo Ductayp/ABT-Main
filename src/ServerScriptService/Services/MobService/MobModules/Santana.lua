@@ -11,14 +11,18 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 local Santana_Mob = {}
 
+--/ Spawners
+Santana_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Santana", true)
+
 --/ Model
 Santana_Mob.Model = ReplicatedStorage.Mobs.Santana
 
 --/ Spawn
+Santana_Mob.RespawnClock = os.clock()
 Santana_Mob.RespawnTime = 10
 Santana_Mob.RandomPlacement = true
-Santana_Mob.Spawn_Z_Offset = 5
-Santana_Mob.Max_Spawned = 7
+Santana_Mob.Spawn_Y_Offset = 5
+Santana_Mob.Max_Spawned = 9
 
 --/ Animations
 Santana_Mob.Animations = {
@@ -29,6 +33,7 @@ Santana_Mob.Animations = {
 
 Santana_Mob.Defs = {}
 Santana_Mob.Defs.Name = "Pillar Man"
+Santana_Mob.Defs.MapZone = "Morioh"
 Santana_Mob.Defs.XpValue = 113
 Santana_Mob.Defs.Health = 100
 Santana_Mob.Defs.WalkSpeed = 16

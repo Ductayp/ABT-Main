@@ -20,6 +20,8 @@ local utils = require(Knit.Shared.Utils)
 PlayerUtilityService.PlayerAnimations = {}
 PlayerUtilityService.PlayerRegenStatus = {}
 PlayerUtilityService.PlayerDamageStatus = {}
+PlayerUtilityService.PlayerMapZone = {}
+
 
 -- local variables
 local updatePlayerTime = 1
@@ -110,6 +112,29 @@ function PlayerUtilityService:SetDamageStatus(player, params)
 
 end
 
+function PlayerUtilityService:SetPlayerMapZone(player, params)
+
+    if not player or not params then return end
+    print(player, params)
+    PlayerUtilityService.PlayerMapZone[player.UserId] = params.MapZone
+
+end
+
+function PlayerUtilityService:GetPlayersInMapZone(mapZone)
+
+    local playersInZone = {}
+    for userId, currentMapZone in pairs(PlayerUtilityService.PlayerMapZone) do
+        if currentMapZone == mapZone then
+            local player = utils.GetPlayerByUserId(userId)
+            if not player then return end
+            table.insert(playersInZone, player)
+        end
+    end
+
+    return playersInZone
+
+end
+
 
 
 --// LoadAnimations
@@ -130,6 +155,7 @@ end
 function PlayerUtilityService:PlayerAdded(player)
 
     PlayerUtilityService.PlayerRegenStatus[player.UserId] = {Enabled = true, Profile = "Default"}
+    self:SetPlayerMapZone(player, {MapZone = "Morioh"})
 
     -- wait for the character
     repeat wait() until player.Character
@@ -156,6 +182,7 @@ function PlayerUtilityService:PlayerRemoved(player)
     PlayerUtilityService.PlayerAnimations[player.UserId] = nil
     PlayerUtilityService.PlayerRegenStatus[player.UserId] = nil
     PlayerUtilityService.PlayerDamageStatus[player.UserId] = nil
+    PlayerUtilityService.PlayerMapZone[player.UserId] = nil
 end
 
 --// CharacterAdded

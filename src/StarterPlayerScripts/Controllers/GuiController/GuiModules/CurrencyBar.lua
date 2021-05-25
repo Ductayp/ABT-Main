@@ -17,7 +17,7 @@ local PlayerGui = Players.LocalPlayer.PlayerGui
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
 local CurrencyBar = {}
-CurrencyBar.Frame = mainGui:FindFirstChild("CurrencyBar", true)
+CurrencyBar.Frame = mainGui:FindFirstChild("Frame_CurrencyBar", true)
 CurrencyBar.Frame_Cash = CurrencyBar.Frame:FindFirstChild("Frame_Cash", true)
 CurrencyBar.Frame_SoulOrbs = CurrencyBar.Frame:FindFirstChild("Frame_SoulOrbs", true)
 CurrencyBar.Text_Cash = CurrencyBar.Frame:FindFirstChild("Text_Cash", true)
@@ -33,6 +33,8 @@ end
 
 --// Update ------------------------------------------------------------
 function CurrencyBar.Update(data)
+
+    print("yes")
 
     if utils.CommaValue(data.Cash) ~= CurrencyBar.Text_Cash.Text then
         if data.Cash < 1 then

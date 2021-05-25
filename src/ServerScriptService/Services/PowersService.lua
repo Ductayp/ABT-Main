@@ -122,7 +122,8 @@ function PowersService:SetCurrentPower(player, params)
 
     playerData.CurrentStand = params
 
-    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+    Knit.Services.GuiService:Update_Gui(player, "StandData")
+    Knit.Services.GuiService:Update_Gui(player, "AbilityBar")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
     self:PlayerSetup(player)

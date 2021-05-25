@@ -18,7 +18,9 @@ local utils = require(Knit.Shared.Utils)
 -- events
 GuiService.Client.Event_Update_Notifications = RemoteEvent.new()
 GuiService.Client.Event_Update_Currency = RemoteEvent.new()
-GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
+--GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
+GuiService.Client.Event_Update_AbilityBar = RemoteEvent.new()
+GuiService.Client.Event_Update_StandData = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel = RemoteEvent.new()
 GuiService.Client.Event_Update_StoragePanel_Access = RemoteEvent.new()
@@ -111,12 +113,29 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         self.Client.Event_Update_Currency:Fire(player, playerData.Currency)
     end
 
+    --[[
+
     if requestName == "BottomGUI" then
         local data = {}
         data.CurrentStand = playerData.CurrentStand
         data.CurrentHealth = player.Character.Humanoid.Health
         data.MaxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
         self.Client.Event_Update_BottomGUI:Fire(player, data, optionalParams)
+    end
+    ]]--
+
+    if requestName == "AbilityBar" then
+        local data = {}
+        data.CurrentStand = playerData.CurrentStand
+        self.Client.Event_Update_AbilityBar:Fire(player, data, optionalParams)
+    end
+
+    if requestName == "StandData" then
+        local data = {}
+        data.CurrentStand = playerData.CurrentStand
+        data.CurrentHealth = player.Character.Humanoid.Health
+        data.MaxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
+        self.Client.Event_Update_StandData:Fire(player, data, optionalParams)
     end
 
     if requestName == "StandReveal" then

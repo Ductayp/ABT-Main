@@ -75,8 +75,14 @@ function GuiController:KnitStart()
         GuiController.Modules.CurrencyBar.Update(data)
     end)
 
+    --[[
     GuiService.Event_Update_BottomGUI:Connect(function(data, params)
         GuiController.Modules.BottomGui.Update(data, params)
+    end)
+    ]]--
+
+    GuiService.Event_Update_StandData:Connect(function(data, params)
+        GuiController.Modules.StandData.Update(data, params)
     end)
 
     GuiService.Event_Update_StandReveal:Connect(function(standData, params)
@@ -92,7 +98,11 @@ function GuiController:KnitStart()
     end)
 
     GuiService.Event_Update_Cooldown:Connect(function(params)
-        --GuiController.Modules.BottomGui.UpdateCooldown(params)
+        GuiController.Modules.AbilityBar.UpdateCooldown(params)
+    end)
+
+    GuiService.Event_Update_AbilityBar:Connect(function(params)
+        GuiController.Modules.AbilityBar.Update(params)
     end)
 
     GuiService.Event_Update_ItemPanel:Connect(function(data)
@@ -109,16 +119,18 @@ function GuiController:KnitStart()
         --GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
     end)
 
+    --[[
     GuiService.Event_Update_RightGui:Connect(function(pvpToggle, params)
         --GuiController.RightGui.Update(pvpToggle, params)
     end)
+    ]]--
 
 end
 
 --// KnitInit ------------------------------------------------------------
 function GuiController:KnitInit()
 
-    StarterGui:SetCore("ChatWindowPosition", UDim2.new(0,0,0.25,0))
+    StarterGui:SetCore("ChatWindowPosition", UDim2.new(0,0,0.2,0))
 
 end
 

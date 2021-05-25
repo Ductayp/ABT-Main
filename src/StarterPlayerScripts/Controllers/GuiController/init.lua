@@ -5,82 +5,47 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local PlayerGui = Players.LocalPlayer.PlayerGui
-
+local StarterGui = game:GetService("StarterGui")
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiController = Knit.CreateController { Name = "GuiController" }
 local GuiService = Knit.GetService("GuiService")
-local InventoryService = Knit.GetService("InventoryService")
-local PowersService = Knit.GetService("PowersService")
-local GamePassService = Knit.GetService("GamePassService")
 
--- utility modules
 local utils = require(Knit.Shared.Utils)
-
--- gui modules
-GuiController.InventoryWindow = require(Knit.GuiModules.InventoryWindow)
-GuiController.ItemFinderWindow = require(Knit.GuiModules.ItemFinderWindow)
-GuiController.StoragePanel = require(Knit.GuiModules.StoragePanel)
-GuiController.ItemPanel = require(Knit.GuiModules.ItemPanel)
---GuiController.BoostPanel = require(Knit.GuiModules.BoostPanel)
-GuiController.StandReveal = require(Knit.GuiModules.StandReveal)
-GuiController.BottomGui = require(Knit.GuiModules.BottomGui)
-GuiController.LeftGui = require(Knit.GuiModules.LeftGui)
-GuiController.RightGui = require(Knit.GuiModules.RightGui)
-GuiController.Notifications = require(Knit.GuiModules.Notifications)
-GuiController.CurrencyBar = require(Knit.GuiModules.CurrencyBar)
-GuiController.SettingsWindow = require(Knit.GuiModules.SettingsWindow)
-GuiController.CodesWindow = require(Knit.GuiModules.CodesWindow)
-GuiController.NPCDialogueWindow = require(Knit.GuiModules.NPCDialogueWindow)
-GuiController.ShopWindow = require(Knit.GuiModules.ShopWindow)
 
 GuiController.InDialogue = false -- this is a variable we can check from anywhere to see if the player is in a dialgue gui
 GuiController.CurrentWindow = nil
 
--- Gui Defs
-local mainGui = PlayerGui:WaitForChild("MainGui_OLD", 120)
+-- build table of gui modules
+GuiController.Modules = {}
+for i, v in pairs(Knit.GuiModules:GetChildren()) do
+    if v:IsA("ModuleScript") then
+        GuiController.Modules[v.Name] = require(v)
+    end
+end
 
---// ToggleDialogue
+local mainGui = PlayerGui:WaitForChild("MainGui", 120)
+
+--// ToggleMainMenu
+function GuiController:ToggleMainMenu()
+
+end
+
+--// ToggleDialogue ------------------------------------------------------------
 function GuiController:ToggleDialogue(boolean)
-
     GuiController.InDialogue = boolean
     GuiService:DialogueLock(boolean)
-
 end
 
 --// CloseAllWindows ------------------------------------------------------------
 function GuiController:CloseAllWindows()
-    for _,instance in pairs(mainGui.Windows.ScaleFrame:GetChildren()) do
+    for _,instance in pairs(mainGui.Windows:GetChildren()) do
         if instance:IsA("Frame") then
             instance.Visible = false
         end
     end
     GuiController.CurrentWindow = nil
-end
-
-
---// Request_GuiUpdate ------------------------------------------------------------
-function GuiController:Request_GuiUpdate(requestName)
-    GuiService:Request_GuiUpdate(requestName)
-end
-
---// TimerLoop
-function GuiController:TimerLoop()
-    spawn(function()
-        local lastUpdate = 0
-        while game:GetService("RunService").Heartbeat:Wait() do
-            if lastUpdate < os.clock() - 1 then
-                for _, module in pairs(Knit.GuiModules:GetChildren()) do
-                    local thisModule = require(module)
-                    if thisModule.UpdateTimer then
-                        thisModule.UpdateTimer()
-                    end
-                end
-                lastUpdate = os.clock()
-            end
-        end
-    end)
 end
 
 
@@ -95,61 +60,43 @@ function GuiController:KnitStart()
     local playerDataBoolean = playerDataStatuses:WaitForChild(Players.LocalPlayer.UserId)
     repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true, this is set by PlayerDataService when the data is fully loaded for this player
 
-    -- do some setups
-    GuiController.InventoryWindow.Setup()
-    GuiController.StoragePanel.Setup()
-    GuiController.ItemPanel.Setup()
-    GuiController.CurrencyBar.Setup()
-    --GuiController.BoostPanel.Setup()
-    GuiController.StandReveal.Setup()
-    GuiController.BottomGui.Setup()
-    GuiController.LeftGui.Setup()
-    GuiController.RightGui.Setup()
-    GuiController.Notifications.Setup()
-    GuiController.SettingsWindow.Setup()
-    GuiController.CodesWindow.Setup()
-    GuiController.NPCDialogueWindow.Setup()
-    GuiController.ShopWindow.Setup()
-    GuiController.ItemFinderWindow.Setup()
-
-    -- request Gui Updates
-    self:Request_GuiUpdate("Currency")
-    self:Request_GuiUpdate("SoulOrb")
-    self:Request_GuiUpdate("ItemPanel")
-    self:Request_GuiUpdate("ItemFinderWindow")
-    self:Request_GuiUpdate("RightGui")
+    for i, v in pairs(GuiController.Modules) do
+        if v.Setup() then
+            v.Setup()
+        end
+    end
 
     -- connect events
     GuiService.Event_Update_Notifications:Connect(function(params)
-        GuiController.Notifications.Update(params)
+        GuiController.Modules.Notifications.Update(params)
     end)
 
     GuiService.Event_Update_Currency:Connect(function(data)
-        GuiController.CurrencyBar.Update(data)
+        GuiController.Modules.CurrencyBar.Update(data)
     end)
 
     GuiService.Event_Update_BottomGUI:Connect(function(data, params)
-        GuiController.BottomGui.Update(data, params)
+        GuiController.Modules.BottomGui.Update(data, params)
     end)
 
     GuiService.Event_Update_StandReveal:Connect(function(standData, params)
-        GuiController.StandReveal.Update(standData, params)
+        --GuiController.StandReveal.Update(standData, params)
     end)
 
     GuiService.Event_Update_StoragePanel:Connect(function(currentStand, storageData, hasGamePass, isInZone)
-        GuiController.StoragePanel.Update(currentStand, storageData, hasGamePass, isInZone)
+        GuiController.Modules.Storage.Update(currentStand, storageData, hasGamePass, isInZone)
     end)
 
     GuiService.Event_Update_StoragePanel_Access:Connect(function(hasGamePass, isInZone)
-        GuiController.StoragePanel.Update_Access(hasGamePass, isInZone)
+        GuiController.Modules.Storage.Update_Access(hasGamePass, isInZone)
     end)
 
     GuiService.Event_Update_Cooldown:Connect(function(params)
-        GuiController.BottomGui.UpdateCooldown(params)
+        --GuiController.Modules.BottomGui.UpdateCooldown(params)
     end)
 
     GuiService.Event_Update_ItemPanel:Connect(function(data)
-        GuiController.ItemPanel.Update(data)
+        GuiController.Modules.Items.Update(data)
     end)
 
     --[[
@@ -159,19 +106,19 @@ function GuiController:KnitStart()
     ]]--
 
     GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, expirationTime)
-        GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
+        --GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
     end)
 
     GuiService.Event_Update_RightGui:Connect(function(pvpToggle, params)
-        GuiController.RightGui.Update(pvpToggle, params)
+        --GuiController.RightGui.Update(pvpToggle, params)
     end)
-
-    self:TimerLoop()
 
 end
 
 --// KnitInit ------------------------------------------------------------
 function GuiController:KnitInit()
+
+    StarterGui:SetCore("ChatWindowPosition", UDim2.new(0,0,0.25,0))
 
 end
 

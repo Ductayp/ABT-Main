@@ -20,6 +20,7 @@ local localPlayer = game.Players.LocalPlayer
 local character
 local humanoid
 
+
 --// SendToPowersService
 function InputController:SendToPowersService(params)
 
@@ -29,6 +30,7 @@ function InputController:SendToPowersService(params)
 
 end
 
+--// MouseSetup
 function InputController:MouseSetup()
 
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -72,6 +74,8 @@ function InputController:KeyboardSetup()
             InputController:SendToPowersService({InputId = "X", KeyState = "InputBegan"})
         elseif input.KeyCode == Enum.KeyCode.C then
             InputController:SendToPowersService({InputId = "C", KeyState = "InputBegan"})
+        elseif input.KeyCode == Enum.KeyCode.M then
+            Knit.Controllers.GuiController.Modules.MainMenu:Toggle()
         end
     end)
 

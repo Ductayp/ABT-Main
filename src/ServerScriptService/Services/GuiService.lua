@@ -136,7 +136,7 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         self.Client.Event_Update_StoragePanel_Access:Fire(player, hasGamePass, isInZone)
     end
 
-    if requestName == "ItemPanel" then 
+    if requestName == "ItemsWindow" then 
         self.Client.Event_Update_ItemPanel:Fire(player, playerData.ItemInventory)
     end
 

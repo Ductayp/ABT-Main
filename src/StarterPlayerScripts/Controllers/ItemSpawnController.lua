@@ -19,21 +19,14 @@ local spawnedItemsFolder = Workspace:WaitForChild("SpawnedItems")
 --// UpdateItemFinder
 function ItemSpawnController:UpdateItemFinder()
 
-    --[[
-    local hasFinder
-    if GamePassService:Has_GamePass("ItemFinder") or BoostService:Has_Boost("ItemFinder") then
-        hasFinder = true
-    else
-        hasFinder = false
-    end
-    ]]--
-
     local hasFinder
     if GamePassService:Has_GamePass("ItemFinder") then
         hasFinder = true
     else
         hasFinder = false
     end
+
+    --[[
         
     if Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys ~= nil then
         for itemKey, itemBool in pairs(Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys) do
@@ -74,6 +67,7 @@ function ItemSpawnController:UpdateItemFinder()
             end
         end
     end
+    ]]--
 
 end
 

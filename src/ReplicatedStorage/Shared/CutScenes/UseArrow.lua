@@ -44,7 +44,9 @@ function UseArrow.Server_Run(params)
     spawn(function()
         Knit.Services.PlayerUtilityService.PlayerAnimations[params.TargetPlayer.UserId].UseArrow.Stopped:wait()
         Knit.Services.PowersService:ActivatePower(params.TargetPlayer, powerParams)
+
         wait(2)
+
         newArrow:Destroy()
     end)
 
@@ -64,6 +66,7 @@ function UseArrow.Server_End(params)
 
     params.CanRun = true
     return params
+
 end
 
 --// Client_Run
@@ -73,9 +76,11 @@ function UseArrow.Client_Run(params)
 
     if not Players.LocalPlayer.Character then return end
 
-    require(Knit.GuiModules.BottomGui).HideStand()
+    Knit.Controllers.GuiController.Modules.StandData.HideStand()
+    Knit.Controllers.GuiController.Modules.AbilityBar.HideAbilities()
 
     --print("MODULE RUN SCENE", params)
+    Knit.Controllers.GuiController.Modules.ShiftLock.SetOff()
     local camera = Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Scriptable
 
@@ -85,15 +90,14 @@ function UseArrow.Client_Run(params)
     local cameraTween = TweenService:Create(camera, TweenInfo.new(.5), {CFrame = cameraCFrame})
     cameraTween:Play()
 
-
-    --camera.CFrame = utils.LookAt(eye, target)
 end
 
 --// Client_End
 function UseArrow.Client_End(params)
     local camera = Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Custom 
-    require(Knit.GuiModules.BottomGui).ShowStand()
+    Knit.Controllers.GuiController.Modules.StandData.ShowStand()
+    Knit.Controllers.GuiController.Modules.AbilityBar.ShowAbilities()
 end
 
 

@@ -22,6 +22,17 @@ local AbilityBar = {}
 
 AbilityBar.Frame_Main = mainGui:FindFirstChild("AbilityBar", true)
 
+AbilityBar.Frames = {
+    Q = AbilityBar.Frame_Main:FindFirstChild("Frame_Q", true),
+    E = AbilityBar.Frame_Main:FindFirstChild("Frame_E", true),
+    R = AbilityBar.Frame_Main:FindFirstChild("Frame_R", true),
+    T = AbilityBar.Frame_Main:FindFirstChild("Frame_T", true),
+    F = AbilityBar.Frame_Main:FindFirstChild("Frame_F", true),
+    Z = AbilityBar.Frame_Main:FindFirstChild("Frame_Z", true),
+    X = AbilityBar.Frame_Main:FindFirstChild("Frame_X", true),
+    C = AbilityBar.Frame_Main:FindFirstChild("Frame_C", true)
+}
+
 AbilityBar.Buttons = {
     Q = AbilityBar.Frame_Main:FindFirstChild("Button_Q", true),
     E = AbilityBar.Frame_Main:FindFirstChild("Button_E", true),
@@ -82,13 +93,20 @@ end
 --// Update ------------------------------------------------------------
 function AbilityBar.Update(data, params)
     
-    --print("AbilityBar.Update", data)
+    print("AbilityBar.Update", data)
 
     local currentPowerModule = require(Knit.Powers[data.CurrentStand.Power])
 
     -- setup the ability buttons
     for i, v in pairs(currentPowerModule.Defs.KeyMap) do
-        AbilityBar.AbilityNames[i].Text = v.AbilityName
+        if v.AbilityName == "-" then
+            AbilityBar.Buttons[i].Parent.Visible = false
+            AbilityBar.AbilityNames[i].Text = v.AbilityName
+        else
+            AbilityBar.Buttons[i].Parent.Visible = true
+            AbilityBar.AbilityNames[i].Text = v.AbilityName
+        end
+        
     end
     
 end
@@ -113,10 +131,26 @@ function AbilityBar.UpdateCooldown(params)
     if tweenTime <= 1 then
         tweenTime = 1
     end
-    --local cooldownTween = TweenService:Create(thisCooldown,TweenInfo.new(tweenTime),{Size = EMPTY_COOLDOWN_SIZE})
+
     local cooldownTween = TweenService:Create(thisCooldown,TweenInfo.new(tweenTime),{Size = EMPTY_COOLDOWN_SIZE})
     cooldownTween:Play()
     
+end
+
+function AbilityBar.HideAbilities()
+    for _, abilityName in pairs(AbilityBar.AbilityNames) do
+        abilityName.Visible = false
+    end
+end
+
+function AbilityBar.ShowAbilities()
+    for _, abilityName in pairs(AbilityBar.AbilityNames) do
+        if abilityName.Text == "-" then
+            abilityName.Visible = false
+        else
+            abilityName.Visible = true
+        end
+    end
 end
 
 return AbilityBar

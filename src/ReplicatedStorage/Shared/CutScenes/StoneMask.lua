@@ -38,6 +38,8 @@ function StoneMask.Client_Run(params)
 
     --print("StoneMask.Client_Run", params)
 
+    
+
     if params.TargetPlayer == Players.LocalPlayer then
 
         if not Players.LocalPlayer.Character then return end
@@ -48,7 +50,10 @@ function StoneMask.Client_Run(params)
             StoneMask.ShowCharacters()
         end)
 
-        require(Knit.GuiModules.BottomGui).HideStand()
+        Knit.Controllers.GuiController.Modules.StandData.HideStand()
+        Knit.Controllers.GuiController.Modules.AbilityBar.HideAbilities()
+
+        Knit.Controllers.GuiController.Modules.ShiftLock.SetOff()
         local camera = Workspace.CurrentCamera
         camera.CameraType = Enum.CameraType.Scriptable
     
@@ -56,6 +61,7 @@ function StoneMask.Client_Run(params)
         local eye = Players.LocalPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(6, 3, -11)).Position
         local cameraCFrame = utils.LookAt(eye, target)
         local cameraTween1 = TweenService:Create(camera, TweenInfo.new(.5), {CFrame = cameraCFrame})
+
         cameraTween1.Completed:Connect(function()
             local target = Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 1, 0)
             local eye = Players.LocalPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(6, 3, -7)).Position
@@ -63,6 +69,7 @@ function StoneMask.Client_Run(params)
             local cameraTween2 = TweenService:Create(camera, TweenInfo.new(3), {CFrame = cameraCFrame})
             cameraTween2:Play()
         end)
+        
         cameraTween1:Play()
 
         local redCC = ReplicatedStorage.EffectParts.CutScenes.StoneMask.ColorCorrection_Red:Clone()
@@ -90,7 +97,10 @@ function StoneMask.Client_Run(params)
 
             wait(1)
             camera.CameraType = Enum.CameraType.Custom 
-            require(Knit.GuiModules.BottomGui).ShowStand()
+
+            Knit.Controllers.GuiController.Modules.StandData.ShowStand()
+            Knit.Controllers.GuiController.Modules.AbilityBar.ShowAbilities()
+
             satCC:Destroy()
         end)
     

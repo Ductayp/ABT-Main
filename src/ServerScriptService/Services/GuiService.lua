@@ -113,17 +113,6 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         self.Client.Event_Update_Currency:Fire(player, playerData.Currency)
     end
 
-    --[[
-
-    if requestName == "BottomGUI" then
-        local data = {}
-        data.CurrentStand = playerData.CurrentStand
-        data.CurrentHealth = player.Character.Humanoid.Health
-        data.MaxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
-        self.Client.Event_Update_BottomGUI:Fire(player, data, optionalParams)
-    end
-    ]]--
-
     if requestName == "AbilityBar" then
         local data = {}
         data.CurrentStand = playerData.CurrentStand
@@ -160,6 +149,7 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "ItemFinderWindow" then 
+        print("BEEPERS!")
         local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "ItemFinder")
         --local hasBoost, expirationTime = Knit.Services.BoostService:Has_Boost(player, "ItemFinder")
         self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass)

@@ -20,6 +20,9 @@ MainMenu.Button_Close = MainMenu.Frame:FindFirstChild("Button_Close", true)
 
 MainMenu.Button_Storage = MainMenu.Frame:FindFirstChild("Button_Storage", true)
 MainMenu.Button_Items = MainMenu.Frame:FindFirstChild("Button_Items", true)
+MainMenu.Button_Codes = MainMenu.Frame:FindFirstChild("Button_Codes", true)
+MainMenu.Button_Shop = MainMenu.Frame:FindFirstChild("Button_Shop", true)
+MainMenu.Button_ItemFinder = MainMenu.Frame:FindFirstChild("Button_ItemFinder", true)
 
 
 
@@ -38,6 +41,18 @@ function MainMenu.Setup()
 
     MainMenu.Button_Items.MouseButton1Down:Connect(function()
         Knit.Controllers.GuiController.Modules.Items.Open()
+    end)
+
+    MainMenu.Button_Codes.MouseButton1Down:Connect(function()
+        Knit.Controllers.GuiController.Modules.Codes.Open()
+    end)
+
+    MainMenu.Button_Shop.MouseButton1Down:Connect(function()
+        Knit.Controllers.GuiController.Modules.Shop.Open()
+    end)
+
+    MainMenu.Button_ItemFinder.MouseButton1Down:Connect(function()
+        Knit.Controllers.GuiController.Modules.ItemFinder.Open()
     end)
 
 end

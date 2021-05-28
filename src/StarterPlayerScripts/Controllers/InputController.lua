@@ -102,16 +102,20 @@ function InputController:KeyboardSetup()
     end)
 end
 
+--[[
 function InputController:MobileSetup()
 
-    PlayerGui.MainGui.MobileRight.Frame.Visible = true
+    local punchButton = PlayerGui.MainGui.MobileBottomRight.Button_Punch
 
-    PlayerGui.MainGui.MobileRight.Frame.PunchButton.MouseButton1Down:Connect(function()
+    punchButton.Visible = true
+
+    punchButton.MouseButton1Down:Connect(function()
         --print("MobileClicked", buttonInstance.Name)
         self:SendToPowersService({InputId = "Mouse1", KeyState = "InputBegan"})
     end)
 
 end
+]]--
 
 
 function InputController:CharacterAdded(newCharacter)
@@ -132,9 +136,11 @@ function InputController:KnitStart()
         self:CharacterAdded(newCharacter)
     end)
 
+    --[[
     if UserInputService.TouchEnabled then
         self:MobileSetup()
     end
+    ]]--
 
 end
 

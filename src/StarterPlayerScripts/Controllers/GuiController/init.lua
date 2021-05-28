@@ -86,7 +86,7 @@ function GuiController:KnitStart()
     end)
 
     GuiService.Event_Update_StandReveal:Connect(function(standData, params)
-        --GuiController.StandReveal.Update(standData, params)
+        GuiController.Modules.StandReveal.Update(standData, params)
     end)
 
     GuiService.Event_Update_StoragePanel:Connect(function(currentStand, storageData, hasGamePass, isInZone)
@@ -116,7 +116,7 @@ function GuiController:KnitStart()
     ]]--
 
     GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, expirationTime)
-        --GuiController.ItemFinderWindow.Update(hasGamePass, hasBoost, expirationTime)
+        GuiController.Modules.ItemFinder.Update(hasGamePass, hasBoost, expirationTime)
     end)
 
     --[[

@@ -18,7 +18,33 @@ local Standless = {}
 Standless.Defs = {
     PowerName = "Standless",
     BaseSacrificeValue = 0,
-    Abilities = {} -- ability defs are inside each ability function area
+    Abilities = {}, -- ability defs are inside each ability function area
+    KeyMap = {
+        Q = {
+            AbilityName = "-"
+        },
+        E = {
+            AbilityName = "-"
+        },
+        F = {
+            AbilityName = "-"
+        },
+        T = {
+            AbilityName = "-"
+        },
+        R = {
+            AbilityName = "-"
+        },
+        X = {
+            AbilityName = "-"
+        },
+        Z = {
+            AbilityName = "-"
+        },
+        C = {
+            AbilityName = "-"
+        }
+    }
 }
 
 --// SETUP - run this once when the stand is equipped

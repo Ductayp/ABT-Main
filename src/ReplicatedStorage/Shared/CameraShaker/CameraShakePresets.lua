@@ -29,6 +29,15 @@ local CameraShakePresets = {
 		c.RotationInfluence = Vector3.new(1, 1, 1)
 		return c
 	end;
+
+		-- A high-magnitude, short, yet smooth shake.
+	-- Should happen once.
+	Damage = function()
+		local c = CameraShakeInstance.new(1.5, 12, 0, 0.5)
+		c.PositionInfluence = Vector3.new(0.15, 0.15, 0.15)
+		c.RotationInfluence = Vector3.new(1, 1, 1)
+		return c
+	end;
 	
 	
 	-- An intense and rough shake.

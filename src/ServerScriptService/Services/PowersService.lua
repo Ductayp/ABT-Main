@@ -215,7 +215,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
         if mobIdObject then
 
             local thisMob = Knit.Services.MobService:GetMobById(mobIdObject.Value)
-            print(thisMob)
+            
             if thisMob then
 
                 --print("mapzones", thisMob.Defs.MapZone,intiPlayer_MapZone )

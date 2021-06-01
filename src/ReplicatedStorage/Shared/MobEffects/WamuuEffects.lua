@@ -13,7 +13,7 @@ local WamuuEffects = {}
 
 function WamuuEffects.Tornado(params)
 
-    print("TORNADO", params)
+    --print("TORNADO", params)
 
 
     local mobHRP = params.MobModel:FindFirstChild("HumanoidRootPart", true)

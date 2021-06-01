@@ -109,6 +109,10 @@ function GuiController:KnitStart()
         GuiController.Modules.Items.Update(data)
     end)
 
+    GuiService.Event_Update_CraftingWindow:Connect(function(inventoryData, currencyData)
+        GuiController.Modules.Crafting.Update(inventoryData, currencyData)
+    end)
+
     --[[
     GuiService.Event_Update_BoostPanel:Connect(function(data)
         GuiController.BoostPanel.Update(data)
@@ -119,11 +123,10 @@ function GuiController:KnitStart()
         GuiController.Modules.ItemFinder.Update(hasGamePass, hasBoost, expirationTime)
     end)
 
-    --[[
-    GuiService.Event_Update_RightGui:Connect(function(pvpToggle, params)
-        --GuiController.RightGui.Update(pvpToggle, params)
+    GuiService.Event_Update_PvPToggle:Connect(function(pvpToggle, params)
+        GuiController.Modules.MainMenu.Update_PvPButton(pvpToggle, params)
     end)
-    ]]--
+
 
 end
 

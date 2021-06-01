@@ -149,7 +149,7 @@ function  Wamuu_Mob.Attack(mobData)
 
         if randAttack == 5 then
 
-            print("SPECIAL ATTACK!")
+            --print("SPECIAL ATTACK!")
 
             local abilityScript = Knit.Shared.MobEffects.WamuuEffects
 

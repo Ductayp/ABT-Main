@@ -121,7 +121,7 @@ end
 --// Update ------------------------------------------------------------
 function ItemFinder.Update(hasGamePass)
 
-    print("YEET UPDATE IT")
+    --print("YEET UPDATE IT")
 
     if hasGamePass then
         ItemFinder.Frame_Blocker.Visible = false

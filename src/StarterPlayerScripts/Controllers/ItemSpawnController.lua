@@ -26,10 +26,10 @@ function ItemSpawnController:UpdateItemFinder()
         hasFinder = false
     end
 
-    --[[
+    local activeFinderKeys = Knit.Controllers.GuiController.Modules.ItemFinder.ActiveKeys
         
-    if Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys ~= nil then
-        for itemKey, itemBool in pairs(Knit.Controllers.GuiController.ItemFinderWindow.ActiveKeys) do
+    if activeFinderKeys ~= nil then
+        for itemKey, itemBool in pairs(activeFinderKeys) do
             for _, item in pairs(spawnedItemsFolder:GetChildren()) do
 
                 -- if this item.Name and key match, make a new beam and attachments
@@ -67,7 +67,7 @@ function ItemSpawnController:UpdateItemFinder()
             end
         end
     end
-    ]]--
+
 
 end
 

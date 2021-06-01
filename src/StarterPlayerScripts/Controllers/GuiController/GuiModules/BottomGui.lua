@@ -17,7 +17,6 @@ local utils = require(Knit.Shared.Utils)
 local PlayerGui = Players.LocalPlayer.PlayerGui
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
-print("MAIN GUI", mainGui)
 local BottomGui = {}
 
 BottomGui.Frame_Main = mainGui:FindFirstChild("BottomGui", true)

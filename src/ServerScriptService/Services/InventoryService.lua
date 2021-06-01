@@ -55,6 +55,7 @@ function InventoryService:Give_Currency(player, key, value, source)
 
     -- update the gui
     Knit.Services.GuiService:Update_Gui(player, "Currency")
+    Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
 
 end
 
@@ -86,7 +87,8 @@ function InventoryService:Give_Item(player, key, quantity)
     playerData.ItemInventory[key] += quantity
 
     -- update item panel
-    Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+    Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
+    Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
 
 end
 
@@ -96,7 +98,7 @@ function InventoryService:Give_Xp(player, xpValue)
 
     -- check if player has any bonuses
     local multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
-    --print("XP Multiplier is: ", multiplier)
+    print("XP Multiplier is: ", multiplier)
 
     -- multiply the value
     xpValue = xpValue * multiplier
@@ -129,7 +131,7 @@ function InventoryService:Give_Xp(player, xpValue)
 
     playerData.CurrentStand.Xp += xpValue
 
-    Knit.Services.GuiService:Update_Gui(player, "BottomGUI")
+    Knit.Services.GuiService:Update_Gui(player, "StandData")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
     if maxXpReached then
@@ -144,7 +146,7 @@ end
 --// USeItem
 function InventoryService:UseItem(player, key)
 
-    --print(player, " is trying to use: ", key)
+    print(player, " is trying to use: ", key)
 
     local returnMessage
 
@@ -199,6 +201,7 @@ function InventoryService:UseItem(player, key)
         playerData.ItemInventory[key] += - 1
 
         Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+        Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
 
         local returnMessage = "Used Arrow"
         return returnMessage
@@ -207,7 +210,7 @@ function InventoryService:UseItem(player, key)
 
     if thisItem.Type == "Evolution" then
 
-        if key == "SoulKey" then
+        if key == "GoldStar" then
 
             if playerData.CurrentStand.Power == "Standless" then
                 local returnMessage = "You are Standless"
@@ -475,6 +478,81 @@ function InventoryService:BuyStorage(player)
     return results
 end
 
+--// CraftItem
+function InventoryService:CraftItem(player, params)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData then return end
+
+    local returnMessage = "FAIL" -- default message
+
+    local thisRecipe = require(Knit.Defs.CraftingDefs)[params.ReceipeKey]
+    if not thisRecipe then
+        warn("Crafting Recipe not found")
+    end
+
+    -- check if player has all ingredients
+    local canCraft = true
+    for _, inputItem in pairs(thisRecipe.InputItems) do
+
+        if inputItem.Key == "Cash" or inputItem.Key == "SoulOrbs" then
+            if playerData.Currency[inputItem.Key] < inputItem.Value then
+                canCraft = false
+                break
+            end
+        else
+            if playerData.ItemInventory[inputItem.Key] < inputItem.Value then
+                canCraft = false
+                break
+            end
+        end
+    end
+
+    -- if canCraft then do the crafting
+    if canCraft then
+
+        for _, inputItem in pairs(thisRecipe.InputItems) do
+            if inputItem.Key == "Cash" or inputItem.Key == "SoulOrbs" then
+                playerData.Currency[inputItem.Key] = playerData.Currency[inputItem.Key] - inputItem.Value
+            else
+                playerData.ItemInventory[inputItem.Key] = playerData.ItemInventory[inputItem.Key] - inputItem.Value
+            end
+        end
+
+        for _, outputItem in pairs(thisRecipe.OutputItems) do
+            
+            if outputItem.Key == "Cash" or outputItem.Key == "SoulOrbs" then
+                playerData.Currency[outputItem.Key] += outputItem.Value
+            else
+                playerData.ItemInventory[outputItem.Key] += outputItem.Value
+            end
+
+            -- update notifications
+            local notificationParams = {}
+            notificationParams.Icon = "Item"
+            notificationParams.Text = "You Crafted: " .. outputItem.Name
+            Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+
+        end
+
+        returnMessage = "SUCCESS"
+    end
+
+    if not canCraft then
+        returnMessage = "MISSING ITEMS"
+    end
+
+    --Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+    Knit.Services.GuiService:Update_Gui(player, "Currency")
+    Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+    Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
+
+
+    
+    return returnMessage
+
+end
+
 --// NPCTransaction
 function InventoryService:NPCTransaction(player, params)
 
@@ -513,7 +591,7 @@ function InventoryService:NPCTransaction(player, params)
 
     -- if success, give the output stuff
     if success then
-        if outputKey == "Cash" or outputKey == "SoulOrbs"then
+        if outputKey == "Cash" or outputKey == "SoulOrbs" then
             playerData.Currency[outputKey] = playerData.Currency[outputKey] + outputValue
         else
             if playerData.ItemInventory[outputKey] == nil then
@@ -558,6 +636,12 @@ end
 --// Client:UseItem
 function InventoryService.Client:UseItem(player, key)
     local returnMessage = self.Server:UseItem(player, key)
+    return returnMessage
+end
+
+--// Client:CraftItem
+function InventoryService.Client:CraftItem(player, params)
+    local returnMessage = self.Server:CraftItem(player, params)
     return returnMessage
 end
 
@@ -607,7 +691,7 @@ end
 
 --// Client:UpgradeStandRank
 function InventoryService.Client:UpgradeStandRank(player, standGUID)
-    result = self.Server:UpgradeStandRank(player, standGUID)
+    local result = self.Server:UpgradeStandRank(player, standGUID)
     return result
 end
 

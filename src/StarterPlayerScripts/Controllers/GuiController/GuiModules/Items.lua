@@ -22,6 +22,7 @@ local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 local Items = {}
 
 -- local variables
+local inventoryData
 local currentItemKey -- used to store the key of the active info card.
 local currentItemType -- store the item type of tha active item card
 
@@ -111,15 +112,16 @@ function Items.Close()
 end
 
 --// Update ------------------------------------------------------------
-function Items.Update(inventoryData)
-    Items.Update_ItemList(inventoryData)
-    Items.Update_ItemFinder()
+function Items.Update(data)
+
+    inventoryData = data
+    Items.Update_ItemList()
 end
 
 --// UpdateItemList ------------------------------------------------------------
-function Items.Update_ItemList(inventoryData)
+function Items.Update_ItemList()
 
-    --print("inventoryData", inventoryData)
+    print("UPDATE ITEM LIST")
 
     -- destroy the old items in the list
     for _, item in pairs(Items.Item_List:GetChildren()) do
@@ -145,6 +147,7 @@ function Items.Update_ItemList(inventoryData)
         else
             quantityOwned = inventoryData[itemDefKey]
         end
+        print("KEY VALUE", itemDefKey, inventoryData[itemDefKey])
         newListItem:FindFirstChild("Item_Quantity", true).Text = quantityOwned
 
         newListItem.Visible = true
@@ -199,10 +202,6 @@ function Items.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
     end
 end
 
---// UpdateItemFinder ------------------------------------------------------------
-function Items.Update_ItemFinder()
-
-end
 
 --// Request_UseArrow ------------------------------------------------------------
 function Items.Request_UseArrow(params, button)

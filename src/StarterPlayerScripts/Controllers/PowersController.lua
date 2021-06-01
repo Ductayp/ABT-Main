@@ -129,7 +129,6 @@ end
 --// RenderExistingStands
 function PowersController:RenderExistingStands()
     
-    print("RenderExisting-PowersController")
     for _, folder in pairs(ReplicatedStorage.PowerStatus:GetChildren()) do
 
         -- only run this on other players

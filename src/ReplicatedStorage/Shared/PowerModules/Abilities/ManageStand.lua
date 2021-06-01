@@ -143,7 +143,7 @@ end
 --// equips a stand for the target player
 function ManageStand.EquipStand(params, abilityDefs)
 
-	print("EquipStand", params, abilityDefs)
+	--print("EquipStand", params, abilityDefs)
 
 	-- some setup and definitions
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)

@@ -14,7 +14,6 @@ local utils = require(Knit.Shared.Utils)
 local PlayerGui = Players.LocalPlayer.PlayerGui
 local mainGui = PlayerGui:WaitForChild("MainGui", 120)
 
-print("MAIN GUI", mainGui)
 local StandData = {}
 
 StandData.Frame_Main = mainGui:FindFirstChild("TopLeftGui", true)
@@ -53,7 +52,7 @@ end
 --// Update ------------------------------------------------------------
 function StandData.Update(data, params)
     
-    print("StandData.Update", data)
+    --print("StandData.Update", data)
 
     -- delete the old stand icon if it exists
     local oldIcon = StandData.Frame_Stand:FindFirstChild("StandIcon")

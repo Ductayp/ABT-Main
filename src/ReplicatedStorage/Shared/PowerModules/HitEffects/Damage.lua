@@ -79,6 +79,25 @@ end
 
 function Damage.Client_RenderEffect(params)
 
+    local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
+    if hitPlayer == Players.LocalPlayer then
+        if not params.DisableShake then
+
+            local camera = Workspace.CurrentCamera
+    
+            local camShake = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCf)
+                camera.CFrame = camera.CFrame * shakeCf
+            end)
+    
+            camShake:Start()
+    
+            -- shake settings:
+            camShake:Shake(CameraShaker.Presets.Damage)
+            --camShake:ShakeOnce(3, 1, 0.2, 1.5)
+    
+        end
+    end
+
     -- damage number
     if not params.HideNumbers then
         local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()
@@ -125,20 +144,7 @@ function Damage.Client_RenderEffect(params)
         end
     end
 
-    if not params.DisableShake then
-        local camera = Workspace.CurrentCamera
 
-        local camShake = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCf)
-            camera.CFrame = camera.CFrame * shakeCf
-        end)
-
-        camShake:Start()
-
-        -- shake settings:
-        camShake:Shake(CameraShaker.Presets.Damage)
-        --camShake:ShakeOnce(3, 1, 0.2, 1.5)
-
-    end
    
 end
 

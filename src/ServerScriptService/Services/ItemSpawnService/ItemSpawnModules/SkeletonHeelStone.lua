@@ -1,18 +1,17 @@
--- Morioh_Cash Spawn Table
--- PDab
--- 12/14/2020
+-- SkeletonHeelStoneSpawners
 
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Morioh_Cash = {}
+local SkeletonHeelStone = {}
 
-Morioh_Cash.SpawnGroupId = "Morioh_Currency"
-Morioh_Cash.Region = "Morioh"
-Morioh_Cash.MaxSpawned = 15
-Morioh_Cash.TotalSpawned = 0
+SkeletonHeelStone.Spawners = Workspace:FindFirstChild("ItemSpawners_SkeletonHeelStone", true)
+SkeletonHeelStone.MapZone = "SkeletonHeelStone"
+SkeletonHeelStone.MaxSpawned = 15
+SkeletonHeelStone.TotalSpawned = 0
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT
-Morioh_Cash.Items = {
+SkeletonHeelStone.Items = {
 
     {
         Weight = 1,
@@ -49,17 +48,7 @@ Morioh_Cash.Items = {
         }
     },
 
-    {
-        Weight = 10,
-        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
-        Params = {
-            DataKey = "SoulOrbs",
-            DataCategory = "Currency",
-            MinValue = 1,
-            MaxValue = 1,
-        },
-    }
 }
 
 
-return Morioh_Cash
+return SkeletonHeelStone

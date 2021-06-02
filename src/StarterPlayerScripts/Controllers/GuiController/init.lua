@@ -119,8 +119,8 @@ function GuiController:KnitStart()
     end)
     ]]--
 
-    GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, expirationTime)
-        GuiController.Modules.ItemFinder.Update(hasGamePass, hasBoost, expirationTime)
+    GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, mapZone)
+        GuiController.Modules.ItemFinder.Update(hasGamePass, hasBoost, mapZone)
     end)
 
     GuiService.Event_Update_PvPToggle:Connect(function(pvpToggle, params)

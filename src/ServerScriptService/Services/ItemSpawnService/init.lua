@@ -36,18 +36,22 @@ function ItemSpawnService:DoSpawns()
 
         -- reuqire this module
         local thisSpawnerModule = require(spawnerModule)
-
+        
         -- if this spawnerModule is not reached maxed spawns, then do a spawn
         if thisSpawnerModule.TotalSpawned < thisSpawnerModule.MaxSpawned then
 
-            -- fill a table with open spawners
             local openSpawners = {}
-            for _, spawner in pairs(ItemSpawnService.Spawners) do
+            for _, spawner in pairs(thisSpawnerModule.Spawners:GetChildren()) do
 
-                if spawner:GetAttribute("SpawnGroupId") == thisSpawnerModule.SpawnGroupId then
-                    if spawner:GetAttribute("ItemSpawned") == false then
-                        table.insert(openSpawners, spawner)
-                    end
+                local isSpawned = spawner:GetAttribute("ItemSpawned")
+
+                if not isSpawned then
+                    spawner:SetAttribute("ItemSpawned", false)
+                    isSpawned = false
+                end
+
+                if isSpawned == false then
+                    table.insert(openSpawners, spawner)
                 end
             end
 
@@ -74,10 +78,7 @@ function ItemSpawnService:DoSpawns()
             end
 
             -- spawn the item
-            self:SpawnItem(pickedSpawner, pickedItem)
-
-            -- increment the spawn groups counter
-            thisSpawnerModule.TotalSpawned = thisSpawnerModule.TotalSpawned + 1
+            self:SpawnItem(pickedSpawner, pickedItem, thisSpawnerModule)
 
             -- clear the variable when we are done
             openSpawners = nil
@@ -87,7 +88,7 @@ function ItemSpawnService:DoSpawns()
 end
 
 --// SpawnItem --------------------------------------------------------------------------------------------
-function ItemSpawnService:SpawnItem(spawner, itemDefs)
+function ItemSpawnService:SpawnItem(spawner, itemDefs, spawnerModule)
 
     -- spawn item
     local item = itemDefs.Model:Clone()
@@ -106,6 +107,12 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs)
     newBeam.Parent = item
     newBeam.Enabled = false
 
+    -- set MapZone for item
+    item:SetAttribute("MapZone", spawnerModule.MapZone)
+
+    -- increment the spawn groups counter
+    spawnerModule.TotalSpawned = spawnerModule.TotalSpawned + 1
+
     spawner:SetAttribute("ItemSpawned", true)
 
     -- create a new TouchInterest
@@ -119,8 +126,7 @@ function ItemSpawnService:SpawnItem(spawner, itemDefs)
 
                 spawner:SetAttribute("ItemSpawned", false)
 
-                local spawnGroupModule = require(script.ItemSpawnModules[spawner:GetAttribute("SpawnGroupId")])
-                spawnGroupModule.TotalSpawned = spawnGroupModule.TotalSpawned - 1
+                spawnerModule.TotalSpawned = spawnerModule.TotalSpawned - 1
 
             end
         end
@@ -230,6 +236,7 @@ function ItemSpawnService:GiveItem(player, itemParams)
     
 end
 
+--[[
 --------------------------------------------------------------------------------------------------------------------------
 --// ITEM FINDER ---------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------
@@ -253,6 +260,8 @@ end
 function ItemSpawnService.Client:Toggle_ItemInFinder(player, itemKey)
     self.Services:Toggle_ItemInFinder(player, itemKey)
 end
+]]--
+
 
 --------------------------------------------------------------------------------------------------------------------------
 --// KNIT ---------------------------------------------------------------------------------------------------------
@@ -286,22 +295,6 @@ function ItemSpawnService:KnitInit()
     local spawnedItemsFolder = Instance.new("Folder")
     spawnedItemsFolder.Name = "SpawnedItems"
     spawnedItemsFolder.Parent = Workspace
-
-    -- setup all the spawners
-    for _, instance in pairs(Workspace:GetDescendants()) do
-        if instance.Name == "ItemSpawnService" then
-            for _, groupFolder in pairs(instance:GetChildren()) do
-                for _, spawner in pairs(groupFolder:GetChildren()) do
-                    if spawner:IsA("Part") then
-                        --spawner.Transparency = 1
-                        spawner:SetAttribute("SpawnGroupId", groupFolder.Name)
-                        spawner:SetAttribute("ItemSpawned", false)
-                        table.insert(ItemSpawnService.Spawners, spawner)
-                    end
-                end
-            end
-        end
-    end
 
 end
 

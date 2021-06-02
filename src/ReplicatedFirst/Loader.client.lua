@@ -3,6 +3,13 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ContentProvider = game:GetService("ContentProvider")
 
+local enabledBool = ReplicatedFirst:FindFirstChild("LoadingScreenEnabled")
+if enabledBool then
+    if enabledBool.Value == false then
+        return
+    end
+end
+
 local LoadingScreen = ReplicatedFirst:WaitForChild("LoadingScreen", true)
 
 Players.LocalPlayer:WaitForChild("PlayerGui")

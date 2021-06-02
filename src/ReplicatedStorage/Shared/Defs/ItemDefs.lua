@@ -10,15 +10,6 @@ return {
         LayoutOrder = 1,
     },
 
-    --[[
-    SoulKey = {
-        Name = "Soul Key",
-        Type = "Evolution",
-        Description = "Unlocks the potential of a stand/spec.<br /><br />Simply use this item when your XP bar is full to rank the stand/spec up to a max of rank 3.",
-        LayoutOrder = 2,
-    },
-    ]]--
-
     GoldStar = {
         Name = "Gold Star",
         Type = "Evolution",
@@ -31,7 +22,16 @@ return {
         Type = "Special",
         GivePower = "Vampire",
         CutScene = "StoneMask",
-        Description = "<b>VAMPIRIC!</b><br/>Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they impbue mere humans with such great power?",
+        Description = "<b>VAMPIRIC!</b><br/>Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they imbue mere humans with such great power?",
+        LayoutOrder = 3
+    },
+
+    HornedMask = {
+        Name = "Horned Mask",
+        Type = "Special",
+        GivePower = "PillarMan",
+        CutScene = "StoneMask",
+        Description = "Use this item while you have Vampire Spec. to get Pillar Man Spec.<br/><br/>MORE TEXT HERE?",
         LayoutOrder = 3
     },
 
@@ -66,8 +66,6 @@ return {
         LayoutOrder = 6
     },
     ]]--
-
-
 
     BrokenArrow = {
         Name = "Broken Arrow",

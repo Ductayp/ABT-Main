@@ -8,7 +8,8 @@ local Workspace = game:GetService("Workspace")
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local ItemSpawnController = Knit.CreateController { Name = "ItemSpawnController" }
-local ItemSpawnService = Knit.GetService("ItemSpawnService")
+--local ItemSpawnService = Knit.GetService("ItemSpawnService")
+local PlayerUtilityService = Knit.GetService("PlayerUtilityService")
 local GamePassService = Knit.GetService("GamePassService")
 --local BoostService = Knit.GetService("BoostService")
 local utils = require(Knit.Shared.Utils)
@@ -27,6 +28,7 @@ function ItemSpawnController:UpdateItemFinder()
     end
 
     local activeFinderKeys = Knit.Controllers.GuiController.Modules.ItemFinder.ActiveKeys
+    local playerMapZone = PlayerUtilityService:GetPlayerMapZone(Players.LocalPlayer)
         
     if activeFinderKeys ~= nil then
         for itemKey, itemBool in pairs(activeFinderKeys) do
@@ -35,7 +37,6 @@ function ItemSpawnController:UpdateItemFinder()
                 -- if this item.Name and key match, make a new beam and attachments
                 if item.Name == itemKey then
                     
-                    -- find or create item attachment
                     local itemAttchment = item:FindFirstChild("ItemAttachment")
                     if not itemAttchment then
                         itemAttchment = Instance.new("Attachment")
@@ -51,12 +52,21 @@ function ItemSpawnController:UpdateItemFinder()
                         playerAttachment.Parent = Players.LocalPlayer.Character.HumanoidRootPart
                     end
 
-                    -- find
+                    -- check if the players zone matches the items zone
+                    local inZone = false
+                    local itemMapZone = item:GetAttribute("MapZone")
+                    if itemMapZone == playerMapZone then
+                        inZone = true
+                    end
+
+                    -- find the beam
                     local itemBeam = item:FindFirstChild("ItemBeam")
                     if itemBeam then
                         itemBeam.Attachment0 = itemAttchment
                         itemBeam.Attachment1 = playerAttachment
-                        if hasFinder then
+
+                         -- do the beam if inZone
+                        if inZone and hasFinder then
                             itemBeam.Enabled = itemBool
                         else
                             itemBeam.Enabled = false
@@ -67,8 +77,6 @@ function ItemSpawnController:UpdateItemFinder()
             end
         end
     end
-
-
 end
 
 

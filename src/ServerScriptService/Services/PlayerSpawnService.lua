@@ -39,6 +39,11 @@ function PlayerSpawnService:SetPlayerSpawn(player, spawnName, respawn)
         player.Character.Humanoid.Health = 0
     end
 
+    
+    Knit.Services.PlayerUtilityService.PlayerMapZone[player.UserId] = spawnName
+    print("BEEP DEEPE", Knit.Services.PlayerUtilityService.PlayerMapZone[player.UserId])
+    Knit.Services.GuiService:Update_Gui(player, "ItemFinderWindow")
+
 end
 
 --// TransportToSpawn - SERVER ONLY!!!! Can take a player to any spawners

@@ -121,8 +121,6 @@ end
 --// UpdateItemList ------------------------------------------------------------
 function Items.Update_ItemList()
 
-    print("UPDATE ITEM LIST")
-
     -- destroy the old items in the list
     for _, item in pairs(Items.Item_List:GetChildren()) do
         if item.name == "List_Item" then
@@ -147,7 +145,7 @@ function Items.Update_ItemList()
         else
             quantityOwned = inventoryData[itemDefKey]
         end
-        print("KEY VALUE", itemDefKey, inventoryData[itemDefKey])
+        
         newListItem:FindFirstChild("Item_Quantity", true).Text = quantityOwned
 
         newListItem.Visible = true

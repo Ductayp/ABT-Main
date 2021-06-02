@@ -38,6 +38,7 @@ ItemFinder.Button_Buy_Finder = ItemFinder.Frame:FindFirstChild("Button_Buy_Finde
 
 -- public variables
 ItemFinder.ActiveKeys = {}
+ItemFinder.CurrentMapZone = nil
 ItemFinder.HasAccess = false
 
 --// Setup ------------------------------------------------------------
@@ -85,7 +86,45 @@ function ItemFinder.Setup()
         end
     end)
 
-    local itemList = require(script.ItemFinder_List)
+    
+end
+
+--// Update ------------------------------------------------------------
+function ItemFinder.Update(hasGamePass, mapZone)
+
+    print("ItemFinder.Update(hasGamePass, mapZone)", hasGamePass, mapZone)
+
+    if hasGamePass then
+        ItemFinder.Frame_Blocker.Visible = false
+        ItemFinder.HasAccess = true
+        --ItemFinder.Time_Left_Text.Text = "TIME LEFT - INF."
+    else
+        ItemFinder.Frame_Blocker.Visible = true
+        ItemFinder.HasAccess = false
+    end
+
+    -- if we are moving into a new mapzone, then turn off all the keys
+    if mapZone ~= ItemFinder.CurrentMapZone then
+        ItemFinder.ActiveKeys = {}
+    end
+
+    ItemFinder.CurrentMapZone = mapZone
+
+    ItemFinder.UpdateItemList(mapZone)
+    Knit.Controllers.ItemSpawnController:UpdateItemFinder()
+
+end
+
+function ItemFinder.UpdateItemList(mapZone)
+
+    for _, item in pairs(ItemFinder.Scrolling_Frame:GetChildren()) do
+        if item.Name == "ListItem" then
+            item:Destroy()
+        end
+    end
+
+    local itemList = require(script.ItemFinder_List)[mapZone]
+
     for _, itemTable in pairs(itemList) do
         local newListItem = ItemFinder.List_Item:Clone()
         newListItem.Parent = ItemFinder.Scrolling_Frame
@@ -95,41 +134,37 @@ function ItemFinder.Setup()
         newListItem:SetAttribute("IsActive", false)
         newListItem:SetAttribute("ItemKey", itemTable.Key)
 
-        -- add the key to the table
-        ItemFinder.ActiveKeys[itemTable.Key] = false
+        --[[
+        if ItemFinder.ActiveKeys[itemTable.Key] == nil then
+            ItemFinder.ActiveKeys[itemTable.Key] = false
+        end
+        ]]--
+
+        if ItemFinder.ActiveKeys[itemTable.Key] == true then
+            newListItem.BackgroundColor3 = color_Select
+            newListItem:SetAttribute("IsActive", true)
+            ItemFinder.ActiveKeys[itemTable.Key] = true
+        else
+            newListItem.BackgroundColor3 = color_DeSelect
+            newListItem:SetAttribute("IsActive", false)
+            ItemFinder.ActiveKeys[itemTable.Key] = false
+        end
 
         newListItem.MouseButton1Down:Connect(function()
 
             if ItemFinder.HasAccess then
                 if newListItem:GetAttribute("IsActive") then
-                    newListItem.BackgroundColor3 = color_DeSelect
-                    newListItem:SetAttribute("IsActive", false)
+                    --newListItem:SetAttribute("IsActive", false)
                     ItemFinder.ActiveKeys[itemTable.Key] = false
                 else
-                    newListItem.BackgroundColor3 = color_Select
-                    newListItem:SetAttribute("IsActive", true)
+                    --newListItem:SetAttribute("IsActive", true)
                     ItemFinder.ActiveKeys[itemTable.Key] = true
                 end
     
-                Knit.Controllers.ItemSpawnController:UpdateItemFinder()
+                GuiService:Request_GuiUpdate("ItemFinderWindow")
             end
 
         end)
-    end
-end
-
---// Update ------------------------------------------------------------
-function ItemFinder.Update(hasGamePass)
-
-    --print("YEET UPDATE IT")
-
-    if hasGamePass then
-        ItemFinder.Frame_Blocker.Visible = false
-        ItemFinder.HasAccess = true
-        --ItemFinder.Time_Left_Text.Text = "TIME LEFT - INF."
-    else
-        ItemFinder.Frame_Blocker.Visible = true
-        ItemFinder.HasAccess = false
     end
 
 end
@@ -155,7 +190,8 @@ function ItemFinder.SelectAll()
         end
     end
 
-    Knit.Controllers.ItemSpawnController:UpdateItemFinder()
+    --Knit.Controllers.ItemSpawnController:UpdateItemFinder()
+    GuiService:Request_GuiUpdate("ItemFinderWindow")
 end
 
 --// DeSelectAll ------------------------------------------------------------
@@ -171,12 +207,12 @@ function ItemFinder.DeSelectAll()
 
     print("TEST", ItemFinder.ActiveKeys)
 
-    Knit.Controllers.ItemSpawnController:UpdateItemFinder()
+    --Knit.Controllers.ItemSpawnController:UpdateItemFinder()
+    GuiService:Request_GuiUpdate("ItemFinderWindow")
 end
 
 --// Open ------------------------------------------------------------
 function ItemFinder.Open()
-    print("beep")
     Knit.Controllers.GuiController:CloseAllWindows()
     ItemFinder.Frame.Visible = true
     Knit.Controllers.GuiController.CurrentWindow = "ItemFinderWindow"
@@ -184,7 +220,6 @@ end
 
 --// Close ------------------------------------------------------------
 function ItemFinder.Close()
-    print("beep")
     Knit.Controllers.GuiController:CloseAllWindows()
     ItemFinder.Frame.Visible = false
     Knit.Controllers.GuiController.CurrentWindow = nil

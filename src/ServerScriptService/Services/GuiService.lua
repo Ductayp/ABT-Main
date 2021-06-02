@@ -155,7 +155,8 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
 
     if requestName == "ItemFinderWindow" then 
         local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "ItemFinder")
-        self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass)
+        local mapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[player.UserId]
+        self.Client.Event_Update_ItemFinderWindow:Fire(player, hasGamePass, mapZone)
     end
 
     if requestName == "PvPToggle" then

@@ -120,6 +120,13 @@ function PlayerUtilityService:SetPlayerMapZone(player, params)
 
 end
 
+function PlayerUtilityService:GetPlayerMapZone(player)
+
+    local playerMapZone = PlayerUtilityService.PlayerMapZone[player.UserId]
+    return playerMapZone
+
+end
+
 function PlayerUtilityService:GetPlayersInMapZone(mapZone)
 
     local playersInZone = {}
@@ -135,8 +142,6 @@ function PlayerUtilityService:GetPlayersInMapZone(mapZone)
 
 end
 
-
-
 --// LoadAnimations
 function PlayerUtilityService:LoadAnimations(player)
 
@@ -150,6 +155,19 @@ function PlayerUtilityService:LoadAnimations(player)
     end
 
 end
+
+--------------------------------------------------------------------------------------------------------------------------
+--// CLIENT METHODS ---------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+
+function PlayerUtilityService.Client:GetPlayerMapZone(player)
+    local playerMapZone = self.Server:GetPlayerMapZone(player)
+    return playerMapZone
+end
+
+--------------------------------------------------------------------------------------------------------------------------
+--// PLAYER EVENTS ---------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
 
 --// PlayerAdded
 function PlayerUtilityService:PlayerAdded(player)
@@ -201,6 +219,9 @@ function PlayerUtilityService:CharacterDied(player)
     --print("PLAYER DIED:", player)
 end
 
+--------------------------------------------------------------------------------------------------------------------------
+--// KNIT ---------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
 
 --// KnitStart
 function PlayerUtilityService:KnitStart()

@@ -148,6 +148,21 @@ function PowersController:RenderExistingStands()
     end
 end 
 
+--// PowerChanged
+function PowersController:PowerChanged(targetPlayer, params)
+
+    local character = targetPlayer.Character
+    if character then
+        for _, v in pairs(character:GetDescendants()) do
+            local attribute = v:GetAttribute("StatusEffect")
+            if attribute then
+                v:Destroy()
+            end
+        end
+    end
+
+end
+
 function PowersController:PlayerAdded(player)
     repeat wait() until player.character
     self:RenderExistingStands()
@@ -173,6 +188,10 @@ function PowersController:KnitStart()
 
     PowersService.RenderAbilityEffect:Connect(function(abilityModule, functionName, params)
         self:RenderAbilityEffect(abilityModule, functionName, params)
+    end)
+
+    PowersService.PowerChanged:Connect(function(targetPlayer, params)
+        self:PowerChanged(targetPlayer, params)
     end)
 
     Players.PlayerAdded:Connect(function(player)

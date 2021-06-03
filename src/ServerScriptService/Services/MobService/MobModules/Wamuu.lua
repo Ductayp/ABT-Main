@@ -133,8 +133,6 @@ function  Wamuu_Mob.Attack(mobData)
 
     spawn(function()
 
-
-
         if not mobData.AttackTarget then return end
         if not mobData.AttackTarget.Character then return end
 
@@ -164,7 +162,8 @@ function  Wamuu_Mob.Attack(mobData)
 
                 local effectParams = {}
                 effectParams.Position = mobHRP.Position
-                effectParams.MobModel = mobData.Model                effectParams.RenderRange = 250
+                effectParams.MobModel = mobData.Model                
+                effectParams.RenderRange = 250
                 Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Tornado", effectParams)
 
                 for _, player in pairs(game.Players:GetPlayers()) do
@@ -211,7 +210,7 @@ function Wamuu_Mob.Death(mobData)
     spawn(function()
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
         wait(.1)
-        mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 5
+        mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 0
     end)
 end
 

@@ -15,8 +15,9 @@ function VampiricRage.Server_AbilityOn(params, abilityDefs)
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer then return end
 
-    Knit.Services.PlayerUtilityService:SetDamageStatus(initPlayer, {Enabled = true, Profile = "VampiricRage"})
-    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "VampiricRage", 2, {RemoveOnDeath = true})
+    --Knit.Services.PlayerUtilityService:SetDamageStatus(initPlayer, {Enabled = true, Profile = "VampiricRage"})
+    Knit.Services.StateService:AddEntryToState(initPlayer, "HealthTick", "VampiricRage", true, {Day = -2, Night = -2, RemoveOnDeath = true, RemoveOnPowerChange = true})
+    Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "VampiricRage", 2, {RemoveOnDeath = true, RemoveOnPowerChange = true})
 
     Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Rage:Play()
 
@@ -30,7 +31,8 @@ function VampiricRage.Server_AbilityOff(params, abilityDefs)
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer then return end
 
-    Knit.Services.PlayerUtilityService:SetDamageStatus(initPlayer, {Enabled = true, Profile = "Default"})
+    --Knit.Services.PlayerUtilityService:SetDamageStatus(initPlayer, {Enabled = true, Profile = "Default"})
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "HealthTick", "VampiricRage")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "VampiricRage")
 
 end
@@ -44,6 +46,7 @@ function VampiricRage.Client_AbilityOn(params, abilityDefs)
     if initPlayer.Character and initPlayer.Character.Head then
         local newAura = ReplicatedStorage.EffectParts.Specs.Vampire.VampireHeadAura:Clone()
         newAura.Parent = initPlayer.Character.Head
+        newAura:SetAttribute("StatusEffect", true)
         spawn(function()
             newAura.Speed = NumberRange.new(1, 1)
             newAura:Emit(200)
@@ -53,6 +56,7 @@ function VampiricRage.Client_AbilityOn(params, abilityDefs)
         
         local newText = ReplicatedStorage.EffectParts.Specs.Vampire.RageText:Clone()
         newText.Parent = initPlayer.Character.Head
+        newText:SetAttribute("StatusEffect", true)
 
         WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.Wry)
     end

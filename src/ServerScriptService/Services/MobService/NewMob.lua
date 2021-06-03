@@ -55,6 +55,7 @@ function NewMob.Create(mobDefs)
     -- add functions
     newMob.Functions = {}
     newMob.Functions.Death = mobDefs.Death
+    newMob.Functions.DeSpawn = mobDefs.DeSpawn
     newMob.Functions.Attack = mobDefs.Attack
     newMob.Functions.Drop = mobDefs.Drop
 

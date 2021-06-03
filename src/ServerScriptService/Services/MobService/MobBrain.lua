@@ -148,7 +148,7 @@ function MobBrain.Run()
                             mobData.IsDead = true
                             mobData.DeadTime = os.clock()
                             mobData.PlayerDamage = {} -- delete all player damage
-                            Knit.Services.MobService:KillMob(mobData)
+                            Knit.Services.MobService:DeSpawnMob(mobData)
                         end
 
                     end
@@ -232,8 +232,12 @@ function MobBrain.State_Home(mobData)
 
     -- set chase if we have a target
     if mobData.AttackTarget then
-        mobData.Model.HumanoidRootPart.Anchored = false
-        mobData.Model.HumanoidRootPart:SetNetworkOwner(nil)
+
+        if mobData.Defs.IsMobile then
+            mobData.Model.HumanoidRootPart.Anchored = false
+            mobData.Model.HumanoidRootPart:SetNetworkOwner(nil)
+        end
+
         mobData.BrainState = "Chase"
         mobData.StateTime = os.clock()
         return

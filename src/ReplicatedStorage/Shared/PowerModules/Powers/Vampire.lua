@@ -58,7 +58,7 @@ function Vampire.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "Vampire_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "Vampire_Setup", Vampire.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "Vampire_Setup", Vampire.Defs.DamageMultiplier[params.Rank], nil)
-    Knit.Services.PlayerUtilityService:SetRegenStatus(initPlayer, {Enabled = true, Profile = "Vampire"})
+    Knit.Services.StateService:AddEntryToState(initPlayer, "HealthTick", "Vampire_Setup", true, {Day = -1, Night = 1})
 
     local newFistAura_1 = ReplicatedStorage.EffectParts.Specs.Vampire.VampireFistAura:Clone()
     local newFistAura_2 = ReplicatedStorage.EffectParts.Specs.Vampire.VampireFistAura:Clone()
@@ -74,7 +74,7 @@ function Vampire.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "Vampire_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "Vampire_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "Vampire_Setup")
-    Knit.Services.PlayerUtilityService:SetRegenStatus(initPlayer, {Enabled = true, Profile = "Default"})
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "HealthTick", "Vampire_Setup")
 
     repeat wait() until initPlayer.Character
 

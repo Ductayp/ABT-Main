@@ -42,8 +42,8 @@ RedHot_Mob.Defs.Health = 200
 RedHot_Mob.Defs.WalkSpeed = 0
 RedHot_Mob.Defs.JumpPower = 50
 RedHot_Mob.Defs.Aggressive = true
-RedHot_Mob.Defs.AttackSpeed = 3
-RedHot_Mob.Defs.AttackRange = 20
+RedHot_Mob.Defs.AttackSpeed = 1
+RedHot_Mob.Defs.AttackRange = 15
 RedHot_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
 RedHot_Mob.Defs.SeekRange = 60 -- In Studs
 RedHot_Mob.Defs.ChaseRange = 80 -- In Studs
@@ -55,7 +55,13 @@ function RedHot_Mob.Pre_Spawn(mobData)
 
     -- set mob to inactive so its brain doesnt run yet
     mobData.Active = false
-    mobData.SpawnCFrame = mobData.SpawnCFrame * CFrame.new(0,-4,0)
+
+    -- make everything trasnparent for the spawn
+    for _,instance in pairs(mobData.Model:GetDescendants()) do
+        if instance:IsA("BasePart") then
+            instance.Transparency = 1
+        end
+    end
 
 end
 
@@ -63,14 +69,24 @@ end
 function RedHot_Mob.Post_Spawn(mobData)
 
     mobData.Model.HumanoidRootPart.Anchored = true
-    
-    local spawnTween = TweenService:Create(mobData.Model.HumanoidRootPart, TweenInfo.new(.5), {Position = mobData.Model.HumanoidRootPart.Position + Vector3.new(0, 5, 0)})
-    spawnTween:Play()
 
-    spawnTween.Completed:Connect(function()
-        -- make the mob active so the brain runs
-        mobData.Active = true
-    end)
+    mobData.Model.HumanoidRootPart.SpawnEmitter:Emit(200)
+
+    -- make it visible
+    for _,instance in pairs(mobData.Model:GetDescendants()) do
+        if instance:IsA("BasePart") then
+            if instance.Name == "HumanoidRootPart" then
+                instance.Transparency = 1
+            elseif instance:FindFirstChild("Transparent", true) then
+                instance.Transparency = 1
+            else
+                instance.Transparency = 0
+            end
+        end
+    end
+
+    mobData.Active = true
+    
 
 end
 
@@ -113,71 +129,33 @@ end
 
 --// Attack
 function  RedHot_Mob.Attack(mobData)
+
+    if not mobData.AttackTarget then return end
+    if not mobData.AttackTarget.Character then return end
+
+    local mobHRP = mobData.Model:FindFirstChild("HumanoidRootPart")
+    if not mobHRP then return end
+
+    local effectScript = Knit.Shared.MobEffects.RedHotEffects
+    local effectParams = {}
+    effectParams.Position = mobHRP.Position
+    effectParams.MobModel = mobData.Model                
+    effectParams.RenderRange = 250
+    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(effectScript, "ElectroBall", effectParams)
+
     spawn(function()
 
-        -- play attack animation
-        
-        local rand = math.random(1, #mobData.Animations.Attack)
-        mobData.Animations.Attack[rand]:Play()
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player.Character and player.Character.HumanoidRootPart then
+                local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
+                if distance <= RedHot_Mob.Defs.AttackRange then
 
-        local shockBall = ReplicatedStorage.EffectParts.MobEffects.RHCP.ShockBall:Clone()
-        shockBall.CFrame = mobData.Model.HumanoidRootPart.CFrame
-        shockBall.Parent = Workspace
-        shockBall.Anchored = false
-        shockBall.BodyPosition.D = 125
-        shockBall.BodyPosition.P = 1000
-        shockBall.BodyPosition.MaxForce = Vector3.new(1,1,1) * 2000
-        shockBall:SetNetworkOwner(nil)
-
-        local expireTime = os.clock() + 5
-
-        while game:GetService("RunService").Heartbeat:Wait() do
-
-            if not mobData.AttackTarget then
-                shockBall:Destroy()
-                break
-            end
-
-            if not mobData.AttackTarget.Character then
-                shockBall:Destroy()
-                break
-            end
-            
-            if not mobData.AttackTarget.Character.Humanoid then
-                shockBall:Destroy()
-                break
-            end
-
-            -- expire the shockball if its too old
-            if os.clock() > expireTime then
-                shockBall:Destroy()
-                break
-            end
-
-            -- check for hits
-            local magnitude = (shockBall.Position - mobData.AttackTarget.Character.HumanoidRootPart.Position).Magnitude
-            if magnitude < .5 then
-                if mobData.AttackTarget.Character.Humanoid then
-                    if mobData.AttackTarget.Character.Humanoid.Health <= 0 then
-                        shockBall:Destroy()
-                        break
-                    else
-                        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
-                        shockBall:Destroy()
-                        break
-                    end
-                else
-                    shockBall:Destroy()
-                    break
+                    local hitEffects = {Damage = {Damage = 10}}
+                    Knit.Services.MobService:HitPlayer(player, hitEffects)
                 end
-                break
             end
-
-            -- update the BodyPosition
-            shockBall.BodyPosition.Position = mobData.AttackTarget.Character.HumanoidRootPart.Position
-            wait()
         end
-    
+
     end)                          
 end
 
@@ -189,8 +167,34 @@ end
 --// Death
 function RedHot_Mob.Death(mobData)
 
-    local deathTween = TweenService:Create(mobData.Model.HumanoidRootPart, TweenInfo.new(.5), {Position = mobData.Model.HumanoidRootPart.Position + Vector3.new(0, -4, 0)})
-    deathTween:Play()
+
+end
+
+function RedHot_Mob.DeSpawn(mobData)
+
+    mobData.Model.HumanoidRootPart.SpawnEmitter:Emit(200)
+
+    -- make everything trasnparent for the spawn
+    for _,instance in pairs(mobData.Model:GetDescendants()) do
+
+        if instance:IsA("BasePart") then
+            instance.Transparency = 1
+        end
+
+        if instance:IsA("ParticleEmitter") then
+            instance.Enabled = false
+        end
+
+        if instance:IsA("Beam") then
+            instance.Enabled = false
+        end
+
+        if instance:IsA("Decal") then
+            instance:Destroy()
+        end
+    end
+
+    wait(3)
 
 end
 

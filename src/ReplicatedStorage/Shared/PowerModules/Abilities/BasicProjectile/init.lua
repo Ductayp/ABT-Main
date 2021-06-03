@@ -171,7 +171,7 @@ function BasicProjectile.Run_Server(params, abilityDefs)
     projectileData["Velocity"] = abilityMod.Velocity
     projectileData["Lifetime"] = abilityMod.Lifetime
     projectileData["Iterations"] = abilityMod.Iterations
-    --projectileData["Visualize"] = true
+    projectileData["Visualize"] = true
     projectileData["Ignore"] = ignoreList
     projectileData["BreakOnHit"] = abilityMod.BreakOnHit
     projectileData["BreakifNotHuman"] = abilityMod.BreakifNotHuman

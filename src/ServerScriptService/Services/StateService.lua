@@ -1,27 +1,9 @@
--- State Service
--- PDab
--- 12/6/2020
+-- StateService
 
---[[ STATE SERVICE
-service habdle all forms of state, besides the acyual player data, in one central location. This is useful for things like damage or walkspeed modifiers,
-not temporary or permanent. It is also useful for thing like safe zones, or bonueses given by gamepasses.
-Keeping all of these states and/or modifiers in one place allows us to stack them easily, remove them when needed, and always know exactly what any player
-has at any given time.
-
-States are managed as ValueBase objects so that that can easily be listened to by the client or other services.
-
-We are not using playerData storage for these states, because they are not always saved, sometimes temporary, and we dont want to clutter up the playerData code.
-]]--
-
--- services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-
--- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local StateService = Knit.CreateService { Name = "StateService", Client = {}}
-
--- modules
 local utils = require(Knit.Shared.Utils)
 
 --// AddState - add a modfier value, if one of the same name exists then do nothing
@@ -29,8 +11,22 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
 
     --print("AddEntryToState: ", player, stateName, entryName, entryValue, params)
 
+    local playerFolder = ReplicatedStorage.StateService:FindFirstChild(player.UserId)
+    if not playerFolder then
+
+        -- create a folder for the player
+        playerFolder = utils.EasyInstance("Folder",{Name = player.UserId, Parent = ReplicatedStorage.StateService})
+
+        -- create the folders based on scripts parented to StateService
+        for _,child in pairs(Knit.StateModules:GetChildren()) do
+            if child:IsA("ModuleScript") then
+                utils.EasyInstance("Folder",{Name = child.Name, Parent = playerFolder})
+            end
+        end
+    end
+
     -- see if the state exists and make it if it doesnt
-    local stateFolder = ReplicatedStorage.StateService[player.UserId]:FindFirstChild(stateName)
+    local stateFolder = playerFolder:FindFirstChild(stateName)
     if not stateFolder then
         print("State Class does not exist")
         return
@@ -96,6 +92,67 @@ function StateService:RemoveEntryFromState(player, stateName, entryName, params)
     end 
 end
 
+--// PowerChanged
+function StateService:PowerChanged(player)
+
+    local playerFolder = ReplicatedStorage.StateService:FindFirstChild(player.UserId)
+    if not playerFolder then return end
+
+    for _, state in pairs(playerFolder:GetChildren()) do
+        for _, stateEntry in pairs(state:GetChildren()) do
+            for _, stateParam in pairs(stateEntry:GetChildren()) do
+                if stateParam.Name == "RemoveOnPowerChange" and stateParam.Value == true then
+                    self:RemoveEntryFromState(player, state.Name, stateEntry.Name)
+                end
+            end
+        end
+    end
+
+end
+
+
+--// StateTick
+function StateService:StateTick()
+
+    local tickTime = 1
+    local lastTick = os.clock()
+
+    spawn(function()
+        while game:GetService("RunService").Heartbeat:Wait() do
+
+            if os.clock() >= lastTick + tickTime then
+
+                lastTick = os.clock()
+
+                for _, player in pairs(Players:GetPlayers()) do
+                    local playerFolder = ReplicatedStorage.StateService:FindFirstChild(player.UserId)
+                    if playerFolder then
+            
+                        for _, state in pairs(playerFolder:GetChildren()) do
+                            local stateModule = Knit.StateModules:FindFirstChild(state.Name)
+                            if stateModule then
+                                local requiredModule = require(stateModule)
+                                if requiredModule.OnTick then
+                                    requiredModule.OnTick(player)
+                                end 
+                            end
+                        end
+                    end
+                end
+
+            end
+    
+            wait()
+        end
+    end)
+
+
+end
+
+-----------------------------------------------------------------------------------------------------------------------------
+--// PLAYER MANAGEMENT
+-----------------------------------------------------------------------------------------------------------------------------
+
 --// PlayerJoining
 function StateService:CharacterAdded(character)
 
@@ -103,7 +160,7 @@ function StateService:CharacterAdded(character)
 
 end
 
---// PlayerJoining
+--// CharacterDied
 function StateService:CharacterDied(player, character)
 
     --print("STATE SERVICE: CHARACTER DIED", player, character)
@@ -126,15 +183,6 @@ end
 --// PlayerJoining
 function StateService:PlayerAdded(player)
 
-    -- create a folder for the player
-    local playerFolder = utils.EasyInstance("Folder",{Name = player.UserId, Parent = ReplicatedStorage.StateService})
-
-    -- create the folders based on scripts parented to StateService
-    for _,child in pairs(Knit.StateModules:GetChildren()) do
-        if child:IsA("ModuleScript") then
-            utils.EasyInstance("Folder",{Name = child.Name, Parent = playerFolder})
-        end
-    end
 
 end
 
@@ -144,9 +192,13 @@ function StateService:PlayerRemoved(player)
     ReplicatedStorage.StateService:FindFirstChild(player.UserId):Destroy()
 end
 
+-----------------------------------------------------------------------------------------------------------------------------
+--// KNIT STARTUP
+-----------------------------------------------------------------------------------------------------------------------------
+
 --// KnitStart
 function StateService:KnitStart()
-
+    self:StateTick()
 end
 
 --// KnitInit

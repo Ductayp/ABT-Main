@@ -20,6 +20,7 @@ local BlockInput = require(Knit.PowerUtils.BlockInput)
 PowersService.Client.ExecutePower = RemoteEvent.new()
 PowersService.Client.RenderHitEffect = RemoteEvent.new()
 PowersService.Client.RenderAbilityEffect = RemoteEvent.new()
+PowersService.Client.PowerChanged = RemoteEvent.new()
 
 --// ActivatePower -- the server side version of this
 function PowersService:ActivatePower(player, params)
@@ -118,9 +119,16 @@ function PowersService:SetCurrentPower(player, params)
         if setupPowerModule.SetupPower then
             setupPowerModule.SetupPower(player, setupPowerParams)
         end
+
+        playerData.CurrentStand = params
+
+        Knit.Services.StateService:PowerChanged(player)
+
+        self.Client.PowerChanged:FireAll(player, params)
+        
     end
 
-    playerData.CurrentStand = params
+    
 
     Knit.Services.GuiService:Update_Gui(player, "StandData")
     Knit.Services.GuiService:Update_Gui(player, "AbilityBar")
@@ -162,7 +170,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end
@@ -277,7 +285,7 @@ function PowersService:PlayerSetup(player)
         player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
     end
 
-    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes, ReplicatedStorage.PowerStatus}
+    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, ReplicatedStorage.PowerStatus}
     for _,location in pairs(cleanupLocations) do
         for _,object in pairs(location:GetChildren()) do
             if object.Name == tostring(player.UserId) then
@@ -289,7 +297,6 @@ function PowersService:PlayerSetup(player)
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
-    local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
 
 end
 
@@ -433,10 +440,19 @@ function PowersService:KnitInit()
 
     -- make some folders
     local effectFolder = utils.EasyInstance("Folder",{Name = "RenderedEffects",Parent = workspace})
+    effectFolder:SetAttribute("IgnoreProjectiles", true)
+
     local effectFolder_2 = utils.EasyInstance("Folder",{Name = "RenderedEffects_BlockAbility",Parent = workspace})
+
     local standsFolder = utils.EasyInstance("Folder",{Name = "PlayerStands",Parent = workspace})
+    standsFolder:SetAttribute("IgnoreProjectiles", true)
+
     local serverHitboxes = utils.EasyInstance("Folder",{Name = "ServerHitboxes",Parent = workspace})
-    local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
+    serverHitboxes:SetAttribute("IgnoreProjectiles", true)
+
+    --local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
+    --serverHitboxes:SetAttribute("IgnoreProjectiles", true)
+
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 
     -- Player Removing event

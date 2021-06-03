@@ -35,27 +35,47 @@ function SpawnLoop.Run()
                 local spawnCount = 0
                 local spawners = thisModule.SpawnersFolder:GetChildren()
                 for _, spawner in pairs(spawners) do
-                    local thisCount = 0
-                    for _,mob in pairs(spawner:GetChildren()) do
-                        thisCount += 1
+                    
+                    local spawnCounter = spawner:FindFirstChild("SpawnCounter", true)
+                    if not spawnCounter then
+                        spawnCounter = Instance.new("NumberValue")
+                        spawnCounter.Name = "SpawnCounter"
+                        spawnCounter.Parent = spawner
+                        spawnCounter.Value = 0
                     end
-                    spawnCount += thisCount
+
+                    spawnCount += spawnCounter.Value
                 end
+
+                print("CHECK IF OVER COUNT", thisModule.Defs.Name, spawnCount, thisModule.Max_Spawned)
 
                 -- if we are less than Max_Spawned across the whole spawner group
                 if spawnCount < thisModule.Max_Spawned then
 
+                    print("COUNT CHECK START:", thisModule.Defs.Name, #spawners)
                     -- build a table of open spawners
                     local openSpawners = {}
-                    for _, spawner in pairs(spawners) do
-                        if #spawner:GetChildren() == 0 then
+                    for i, spawner in pairs(spawners) do
+
+                        print(i, spawner.SpawnCounter.Value)
+
+                        if spawner.SpawnCounter.Value < 1 then
+
+                            --print("insert", spawner.SpawnCounter.Value)
+
                             table.insert(openSpawners, spawner)
                         end
+
                     end
+                    print("COUNT CHECK END", thisModule.Defs.Name, #openSpawners)
 
                     -- pick a spawner randomly from the open spawners
                     local rand = math.random(1, #openSpawners)
                     local pickedSpawner = openSpawners[rand]
+
+                    --print("val 1", pickedSpawner.SpawnCounter.Value)
+                    pickedSpawner.SpawnCounter.Value += 1
+                    --print("val 2", pickedSpawner.SpawnCounter.Value)
 
                         -- create a new mobData object
                     local mobData = require(script.Parent.NewMob).Create(thisModule)
@@ -83,9 +103,11 @@ function SpawnLoop.Run()
                     -- run the pre-spawn setup
                     thisModule.Pre_Spawn(mobData)
 
+                    
+
                     -- spawn the mob into the world
                     mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
-                    mobData.Model.Parent = pickedSpawner
+                    mobData.Model.Parent = Workspace.SpawnedMobs
 
                     for _,object in pairs(mobData.Model:GetDescendants()) do
                         if object:IsA("BasePart") then

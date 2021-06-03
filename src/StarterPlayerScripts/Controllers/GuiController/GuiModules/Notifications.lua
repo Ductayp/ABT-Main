@@ -35,6 +35,16 @@ Notifications.Icons.XP = Notifications.Frame:FindFirstChild("Icon_XP", true)
 Notifications.Icons.Boost = Notifications.Frame:FindFirstChild("Icon_Boost", true)
 Notifications.Icons.MobKill = Notifications.Frame:FindFirstChild("Icon_MobKill", true)
 
+-- tweens
+local homePosition = UDim2.new(0.5, 0,-.3, 0)
+local displayPosition = UDim2.new(0.5, 0, 0, 0)
+local moveDown = TweenService:Create(Notifications.Frame, TweenInfo.new(.5), {Position = displayPosition})
+local moveUp = TweenService:Create(Notifications.Frame, TweenInfo.new(.5), {Position = homePosition})
+moveUp.Completed:Connect(function()
+    Notifications.Frame.Visible = false
+end)
+
+
 --// ShowNotification
 function Notifications.ShowNotification(params)
 
@@ -52,11 +62,8 @@ function Notifications.ShowNotification(params)
     -- make it visible
     Notifications.Frame.Visible = true
 
-    -- some tweens
-    local moveDown = TweenService:Create(Notifications.Frame, TweenInfo.new(.5), {Position = Notifications.Frame.Position + UDim2.new(0,0,0.2,0)})
-    local moveUp = TweenService:Create(Notifications.Frame, TweenInfo.new(.5), {Position = Notifications.Frame.Position + UDim2.new(0,0,0,0)})
-
     spawn(function()
+        Notifications.Frame.Visible = true
         moveDown:Play()
         wait(4)
         moveUp:Play()
@@ -71,9 +78,6 @@ end
 
 --// Setup
 function Notifications.Setup()
-
-    -- move it up
-    Notifications.Frame.Position = Notifications.Frame.Position + UDim2.new(0,0,-.2,0)
 
     -- besic stuff
     Notifications.Frame.Visible = false

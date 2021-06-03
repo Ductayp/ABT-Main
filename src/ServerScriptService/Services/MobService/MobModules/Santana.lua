@@ -159,8 +159,13 @@ function Santana_Mob.Death(mobData)
     spawn(function()
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
         wait(.1)
-        mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 5
+        mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 0
     end)
+end
+
+--// DeSpawn
+function Santana_Mob.DeSpawn(mobData)
+
 end
 
 --// Setup_Drop

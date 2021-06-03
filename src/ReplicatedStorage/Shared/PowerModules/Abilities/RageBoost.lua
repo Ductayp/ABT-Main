@@ -100,7 +100,7 @@ function RageBoost.Run_Server(params, abilityDefs)
 
     spawn(function()
         local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_RageBoost", abilityDefs.Multiplier,  {RemoveOnDeath = true})
+        Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_RageBoost", abilityDefs.Multiplier,  {RemoveOnDeath = true,  RemoveOnPowerChange = true})
         wait(abilityDefs.Duration)
         Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CrazyDiamond_RageBoost")
     end)
@@ -134,11 +134,13 @@ function RageBoost.Run_Effects(params, abilityDefs)
     
     local rageText = ReplicatedStorage.EffectParts.Abilities.RageBoost.RageText:Clone()
     rageText.Parent = character.Head
+    rageText:SetAttribute("StatusEffect", true)
 
     local rageParticle = ReplicatedStorage.EffectParts.Abilities.RageBoost.RageParticle:Clone()
     rageParticle.Parent = character.Head
+    rageParticle:SetAttribute("StatusEffect", true)
 
-    --wait(abilityDefs.Duration)
+    wait(abilityDefs.Duration)
     --[[
     local originalStudsOffest = rageText.StudsOffset
     local endTime = os.clock() + abilityDefs.Duration

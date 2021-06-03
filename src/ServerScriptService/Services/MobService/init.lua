@@ -63,11 +63,41 @@ function MobService:DamageMob(player, mobId, damage)
     end
 end
 
+--// DeSpawnMob
+function MobService:DeSpawnMob(mobData)
+
+    spawn(function()
+        if mobData.Functions.DeSpawn then
+            mobData.Functions.DeSpawn(mobData)
+        end
+    
+        self:KillMob(mobData)
+    end)
+
+end
+
 --// KillMob
 function MobService:KillMob(mobData)
 
     -- break the joints, YEET
     mobData.Model:BreakJoints()
+
+    -- run the models death function
+    mobData.Functions.Death(mobData)
+
+    -- subtract the mob from its counter
+    if mobData.Spawner.SpawnCounter.Value < 1 then
+        mobData.Spawner.SpawnCounter.Value = 0
+    else
+        mobData.Spawner.SpawnCounter.Value = mobData.Spawner.SpawnCounter.Value - 1
+    end
+    
+
+    spawn(function()
+        wait(5)
+        mobData.Model:Destroy()
+        MobService.SpawnedMobs[mobData.MobId] = nil
+    end)
 
     -- cehck if a player did more than 1/3 of total damage
     for player, damage in pairs(mobData.PlayerDamage) do
@@ -111,17 +141,7 @@ function MobService:KillMob(mobData)
             end
         end
 
-        spawn(function()
-            wait(5)
-            mobData.Model:Destroy()
-            MobService.SpawnedMobs[mobData.MobId] = nil
-        end)
-
-
     end
-
-    -- run the models death function
-    mobData.Functions.Death(mobData)
 
 end
 
@@ -231,6 +251,12 @@ end
 
 --// KnitInit
 function MobService:KnitInit()
+
+        -- create a spawned items folder
+        local spawnedMobsFolder = Instance.new("Folder")
+        spawnedMobsFolder.Name = "SpawnedMobs"
+        spawnedMobsFolder.Parent = Workspace
+        spawnedMobsFolder:SetAttribute("IgnoreProjectiles", true)
 
     -- create no-collision group and set it
     PhysicsService:CreateCollisionGroup("Mob_NoCollide")

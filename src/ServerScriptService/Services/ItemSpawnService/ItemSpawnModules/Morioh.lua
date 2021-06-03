@@ -8,7 +8,7 @@ local Morioh = {}
 --Morioh.SpawnGroupId = "Morioh_Arrows" --
 Morioh.Spawners = Workspace:FindFirstChild("ItemSpawners_Morioh", true)
 Morioh.MapZone = "Morioh"
-Morioh.MaxSpawned = 15
+Morioh.MaxSpawned = 20
 Morioh.TotalSpawned = 0
 
 Morioh.Items = {
@@ -48,16 +48,16 @@ Morioh.Items = {
     },
 
     -- WEIGHT 20
-    
+
     {
         Weight = 20,
-        Model = ReplicatedStorage.SpawnItems.Cash,
+        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
-            DataKey = "Cash",
+            DataKey = "SoulOrbs",
             DataCategory = "Currency",
-            MinValue = 50,
-            MaxValue = 250,
-        }
+            MinValue = 1,
+            MaxValue = 1,
+        },
     },
 
 
@@ -69,20 +69,9 @@ Morioh.Items = {
         Params = {
             DataKey = "Cash",
             DataCategory = "Currency",
-            MinValue = 20,
-            MaxValue = 100,
+            MinValue = 50,
+            MaxValue = 250,
         }
-    },
-
-    {
-        Weight = 100,
-        Model = ReplicatedStorage.SpawnItems.SoulOrbs,
-        Params = {
-            DataKey = "SoulOrbs",
-            DataCategory = "Currency",
-            MinValue = 1,
-            MaxValue = 1,
-        },
     },
 
     {

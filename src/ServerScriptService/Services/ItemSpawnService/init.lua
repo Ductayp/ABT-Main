@@ -295,6 +295,7 @@ function ItemSpawnService:KnitInit()
     local spawnedItemsFolder = Instance.new("Folder")
     spawnedItemsFolder.Name = "SpawnedItems"
     spawnedItemsFolder.Parent = Workspace
+    spawnedItemsFolder:SetAttribute("IgnoreProjectiles", true)
 
 end
 

@@ -1,4 +1,4 @@
--- Koichi_A
+-- Koichi_B
 
 local module = {}
 
@@ -23,15 +23,15 @@ module.Stage = {}
 module.Stage.Start = {
     IconName = "Icon_Koichi",
     Title = "Smol Guy",
-    Body = "Akira and Hot Tamale have been shooting arrows all over the island! Maybe you can collect some <b>BROKEN ARROWS</b> inside?" ..
-        "<br/><br/>I can get you in for <b>2 DUNGEON KEYS.</b>",
+    Body = "Let's get to work! Akira is causing too much trouble with all these arrows. Kill his stand Hot Tamale to get a bunch of <b>BROKEN ARROWS.</b>" ..
+        "<br/><br/>Just let me know when your ready to leave here.",
     Choice_1 = {
         Display = true,
-        Text = "ENTER DUNGEON",
+        Text = "LEAVE DUNGEON",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(85, 85, 255), Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
             Type = "ChangeStage",
-            Stage = "Dungeon"
+            Stage = "DungeonLeave"
         }
     },
     Choice_2 = {
@@ -43,18 +43,17 @@ module.Stage.Start = {
 }
 
 
-module.Stage.Dungeon = {
+module.Stage.DungeonLeave = {
     IconName = "Icon_Koichi",
     Title = "Smol Guy",
-    Body = "Do you realy want to spend 2 DUNEGON KEYS to enter this dungeon?",
+    Body = "Are you sure you are ready to leave? There might be more <b>BROKEN ARROWS</b> laying around ..."  ..
+        "<br/><br/>If you want to come back, you will have to use more keys.",
     Choice_1 = {
         Display = true,
         Text = "YES",
         CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 255, 0), Size = UDim2.new(0.4, 0, 0.9, 0)},
         Action = {
-            Type = "DungeonTravel",
-            ModuleName = "Koichi_A",
-            TransactionKey = "DuwangHarbor",
+            Type = "LeaveDungeon",
         }
     },
     Choice_2 = {

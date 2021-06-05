@@ -15,7 +15,6 @@ function WamuuEffects.Tornado(params)
 
     --print("TORNADO", params)
 
-
     local mobHRP = params.MobModel:FindFirstChild("HumanoidRootPart", true)
     if not mobHRP then return end
 

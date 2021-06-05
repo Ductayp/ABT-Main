@@ -17,6 +17,7 @@ local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 -- Default Stand Anchor Offsets
 local anchors = {}
 anchors.Idle = CFrame.new(-2, -1.75, -3)
+--anchors.Idle = CFrame.new(2, 1.75, 3)
 anchors.Front = CFrame.new(0, 0, 4)
 anchors.StandJump = CFrame.new(0, -1.25, -3)
 
@@ -172,6 +173,15 @@ function ManageStand.EquipStand(params, abilityDefs)
 	newWeld.Part0 = initPlayerRoot
 	newWeld.Part1 = newStand.HumanoidRootPart
 	newWeld.Parent = newStand.HumanoidRootPart
+
+	--[[
+			local newWeld = Instance.new("Weld")
+	newWeld.Name = "StandWeld"
+	newWeld.C1 =  anchors.Idle
+	newWeld.Part0 = initPlayerRoot
+	newWeld.Part1 = newStand.HumanoidRootPart
+	newWeld.Parent = newStand.HumanoidRootPart
+	]]--
 
 	-- do the auras
 	spawn(function()
@@ -339,10 +349,16 @@ function ManageStand.QuickRender(params)
 
 	local newWeld = Instance.new("Weld")
 	newWeld.Name = "StandWeld"
-	newWeld.C1 =  anchors.Idle
+	newWeld.C1 =  CFrame.new(0, 0, 0)
 	newWeld.Part0 = initPlayerRoot
 	newWeld.Part1 = newStand.HumanoidRootPart
 	newWeld.Parent = newStand.HumanoidRootPart
+
+	-- tween the move
+	local spawnTween = TweenService:Create(newWeld,TweenInfo.new(.01),{C1 = anchors.Idle})
+	spawnTween:Play()
+
+	--ManageStand.MoveStand(params, "Idle")
 
 	-- run the idle animation
 	local animationController = newStand:FindFirstChild("AnimationController")

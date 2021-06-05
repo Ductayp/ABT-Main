@@ -7,7 +7,7 @@ local SkeletonHeelStone = {}
 
 SkeletonHeelStone.Spawners = Workspace:FindFirstChild("ItemSpawners_SkeletonHeelStone", true)
 SkeletonHeelStone.MapZone = "SkeletonHeelStone"
-SkeletonHeelStone.MaxSpawned = 15
+SkeletonHeelStone.MaxSpawned = 2
 SkeletonHeelStone.TotalSpawned = 0
 
 -- ALWAYS SORT THESE FROM LOWEST TO HIGHEST OR IT WONT WORK RIGHT

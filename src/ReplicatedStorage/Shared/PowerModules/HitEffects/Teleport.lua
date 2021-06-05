@@ -18,6 +18,9 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
     if not hitCharacter then return end
     if not hitCharacter:FindFirstChild("HumanoidRootPart") then return end
 
+    local antiTeleport = hitCharacter:FindFirstChild("DisableTeleport", true)
+    if antiTeleport then return end
+
 
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitParams.IsMob then
@@ -25,12 +28,14 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
         local orginalParent = hitCharacter.Parent
         if orginalParent == ReplicatedStorage then return end
 
-        hitCharacter.Parent = ReplicatedStorage
-        hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
-        hitCharacter.Parent = orginalParent
+        --hitCharacter.Parent = ReplicatedStorage
+        --hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
+        hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
+        --hitCharacter.Parent = orginalParent
 
     else
-        hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
+        --hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
+        hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
     end
 
 

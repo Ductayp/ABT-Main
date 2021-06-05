@@ -151,6 +151,19 @@ function MobBrain.Run()
                             Knit.Services.MobService:DeSpawnMob(mobData)
                         end
 
+                        --[[
+                        -- BRAIN EVENT: If the mob is stuck in RETURN state, despawn it
+                        if mobData.BrainState == "Return" and os.clock() > mobData.StateTime + maxReturnTime then
+                            print("BIG RETURN TEST!")
+                            mobData.BrainState = "Dead"
+                            mobData.StateTime = os.clock()
+                            mobData.IsDead = true
+                            mobData.DeadTime = os.clock()
+                            mobData.PlayerDamage = {} -- delete all player damage
+                            Knit.Services.MobService:DeSpawnMob(mobData)
+                        end
+                        ]]--
+
                     end
                 end
 
@@ -202,18 +215,17 @@ function MobBrain.State_Wait(mobData)
     local spawnerMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.Position).Magnitude
     if spawnerMagnitude > mobData.Defs.ChaseRange then
         mobData.BrainState = "Return"
-        mobData.AttackTarget = nil
         mobData.StateTime = os.clock()
+        mobData.AttackTarget = nil
         return
     end
 
     -- if theres no attack target and we are inside the chase range, give 1 second then send the mob back to spawner
     if spawnerMagnitude < mobData.Defs.ChaseRange then
         if mobData.StateTime < os.clock() + 1 then
-
             mobData.BrainState = "Return"
-            mobData.AttackTarget = nil
             mobData.StateTime = os.clock()
+            mobData.AttackTarget = nil
             return
         end
     end
@@ -237,7 +249,7 @@ function MobBrain.State_Home(mobData)
             mobData.Model.HumanoidRootPart.Anchored = false
             mobData.Model.HumanoidRootPart:SetNetworkOwner(nil)
         end
-
+        
         mobData.BrainState = "Chase"
         mobData.StateTime = os.clock()
         return
@@ -247,24 +259,28 @@ end
 
 --// State_Return
 function MobBrain.State_Return(mobData)
-    
+
     -- set move
     mobData.MoveTarget = mobData.Spawner.Position
 
     -- check if we are too far from Home
     local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.Position).Magnitude
-    if rangeMagnitude < 5 then 
+    if rangeMagnitude < 3 then 
         mobData.BrainState = "Home"
+        mobData.StateTime = os.clock()
         mobData.AttackTarget = nil
         mobData.MoveTarget = nil
-        mobData.StateTime = os.clock()
     end
 
     -- if we get stuck in the return state too long, kill the mob
     if os.clock() > mobData.StateTime + 10 then
+
+        print("STATE RETURN", mobData)
+
         mobData.PlayerDamage = nil
         mobData.IsDead = true
         mobData.DeadTime = os.clock()
+        Knit.Services.MobService:DeSpawnMob(mobData)
     end
 
     -- if a player gets back in range, set it back to chase
@@ -273,7 +289,6 @@ function MobBrain.State_Return(mobData)
             mobData.BrainState = "Chase"
             mobData.StateTime = os.clock()
         end
-
     end
 
 end
@@ -281,9 +296,10 @@ end
 --// State_Chase
 function MobBrain.State_Chase(mobData)
 
--- if chaseTarget is nil, then return to home
+    -- if chaseTarget is nil, then return to home
     if mobData.AttackTarget == nil then
         mobData.BrainState = "Return"
+        mobData.StateTime = os.clock()
     end
 
     if mobData.BrainState == "Chase" then
@@ -295,6 +311,7 @@ function MobBrain.State_Chase(mobData)
         else
             --mobData.MoveTarget = nil
             mobData.BrainState = "Attack"
+            mobData.StateTime = os.clock()
         end
 
         -- if we get too far away, return to the spawner
@@ -305,6 +322,15 @@ function MobBrain.State_Chase(mobData)
             mobData.StateTime = os.clock()
         end
     end
+
+    -- if we get stuck in the chase state too long, kill the mob
+    if os.clock() > mobData.StateTime + 10 then
+        mobData.BrainState = "Return"
+        mobData.AttackTarget = nil
+        mobData.StateTime = os.clock()
+    end
+
+
 end
 
 

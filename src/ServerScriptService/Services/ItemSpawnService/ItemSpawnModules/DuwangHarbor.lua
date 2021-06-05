@@ -8,7 +8,7 @@ local DuwangHarbor = {}
 --DuwangHarbor.SpawnGroupId = "DuwangHarbor_Arrows" --
 DuwangHarbor.Spawners = Workspace:FindFirstChild("ItemSpawners_DuwangHarbor", true)
 DuwangHarbor.MapZone = "DuwangHarbor"
-DuwangHarbor.MaxSpawned = 15
+DuwangHarbor.MaxSpawned = 2
 DuwangHarbor.TotalSpawned = 0
 
 DuwangHarbor.Items = {
@@ -27,6 +27,7 @@ DuwangHarbor.Items = {
 
     -- WEIGHT 5
     
+    --[[
     {
         Weight = 5,
         Model = ReplicatedStorage.SpawnItems.Cash,
@@ -37,10 +38,12 @@ DuwangHarbor.Items = {
             MaxValue = 250,
         }
     },
+    ]]--
 
 
     -- WEIGHT 10
 
+    --[[
     {
         Weight = 10,
         Model = ReplicatedStorage.SpawnItems.Cash,
@@ -51,6 +54,7 @@ DuwangHarbor.Items = {
             MaxValue = 100,
         }
     },
+    ]]--
 
     {
         Weight = 10,

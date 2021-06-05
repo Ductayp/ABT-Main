@@ -303,7 +303,7 @@ end
 --// PlayerRemoving -- cleans up after the player, used on PlayerRemoving and also in other functions, such as PlayerSetup
 function PowersService:PlayerRemoving(player)
 
-    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes, ReplicatedStorage.PowerStatus}
+    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, ReplicatedStorage.PowerStatus}
     for _,location in pairs(cleanupLocations) do
         for _,object in pairs(location:GetChildren()) do
             if object.Name == tostring(player.UserId) then
@@ -348,7 +348,7 @@ function PowersService:CharacterAdded(player)
     local equippedStandObject = thisPlayerFolder:FindFirstChild("EquippedStand")
     if equippedStandObject then equippedStandObject:Destroy() end
 
-    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes, workspace.ClientHitboxes}
+    local cleanupLocations = {workspace.PlayerStands, workspace.ServerHitboxes}
     for _,location in pairs(cleanupLocations) do
         for _, folder in pairs(location:GetChildren()) do
             if folder.Name == tostring(player.UserId) then
@@ -359,7 +359,7 @@ function PowersService:CharacterAdded(player)
 
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
-    local playerHitboxClientFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ClientHitboxes})
+    
 
     -- get the players current power: run remove then setup
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -449,9 +449,6 @@ function PowersService:KnitInit()
 
     local serverHitboxes = utils.EasyInstance("Folder",{Name = "ServerHitboxes",Parent = workspace})
     serverHitboxes:SetAttribute("IgnoreProjectiles", true)
-
-    --local clientHitboxes = utils.EasyInstance("Folder",{Name = "ClientHitboxes",Parent = workspace})
-    --serverHitboxes:SetAttribute("IgnoreProjectiles", true)
 
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
 

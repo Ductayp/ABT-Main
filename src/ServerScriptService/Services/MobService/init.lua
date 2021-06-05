@@ -17,7 +17,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local config = require(script.Config)
 MobService.SpawnedMobs = {} -- table of all spawned mobs
 
-MobService.DebugMode = false
+MobService.DebugMode = true
 
 function MobService:GetMobById(sentMobId)
 
@@ -53,6 +53,10 @@ function MobService:DamageMob(player, mobId, damage)
     local thisMob = MobService.SpawnedMobs[mobId]
     if not thisMob then return end
 
+    if not thisMob.PlayerDamage then
+        thisMob.PlayerDamage = {}
+    end
+
     -- apply player damage counts only if the mob is not dead
     if thisMob.BrainState ~= "Dead" then
         if thisMob.PlayerDamage[player] == nil then
@@ -66,18 +70,20 @@ end
 --// DeSpawnMob
 function MobService:DeSpawnMob(mobData)
 
-    spawn(function()
-        if mobData.Functions.DeSpawn then
-            mobData.Functions.DeSpawn(mobData)
-        end
-    
-        self:KillMob(mobData)
-    end)
+
+    if mobData.Functions.DeSpawn then
+        mobData.Functions.DeSpawn(mobData)
+    end
+
+    self:KillMob(mobData)
+
 
 end
 
 --// KillMob
 function MobService:KillMob(mobData)
+
+    --print(mobData)
 
     -- break the joints, YEET
     mobData.Model:BreakJoints()
@@ -91,57 +97,59 @@ function MobService:KillMob(mobData)
     else
         mobData.Spawner.SpawnCounter.Value = mobData.Spawner.SpawnCounter.Value - 1
     end
+
+    if mobData.PlayerDamage then
     
+        -- check if a player did more than 1/3 of total damage
+        for player, damage in pairs(mobData.PlayerDamage) do
+            if damage > mobData.Defs.Health / 3 then
+
+                if Players:FindFirstChild(player.Name) then
+
+                    -- get drops
+                    local dropRewards = mobData.Functions.Drop(player, mobData)
+
+                    -- get modified values for notifications
+                    local xp_Multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
+                    local orbs_Multiplier = require(Knit.StateModules.Multiplier_Orbs).GetTotalMultiplier(player)
+                    local xp_Modified = dropRewards.XP * xp_Multiplier
+                    local orbs_Modified = dropRewards.SoulOrbs * orbs_Multiplier
+
+                    -- send notifications for Xp and Soul Orbs
+                    local notificationParams = {}
+                    notificationParams.Icon = "MobKill"
+                    notificationParams.Text = "Killed: " .. mobData.Defs.Name .. "<br/>Stand XP: " .. tostring(xp_Modified) .. "    +   Soul Orbs: " ..  tostring(orbs_Modified)
+                    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+
+                    -- give unmodified rewardsfor Xp and Soul Orbs
+                    Knit.Services.InventoryService:Give_Xp(player, dropRewards.XP)
+                    Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", dropRewards.SoulOrbs, "MobDrop")
+
+                    -- handle item rewards
+                    local itemDefs = require(Knit.Defs.ItemDefs)
+                    for itemKey, itemValue in pairs(dropRewards.Items) do
+
+                        local thisItemDef = itemDefs[itemKey]
+                        if thisItemDef then
+                            local notificationParams_2 = {}
+                            notificationParams_2.Icon = "Item"
+                            print("mobData 1", mobData)
+                            notificationParams_2.Text = mobData.Defs.Name .. " Dropped Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemValue)
+                            print("mobData 2", mobData)
+                            Knit.Services.GuiService:Update_Notifications(player, notificationParams_2)
+                            Knit.Services.InventoryService:Give_Item(player, itemKey, itemValue)
+                        end
+                    end
+                end
+            end
+        end
+    end
 
     spawn(function()
         wait(5)
         mobData.Model:Destroy()
         MobService.SpawnedMobs[mobData.MobId] = nil
     end)
-
-    -- cehck if a player did more than 1/3 of total damage
-    for player, damage in pairs(mobData.PlayerDamage) do
-        if damage > mobData.Defs.Health / 3 then
-
-            if Players:FindFirstChild(player.Name) then
-
-                -- get drops
-                local dropRewards = mobData.Functions.Drop(player, mobData)
-
-                -- get modified values for notifications
-                local xp_Multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
-                local orbs_Multiplier = require(Knit.StateModules.Multiplier_Orbs).GetTotalMultiplier(player)
-                local xp_Modified = dropRewards.XP * xp_Multiplier
-                local orbs_Modified = dropRewards.SoulOrbs * orbs_Multiplier
-
-                -- send notifications for Xp and Soul Orbs
-                local notificationParams = {}
-                notificationParams.Icon = "MobKill"
-                notificationParams.Text = "Killed: " .. mobData.Defs.Name .. "<br/>Stand XP: " .. tostring(xp_Modified) .. "    +   Soul Orbs: " ..  tostring(orbs_Modified)
-                Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-
-                -- give unmodified rewardsfor Xp and Soul Orbs
-                Knit.Services.InventoryService:Give_Xp(player, dropRewards.XP)
-                Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", dropRewards.SoulOrbs, "MobDrop")
-
-                -- handle item rewards
-                local itemDefs = require(Knit.Defs.ItemDefs)
-                for itemKey, itemValue in pairs(dropRewards.Items) do
-
-                    local thisItemDef = itemDefs[itemKey]
-
-                    local notificationParams = {}
-                    notificationParams.Icon = "Item"
-                    notificationParams.Text = mobData.Defs.Name .." Dropped Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemValue)
-                    Knit.Services.GuiService:Update_Notifications(player, notificationParams)
-
-                    Knit.Services.InventoryService:Give_Item(player, itemKey, itemValue)
-
-                end
-            end
-        end
-
-    end
 
 end
 
@@ -252,12 +260,11 @@ end
 --// KnitInit
 function MobService:KnitInit()
 
-        -- create a spawned items folder
-        local spawnedMobsFolder = Instance.new("Folder")
-        spawnedMobsFolder.Name = "SpawnedMobs"
-        spawnedMobsFolder.Parent = Workspace
-        spawnedMobsFolder:SetAttribute("IgnoreProjectiles", true)
-
+    -- create a spawned mobs folder
+    local spawnedMobsFolder = Instance.new("Folder")
+    spawnedMobsFolder.Name = "SpawnedMobs"
+    spawnedMobsFolder.Parent = Workspace
+        
     -- create no-collision group and set it
     PhysicsService:CreateCollisionGroup("Mob_NoCollide")
     PhysicsService:CollisionGroupSetCollidable("Mob_NoCollide", "Mob_NoCollide", false)

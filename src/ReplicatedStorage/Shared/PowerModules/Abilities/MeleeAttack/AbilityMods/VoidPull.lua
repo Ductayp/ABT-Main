@@ -27,7 +27,7 @@ ScrapePunch.HitDelay = 0.4
 ScrapePunch.InputBlockTime = 0.5
 
 -- hitbox
-ScrapePunch.HitboxSize = Vector3.new(6, 5, 50)
+ScrapePunch.HitboxSize = Vector3.new(6, 5, 32)
 ScrapePunch.HitboxOffset = CFrame.new(0, 0, 25)
 ScrapePunch.HitboxDestroyTime = .4
 
@@ -39,7 +39,9 @@ local pinTime = 1
 
 function ScrapePunch.Hitbox_Start(params, abilityDefs, initPlayer, hitbox)
 
-    local targetPosition = hitbox.CFrame:ToWorldSpace(CFrame.new(0,0, 15)).Position
+    local thisHRP = initPlayer.Character.HumanoidRootPart
+    if not thisHRP then return end
+    local targetPosition = thisHRP.CFrame:ToWorldSpace(CFrame.new(0,0, -6)).Position
 
     local effectParams = {}
     effectParams.Hitbox = hitbox
@@ -52,6 +54,10 @@ end
 
 --// HitCharacter
 function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitbox)
+
+    --local thisHRP = initPlayer.Character.HumanoidRootPart
+    --if not thisHRP then return end
+    --local targetPosition = thisHRP.CFrame:ToWorldSpace(CFrame.new(0,0, -6)).Position
 
     spawn(function()
 

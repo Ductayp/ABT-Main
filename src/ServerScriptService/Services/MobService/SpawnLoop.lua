@@ -14,6 +14,7 @@ local activeMob_Modules = {
     script.Parent.MobModules.Santana,
     script.Parent.MobModules.RedHot,
     script.Parent.MobModules.Wamuu,
+    script.Parent.MobModules.Akira,
 }
 
 local SpawnLoop = {}
@@ -47,92 +48,90 @@ function SpawnLoop.Run()
                     spawnCount += spawnCounter.Value
                 end
 
-                print("CHECK IF OVER COUNT", thisModule.Defs.Name, spawnCount, thisModule.Max_Spawned)
-
                 -- if we are less than Max_Spawned across the whole spawner group
                 if spawnCount < thisModule.Max_Spawned then
 
-                    print("COUNT CHECK START:", thisModule.Defs.Name, #spawners)
                     -- build a table of open spawners
                     local openSpawners = {}
                     for i, spawner in pairs(spawners) do
-
-                        print(i, spawner.SpawnCounter.Value)
-
                         if spawner.SpawnCounter.Value < 1 then
-
-                            --print("insert", spawner.SpawnCounter.Value)
-
                             table.insert(openSpawners, spawner)
                         end
-
                     end
-                    print("COUNT CHECK END", thisModule.Defs.Name, #openSpawners)
 
                     -- pick a spawner randomly from the open spawners
-                    local rand = math.random(1, #openSpawners)
-                    local pickedSpawner = openSpawners[rand]
+                    if openSpawners ~= nil and #openSpawners > 0 then
 
-                    --print("val 1", pickedSpawner.SpawnCounter.Value)
-                    pickedSpawner.SpawnCounter.Value += 1
-                    --print("val 2", pickedSpawner.SpawnCounter.Value)
-
-                        -- create a new mobData object
-                    local mobData = require(script.Parent.NewMob).Create(thisModule)
-
-                    -- set the spawner this mob is owned by
-                    mobData.Spawner = pickedSpawner
-
-                    -- assign serialNumber to mob model and also add the mobData table to MobService.SpawnedMobs table
-                    utils.NewValueObject("MobId", serialNumber, mobData.Model)
-                    mobData.MobId = serialNumber
-                    serialNumber += 1
-
-                    -- Set spawn CFrame
-                    local offsetX
-                    local offsetZ
-                    if thisModule.RandomPlacement then
-                        offsetX = math.random(-mobData.Spawner.Size.X / 2, mobData.Spawner.Size.X / 2)
-                        offsetX = math.random(-mobData.Spawner.Size.Z / 2, mobData.Spawner.Size.Z / 2)
-                    else
-                        offsetX = 0
-                        offsetX = 0
-                    end
-                    mobData.SpawnCFrame = pickedSpawner.CFrame * CFrame.new(offsetX, thisModule.Spawn_Y_Offset, offsetZ)
-
-                    -- run the pre-spawn setup
-                    thisModule.Pre_Spawn(mobData)
-
-                    
-
-                    -- spawn the mob into the world
-                    mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
-                    mobData.Model.Parent = Workspace.SpawnedMobs
-
-                    for _,object in pairs(mobData.Model:GetDescendants()) do
-                        if object:IsA("BasePart") then
-                            object.Anchored = false
+                        local rand = math.random(1, #openSpawners)
+                        local pickedSpawner = openSpawners[rand]
+    
+                        pickedSpawner.SpawnCounter.Value += 1
+    
+                            -- create a new mobData object
+                        local mobData = require(script.Parent.NewMob).Create(thisModule)
+    
+                        -- set the spawner this mob is owned by
+                        mobData.Spawner = pickedSpawner
+    
+                        -- assign serialNumber to mob model and also add the mobData table to MobService.SpawnedMobs table
+                        utils.NewValueObject("MobId", serialNumber, mobData.Model)
+                        mobData.MobId = serialNumber
+                        serialNumber += 1
+    
+                        -- Set spawn CFrame
+                        local offsetX
+                        local offsetZ
+                        if thisModule.RandomPlacement then
+                            offsetX = math.random(-mobData.Spawner.Size.X / 2, mobData.Spawner.Size.X / 2)
+                            offsetX = math.random(-mobData.Spawner.Size.Z / 2, mobData.Spawner.Size.Z / 2)
+                        else
+                            offsetX = 0
+                            offsetX = 0
                         end
-                    end
-
-                    if config.NetworkOwner_Server then
+                        mobData.SpawnCFrame = pickedSpawner.CFrame * CFrame.new(offsetX, thisModule.Spawn_Y_Offset, offsetZ)
+    
+                        -- run the pre-spawn setup
+                        thisModule.Pre_Spawn(mobData)
+    
+                        -- spawn the mob into the world
+                        mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
+                        mobData.Model.Parent = Workspace.SpawnedMobs
+    
                         for _,object in pairs(mobData.Model:GetDescendants()) do
                             if object:IsA("BasePart") then
-                                object:SetNetworkOwner(nil)
+                                object.Anchored = false
                             end
                         end
+    
+                        if config.NetworkOwner_Server then
+                            for _,object in pairs(mobData.Model:GetDescendants()) do
+                                if object:IsA("BasePart") then
+                                    object:SetNetworkOwner(nil)
+                                end
+                            end
+                        end
+    
+                        Knit.Services.MobService.SpawnedMobs[mobData.MobId] = mobData
+    
+                        -- run the post-spawn setup
+                        thisModule.Post_Spawn(mobData)
+    
+                        -- setup functions
+                        thisModule.Setup_Animations(mobData)
+                        thisModule.Setup_Attack(mobData)
+                        thisModule.Setup_Death(mobData)
+                        thisModule.Setup_Drop(mobData)
+                        
                     end
 
-                    Knit.Services.MobService.SpawnedMobs[mobData.MobId] = mobData
 
-                    -- run the post-spawn setup
-                    thisModule.Post_Spawn(mobData)
 
-                    -- setup functions
-                    thisModule.Setup_Animations(mobData)
-                    thisModule.Setup_Attack(mobData)
-                    thisModule.Setup_Death(mobData)
-                    thisModule.Setup_Drop(mobData)
+
+
+
+
+
+
 
                 end
             end

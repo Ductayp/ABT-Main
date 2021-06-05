@@ -284,34 +284,39 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
 
     if stageDef[choiceName].Action.Type == "DungeonTravel" then
         
+        local originalText = button.Text
+        local originalTextColor = button.TextColor3
+        local originalBackgroundColor = button.BackgroundColor3
+
+        button.Text = "CHECKING..."
+
         local travelParams = {}
         travelParams.ModuleName = stageDef[choiceName].Action.ModuleName
         travelParams.TransactionKey = stageDef[choiceName].Action.TransactionKey
-
         local travelSuccess = DungeonService:BuyAccess(travelParams)
-        
-        local originalText = button.Text
-        local originalTextColor = button.TextColor3
+
         if travelSuccess then
             button.Text = "SUCCESS"
             button.TextColor3 = Color3.fromRGB(0, 255, 0)
+            button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
             Knit.Controllers.GuiController:ToggleDialogue(false)
             wait(1)
             disableChoiceButtons = true
             NPCDialogue.Frame.Visible = false
             button.Text = originalText
             button.TextColor3 = originalTextColor
+            button.BackgroundColor3 = originalBackgroundColor
             disableChoiceButtons = false
         else
-            spawn(function()
-                button.Text = "FAILURE"
-                button.TextColor3 = Color3.fromRGB(255, 0, 0)
-                disableChoiceButtons = true
-                wait(2)
-                button.Text = originalText
-                button.TextColor3 = originalTextColor
-                disableChoiceButtons = false
-            end)
+            button.Text = "NOT ENOUGH"
+            button.TextColor3 = Color3.fromRGB(255, 0, 0)
+            button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+            disableChoiceButtons = true
+            wait(2)
+            button.Text = originalText
+            button.TextColor3 = originalTextColor
+            button.BackgroundColor3 = originalBackgroundColor
+            disableChoiceButtons = false
         end
 
         NPCDialogue.Close()
@@ -322,8 +327,10 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
 
         local originalText = button.Text
         local originalTextColor = button.TextColor3
+        local originalBackgroundColor = button.BackgroundColor3
 
         button.Text = "SUCCESS"
+        button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
         button.TextColor3 = Color3.fromRGB(0, 255, 0)
         Knit.Controllers.GuiController:ToggleDialogue(false)
         wait(1)
@@ -331,6 +338,7 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
         NPCDialogue.Frame.Visible = false
         button.Text = originalText
         button.TextColor3 = originalTextColor
+        button.BackgroundColor3 = originalBackgroundColor
         disableChoiceButtons = false
 
         DungeonService:LeaveDungeon(Players.LocalPlayer)

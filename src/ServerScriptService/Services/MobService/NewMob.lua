@@ -44,7 +44,7 @@ function NewMob.Create(mobDefs)
     -- setup assorted mobData values
     newMob.Active = true -- defaults to true, but we can set this before spawn with the provided functions
     newMob.PlayerDamage = {} -- this table hold player objects and the damage they have dealt this mob, used for aggro
-    newMob.BrainState = "Wait" -- initial brain state
+    newMob.BrainState = "Home" -- initial brain state
     newMob.StateTime = os.clock() -- used as a timestop whenever we change the state
     newMob.SpawnTime = os.clock() -- the time this mob was spawned, used to track its lifetime and despawn when it expires
     newMob.MoveTarget = nil

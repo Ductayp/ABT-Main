@@ -225,11 +225,13 @@ function Wamuu_Mob.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
+    --[[
     local itemDropPercent = 75
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
         rewards.Items["Antidote"] = 1
     end
+    ]]--
 
     rewards.XP = Wamuu_Mob.Defs.XpValue
     rewards.SoulOrbs = 1

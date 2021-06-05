@@ -144,11 +144,14 @@ end
 
 function AbilityBar.ShowAbilities()
     for _, abilityName in pairs(AbilityBar.AbilityNames) do
+        abilityName.Visible = true
+        --[[
         if abilityName.Text == "-" then
             abilityName.Visible = false
         else
             abilityName.Visible = true
         end
+        ]]--
     end
 end
 

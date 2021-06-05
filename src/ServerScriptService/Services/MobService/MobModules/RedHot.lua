@@ -1,6 +1,4 @@
--- RedHot_Mob Mob
--- Pdab
--- 1/10/21
+-- RedHot_Mob
 
 -- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -17,7 +15,7 @@ local RedHot_Mob = {}
 RedHot_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_RedHot", true)
 
 --/ Model
-RedHot_Mob.Model = ReplicatedStorage.Mobs.RHCP_Model
+RedHot_Mob.Model = ReplicatedStorage.Mobs.RedHot
 
 --/ Spawn
 RedHot_Mob.RespawnClock = os.clock()
@@ -46,7 +44,7 @@ RedHot_Mob.Defs.AttackSpeed = 1
 RedHot_Mob.Defs.AttackRange = 15
 RedHot_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
 RedHot_Mob.Defs.SeekRange = 60 -- In Studs
-RedHot_Mob.Defs.ChaseRange = 80 -- In Studs
+RedHot_Mob.Defs.ChaseRange = 5 -- In Studs
 RedHot_Mob.Defs.IsMobile = false
 RedHot_Mob.Defs.LifeSpan = 60 -- how long the mob lives before resapwn, in seconds
 
@@ -62,6 +60,11 @@ function RedHot_Mob.Pre_Spawn(mobData)
             instance.Transparency = 1
         end
     end
+
+    local antiTeleport = Instance.new("BoolValue")
+    antiTeleport.Name = "DisableTeleport"
+    antiTeleport.Value = true
+    antiTeleport.Parent = mobData.Model.Humanoid
 
 end
 
@@ -194,7 +197,7 @@ function RedHot_Mob.DeSpawn(mobData)
         end
     end
 
-    wait(3)
+    --wait(3)
 
 end
 
@@ -209,14 +212,17 @@ function RedHot_Mob.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
+    --[[
     local itemDropPercent = 25
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        rewards.Items["BrokenArrow"] = 1
+        rewards.Items["BrokenArrow"] = 10
     end
+    ]]--
 
+    rewards.Items["BrokenArrow"] = math.random(1, 10)
     rewards.XP = RedHot_Mob.Defs.XpValue
-    rewards.SoulOrbs = 2
+    rewards.SoulOrbs = 10
 
     return rewards
 end

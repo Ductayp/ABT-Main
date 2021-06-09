@@ -232,7 +232,8 @@ function Wamuu_Mob.Drop(player, mobData)
         rewards.Items["Antidote"] = 1
     end
     ]]--
-
+    
+    rewards.Items["Antidote"] = math.random(1, 3)
     rewards.XP = Wamuu_Mob.Defs.XpValue
     rewards.SoulOrbs = 1
 

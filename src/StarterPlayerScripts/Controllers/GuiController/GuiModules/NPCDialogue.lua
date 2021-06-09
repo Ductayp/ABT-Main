@@ -25,12 +25,14 @@ NPCDialogue.Button_Close = NPCDialogue.Frame:FindFirstChild("Button_Close", true
 NPCDialogue.Button_Choice1 = NPCDialogue.Frame:FindFirstChild("Button_Choice1", true)
 NPCDialogue.Button_Choice2 = NPCDialogue.Frame:FindFirstChild("Button_Choice2", true)
 NPCDialogue.Button_Choice3 = NPCDialogue.Frame:FindFirstChild("Button_Choice3", true)
-NPCDialogue.Frame_Icons = NPCDialogue.Frame:FindFirstChild("Frame_Icons", true)
+NPCDialogue.Frame_Icon = NPCDialogue.Frame:FindFirstChild("Frame_Icon", true)
 NPCDialogue.Text_Title = NPCDialogue.Frame:FindFirstChild("Text_Title", true)
 NPCDialogue.Text_Body = NPCDialogue.Frame:FindFirstChild("Text_Body", true)
 
 NPCDialogue.AllProximityPrompts = {} -- a table to held them all
 NPCDialogue.DialogueModules = {} -- the current active dialogue module, gets set when you open a dialogue
+
+local NPC_Icons = mainGui:FindFirstChild("NPC_Icons", true)
 
 local currentDialogueDef = {}
 local currentStageName
@@ -155,15 +157,18 @@ function NPCDialogue.RenderDialogueWindow()
     local stageDef = currentDialogueDef.Stage[currentStageName]
     if not stageDef then return end
 
-    -- render the icon
-    for _, icon in pairs(NPCDialogue.Frame_Icons:GetChildren()) do
-        if icon:IsA("Frame") then
-            if icon.Name == stageDef.IconName then
-                icon.Visible = true
-            else
-                icon.Visible = false
-            end
+    for _, object in pairs(NPCDialogue.Frame_Icon:GetChildren()) do
+        if object:IsA("Frame") then
+            object:Destroy()
         end
+    end
+
+    local newIcon
+    local findIcon = NPC_Icons:FindFirstChild(stageDef.IconName)
+    if findIcon then
+        newIcon = findIcon:Clone()
+        newIcon.Parent = NPCDialogue.Frame_Icon
+        newIcon.Visible = true
     end
 
     -- fill the title

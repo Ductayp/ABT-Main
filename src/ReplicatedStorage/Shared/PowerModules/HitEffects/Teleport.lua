@@ -21,7 +21,10 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
     local antiTeleport = hitCharacter:FindFirstChild("DisableTeleport", true)
     if antiTeleport then return end
 
+    hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
 
+
+    --[[
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitParams.IsMob then
 
@@ -37,6 +40,7 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
         --hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
         hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
     end
+    ]]--
 
 
 end

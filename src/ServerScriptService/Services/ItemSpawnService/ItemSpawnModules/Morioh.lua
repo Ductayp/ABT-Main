@@ -32,8 +32,7 @@ Morioh.Items = {
         Params = {
             DataKey = "GoldStar",
             DataCategory = "Item",
-            MinValue = 1,
-            MaxValue = 1,
+            Quantity = 1,
         },
     },
 

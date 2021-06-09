@@ -73,6 +73,7 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_Currency:Connect(function(data)
         GuiController.Modules.CurrencyBar.Update(data)
+        GuiController.Modules.NPCShop.Update(data)
     end)
 
     --[[

@@ -41,12 +41,6 @@ return {
     DuwangHarbor = {
 
         {
-            Key = "Cash",
-            Name = "Cash",
-            LayoutOrder = 1
-        },
-    
-        {
             Key = "SoulOrbs",
             Name = "Soul Orbs",
             LayoutOrder = 2
@@ -68,8 +62,8 @@ return {
     SkeletonHeelStone = {
 
         {
-            Key = "Cash",
-            Name = "Cash",
+            Key = "GoldStar",
+            Name = "Gold Star",
             LayoutOrder = 1
         },
     

@@ -33,7 +33,7 @@ module.Stage.Start = {
     },
     Choice_3 = {
         Display = true,
-        Text = "Any more codes?",
+        Text = "More codes?",
         Action = {
             Type = "ChangeStage",
             Stage = "Codes2"
@@ -45,10 +45,10 @@ module.Stage.PlanetIntro = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
     Body = "Glad you asked, Planet Milo is our YouTube channel, maybe check it out? Link is on the Game Page. " ..
-            "We will be dropping fresh codes and game leaks over there.",
+            "<br/><br/>We will be dropping fresh codes and game leaks over there.",
     Choice_1 = {
         Display = true,
-        Text = "So, how do I play?",
+        Text = "How do I play?",
         Action = {
             Type = "ChangeStage",
             Stage = "QuickTutorial1"
@@ -101,14 +101,19 @@ module.Stage.Codes2 = {
     Body = "Just use the starter code for 3 arrows: <b>StarterArrows</b><br/><br/>Follow us on YouTube, Twitter, and join Dis-cord for fresh codes. Links are on the Roblox game page.",
     Choice_1 = {
         Display = true,
-        Text = "So, how do I play?",
+        Text = "How do I play?",
         Action = {
             Type = "ChangeStage",
             Stage = "QuickTutorial1"
         }
     },
     Choice_2 = {
-        Display = false,
+        Display = true,
+        Text = "Planet WHO?",
+        Action = {
+            Type = "ChangeStage",
+            Stage = "PlanetIntro"
+        }
     },
     Choice_3 = {
         Display = false,
@@ -168,7 +173,7 @@ module.Stage.QuickTutorial2 = {
 module.Stage.QuickTutorial3 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "Then you gotta GRIND! Your stand will gain XP and SOUL ORBS as you kill mobs. When your stand reaches max XP, you use the SOUL ORBS to EVOLVE it.<br/><br/><b>Enrico Can tell you more about that at his Shop.</b>",
+    Body = "Then you gotta GRIND! Your stand will gain XP and SOUL ORBS as you kill mobs. When your stand reaches max XP, you use a GOLD STAR to EVOLVE it.<br/><br/><b>Enrico Can tell you more about that at his Shop.</b>",
     Choice_1 = {
         Display = true,
         Text = "And then? ...",
@@ -209,7 +214,7 @@ module.Stage.QuickTutorial4 = {
 module.Stage.QuickTutorial5 = {
     IconName = "Icon_PlanetWagon",
     Title = "PlanetWagon (A.K.A. Planet_Dad)",
-    Body = "If you need to remove your stand, you can TRASH it or STORE it at Enrico's Shop.<br/><br/><b>You really should go visit the place, its just down the road by the Harbor!!!</b>",
+    Body = "If you need to remove your stand, you can TRASH it anywhere or to STORE it for later, go to Enrico's Shop.<br/><br/><b>You really should go visit the place, its just down the road by the Harbor!!!</b>",
     Choice_1 = {
         Display = true,
         Text = "I will go see Enrico, Then what?",

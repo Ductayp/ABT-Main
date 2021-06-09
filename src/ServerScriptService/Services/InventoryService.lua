@@ -609,6 +609,61 @@ function InventoryService:NPCTransaction(player, params)
 
 end
 
+--// ShopTransaction
+function InventoryService:ShopTransaction(player, params)
+
+    --print("InventoryService:ShopTransaction", player, params)
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData then return end
+
+    local shopModule = require(params.ShopModule)
+    if not shopModule then return end
+
+    local transactionDef = shopModule.ShopItems[params.TransactionId]
+    if not transactionDef then return end
+
+    local inputKey = transactionDef.InputKey
+    local inputValue = transactionDef.InputValue
+    local outputKey = transactionDef.OutputKey
+    local outputValue = transactionDef.OutputValue
+
+    local success = false
+    if inputKey == "Cash" or inputKey == "SoulOrbs"then
+        if playerData.Currency[inputKey] >= inputValue then
+            playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue
+            success = true
+        end
+    else
+        if playerData.ItemInventory[inputKey] ~= nil then
+            if playerData.ItemInventory[inputKey] >= inputValue then
+                playerData.ItemInventory[inputKey] = playerData.ItemInventory[inputKey] - inputValue
+                success = true
+            end
+        end
+    end
+
+    -- if success, give the output stuff
+    if success then
+
+        if outputKey == "Cash" or outputKey == "SoulOrbs" then
+            playerData.Currency[outputKey] = playerData.Currency[outputKey] + outputValue
+        else
+            if playerData.ItemInventory[outputKey] == nil then
+                playerData.ItemInventory[outputKey] = 0
+            end
+            playerData.ItemInventory[outputKey] = playerData.ItemInventory[outputKey] + outputValue
+        end
+
+        Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+        Knit.Services.GuiService:Update_Gui(player, "Currency")
+        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+    end
+
+    return success
+
+end
+
 --// GetCurrencyData ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:GetCurrencyData(player)
 
@@ -686,6 +741,12 @@ end
 --// Client:NPCTransaction
 function InventoryService.Client:NPCTransaction(player, params)
     local success = self.Server:NPCTransaction(player, params)
+    return success
+end
+
+--// Client:ShopTransaction
+function InventoryService.Client:ShopTransaction(player, params)
+    local success = self.Server:ShopTransaction(player, params)
     return success
 end
 

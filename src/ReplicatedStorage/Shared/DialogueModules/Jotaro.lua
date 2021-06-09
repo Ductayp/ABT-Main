@@ -7,52 +7,28 @@ function module.Initialize()
     -- print("BEEEP BEEP!")
 end
 
-module.Shop = {
-    TenArrows = {
-        Input = {
-            Key = "Arrow",
-            Value = 10
-        },
-        Output = {
-            Key = "Cash",
-            Value = 900
-        }
-    },
-    HundredArrows = {
-        Input = {
-            Key = "Arrow",
-            Value = 100
-        },
-        Output = {
-            Key = "Cash",
-            Value = 9000
-        }
-    },
-}
-
 module.Stage = {}
 
 module.Stage.Start = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
-    Body = "Seems like the whole island is stuck in a TIME RIFT and suddenly all these stands users show up.<br/><br/>Dio must be up to something again, theres arrows all over the place! If you have any of those arows, I will buy them.",
-    
+    Body = "This islands seems to be at the nexus of a TIME RIFT where many timelines cross. As the timelines overlap, it's common to see time-clones walking round." .. 
+        "<br/><br/>Dio must be up to soemthing.",
     Choice_1 = {
         Display = true,
-        Text = "TRADE",
-        CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
+        Text = "Time Rift?",
         Action = {
             Type = "ChangeStage",
-            Stage = "SellArrows"
+            Stage = "TimeRift"
         }
     },
 
     Choice_2 = {
         Display = true,
-        Text = "Time Rift??",
+        Text = "Time Clones?",
         Action = {
             Type = "ChangeStage",
-            Stage = "TimeRift"
+            Stage = "TimeClones"
         }
     },
 
@@ -64,15 +40,15 @@ module.Stage.Start = {
 module.Stage.TimeRift = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
-    Body = "Did you notice the water looks CRAZY PINK? If you go into it, you die. <br/><br/>You might want to talk to the Gang Star at the end of the dock to see what he knows about it.",
+    Body = "Did you notice the water looks CRAZY PINK? If you go into it, you die. Thats not water at all I bet." ..
+        "<br/><br/>You might want to talk to the Gang Star at the end of the dock to see what he knows about it.",
     Choice_1 = {
         Display = true,
-        Text = "TRADE",
-        CustomProperties = {BackgroundColor3 = Color3.fromRGB(0, 170, 0)},
+        Text = "Time Clones?",
         Action = {
             Type = "ChangeStage",
-            Stage = "SellArrows"
-        },
+            Stage = "TimeClones"
+        }
     },
     Choice_2 = {
         Display = false,
@@ -82,35 +58,25 @@ module.Stage.TimeRift = {
     },
 }
 
-module.Stage.SellArrows = {
+module.Stage.TimeClones = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
-    Body = "If I can get rid of the arrows making people into Stand Users, maybe we can fix this.<br/><b><br/>10 Arrows for 900 Cash<br/>100 Arrows for 9000 Cash</b>",
+    Body = "I dont know what to call them but they are multiple copies of someone, as if they arrived here from other timelines." ..
+        "<br/><br/>If you see any that look like me, just kill them please. Those guys are a bunch of idiots.",
     Choice_1 = {
         Display = true,
-        Text = "Sell 10 Arrows",
+        Text = "Time Rift?",
         Action = {
-            Type = "Shop",
-            ModuleName = "Jotaro",
-            TransactionKey = "TenArrows"
+            Type = "ChangeStage",
+            Stage = "TimeRift"
         }
     },
-
     Choice_2 = {
-        Display = true,
-        Text = "Sell 100 Arrows",
-        Action = {
-            Type = "Shop",
-            ModuleName = "Jotaro",
-            TransactionKey = "HundredArrows"
-        }
+        Display = false,
     },
-
     Choice_3 = {
         Display = false,
     },
 }
-
-
 
 return module

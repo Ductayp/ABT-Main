@@ -153,7 +153,7 @@ function  RedHot_Mob.Attack(mobData)
                 local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
                 if distance <= RedHot_Mob.Defs.AttackRange then
 
-                    local hitEffects = {Damage = {Damage = 10}}
+                    local hitEffects = {Damage = {Damage = 5}}
                     Knit.Services.MobService:HitPlayer(player, hitEffects)
                 end
             end

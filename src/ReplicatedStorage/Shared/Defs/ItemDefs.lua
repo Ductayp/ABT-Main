@@ -6,14 +6,14 @@ return {
         Name = "Arrow",
         Type = "Special",
         GivePower = "Stand",
-        Description = "Use this arrow to gain a stand.<br /><u>You MUST be standless.</u><br /><br />95% 1-Star<br />4.5% 2-Star<br />0.5% 3-Star",
+        Description = "Use this arrow while STANDLESS to gain a stand.<br /><br />You will get a Rank 1 stand unless you have the Super Arrow pass.",
         LayoutOrder = 1,
     },
 
     GoldStar = {
         Name = "Gold Star",
         Type = "Evolution",
-        Description = "Unlocks the potential of a stand/spec.<br /><br />Simply use this item when your XP bar is full to rank the stand/spec up to a max of rank 3.",
+        Description = "Unlocks the potential of a stand/spec.<br /><br />Use this item when your XP bar is full to rank-up. Rank 3 is max.",
         LayoutOrder = 2,
     },
 
@@ -22,10 +22,11 @@ return {
         Type = "Special",
         GivePower = "Vampire",
         CutScene = "StoneMask",
-        Description = "<b>VAMPIRIC!</b><br/>Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they imbue mere humans with such great power?",
+        Description = "Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they imbue mere humans with such great power?",
         LayoutOrder = 3
     },
 
+    --[[
     HornedMask = {
         Name = "Horned Mask",
         Type = "Special",
@@ -34,27 +35,26 @@ return {
         Description = "Use this item while you have Vampire Spec. to get Pillar Man Spec.<br/><br/>MORE TEXT HERE?",
         LayoutOrder = 3
     },
+    ]]--
 
-    --[[
     Antidote = {
         Name = "Antidote",
         Type = "Collectable",
-        Description = "Hidden inside the nose ring of Wham is an antidote. Infused with the power of the Pillar Men, it glows softly.<br/><br/>Bring this to Cesar in the Arena, he will buy them for a good price.",
+        Description = "Hidden inside the nose ring of Wham is an antidote. Infused with the power of the Pillar Men, it glows softly.<br/><br/>Can be used to craft powerful items.",
         LayoutOrder = 4
     },
-    ]]--
 
     MaskFragment = {
         Name = "Mask Fragment",
         Type = "Collectable",
-        Description = "A small piece of a stone mask. Maybe they can be used somehow?<br/><br/>Or maybe you can sell them Jonathon, he's at the beach surfing.",
+        Description = "A small piece of a stone mask. You can probably piece them together if you had enough.<br/><br/>Can be crafted into the Stone Mask.",
         LayoutOrder = 5,
     },
 
     DungeonKey = {
         Name = "Dungeon Key",
         Type = "Collectable",
-        Description = "A small piece of a stone mask. Maybe they can be used somehow?<br/><br/>Or maybe you can sell them Jonathon, he's at the beach surfing.",
+        Description = "While these resemble real keys, they are imbued with the power to stabilize the Time Rift.<br/><br/>You will need a lot of these.",
         LayoutOrder = 6,
     },
 
@@ -70,7 +70,7 @@ return {
     BrokenArrow = {
         Name = "Broken Arrow",
         Type = "Collectable",
-        Description = "The head has been broken off of this arrow. I wonder why?<br /><br />You can sell this to the Rock Star at the Harbor, or maybe somebody else wants them too?",
+        Description = "The head has been broken off of this arrow. I wonder why?<br /><br />Can be crafted into Arrows and Requiem Arrows.",
         LayoutOrder = 7
     },
 
@@ -86,7 +86,7 @@ return {
     Diamond = {
         Name = "Diamond",
         Type = "Collectable",
-        Description = "Diamonds are unbreakable, or so they say...<br/><br/>Some are for selling to the Guy With Nice Hair, hes right by the park.",
+        Description = "Diamonds are unbreakable, or so they say...<br/><br/>Some are for selling to the Gang Member in the shop.",
         LayoutOrder = 9
     },
 

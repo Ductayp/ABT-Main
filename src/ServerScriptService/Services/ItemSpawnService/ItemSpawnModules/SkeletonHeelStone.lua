@@ -15,36 +15,22 @@ SkeletonHeelStone.Items = {
 
     {
         Weight = 1,
-        Model = ReplicatedStorage.SpawnItems.Cash,
+        Model = ReplicatedStorage.SpawnItems.GoldStar,
         Params = {
-            DataKey = "Cash",
-            DataCategory = "Currency",
-            MinValue = 50,
-            MaxValue = 250,
+            DataKey = "GoldStar",
+            DataCategory = "Item",
+            Quantity = 1,
         }
     },
 
-   
     {
-        Weight = 1,
+        Weight = 100,
         Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
             MinValue = 2,
             MaxValue = 3,
-        }
-    },
-
-
-    {
-        Weight = 10,
-        Model = ReplicatedStorage.SpawnItems.Cash,
-        Params = {
-            DataKey = "Cash",
-            DataCategory = "Currency",
-            MinValue = 20,
-            MaxValue = 100,
         }
     },
 

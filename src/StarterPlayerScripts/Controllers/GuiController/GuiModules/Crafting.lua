@@ -115,8 +115,6 @@ function Crafting.Update(inventoryData, currencyData)
 
     playerInventory = inventoryData
     playerCurrency = currencyData
-    print("playerInventory", playerInventory)
-    print("playerCurrency", playerCurrency)
 
     Crafting.Update_RecipeCard()
 

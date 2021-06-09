@@ -12,3 +12,16 @@ DUWANG HARBOR ------------------------------------------------------------------
 • Arrow
 • Broken Arrow
 • Soul Orbs
+
+
+Ancient Arena ----------------------------------------------------------------------------
+
+
+<b>Mobs</b>
+• Wham
+• The Baron (coming soon)
+
+<b>Item Drops/Spawns</b>
+• Antidote
+• Gold Stars
+• Soul Orbs

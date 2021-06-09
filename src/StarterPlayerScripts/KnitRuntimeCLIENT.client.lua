@@ -19,7 +19,10 @@ Knit.HitEffects = ReplicatedStorage.GameFiles.Shared.PowerModules.HitEffects
 Knit.PowerUtils = ReplicatedStorage.GameFiles.Shared.PowerModules.PowerUtils
 
 Knit.GuiModules = StarterPlayer.StarterPlayerScripts.GameFiles.Controllers.GuiController.GuiModules
+
 Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
+Knit.ShopModules = ReplicatedStorage.GameFiles.Shared.ShopModules
+
 Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 Knit.CutScenes = ReplicatedStorage.GameFiles.Shared.CutScenes

@@ -34,8 +34,6 @@ end
 --// Update ------------------------------------------------------------
 function CurrencyBar.Update(data)
 
-    print("yes")
-
     if utils.CommaValue(data.Cash) ~= CurrencyBar.Text_Cash.Text then
         if data.Cash < 1 then
             CurrencyBar.Text_Cash.Text = data.Cash

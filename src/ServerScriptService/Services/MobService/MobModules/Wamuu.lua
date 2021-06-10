@@ -1,50 +1,54 @@
--- Wamuu_Mob
+-- module
 
 -- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
-local Wamuu_Mob = {}
+local module = {}
 
 --/ Spawners
-Wamuu_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Wamuu", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Wamuu", true)
 
 --/ Model
-Wamuu_Mob.Model = ReplicatedStorage.Mobs.Wamuu
+module.Model = ReplicatedStorage.Mobs.Wamuu
 
 --/ Spawn
-Wamuu_Mob.RespawnClock = os.clock()
-Wamuu_Mob.RespawnTime = 10
-Wamuu_Mob.RandomPlacement = true
-Wamuu_Mob.Spawn_Z_Offset = 5
-Wamuu_Mob.Max_Spawned = 8
+module.RespawnClock = os.clock()
+module.RespawnTime = 10
+module.RandomPlacement = true
+module.Spawn_Z_Offset = 5
+module.Max_Spawned = 8
 
 --/ Animations
-Wamuu_Mob.Animations = {
+module.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
     SpinArmsAttack = "rbxassetid://6807049836"
 }
 
-Wamuu_Mob.Defs = {}
-Wamuu_Mob.Defs.Name = "Wham"
-Wamuu_Mob.Defs.MapZone = "SkeletonHeelStone"
-Wamuu_Mob.Defs.XpValue = 450
-Wamuu_Mob.Defs.Health = 350
-Wamuu_Mob.Defs.WalkSpeed = 18
-Wamuu_Mob.Defs.JumpPower = 50
-Wamuu_Mob.Defs.Aggressive = true
-Wamuu_Mob.Defs.AttackSpeed = 2
-Wamuu_Mob.Defs.AttackRange = 5
-Wamuu_Mob.Defs.SeekRange = 70 -- In Studs
-Wamuu_Mob.Defs.ChaseRange = 80 -- In Studs
-Wamuu_Mob.Defs.IsMobile = true
-Wamuu_Mob.Defs.LifeSpan = 600 -- number of seconds it will live, get killed when the time is up
+module.Defs = {}
+module.Defs.Name = "Wham"
+module.Defs.MapZone = "SkeletonHeelStone"
+module.Defs.XpValue = 450
+module.Defs.Health = 350
+module.Defs.WalkSpeed = 18
+module.Defs.JumpPower = 50
+module.Defs.Aggressive = true
+module.Defs.AttackSpeed = 2
+module.Defs.AttackRange = 5
+module.Defs.SeekRange = 70 -- In Studs
+module.Defs.ChaseRange = 80 -- In Studs
+module.Defs.IsMobile = true
+module.Defs.LifeSpan = 600 -- number of seconds it will live, get killed when the time is up
+
+function module.GetModel()
+    return module.Model
+end
 
 --/ Spawn Function
-function Wamuu_Mob.Pre_Spawn(mobData)
+function module.Pre_Spawn(mobData)
 
     -- set mob to inactive so its brain doesnt run yet
     mobData.Active = false
@@ -58,7 +62,7 @@ function Wamuu_Mob.Pre_Spawn(mobData)
 end
 
 --/ Spawn Function
-function Wamuu_Mob.Post_Spawn(mobData)
+function module.Post_Spawn(mobData)
     
     spawn(function()
 
@@ -86,7 +90,7 @@ function Wamuu_Mob.Post_Spawn(mobData)
 end
 
 --// Setup_Animations
-function Wamuu_Mob.Setup_Animations(mobData)
+function module.Setup_Animations(mobData)
 
     -- add an animator
     mobData.Animations = {} -- setup a table
@@ -96,24 +100,24 @@ function Wamuu_Mob.Setup_Animations(mobData)
 
     -- idle animation
     local idleAnimation = Instance.new("Animation")
-    idleAnimation.AnimationId = Wamuu_Mob.Animations.Idle
+    idleAnimation.AnimationId = module.Animations.Idle
     mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
     idleAnimation:Destroy()
 
     -- walk animation
     local walkAnimation = Instance.new("Animation")
-    walkAnimation.AnimationId = Wamuu_Mob.Animations.Walk
+    walkAnimation.AnimationId = module.Animations.Walk
     mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
     walkAnimation:Destroy()
 
     -- Spn Arms animation
     local spinArmAnimation = Instance.new("Animation")
-    spinArmAnimation.AnimationId = Wamuu_Mob.Animations.SpinArmsAttack
+    spinArmAnimation.AnimationId = module.Animations.SpinArmsAttack
     mobData.Animations.SpinArmsAttack = animator:LoadAnimation(spinArmAnimation)
     spinArmAnimation:Destroy()
 
     -- attack animations
-    for index, animationId in pairs(Wamuu_Mob.Animations.Attack) do
+    for index, animationId in pairs(module.Animations.Attack) do
         local newAnimation = Instance.new("Animation")
         newAnimation.AnimationId = animationId
         local newTrack = animator:LoadAnimation(newAnimation)
@@ -124,12 +128,12 @@ function Wamuu_Mob.Setup_Animations(mobData)
 end
 
 --// Setup_Attack
-function  Wamuu_Mob.Setup_Attack(mobData)
+function  module.Setup_Attack(mobData)
     -- nothing here. yet ...
 end
 
 --// Attack
-function  Wamuu_Mob.Attack(mobData)
+function  module.Attack(mobData)
 
     spawn(function()
 
@@ -200,12 +204,12 @@ function  Wamuu_Mob.Attack(mobData)
 end
 
 --// Setup_Death
-function Wamuu_Mob.Setup_Death(mobData)
+function module.Setup_Death(mobData)
     -- nothing here, yet ...
 end
 
 --// Death
-function Wamuu_Mob.Death(mobData)
+function module.Death(mobData)
 
     spawn(function()
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
@@ -215,12 +219,12 @@ function Wamuu_Mob.Death(mobData)
 end
 
 --// Setup_Drop
-function Wamuu_Mob.Setup_Drop(mobData)
+function module.Setup_Drop(mobData)
     -- nothing here, yet ...
 end
 
 --// Drop
-function Wamuu_Mob.Drop(player, mobData)
+function module.Drop(player, mobData)
 
     local rewards = {}
     rewards.Items = {}
@@ -234,7 +238,7 @@ function Wamuu_Mob.Drop(player, mobData)
     ]]--
     
     rewards.Items["Antidote"] = math.random(1, 3)
-    rewards.XP = Wamuu_Mob.Defs.XpValue
+    rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 
     return rewards
@@ -243,4 +247,4 @@ end
 
 
 
-return Wamuu_Mob
+return module

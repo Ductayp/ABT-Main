@@ -8,11 +8,14 @@ local module = {}
 
 --Get playeer by UserId
 function module.GetPlayerByUserId(userId)
+	
 	for _, player in pairs(Players:GetPlayers()) do
 		if player.UserId == userId then
 			return player
 		end
 	end
+
+	return nil
 end
 
 -- get character form player

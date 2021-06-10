@@ -30,6 +30,7 @@ GuiService.Client.Event_Update_CraftingWindow = RemoteEvent.new()
 GuiService.Client.Event_Update_ItemFinderWindow = RemoteEvent.new()
 GuiService.Client.Event_Update_BoostPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_PvPToggle = RemoteEvent.new()
+GuiService.Client.Event_ToggleGUI = RemoteEvent.new()
 
 -- public variables
 GuiService.DialogueLocked = {}
@@ -164,6 +165,11 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         print("SELF", self.Client)
         self.Client.Event_Update_PvPToggle:Fire(player, GuiService.PvPToggles[player.UserId], optionalParams)
     end
+end
+
+--// DisableGUI
+function GuiService:ToggleGUI(player, boolean)
+    self.Client.Event_ToggleGUI:Fire(player, boolean)
 end
 
 --// Client:Request_GuiUpdate

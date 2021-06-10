@@ -69,8 +69,9 @@ function PlayerUtilityService:GetPlayersInMapZone(mapZone)
     for userId, currentMapZone in pairs(PlayerUtilityService.PlayerMapZone) do
         if currentMapZone == mapZone then
             local player = utils.GetPlayerByUserId(userId)
-            if not player then return end
-            table.insert(playersInZone, player)
+            if player then
+                table.insert(playersInZone, player)
+            end
         end
     end
 

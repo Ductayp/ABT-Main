@@ -200,7 +200,7 @@ function InventoryService:UseItem(player, key)
 
         playerData.ItemInventory[key] += - 1
 
-        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+        Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
         Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
 
         local returnMessage = "Used Arrow"
@@ -236,7 +236,8 @@ function InventoryService:UseItem(player, key)
                 return returnMessage
             end
 
-            playerData.ItemInventory.SoulKey += -1
+            playerData.ItemInventory.GoldStar += -1
+
     
             local standData = {}
             standData.Power = playerData.CurrentStand.Power
@@ -244,7 +245,10 @@ function InventoryService:UseItem(player, key)
             standData.Xp = 0
             standData.GUID = playerData.CurrentStand.GUID
             Knit.Services.PowersService:SetCurrentPower(player, standData)
-            Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+            
+            Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
+            Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
+
             returnMessage = "Success!"
             return returnMessage
 
@@ -256,7 +260,9 @@ function InventoryService:UseItem(player, key)
             return returnMessage
 
         end
+
     end
+
 end
 
 function InventoryService:GiveSpecialPower(player, itemDef)
@@ -544,7 +550,7 @@ function InventoryService:CraftItem(player, params)
 
     --Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
     Knit.Services.GuiService:Update_Gui(player, "Currency")
-    Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+    Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
     Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
 
 
@@ -602,7 +608,7 @@ function InventoryService:NPCTransaction(player, params)
 
         Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
         Knit.Services.GuiService:Update_Gui(player, "Currency")
-        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+        Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
     end
 
     return success
@@ -657,7 +663,7 @@ function InventoryService:ShopTransaction(player, params)
 
         Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
         Knit.Services.GuiService:Update_Gui(player, "Currency")
-        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+        Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
     end
 
     return success

@@ -265,7 +265,7 @@ function MobBrain.State_Return(mobData)
 
     -- check if we are too far from Home
     local rangeMagnitude = (mobData.Model.HumanoidRootPart.Position - mobData.Spawner.Position).Magnitude
-    if rangeMagnitude < 3 then 
+    if rangeMagnitude < 5 then 
         mobData.BrainState = "Home"
         mobData.StateTime = os.clock()
         mobData.AttackTarget = nil
@@ -323,7 +323,7 @@ function MobBrain.State_Chase(mobData)
         end
     end
 
-    -- if we get stuck in the chase state too long, kill the mob
+    -- if we get stuck in the chase state too long, return
     if os.clock() > mobData.StateTime + 10 then
         mobData.BrainState = "Return"
         mobData.AttackTarget = nil

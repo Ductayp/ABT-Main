@@ -12,17 +12,22 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local module = {}
 
 --/ Spawners
-module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Santana", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_GraveyardZombies", true)
 
---/ Model
-module.Model = ReplicatedStorage.Mobs.Santana
+--/ Model -- see GetModel()
+module.MobModels = {
+    [1] = ReplicatedStorage.Mobs.Zombie_1,
+    [2] = ReplicatedStorage.Mobs.Zombie_2,
+    [3] = ReplicatedStorage.Mobs.Zombie_3,
+    [4] = ReplicatedStorage.Mobs.Zombie_4,
+}
 
 --/ Spawn
 module.RespawnClock = os.clock()
 module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
-module.Max_Spawned = 9
+module.Max_Spawned = 2
 
 --/ Animations
 module.Animations = {
@@ -32,23 +37,26 @@ module.Animations = {
 }
 
 module.Defs = {}
-module.Defs.Name = "Pillar Man"
+module.Defs.Name = "Basic Zombie"
 module.Defs.MapZone = "Morioh"
-module.Defs.XpValue = 113
-module.Defs.Health = 100
+module.Defs.XpValue = 50
+module.Defs.Health = 40
 module.Defs.WalkSpeed = 16
 module.Defs.JumpPower = 50
-module.Defs.Aggressive = false
+module.Defs.Aggressive = true
 module.Defs.AttackSpeed = 2
 module.Defs.AttackRange = 4.5
-module.Defs.HitEffects = {Damage = {Damage = 20}}
-module.Defs.SeekRange = 60 -- In Studs
-module.Defs.ChaseRange = 80 -- In Studs
+module.Defs.HitEffects = {Damage = {Damage = 10}}
+module.Defs.SeekRange = 30 -- In Studs
+module.Defs.ChaseRange = 40 -- In Studs
 module.Defs.IsMobile = true
 module.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
 
 function module.GetModel()
-    return module.Model
+
+    pick = math.random(1,4)
+    return module.MobModels[pick]
+
 end
 
 --/ Spawn Function
@@ -181,10 +189,10 @@ function module.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
-    local itemDropPercent = 25
+    local itemDropPercent = 5
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        rewards.Items["MaskFragment"] = 1
+        rewards.Items["DungeonKey"] = 1
     end
 
     rewards.XP = module.Defs.XpValue

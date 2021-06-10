@@ -62,7 +62,7 @@ module.Stage.TimeClones = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
     Body = "I dont know what to call them but they are multiple copies of someone, as if they arrived here from other timelines." ..
-        "<br/><br/>If you see any that look like me, just kill them please. Those guys are a bunch of idiots.",
+        "<br/><br/>If you see any that look like me, just kill them please. Those guys are a bunch of idiots and they keep stealing my hat.",
     Choice_1 = {
         Display = true,
         Text = "Time Rift?",

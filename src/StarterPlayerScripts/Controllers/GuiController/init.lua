@@ -128,6 +128,11 @@ function GuiController:KnitStart()
         GuiController.Modules.MainMenu.Update_PvPButton(pvpToggle, params)
     end)
 
+    
+    GuiService.Event_ToggleGUI:Connect(function(boolean)
+        GuiController.Modules.ToggleGUI.Toggle(boolean)
+    end)
+    
 
 end
 

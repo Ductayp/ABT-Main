@@ -1,28 +1,23 @@
--- module Mob
--- Pdab
--- 1/10/21
+-- JotaroFan
 
 -- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
--- Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-
 
 local module = {}
 
 --/ Spawners
-module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Santana", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_JotaroFan", true)
 
 --/ Model
-module.Model = ReplicatedStorage.Mobs.Santana
+module.Model = ReplicatedStorage.Mobs.JotaroFan
 
 --/ Spawn
 module.RespawnClock = os.clock()
 module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
-module.Max_Spawned = 9
+module.Max_Spawned = 4
 
 --/ Animations
 module.Animations = {
@@ -32,16 +27,16 @@ module.Animations = {
 }
 
 module.Defs = {}
-module.Defs.Name = "Pillar Man"
+module.Defs.Name = "Hat Thief"
 module.Defs.MapZone = "Morioh"
-module.Defs.XpValue = 113
-module.Defs.Health = 100
+module.Defs.XpValue = 50
+module.Defs.Health = 40
 module.Defs.WalkSpeed = 16
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = false
 module.Defs.AttackSpeed = 2
 module.Defs.AttackRange = 4.5
-module.Defs.HitEffects = {Damage = {Damage = 20}}
+module.Defs.HitEffects = {Damage = {Damage = 10}}
 module.Defs.SeekRange = 60 -- In Studs
 module.Defs.ChaseRange = 80 -- In Studs
 module.Defs.IsMobile = true
@@ -181,12 +176,7 @@ function module.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
-    local itemDropPercent = 25
-    local rand = math.random(1, 100)
-    if rand <= itemDropPercent then
-        rewards.Items["MaskFragment"] = 1
-    end
-
+    rewards.Items["Arrow"] = math.random(1, 5) 
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 

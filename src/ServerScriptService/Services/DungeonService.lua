@@ -31,9 +31,12 @@ function DungeonService:BuyAccess(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
 
+    if not playerData.ItemInventory[inputKey] then
+        playerData.ItemInventory[inputKey] = 0
+    end
+
     -- check if player has enough of the input
     local success = false
-
     if inputKey == "Cash" or inputKey == "SoulOrbs"then
         if playerData.Currency[inputKey] >= inputValue then
             playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue

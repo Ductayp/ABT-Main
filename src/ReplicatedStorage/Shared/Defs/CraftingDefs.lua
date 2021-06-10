@@ -31,7 +31,7 @@ return {
     StoneMask = {
         Name = "Stone Mask",
         LayoutOrder = 3,
-        Description = "The Stone Mask can be used ot get Vampire spec.",
+        Description = "The Stone Mask can be used to get Vampire spec.",
         InputItems = {
             [1] = {Key = "MaskFragment", Value = 100, Name = "Mask Fragment"},
             [2] = {Key = "SoulOrbs", Value = 50, Name = "Soul Orbs"},

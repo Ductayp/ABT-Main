@@ -11,7 +11,6 @@ module.Body = "You need stuff? We got stuff. It's that simple. Prices might not 
 module.ShopType = "BUY"
 module.ShopType_TextColor = Color3.fromRGB(0, 170, 0)
 
-
 module.ShopItems = {
 
     [1] = {
@@ -97,7 +96,6 @@ module.ShopItems = {
         Description = "Opens up dungeons. What else do you need to know?",
 
     },
-
 
 }
 

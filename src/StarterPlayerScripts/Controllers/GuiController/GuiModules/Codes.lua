@@ -1,6 +1,4 @@
 --Codes
--- PDab
--- 2/11/2021
 
 -- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

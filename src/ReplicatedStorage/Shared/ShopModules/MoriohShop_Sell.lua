@@ -11,7 +11,6 @@ module.Body = "I only buy the finest things with which I shall build my empire."
 module.ShopType = "SELL"
 module.ShopType_TextColor = Color3.fromRGB(255, 0, 0)
 
-
 module.ShopItems = {
 
     [1] = {

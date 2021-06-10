@@ -1,51 +1,55 @@
--- Akira_Mob
+-- module
 
 -- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
-local Akira_Mob = {}
+local module = {}
 
 --/ Spawners
-Akira_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Akira", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Akira", true)
 
 --/ Model
-Akira_Mob.Model = ReplicatedStorage.Mobs.Akira_Mob
+module.Model = ReplicatedStorage.Mobs.Akira
 
 --/ Spawn
-Akira_Mob.RespawnClock = os.clock()
-Akira_Mob.RespawnTime = 10
-Akira_Mob.RandomPlacement = true
-Akira_Mob.Spawn_Z_Offset = 5
-Akira_Mob.Max_Spawned = 4
+module.RespawnClock = os.clock()
+module.RespawnTime = 10
+module.RandomPlacement = true
+module.Spawn_Z_Offset = 5
+module.Max_Spawned = 4
 
 --/ Animations
-Akira_Mob.Animations = {
+module.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
     GuitarAttack = "rbxassetid://6905847408"
 }
 
-Akira_Mob.Defs = {}
-Akira_Mob.Defs.Name = "Akira"
-Akira_Mob.Defs.MapZone = "DuwangHarbor"
-Akira_Mob.Defs.XpValue = 175
-Akira_Mob.Defs.Health = 175
-Akira_Mob.Defs.WalkSpeed = 20
-Akira_Mob.Defs.JumpPower = 50
-Akira_Mob.Defs.Aggressive = true
-Akira_Mob.Defs.AttackSpeed = 4
-Akira_Mob.Defs.AttackRange = 15
-Akira_Mob.Defs.Special_LastAttack = os.clock()
-Akira_Mob.Defs.SeekRange = 50 -- In Studs
-Akira_Mob.Defs.ChaseRange = 60 -- In Studs
-Akira_Mob.Defs.IsMobile = true
-Akira_Mob.Defs.LifeSpan = 600 -- number of seconds it will live, get killed when the time is up
+module.Defs = {}
+module.Defs.Name = "Akira"
+module.Defs.MapZone = "DuwangHarbor"
+module.Defs.XpValue = 175
+module.Defs.Health = 175
+module.Defs.WalkSpeed = 20
+module.Defs.JumpPower = 50
+module.Defs.Aggressive = true
+module.Defs.AttackSpeed = 4
+module.Defs.AttackRange = 15
+module.Defs.Special_LastAttack = os.clock()
+module.Defs.SeekRange = 50 -- In Studs
+module.Defs.ChaseRange = 60 -- In Studs
+module.Defs.IsMobile = true
+module.Defs.LifeSpan = 600 -- number of seconds it will live, get killed when the time is up
+
+function module.GetModel()
+    return module.Model
+end
 
 --/ Spawn Function
-function Akira_Mob.Pre_Spawn(mobData)
+function module.Pre_Spawn(mobData)
 
     -- set mob to inactive so its brain doesnt run yet
     mobData.Active = false
@@ -59,7 +63,7 @@ function Akira_Mob.Pre_Spawn(mobData)
 end
 
 --/ Spawn Function
-function Akira_Mob.Post_Spawn(mobData)
+function module.Post_Spawn(mobData)
     
     spawn(function()
 
@@ -89,7 +93,7 @@ function Akira_Mob.Post_Spawn(mobData)
 end
 
 --// Setup_Animations
-function Akira_Mob.Setup_Animations(mobData)
+function module.Setup_Animations(mobData)
 
     -- add an animator
     mobData.Animations = {} -- setup a table
@@ -99,24 +103,24 @@ function Akira_Mob.Setup_Animations(mobData)
 
     -- idle animation
     local idleAnimation = Instance.new("Animation")
-    idleAnimation.AnimationId = Akira_Mob.Animations.Idle
+    idleAnimation.AnimationId = module.Animations.Idle
     mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
     idleAnimation:Destroy()
 
     -- walk animation
     local walkAnimation = Instance.new("Animation")
-    walkAnimation.AnimationId = Akira_Mob.Animations.Walk
+    walkAnimation.AnimationId = module.Animations.Walk
     mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
     walkAnimation:Destroy()
 
     -- Spn Arms animation
     local guitarAnimation = Instance.new("Animation")
-    guitarAnimation.AnimationId = Akira_Mob.Animations.GuitarAttack
+    guitarAnimation.AnimationId = module.Animations.GuitarAttack
     mobData.Animations.GuitarAttack = animator:LoadAnimation(guitarAnimation)
     guitarAnimation:Destroy()
 
     -- attack animations
-    for index, animationId in pairs(Akira_Mob.Animations.Attack) do
+    for index, animationId in pairs(module.Animations.Attack) do
         local newAnimation = Instance.new("Animation")
         newAnimation.AnimationId = animationId
         local newTrack = animator:LoadAnimation(newAnimation)
@@ -127,12 +131,12 @@ function Akira_Mob.Setup_Animations(mobData)
 end
 
 --// Setup_Attack
-function  Akira_Mob.Setup_Attack(mobData)
+function  module.Setup_Attack(mobData)
     -- nothing here. yet ...
 end
 
 --// Attack
-function  Akira_Mob.Attack(mobData)
+function  module.Attack(mobData)
 
     spawn(function()
 
@@ -152,7 +156,7 @@ function  Akira_Mob.Attack(mobData)
         for _, player in pairs(game.Players:GetPlayers()) do
             if player.Character and player.Character.HumanoidRootPart then
                 local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
-                if distance <= Akira_Mob.Defs.AttackRange then
+                if distance <= module.Defs.AttackRange then
 
                     table.insert(hitCharacters, player.Character)
 
@@ -183,12 +187,12 @@ function  Akira_Mob.Attack(mobData)
 end
 
 --// Setup_Death
-function Akira_Mob.Setup_Death(mobData)
+function module.Setup_Death(mobData)
     -- nothing here, yet ...
 end
 
 --// Death
-function Akira_Mob.Death(mobData)
+function module.Death(mobData)
 
     --[[
     spawn(function()
@@ -200,12 +204,12 @@ function Akira_Mob.Death(mobData)
 end
 
 --// Setup_Drop
-function Akira_Mob.Setup_Drop(mobData)
+function module.Setup_Drop(mobData)
     -- nothing here, yet ...
 end
 
 --// Drop
-function Akira_Mob.Drop(player, mobData)
+function module.Drop(player, mobData)
 
 
     local rewards = {}
@@ -219,7 +223,7 @@ function Akira_Mob.Drop(player, mobData)
     end
     
 
-    rewards.XP = Akira_Mob.Defs.XpValue
+    rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 
     return rewards
@@ -228,4 +232,4 @@ end
 
 
 
-return Akira_Mob
+return module

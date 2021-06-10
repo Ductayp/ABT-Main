@@ -1,4 +1,4 @@
--- RedHot_Mob
+-- module
 
 -- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,47 +9,51 @@ local Workspace = game:GetService("Workspace")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
 
-local RedHot_Mob = {}
+local module = {}
 
 --/ Spawners
-RedHot_Mob.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_RedHot", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_RedHot", true)
 
 --/ Model
-RedHot_Mob.Model = ReplicatedStorage.Mobs.RedHot
+module.Model = ReplicatedStorage.Mobs.RedHot
 
 --/ Spawn
-RedHot_Mob.RespawnClock = os.clock()
-RedHot_Mob.RespawnTime = 5
-RedHot_Mob.RandomPlacement = false
-RedHot_Mob.Spawn_Z_Offset = 0
-RedHot_Mob.Max_Spawned = 1
+module.RespawnClock = os.clock()
+module.RespawnTime = 5
+module.RandomPlacement = false
+module.Spawn_Z_Offset = 0
+module.Max_Spawned = 1
 
 --/ Animations
-RedHot_Mob.Animations = {
+module.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6245847704"},
 }
 
 --/ Defs
-RedHot_Mob.Defs = {}
-RedHot_Mob.Defs.Name = "Hot Tamale"
-RedHot_Mob.Defs.MapZone = "DuwangHarbor"
-RedHot_Mob.Defs.XpValue = 250
-RedHot_Mob.Defs.Health = 200
-RedHot_Mob.Defs.WalkSpeed = 0
-RedHot_Mob.Defs.JumpPower = 50
-RedHot_Mob.Defs.Aggressive = true
-RedHot_Mob.Defs.AttackSpeed = 1
-RedHot_Mob.Defs.AttackRange = 15
-RedHot_Mob.Defs.HitEffects = {Damage = {Damage = 20}}
-RedHot_Mob.Defs.SeekRange = 60 -- In Studs
-RedHot_Mob.Defs.ChaseRange = 5 -- In Studs
-RedHot_Mob.Defs.IsMobile = false
-RedHot_Mob.Defs.LifeSpan = 60 -- how long the mob lives before resapwn, in seconds
+module.Defs = {}
+module.Defs.Name = "Hot Tamale"
+module.Defs.MapZone = "DuwangHarbor"
+module.Defs.XpValue = 250
+module.Defs.Health = 200
+module.Defs.WalkSpeed = 0
+module.Defs.JumpPower = 50
+module.Defs.Aggressive = true
+module.Defs.AttackSpeed = 1
+module.Defs.AttackRange = 15
+module.Defs.HitEffects = {Damage = {Damage = 20}}
+module.Defs.SeekRange = 60 -- In Studs
+module.Defs.ChaseRange = 5 -- In Studs
+module.Defs.IsMobile = false
+module.Defs.LifeSpan = 60 -- how long the mob lives before resapwn, in seconds
+
+function module.GetModel()
+    return module.Model
+end
 
 --/ Spawn Function
-function RedHot_Mob.Pre_Spawn(mobData)
+function module.Pre_Spawn(mobData)
 
     -- set mob to inactive so its brain doesnt run yet
     mobData.Active = false
@@ -69,7 +73,7 @@ function RedHot_Mob.Pre_Spawn(mobData)
 end
 
 --/ Spawn Function
-function RedHot_Mob.Post_Spawn(mobData)
+function module.Post_Spawn(mobData)
 
     mobData.Model.HumanoidRootPart.Anchored = true
 
@@ -94,7 +98,7 @@ function RedHot_Mob.Post_Spawn(mobData)
 end
 
 --// Setup_Animations
-function RedHot_Mob.Setup_Animations(mobData)
+function module.Setup_Animations(mobData)
 
         -- add an animator
         mobData.Animations = {} -- setup a table
@@ -104,18 +108,18 @@ function RedHot_Mob.Setup_Animations(mobData)
     
         -- idle animation
         local idleAnimation = Instance.new("Animation")
-        idleAnimation.AnimationId = RedHot_Mob.Animations.Idle
+        idleAnimation.AnimationId = module.Animations.Idle
         mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
         idleAnimation:Destroy()
     
         -- walk animation
         local walkAnimation = Instance.new("Animation")
-        walkAnimation.AnimationId = RedHot_Mob.Animations.Walk
+        walkAnimation.AnimationId = module.Animations.Walk
         mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
         walkAnimation:Destroy()
     
         -- attack animations
-        for index, animationId in pairs(RedHot_Mob.Animations.Attack) do
+        for index, animationId in pairs(module.Animations.Attack) do
             local newAnimation = Instance.new("Animation")
             newAnimation.AnimationId = animationId
             local newTrack = animator:LoadAnimation(newAnimation)
@@ -126,12 +130,12 @@ function RedHot_Mob.Setup_Animations(mobData)
 end
 
 --// Setup_Attack
-function  RedHot_Mob.Setup_Attack(mobData)
+function  module.Setup_Attack(mobData)
     -- nothing here. yet ...
 end
 
 --// Attack
-function  RedHot_Mob.Attack(mobData)
+function  module.Attack(mobData)
 
     if not mobData.AttackTarget then return end
     if not mobData.AttackTarget.Character then return end
@@ -151,7 +155,7 @@ function  RedHot_Mob.Attack(mobData)
         for _, player in pairs(game.Players:GetPlayers()) do
             if player.Character and player.Character.HumanoidRootPart then
                 local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
-                if distance <= RedHot_Mob.Defs.AttackRange then
+                if distance <= module.Defs.AttackRange then
 
                     local hitEffects = {Damage = {Damage = 5}}
                     Knit.Services.MobService:HitPlayer(player, hitEffects)
@@ -163,17 +167,17 @@ function  RedHot_Mob.Attack(mobData)
 end
 
 --// Setup_Death
-function RedHot_Mob.Setup_Death(mobData)
+function module.Setup_Death(mobData)
     -- nothing here, yet ...
 end
 
 --// Death
-function RedHot_Mob.Death(mobData)
+function module.Death(mobData)
 
 
 end
 
-function RedHot_Mob.DeSpawn(mobData)
+function module.DeSpawn(mobData)
 
     mobData.Model.HumanoidRootPart.SpawnEmitter:Emit(200)
 
@@ -202,12 +206,12 @@ function RedHot_Mob.DeSpawn(mobData)
 end
 
 --// Setup_Drop
-function RedHot_Mob.Setup_Drop(mobData)
+function module.Setup_Drop(mobData)
 
 end
 
 --// Drop
-function RedHot_Mob.Drop(player, mobData)
+function module.Drop(player, mobData)
 
     local rewards = {}
     rewards.Items = {}
@@ -221,7 +225,7 @@ function RedHot_Mob.Drop(player, mobData)
     ]]--
 
     rewards.Items["BrokenArrow"] = math.random(1, 10)
-    rewards.XP = RedHot_Mob.Defs.XpValue
+    rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 10
 
     return rewards
@@ -229,4 +233,4 @@ end
 
 
 
-return RedHot_Mob
+return module

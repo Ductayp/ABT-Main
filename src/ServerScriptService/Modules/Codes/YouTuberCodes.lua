@@ -17,4 +17,13 @@ return {
         Expiration = 1625148506,
         Message = "1,000 Cash so you buy some arrows from DIO!"
     },
+
+    {
+        CodeString = "sub2razer",
+        ActionType = "GiveItem",
+        Key = "DungeonKey",
+        Value = 10,
+        Expiration = 1749679287,
+        Message = "10 Dungeon Keys - YEET!"
+    },
 }

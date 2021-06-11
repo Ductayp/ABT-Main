@@ -105,7 +105,6 @@ end
 
 function LaserEyesMod.ParticlePop(params)
 
-    print("POP")
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
     local newBurst = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.Burst:Clone()

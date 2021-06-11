@@ -91,40 +91,41 @@ function MobBrain.Run()
                             mobData.TargetTime = os.clock() + .5
 
                             local playersInZone = Knit.Services.PlayerUtilityService:GetPlayersInMapZone(mobData.Defs.MapZone)
-                            for _, player in pairs(playersInZone) do
+                            if playersInZone ~= nil then
+                                for _, player in pairs(playersInZone) do
     
-                                -- get a table of player within range
-                                local inRange = {}
-                                if player:DistanceFromCharacter(mobData.Spawner.Position) <= mobData.Defs.SeekRange then
-                                    table.insert(inRange, player)
-                                end
-    
-                                if #inRange > 0 then
-                                    if mobData.Defs.Aggressive == true then
-                                        local rand = math.random(1, #inRange)
-                                        mobData.AttackTarget = inRange[rand]
-                                    else
-                                        if mobData.PlayerDamage ~= nil then
-    
-                                            -- gat a table of players who have done damage AND are in range
-                                            local attackList = {} 
-                                            for damagePlayer, damage in pairs(mobData.PlayerDamage) do
-                                                for _,inRangePlayer in pairs(inRange) do
-                                                    if damagePlayer == inRangePlayer then
-                                                        attackList[damagePlayer] = damage
+                                    -- get a table of player within range
+                                    local inRange = {}
+                                    if player:DistanceFromCharacter(mobData.Spawner.Position) <= mobData.Defs.SeekRange then
+                                        table.insert(inRange, player)
+                                    end
+        
+                                    if #inRange > 0 then
+                                        if mobData.Defs.Aggressive == true then
+                                            local rand = math.random(1, #inRange)
+                                            mobData.AttackTarget = inRange[rand]
+                                        else
+                                            if mobData.PlayerDamage ~= nil then
+        
+                                                -- gat a table of players who have done damage AND are in range
+                                                local attackList = {} 
+                                                for damagePlayer, damage in pairs(mobData.PlayerDamage) do
+                                                    for _,inRangePlayer in pairs(inRange) do
+                                                        if damagePlayer == inRangePlayer then
+                                                            attackList[damagePlayer] = damage
+                                                        end
+                                                    end
+                                                end
+        
+                                                -- attack the player with the highest damage
+                                                local highestDamage = 0
+                                                for player, damage in pairs(attackList) do
+                                                    if damage > highestDamage then
+                                                        highestDamage = damage
+                                                        mobData.AttackTarget = player
                                                     end
                                                 end
                                             end
-    
-                                            -- attack the player with the highest damage
-                                            local highestDamage = 0
-                                            for player, damage in pairs(attackList) do
-                                                if damage > highestDamage then
-                                                    highestDamage = damage
-                                                    mobData.AttackTarget = player
-                                                end
-                                            end
-    
                                         end
                                     end
                                 end

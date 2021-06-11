@@ -49,7 +49,7 @@ module.ShopItems = {
 
         InputName = "Cash",
         InputKey = "Cash",
-        InputValue = 1500,
+        InputValue = 3000,
 
         Description = "Use on a stand/spec with max experience to increase rank.",
 
@@ -63,7 +63,7 @@ module.ShopItems = {
 
         InputName = "Cash",
         InputKey = "Cash",
-        InputValue = 12500,
+        InputValue = 26000,
 
         Description = "Use on a stand/spec with max experience to increase rank.",
 

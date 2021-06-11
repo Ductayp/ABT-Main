@@ -133,7 +133,11 @@ end
 
 --// PlayerRemoved
 function PlayerUtilityService:PlayerRemoved(player)
-    ReplicatedStorage.PlayerPings[player.UserId]:Destroy()
+    
+    if ReplicatedStorage.PlayerPings[player.UserId] then
+        ReplicatedStorage.PlayerPings[player.UserId]:Destroy()
+    end
+    
     PlayerUtilityService.PlayerAnimations[player.UserId] = nil
     PlayerUtilityService.PlayerMapZone[player.UserId] = nil
 end

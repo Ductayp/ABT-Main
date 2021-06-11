@@ -63,18 +63,18 @@ Morioh.Items = {
     -- WEIGHT 100
 
     {
-        Weight = 100,
+        Weight = 50,
         Model = ReplicatedStorage.SpawnItems.Cash,
         Params = {
             DataKey = "Cash",
             DataCategory = "Currency",
-            MinValue = 50,
-            MaxValue = 250,
+            MinValue = 100,
+            MaxValue = 350,
         }
     },
 
     {
-        Weight = 100,
+        Weight = 50,
         Model = ReplicatedStorage.SpawnItems.Arrow,
         Params = {
             DataKey = "Arrow",

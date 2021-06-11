@@ -120,6 +120,8 @@ function TimeStop.Run_Server(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then return end
+    if not initPlayer.Character then return end
 
     -- apply color shift to the initPlayer
     require(Knit.Shared.PowerModules.HitEffects.ColorShift).Server_ApplyEffect(initPlayer, initPlayer.Character, {Duration = 8})

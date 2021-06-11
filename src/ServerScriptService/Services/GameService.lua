@@ -1,5 +1,5 @@
--- AdminService
--- services
+-- GameService
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -41,13 +41,14 @@ end
 --// PlayerAdded
 function GameService:PlayerAdded(player)
 
-    local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
-    local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
-    repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true
+    --local playerDataStatuses = ReplicatedStorage:WaitForChild("PlayerDataLoaded")
+    --local playerDataBoolean = playerDataStatuses:WaitForChild(player.UserId)
+    --repeat wait(1) until playerDataBoolean.Value == true -- wait until the value is true
 
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    --local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
 
-
+    if not player then return end
+    
     local playerRole = player:GetRoleInGroup(3486129)
     local isTester
     if table.find(testerRoles, playerRole) then

@@ -32,7 +32,6 @@ function PlayerSpawnService:SetPlayerSpawn(player, spawnName, respawn)
     end
     PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn = spawnName
 
-    print(PlayerSpawnService.PlayerSpawnSettigns)
     wait()
 
     if respawn then
@@ -41,7 +40,6 @@ function PlayerSpawnService:SetPlayerSpawn(player, spawnName, respawn)
 
     
     Knit.Services.PlayerUtilityService.PlayerMapZone[player.UserId] = spawnName
-    print("BEEP DEEPE", Knit.Services.PlayerUtilityService.PlayerMapZone[player.UserId])
     Knit.Services.GuiService:Update_Gui(player, "ItemFinderWindow")
 
 end
@@ -50,11 +48,8 @@ end
 function PlayerSpawnService:TransportToSpawn(player, spawnName)
 
     if not require(Knit.Defs.SpawnGroups)[spawnName] then 
-        print("NOPE")
         return 
     end
-
-    print("YEP")
 
     local spawnerGroup = require(Knit.Defs.SpawnGroups)[spawnName]:GetChildren()
     local randPick = math.random(1, #spawnerGroup)
@@ -81,6 +76,13 @@ end
 
 --// CustomSpawn
 function PlayerSpawnService:CustomSpawn(player)
+
+    if not player then return end
+
+    if player.Parent ~= game.Players then
+        local p = game.Players:WaitForChild(player.Name, 5)
+        if not p then warn("PlayerSpawnService:CustomSpawn", player.Name, " not loaded in world") return false end
+    end
 
     local spawnGroupName = PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn
     local spawnerGroup = PlayerSpawnService.SpawnerGroups[spawnGroupName]:GetChildren()

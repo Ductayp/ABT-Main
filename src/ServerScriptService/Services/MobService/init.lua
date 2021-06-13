@@ -19,11 +19,12 @@ MobService.SpawnedMobs = {} -- table of all spawned mobs
 
 MobService.DebugMode = false
 
+--// GetMobById
 function MobService:GetMobById(sentMobId)
-
     return MobService.SpawnedMobs[sentMobId]
 end
 
+--// GetMobsInMapZone
 function MobService:GetMobsInMapZone(sentMapZone)
 
     local mobs = {}
@@ -42,6 +43,18 @@ function MobService:HitPlayer(player, hitEffects)
     if Players:FindFirstChild(player.Name) then
         Knit.Services.PowersService:NPC_RegisterHit(player, hitEffects)
     end
+end
+
+--// WakeMob - this is needed to wake a mob up for HitEffects that might happen when it is in the Home brainstate and anchored
+function MobService:WakeMob(initPlayer, thisMob)
+
+    if not initPlayer then return end
+    if not thisMob then return end
+    if not thisMob.Model and thisMob.Model.HumanoidRootPart then return end
+
+    thisMob.AttackTarget = initPlayer
+    thisMob.Model.HumanoidRootPart.Anchored = false
+
 end
 
 --// DamageMob

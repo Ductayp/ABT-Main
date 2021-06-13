@@ -105,12 +105,12 @@ function ScrapePunch.RenderPull(params)
     local hitBoxSize_Z = params.Hitbox.Size.Z
 
     local colors = {
-        [1] = Color3.fromRGB(0, 85, 255),
-        [2] = Color3.fromRGB(255, 255, 255),
-        [3] = Color3.fromRGB(0, 255, 127),
+        [1] = Color3.fromRGB(61, 21, 133),
+        [2] = Color3.fromRGB(248, 248, 248),
+        [3] = Color3.fromRGB(4, 175, 236),
     }
 
-    local rodCount = 20
+    local rodCount = 30
     local rodThickness = 0.3
     local rodOffset = 5
     local rodLength = hitBoxSize_Z - rodOffset
@@ -125,6 +125,7 @@ function ScrapePunch.RenderPull(params)
 
 
         local newRod = Instance.new("Part")
+        newRod.Material = "Neon"
         newRod.Anchored = true
         newRod.CanCollide = false
         newRod.CanTouch = false
@@ -159,7 +160,7 @@ function ScrapePunch.RenderPull(params)
 
     burstParts.ballBlack.Particle:Emit(20)
 
-    local burstTween1 = TweenService:Create(burstParts.burstBlue, TweenInfo.new(.5), {Transparency = 1, Size = burstParts.burstBlue.Size + Vector3.new(3,3,3)})
+    local burstTween1 = TweenService:Create(burstParts.burstBlue, TweenInfo.new(.5), {Transparency = 1, Size = burstParts.burstBlue.Size + Vector3.new(8,8,8)})
     local ballTween2 = TweenService:Create(burstParts.ballBlack, TweenInfo.new(1), {Transparency = 1, Size = Vector3.new(1,1,1)})
 
     burstTween1:Play()
@@ -168,9 +169,9 @@ function ScrapePunch.RenderPull(params)
     burstTween1:Destroy()
     ballTween2:Destroy()
 
-    wait(3)
+    wait(1)
     burstParts.ballBlack.Particle.Enabled = false
-    wait(7)
+    wait(3)
     burstParts.ballBlack:Destroy()
 
 

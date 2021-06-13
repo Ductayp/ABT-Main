@@ -60,7 +60,7 @@ function BlackHole.Client_RenderEffect(params)
         end
     end
 
-    wait(11)
+    wait(5)
     effectHolder:Destroy()
 
 

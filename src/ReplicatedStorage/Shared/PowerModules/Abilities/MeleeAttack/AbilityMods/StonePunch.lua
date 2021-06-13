@@ -20,14 +20,14 @@ ScrapePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular 
 -- hitbox
 ScrapePunch.HitboxSize = Vector3.new(5, 5, 12)
 ScrapePunch.HitboxOffset = CFrame.new(0, 0, 6)
-ScrapePunch.HitboxDestroyTime = .6
+ScrapePunch.HitboxDestroyTime = .3
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 
 --// HitCharacter
 function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    abilityDefs.HitEffects = {Damage = {Damage = 30}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}}
+    abilityDefs.HitEffects = {Damage = {Damage = 10}, PinCharacter = {Duration = 5.5}, AngeloRock = {Duration = 5}}
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
     return params

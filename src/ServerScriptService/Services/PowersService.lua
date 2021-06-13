@@ -170,7 +170,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end
@@ -223,7 +223,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
         if mobIdObject then
 
             local thisMob = Knit.Services.MobService:GetMobById(mobIdObject.Value)
-            
             if thisMob then
 
                 --print("mapzones", thisMob.Defs.MapZone,intiPlayer_MapZone )
@@ -232,10 +231,10 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
                     canHit = true
                     hitParams.IsMob = true
                     hitParams.MobId = mobIdObject.Value
+
+                    Knit.Services.MobService:WakeMob(initPlayer, thisMob)
                 end
-
             end
-
         end
     end
    

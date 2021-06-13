@@ -83,6 +83,7 @@ function InventoryService:Give_Item(player, key, quantity)
         playerData.ItemInventory[key] = 0
     end
 
+    print("CHECK", key, quantity, playerData.ItemInventory[key])
     -- increment the key
     playerData.ItemInventory[key] += quantity
 

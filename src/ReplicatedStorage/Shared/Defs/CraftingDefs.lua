@@ -7,7 +7,7 @@ return {
         LayoutOrder = 1,
         Description = "There's many ways to get arrows, crafting is just one.",
         InputItems = {
-            [1] = {Key = "BrokenArrow", Value = 100, Name = "Broken Arrow"},
+            [1] = {Key = "BrokenArrow", Value = 25, Name = "Broken Arrow"},
             [2] = {Key = "SoulOrbs", Value = 10, Name = "Soul Orbs"},
         },
         OutputItems = {
@@ -20,7 +20,7 @@ return {
         LayoutOrder = 2,
         Description = "There's many ways to get arrows, crafting is just one.",
         InputItems = {
-            [1] = {Key = "BrokenArrow", Value = 900, Name = "Broken Arrow"},
+            [1] = {Key = "BrokenArrow", Value = 225, Name = "Broken Arrow"},
             [2] = {Key = "SoulOrbs", Value = 100, Name = "Soul Orbs"},
         },
         OutputItems = {

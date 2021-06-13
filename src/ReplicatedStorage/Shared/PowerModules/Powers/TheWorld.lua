@@ -157,7 +157,7 @@ TheWorld.Defs.Abilities.TimeStop = {
     Name = "Time Stop",
     Id = "TimeStop",
     Duration = 8,
-    Cooldown = 60,
+    Cooldown = 70,
     Range = 80,
     RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 1}, PinCharacter = {Duration = 8}, ColorShift = {Duration = 8}}, 

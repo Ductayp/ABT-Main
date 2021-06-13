@@ -21,26 +21,22 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
     local antiTeleport = hitCharacter:FindFirstChild("DisableTeleport", true)
     if antiTeleport then return end
 
-    hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
+    --hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
 
-
-    --[[
-    local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitParams.IsMob then
 
-        local orginalParent = hitCharacter.Parent
-        if orginalParent == ReplicatedStorage then return end
+        local thisMob = Knit.Services.MobService:GetMobById(hitParams.MobId)
+        print("IS MOB!", thisMob)
 
-        --hitCharacter.Parent = ReplicatedStorage
-        --hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
-        hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
-        --hitCharacter.Parent = orginalParent
-
+        if thisMob and thisMob.Defs.IsMobile then
+            hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
+        end
+        
     else
-        --hitCharacter.HumanoidRootPart.Position = effectParams.TargetPosition
+
         hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
     end
-    ]]--
+
 
 
 end

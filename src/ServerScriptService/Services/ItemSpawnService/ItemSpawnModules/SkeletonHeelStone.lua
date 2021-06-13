@@ -24,12 +24,12 @@ SkeletonHeelStone.Items = {
     },
 
     {
-        Weight = 100,
+        Weight = 50,
         Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
-            MinValue = 2,
+            MinValue = 1,
             MaxValue = 3,
         }
     },

@@ -52,6 +52,8 @@ function StandJump.Initialize(params, abilityDefs)
 		params.CanRun = false
 		return
     end
+
+    StandJump.Run_Initialize(params, abilityDefs)
     
 end
 
@@ -101,16 +103,58 @@ end
 --// Ability Functions
 --// --------------------------------------------------------------------
 
-function StandJump.Setup(params, abilityDefs)
+function StandJump.Run_Initialize(params, abilityDefs)
+
+    
+    -- get initPlayer
+    local initPlayer = Players.LocalPlayer
+
+    params.OriginCFrame = initPlayer.Character.HumanoidRootPart.CFrame
+
+    Knit.Controllers.PlayerUtilityController.PlayerAnimations.PlayerJump:Play()
+    spawn(function()
+        wait(0.7)
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.PlayerJump:Stop()
+    end)
+
+    -- depth of field effect
+    local newDepthOfField = ReplicatedStorage.EffectParts.Effects.DepthOfField.Default:Clone()
+    newDepthOfField.Name = "newDepthOfField"
+    newDepthOfField.Parent = game:GetService("Lighting")
+    Debris:AddItem(newDepthOfField, 1)
+
+    -- grab the LookVector before we do anything else
+    local lookVector = initPlayer.Character.HumanoidRootPart.CFrame.LookVector
+    local velocityX = lookVector.X * defaultVelocityX 
+    local velocityZ = lookVector.Z * defaultVelocityZ
+    local velocityY = defaultVelocityY
+    local duration = defaultDuration
+
+    -- do the body mover
+    local bodyPosition = Instance.new("BodyPosition")
+    bodyPosition.MaxForce = Vector3.new(10000,10000,10000)
+    bodyPosition.P = 50000
+    bodyPosition.D = 6000
+    bodyPosition.Position = (initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 150, -300)).Position
+    bodyPosition.Parent = initPlayer.Character.HumanoidRootPart
+
+    local duration = 0.4
+    local startTime = tick()
+    while tick() < startTime + duration do
+        RunService.Heartbeat:Wait()
+    end
+    bodyPosition:Destroy()
 
 end
 
 function StandJump.Run_Server(params, abilityDefs)
+    --[[
     Knit.Services.PlayerUtilityService.PlayerAnimations[params.InitUserId].PlayerJump:Play()
     spawn(function()
         wait(.7)
         Knit.Services.PlayerUtilityService.PlayerAnimations[params.InitUserId].PlayerJump:Stop()
     end)
+    ]]--
 end
 
 function StandJump.Run_Client(params, abilityDefs)
@@ -139,11 +183,11 @@ function StandJump.Run_Client(params, abilityDefs)
 
     -- pop the part effects
     local groundShock = ReplicatedStorage.EffectParts.Abilities.StandJump.GroundShock:Clone()
-    groundShock.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,-2.5,0))
+    groundShock.CFrame = params.OriginCFrame:ToWorldSpace(CFrame.new(0,-2.5,0))
     groundShock.Parent = workspace.RenderedEffects
 
-    local sizeTween = TweenService:Create(groundShock,TweenInfo.new(1.5),{Size = (groundShock.Size + Vector3.new(1,2,1))})
-    local fadeTween = TweenService:Create(groundShock,TweenInfo.new(2),{Transparency = 1})
+    local sizeTween = TweenService:Create(groundShock,TweenInfo.new(1),{Size = (groundShock.Size + Vector3.new(8,2,8))})
+    local fadeTween = TweenService:Create(groundShock,TweenInfo.new(1),{Transparency = 1})
 
     fadeTween.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed then
@@ -154,6 +198,7 @@ function StandJump.Run_Client(params, abilityDefs)
     sizeTween:Play()
     fadeTween:Play()
 
+    --[[
     -- apply deffect to the initPlayer
     if initPlayer == Players.LocalPlayer then
 
@@ -192,6 +237,9 @@ function StandJump.Run_Client(params, abilityDefs)
         bodyPosition:Destroy()
 
     end
+    ]]--
+
+
 
     --[[ -- trails commented out because they didnt look great, but im leaving them here justin case :)
     -- add some trails

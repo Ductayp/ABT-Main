@@ -20,7 +20,7 @@ ScrapePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular 
 -- hitbox
 ScrapePunch.HitboxSize = Vector3.new(5, 5, 12)
 ScrapePunch.HitboxOffset = CFrame.new(0, 0, 6)
-ScrapePunch.HitboxDestroyTime = 2
+ScrapePunch.HitboxDestroyTime = .3
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 

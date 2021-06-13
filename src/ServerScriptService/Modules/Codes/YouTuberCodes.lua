@@ -22,7 +22,7 @@ return {
         CodeString = "sub2razer",
         ActionType = "GiveItem",
         Key = "DungeonKey",
-        Value = 10,
+        Quantity = 10,
         Expiration = 1749679287,
         Message = "10 Dungeon Keys - YEET!"
     },

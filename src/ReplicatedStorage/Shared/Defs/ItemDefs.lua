@@ -22,7 +22,7 @@ return {
         Type = "Special",
         GivePower = "Vampire",
         CutScene = "StoneMask",
-        Description = "Use this item while STANDLESS to get Vampire Spec.<br/><br/>Nobody knows why the Pillar Men created these masks, why would they imbue mere humans with such great power?",
+        Description = "Use this item while STANDLESS to get Vampire Spec.<br/><br/>Can be crafted from Mask Fragments dropped by the Pillar Men on the Beach.",
         LayoutOrder = 3
     },
 

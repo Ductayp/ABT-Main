@@ -27,10 +27,10 @@ TheHand.Defs = {
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
         Q = {
-            AbilityName = "Summon Stand"
+            AbilityName = "Summon Stand" -- done
         },
         E = {
-            AbilityName = "Barrage"
+            AbilityName = "Barrage" -- done
         },
         F = {
             AbilityName = "Flower Pot Barrage"
@@ -39,16 +39,16 @@ TheHand.Defs = {
             AbilityName = "Black Hole"
         },
         R = {
-            AbilityName = "Scrape Punch"
+            AbilityName = "Scrape Punch" -- done
         },
         X = {
             AbilityName = "Scrape Away"
         },
         Z = {
-            AbilityName = "Stand Jump"
+            AbilityName = "Stand Jump" -- done
         },
         C = {
-            AbilityName = "Void Pull"
+            AbilityName = "Void Pull" -- done
         }
     }
 }

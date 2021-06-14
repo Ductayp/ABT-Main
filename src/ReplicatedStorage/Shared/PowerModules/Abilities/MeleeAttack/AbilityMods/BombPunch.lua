@@ -1,4 +1,4 @@
--- ScrapePunch
+-- BombPunch
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -10,22 +10,22 @@ local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
-local ScrapePunch = {}
+local BombPunch = {}
 
 -- timing
-ScrapePunch.HitDelay = 0.4
-ScrapePunch.InputBlockTime = 1
-ScrapePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
+BombPunch.HitDelay = 0.4
+BombPunch.InputBlockTime = 1
+BombPunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
 
 -- hitbox
-ScrapePunch.HitboxSize = Vector3.new(5, 5, 12)
-ScrapePunch.HitboxOffset = CFrame.new(0, 0, 6)
-ScrapePunch.HitboxDestroyTime = .3
+BombPunch.HitboxSize = Vector3.new(5, 5, 12)
+BombPunch.HitboxOffset = CFrame.new(0, 0, 6)
+BombPunch.HitboxDestroyTime = .3
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 
 --// HitCharacter
-function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
+function BombPunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
     
     abilityDefs.HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}}
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
@@ -34,7 +34,7 @@ function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 end
 
 --// Client_Start
-function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
+function BombPunch.Client_Start(params, abilityDefs, initPlayer)
 
     local initCharacter = initPlayer.Character
     if not initCharacter then return end
@@ -55,7 +55,7 @@ function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
         ManageStand.Aura_Off(params)
     end)
 
-    wait(ScrapePunch.HitDelay)
+    wait(BombPunch.HitDelay)
 
     WeldedSound.NewSound(targetStand.HumanoidRootPart, punchSound)
 
@@ -88,4 +88,4 @@ end
 
 
 
-return ScrapePunch
+return BombPunch

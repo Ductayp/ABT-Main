@@ -164,11 +164,11 @@ TheHand.Defs.Abilities.F = {
     Id = "FlowerPotBarrage",
     Cooldown = 2,
     RequireToggle_On = {"Q"},
-    --AbilityMod = Knit.Abilities.BasicProjectile.LaserEyes,
+    AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("FlowerPotBarrage", true),
 }
 
 function TheHand.F(params)
-    --params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheHand.Defs.Abilities.F)
+    params = require(Knit.Abilities.ProjectileBarrage)[params.SystemStage](params, TheHand.Defs.Abilities.F)
 end
 
 

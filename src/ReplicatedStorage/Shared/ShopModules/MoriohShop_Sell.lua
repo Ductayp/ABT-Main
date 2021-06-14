@@ -46,13 +46,13 @@ module.ShopItems = {
 
         OutputName = "Cash",
         OutputKey = "Cash",
-        OutputValue = 5000,
+        OutputValue = 2500,
 
         InputName = "Diamond x1",
         InputKey = "Diamond",
         InputValue = 1,
 
-        Description = "Dimaonds are unbreakable, and sellabe too!",
+        Description = "Dimaonds are unbreakable, and sellable too!",
 
     },
 
@@ -60,13 +60,13 @@ module.ShopItems = {
 
         OutputName = "Cash",
         OutputKey = "Cash",
-        OutputValue = 55000,
+        OutputValue = 26000,
 
         InputName = "Diamond x10",
         InputKey = "Diamond",
         InputValue = 10,
 
-        Description = "Dimaonds are unbreakable, and sellabe too!",
+        Description = "Dimaonds are unbreakable, and sellable too!",
 
     },
 
@@ -83,7 +83,6 @@ module.ShopItems = {
         Description = "Use while standless to gain the Vampire spec.",
 
     },
-
 
 }
 

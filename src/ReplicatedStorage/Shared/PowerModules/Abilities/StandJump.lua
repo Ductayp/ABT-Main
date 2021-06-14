@@ -93,8 +93,10 @@ end
 --// Execute
 function StandJump.Execute(params, abilityDefs)
 
-    -- run effects
-	StandJump.Run_Client(params, abilityDefs)
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if initPlayer ~= Players.LocalPlayer then
+        StandJump.Run_Effects(params, abilityDefs, initPlayer)
+    end
 
 end
 
@@ -122,6 +124,8 @@ function StandJump.Run_Initialize(params, abilityDefs)
     newDepthOfField.Name = "newDepthOfField"
     newDepthOfField.Parent = game:GetService("Lighting")
     Debris:AddItem(newDepthOfField, 1)
+
+    StandJump.Run_Effects(params, abilityDefs, Players.LocalPlayer)
 
     -- grab the LookVector before we do anything else
     local lookVector = initPlayer.Character.HumanoidRootPart.CFrame.LookVector
@@ -157,10 +161,10 @@ function StandJump.Run_Server(params, abilityDefs)
     ]]--
 end
 
-function StandJump.Run_Client(params, abilityDefs)
+function StandJump.Run_Effects(params, abilityDefs, initPlayer)
 
     -- get initPlayer
-    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    --local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
     -- setup the stand, if its not there then dont run return
 	local targetStand = workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")

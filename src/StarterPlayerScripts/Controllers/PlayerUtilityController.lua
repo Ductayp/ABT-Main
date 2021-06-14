@@ -13,8 +13,15 @@ PlayerUtilityController.PlayerAnimations = {} -- PLayerUtilityService populates 
 --// GetPing - gets the local players ping
 function PlayerUtilityController:GetPing()
 
+    local ping = 0 
+
     local playerValueObject = ReplicatedStorage.PlayerPings[Players.LocalPlayer.UserId]
-    return playerValueObject.Value
+    if playerValueObject then 
+        ping = playerValueObject.Value
+    end
+
+    return ping
+
 end
 
 --// LoadAnimations

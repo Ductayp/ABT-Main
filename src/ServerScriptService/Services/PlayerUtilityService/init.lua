@@ -25,7 +25,16 @@ PlayerUtilityService.PlayerMapZone = {}
 local updatePlayerTime = 1
 
 function PlayerUtilityService:GetPing(player)
-    return pingTime[player]
+    
+    local ping
+
+    if pingTime[player] then
+        ping = pingTime[player]
+    else
+        ping = 0
+    end
+
+    return ping
 end
 
 --// UpdatePlayerLoop

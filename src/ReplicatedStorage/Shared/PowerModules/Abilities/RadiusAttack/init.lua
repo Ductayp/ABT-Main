@@ -1,13 +1,9 @@
--- Basic Projectile
--- PDab
--- 11-27-2020
+-- RadiusAttack
 
 --Roblox Services
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local Debris = game:GetService("Debris")
-local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -17,17 +13,12 @@ local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
-local WeldedSound = require(Knit.PowerUtils.WeldedSound)
-local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
-
 
 local RadiusAttack = {}
 
---// --------------------------------------------------------------------
---// Handler Functions
---// --------------------------------------------------------------------
-
---// Initialize
+------------------------------------------------------------------------------------------------------------------------------
+--// Initialize --------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 function RadiusAttack.Initialize(params, abilityDefs)
 
 	-- check KeyState
@@ -49,11 +40,19 @@ function RadiusAttack.Initialize(params, abilityDefs)
         return params
     end
 
-    RadiusAttack.Setup(params, abilityDefs)
+    local abilityMod = require(abilityDefs.AbilityMod)
+
+    MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
+
+    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    local delayOffset = playerPing / 2
+    abilityMod.CharacterAnimations(params, abilityDefs, delayOffset)
 
 end
 
---// Activate
+------------------------------------------------------------------------------------------------------------------------------
+--// Activate ----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 function RadiusAttack.Activate(params, abilityDefs)
 
     local abilityMod = require(abilityDefs.AbilityMod)
@@ -83,30 +82,7 @@ function RadiusAttack.Activate(params, abilityDefs)
     -- block input
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "RadiusAttack", abilityMod.InputBlockTime)
 
-    -- tween hitbox
-    RadiusAttack.Run_Server(params, abilityDefs)
-
-end
-
---// Execute
-function RadiusAttack.Execute(params, abilityDefs)
-
-    -- tween effects
-	RadiusAttack.Run_Client(params, abilityDefs)
-
-end
-
-
---// --------------------------------------------------------------------
---// Ability Functions
---// --------------------------------------------------------------------
-
-function RadiusAttack.Setup(params, abilityDefs)
-
-end
-
-function RadiusAttack.Run_Server(params, abilityDefs)
-
+    
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer then return end
 
@@ -139,41 +115,28 @@ function RadiusAttack.Run_Server(params, abilityDefs)
 
 end
 
-function RadiusAttack.Run_Client(params, abilityDefs)
-
-    print("YESSS!", params, abilityDefs)
+------------------------------------------------------------------------------------------------------------------------------
+--// Execute -----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+function RadiusAttack.Execute(params, abilityDefs)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer then
         return
     end
 
-    -- setup the stand, if its not there then make it
-	abilityDefs.TargetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-	if not abilityDefs.TargetStand then
-		abilityDefs.TargetStand = ManageStand.QuickRender(params)
-    end
-
     local abilityMod = require(abilityDefs.AbilityMod)
 
     if abilityMod.HitDelay then wait(abilityMod.HitDelay) end
 
-    if abilityMod.Server_Start then
-        abilityMod.Client_Start(params, abilityDefs, initPlayer)
-    end
+    abilityMod.Client_Start(params, abilityDefs, initPlayer)
 
     for count = 1, abilityMod.TickCount do
         wait(abilityMod.TickTime)
-        if abilityMod.Server_Tick then
-            abilityMod.Client_Tick(params, abilityDefs, initPlayer, hitCharacters)
-        end
+        abilityMod.Client_Tick(params, abilityDefs, initPlayer, hitCharacters)
     end
 
-    if abilityMod.Server_End then
-        abilityMod.Client_End(params, abilityDefs, initPlayer, hitCharacters)
-    end
-
-
+    abilityMod.Client_End(params, abilityDefs, initPlayer, hitCharacters)
 
 end
 

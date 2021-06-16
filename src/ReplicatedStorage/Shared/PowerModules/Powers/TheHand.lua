@@ -33,7 +33,7 @@ TheHand.Defs = {
             AbilityName = "Barrage" -- done
         },
         F = {
-            AbilityName = "Flower Pot Barrage"
+            AbilityName = "Flower Pot Barrage" -- done
         },
         T = {
             AbilityName = "Black Hole"
@@ -42,7 +42,7 @@ TheHand.Defs = {
             AbilityName = "Scrape Punch" -- done
         },
         X = {
-            AbilityName = "Scrape Away"
+            AbilityName = "Scrape Away" -- done
         },
         Z = {
             AbilityName = "Stand Jump" -- done
@@ -179,12 +179,13 @@ end
 -- defs
 TheHand.Defs.Abilities.X = {
     Id = "ScrapeAway",
-    Cooldown = 90,
+    Cooldown = 1,
     RequireToggle_On = {"Q"},
+    AbilityMod = Knit.Abilities.BasicProjectile:FindFirstChild("ScrapeAway", true),
 }
 
 function TheHand.X(params)
-    --params = require(Knit.Abilities.RageBoost)[params.SystemStage](params, TheHand.Defs.Abilities.RageBoost)
+    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, TheHand.Defs.Abilities.X)
 end
 
 --------------------------------------------------------------------------------------------------

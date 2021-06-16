@@ -102,7 +102,8 @@ end
 
 --// RenderAbilityEffect
 function PowersController:RenderAbilityEffect(abilityModule, functionName, params)
-    --print("abilityModule, functionName, params", abilityModule, functionName, params)
+
+    --print("PowersController:RenderAbilityEffect", abilityModule, functionName, params)
 
     if not Players.LocalPlayer.Character then return end
 
@@ -138,7 +139,7 @@ function PowersController:RenderExistingStands()
             if equippedStand then
                 local thisStand = Workspace.PlayerStands[folder.Name]:FindFirstChildWhichIsA("Model")
                 if not thisStand then
-                    params = {}
+                    local params = {}
                     params.InitUserId = folder.Name
                     params.StandModel = equippedStand.Value
                     require(Knit.Abilities.ManageStand).QuickRender(params)

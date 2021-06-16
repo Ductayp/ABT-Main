@@ -4,40 +4,73 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
+
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local utils = require(Knit.Shared.Utils)
 
-local LaserEyesMod = {}
+local module = {}
 
---LaserEyesMod.Cooldown = 3
+module.InputBlockTime = .1
+
+module.MobilityLockParams = {}
+module.MobilityLockParams.Duration = 0
+module.MobilityLockParams.ShiftLock_NoSpin = true
+module.MobilityLockParams.AnchorCharacter = true
 
 -- projectile origin
-LaserEyesMod.CFrameOffest = CFrame.new(0, 1.5, 0) -- offset from the initPlayers HRP
+module.CFrameOffest = CFrame.new(0, 1.5, 0) -- offset from the initPlayers HRP
 
 -- hitbox data points
-LaserEyesMod.HitBox_Size_X = 2.5
-LaserEyesMod.HitBox_Size_Y = 2.5
-LaserEyesMod.HitBox_Resolution_X = .5
-LaserEyesMod.HitBox_Resolution_Y = 1 -- having this larger than the Y size will make it a flat plane
+module.HitBox_Size_X = 2.5
+module.HitBox_Size_Y = 2.5
+module.HitBox_Resolution_X = .5
+module.HitBox_Resolution_Y = 1 -- having this larger than the Y size will make it a flat plane
 
 -- ray data
-LaserEyesMod.Velocity = 800
-LaserEyesMod.Lifetime = .5
-LaserEyesMod.Iterations = 1
-LaserEyesMod.BreakOnHit = false
-LaserEyesMod.BreakifHuman = false
-LaserEyesMod.BreakOnBlockAbility = false
+module.Velocity = 800
+module.Lifetime = .5
+module.Iterations = 1
+module.BreakOnHit = false
+module.BreakifHuman = false
+module.BreakOnBlockAbility = false
 
 -- ignore list
-LaserEyesMod.CustomIgnoreList = {}
+module.CustomIgnoreList = {}
 
--- animation stuff
-LaserEyesMod.PlayerAnchorTime = 0
 
 -- hit effects
-LaserEyesMod.HitEffects = {Damage = {Damage = 15}}
+module.HitEffects = {Damage = {Damage = 15}}
 
-function LaserEyesMod.HitBoxResult(initPlayer, params, abilityDefs, result)
+function module.CharacterAnimations(params, abilityDefs, delayOffset)
+
+    spawn(function()
+
+        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+        if not initPlayer and initPlayer.Character then return end
+
+        if initPlayer == Players.LocalPlayer then
+            spawn(function()
+
+                print("YEET")
+                Knit.Controllers.PlayerUtilityController.PlayerAnimations.HandsOnHead:Play()
+                wait(.4 + delayOffset)
+                Knit.Controllers.PlayerUtilityController.PlayerAnimations.HandsOnHead:Stop()
+
+            end)
+        end
+
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
+
+
+    end)
+
+end
+
+function module.HitBoxResult(initPlayer, params, abilityDefs, result)
+
+    abilityDefs.HitEffects = module.HitEffects
 
     --print("HIT A HUMANOID", result.Instance.Parent)
     if result.Instance.Parent:FindFirstChild("Humanoid") then
@@ -54,7 +87,7 @@ function LaserEyesMod.HitBoxResult(initPlayer, params, abilityDefs, result)
 end
 
 -- setup cosmetic
-function LaserEyesMod.SetupCosmetic(initPlayer, params, abilityDefs)
+function module.SetupCosmetic(initPlayer, params, abilityDefs)
 
     local newProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.LaserEyesAssembly:Clone()
     local newEyeBlast = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.EyeBlast:Clone()
@@ -88,8 +121,8 @@ function LaserEyesMod.SetupCosmetic(initPlayer, params, abilityDefs)
 
         newWeld1:Destroy()
         newProjectile.BeamAnchor.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-        newProjectile.BeamAnchor.BodyVelocity.P = LaserEyesMod.Velocity
-        newProjectile.BeamAnchor.BodyVelocity.Velocity = params.projectileOrigin.LookVector * LaserEyesMod.Velocity
+        newProjectile.BeamAnchor.BodyVelocity.P = module.Velocity
+        newProjectile.BeamAnchor.BodyVelocity.Velocity = params.projectileOrigin.LookVector * module.Velocity
 
     end)
 
@@ -97,13 +130,13 @@ function LaserEyesMod.SetupCosmetic(initPlayer, params, abilityDefs)
 end
 
 -- fire effects
-function LaserEyesMod.FireEffects(initPlayer, projectile, params, abilityDefs)
+function module.FireEffects(initPlayer, projectile, params, abilityDefs)
 
-    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
+    --WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
 
 end
 
-function LaserEyesMod.ParticlePop(params)
+function module.ParticlePop(params)
 
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
@@ -112,14 +145,15 @@ function LaserEyesMod.ParticlePop(params)
     newBurst.Parent = Workspace.RenderedEffects
     Debris:AddItem(newBurst, 5)
 
-    --local sizeTween = TweenService:Create(newBurst, TweenInfo.new(.5),{Size = Vector3.new(2,2,2)})
-    --local transparencyTween = TweenService:Create(newBurst, TweenInfo.new(.5),{Transparency = 1})
-
-    --sizeTween:Play()
-    --transparencyTween:Play()
-
     newBurst.Part.ParticleEmitter:Emit(20)
 
 end
 
-return LaserEyesMod
+-- end cosmetic
+function module.EndCosmetic(projectile)
+
+    projectile:Destroy()
+
+end
+
+return module

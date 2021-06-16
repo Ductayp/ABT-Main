@@ -2,6 +2,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 
@@ -29,17 +30,22 @@ module.Offset_Z = -8
 -- ray box params
 module.Size_X = 1
 module.Size_Y = 1
-module.Velocity = 100
-module.Lifetime = 2
-module.Iterations = 1000
+module.Velocity = 90
+module.Lifetime = .8
+module.Iterations = 700
+
+module.BreakOnHit = true
+module.BreakifNotHuman = true
+module.BreakifHuman = true
+module.BreakOnBlockAbility = true
 
 module.HitEffects = {Damage = {Damage = 10}}
 
 module.Projectiles = {
-    [1] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.FlowerPot_1,
-    [2] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.FlowerPot_2,
-    [3] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.FlowerPot_3,
-    [4] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.FlowerPot_4,
+    [1] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot1,
+    [2] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot2,
+    [3] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot3,
+    [4] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot4,
 }
 
 
@@ -48,6 +54,16 @@ function module.CharacterAnimations(params, abilityDefs, playerPing)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer and initPlayer.Character then return end
+
+    if initPlayer == Players.LocalPlayer then
+        spawn(function()
+
+            Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
+            wait(module.MobilityLockParams.Duration)
+            Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
+
+        end)
+    end
 
 	local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
 	if not targetStand then
@@ -90,23 +106,45 @@ function module.GetProjectile()
 end
 
 --// ProjectileAnimations - client
-function module.ProjectileEffects(projectileModel, projectileDef)
+function module.ProjectileEffects(projectileDef)
 
-    WeldedSound.NewSound(projectileModel, ReplicatedStorage.Audio.General.GunShot)
+    WeldedSound.NewSound(projectileDef.Model, ReplicatedStorage.Audio.General.Thwump)
 
     local newBurst = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.FatBurst:Clone()
     newBurst.Parent = Workspace.RenderedEffects
     newBurst.CFrame = projectileDef.Origin
+    Debris:AddItem(newBurst, 3)
 
     local burstTween = TweenService:Create(newBurst, TweenInfo.new(1),{Size = Vector3.new(4,4,4), Transparency = 1})
     burstTween:Play()
     burstTween:Destroy()
-    
+
 end
 
 --// ProjectileImpact - client
-function module.ProjectileImpact()
+function module.ProjectileImpact(params)
 
+    local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
+    if projectilePart then
+
+        projectilePart:Destroy()
+ 
+        local destroyPart = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.DestroyPart:Clone()
+        destroyPart.Parent = Workspace.RenderedEffects
+        destroyPart.Position = params.Position
+        Debris:AddItem(destroyPart, 6)
+
+        soundParams = {}
+        soundParams.SoundProperties = {TimePosition = 0.2}
+        WeldedSound.NewSound(destroyPart, ReplicatedStorage.Audio.General.CeramicBreak)
+
+        destroyPart.Particle:Emit(100)
+
+        local breakTween = TweenService:Create(destroyPart, TweenInfo.new(.8),{Size = Vector3.new(2,2,2), Transparency = 1})
+        breakTween:Play()
+        breakTween:Destroy()
+
+    end
 
 end
 

@@ -22,7 +22,7 @@
         
         -- Handle server side of ping logic, and expose data
         
-        local UPDATE_FREQUENCY = 3
+        local UPDATE_FREQUENCY = 1
         
         local Http = game:GetService("HttpService")
         local PingTimes = {}

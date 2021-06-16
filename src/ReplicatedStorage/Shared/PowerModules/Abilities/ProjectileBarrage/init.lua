@@ -17,7 +17,7 @@ local BlockInput = require(Knit.PowerUtils.BlockInput)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
 local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
 
-local bulletSerial = 1
+local projectileSerial = 1
 
 local ProjectileBarrage = {}
 
@@ -94,6 +94,8 @@ function ProjectileBarrage.Activate(params, abilityDefs)
         table.insert(ignoreList, v)
     end
 
+    abilityDefs.HitEffects = abilityMod.HitEffects
+
     params.ProjectilesFired = {}
     for count = 1, abilityMod.ShotCount do
 
@@ -103,12 +105,12 @@ function ProjectileBarrage.Activate(params, abilityDefs)
 
         local bulletOrigin = params.HRPOrigin:ToWorldSpace(CFrame.new(offsetX, offsetY, offsetZ))
 
-        local bulletID = params.InitUserId .. "_ProjectileBarrage_" .. bulletSerial
-        bulletSerial = bulletSerial + 1
+        local projectileID = params.InitUserId .. "_ProjectileBarrage_" .. projectileSerial
+        projectileSerial = projectileSerial + 1
 
         params.ProjectilesFired[count] = {}
         params.ProjectilesFired[count].Origin = bulletOrigin
-        params.ProjectilesFired[count].ID = bulletID
+        params.ProjectilesFired[count].ID = projectileID
 
         local dataPoints = hitboxMod:GetSquarePoints(bulletOrigin, abilityMod.Size_X, abilityMod.Size_Y)
 
@@ -118,20 +120,28 @@ function ProjectileBarrage.Activate(params, abilityDefs)
         projectileData["Velocity"] = abilityMod.Velocity
         projectileData["Lifetime"] = abilityMod.Lifetime
         projectileData["Iterations"] = abilityMod.Iterations
-        --projectileData["Visualize"] = true
         projectileData["Ignore"] = ignoreList
+
+        projectileData["BreakOnHit"] = abilityMod.BreakOnHit
+        projectileData["BreakifNotHuman"] = abilityMod.BreakifNotHuman
+        projectileData["BreakifHuman"] = abilityMod.BreakifHuman
+        projectileData["BreakOnBlockAbility"] = abilityMod.BreakOnBlockAbility
+
+        --projectileData["Visualize"] = true
 
         projectileData["Function"] = function(result)
             if result.Instance.Parent then
 
                 local resultParams = {}
                 resultParams.Position = result.Position
-                resultParams.BulletID = bulletID
+                resultParams.ProjectileID = projectileID
+
+                print("TEST", abilityDefs.AbilityMod)
                 Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityDefs.AbilityMod, "ProjectileImpact", resultParams)
 
                 if result.Instance.Parent:FindFirstChild("Humanoid") then
                     --print("HIT A HUMANOID", result.Instance.Parent)
-                    Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityMod.HitEffects)
+                    Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
                 end
             end
         end
@@ -144,12 +154,11 @@ function ProjectileBarrage.Activate(params, abilityDefs)
                 wait(initialWait)
             end
 
-            print("SERVER WAIT", initialWait)
-            
             local shotWait = (abilityMod.ShotDelay * count) - abilityMod.ShotDelay
             wait(shotWait)
 
             hitboxMod:CastProjectileHitbox(projectileData)
+
         end)
     end
 end
@@ -173,62 +182,36 @@ function ProjectileBarrage.Execute(params, abilityDefs)
     --local shotCount = 1
     for projectileCount, projectileDef in pairs(params.ProjectilesFired) do
 
-        local projectileModel = abilityMod.GetProjectile()
+        projectileDef.Model = abilityMod.GetProjectile()
 
-        projectileModel.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-        projectileModel.BodyVelocity.P = abilityMod.Velocity
+        projectileDef.Model.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+        projectileDef.Model.BodyVelocity.P = abilityMod.Velocity
 
-        projectileModel.BodyVelocity.Velocity = projectileDef.Origin.LookVector * abilityMod.Velocity
-        projectileModel.Name = projectileDef.ID
+        projectileDef.Model.BodyVelocity.Velocity = projectileDef.Origin.LookVector * abilityMod.Velocity
+        projectileDef.Model.Name = projectileDef.ID
 
-        projectileModel.Touched:Connect(function(hit)
+        --[[
+        projectileDef.Model.Touched:Connect(function(hit)
             if hit.Parent.Name == "RenderedEffects_BlockAbility" then
-                projectileModel:Destroy()
+                projectileDef.Model:Destroy()
             end
         end)
+        ]]--
 
         spawn(function()
             local waitTime = (abilityMod.ShotDelay * projectileCount) - abilityMod.ShotDelay
             print("WAiT 2", waitTime)
             wait(waitTime)
-            projectileModel.Parent = Workspace.RenderedEffects
-            projectileModel.CFrame = projectileDef.Origin
-            abilityMod.ProjectileEffects(projectileModel, projectileDef)
+            projectileDef.Model.Parent = Workspace.RenderedEffects
+            projectileDef.Model.CFrame = projectileDef.Origin
+
+            abilityMod.ProjectileEffects(projectileDef)
+
+            wait(abilityMod.Lifetime)
+
+            projectileDef.Model:Destroy()
+
         end)
-
-
-
-
-        --[[
-        local projectileDef = params.ProjectilesFired[count]
-
-        local bullet = abilityMod.GetProjectile()
-
-        bullet.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-        bullet.BodyVelocity.P = Velocity
-
-        bullet.BodyVelocity.Velocity = projectileDef.Origin.LookVector * Velocity
-        bullet.CFrame = projectileDef.Origin
-        bullet.Name = projectileDef.ID
-
-        bullet.Touched:Connect(function(hit)
-            if hit.Parent.Name == "RenderedEffects_BlockAbility" then
-                bullet:Destroy()
-            end
-        end)
-
-        spawn(function()
-            local waitTime = (shotDelay * count) - shotDelay
-            wait(waitTime)
-            WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GunShot)
-            bullet.Parent = Workspace.RenderedEffects
-        end)
-
-        spawn(function()
-            wait(Lifetime)
-            bullet:Destroy()
-        end)
-        ]]--
 
     end
 

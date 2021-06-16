@@ -27,6 +27,8 @@ end
 --// LoadAnimations
 function PlayerUtilityController:LoadAnimations(character)
 
+    if not character then return end
+
     -- clear the players animation table so its fresh
     PlayerUtilityController.PlayerAnimations = {}
 

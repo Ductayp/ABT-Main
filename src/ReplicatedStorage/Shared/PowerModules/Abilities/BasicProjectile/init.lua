@@ -7,7 +7,6 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
---local TweenService = game:GetService("TweenService")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
@@ -23,11 +22,9 @@ local projectileSerial = 1 -- incremented ever time e fire a projectile
 
 local BasicProjectile = {}
 
---// --------------------------------------------------------------------
---// Handler Functions
---// --------------------------------------------------------------------
-
---// Initialize
+------------------------------------------------------------------------------------------------------------------------------
+--// Initialize --------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 function BasicProjectile.Initialize(params, abilityDefs)
 
     params.RenderRange = 700
@@ -53,11 +50,21 @@ function BasicProjectile.Initialize(params, abilityDefs)
         end
     end
 
-    BasicProjectile.Setup(params, abilityDefs)
+    local abilityMod = require(abilityDefs.AbilityMod)
+
+    MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
+
+    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    local delayOffset = playerPing / 2
+    abilityMod.CharacterAnimations(params, abilityDefs, delayOffset)
+
+    params.HRPOrigin = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 
 end
 
---// Activate
+------------------------------------------------------------------------------------------------------------------------------
+--// Activate ----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 function BasicProjectile.Activate(params, abilityDefs)
 
     local abilityMod = require(abilityDefs.AbilityMod)
@@ -87,48 +94,10 @@ function BasicProjectile.Activate(params, abilityDefs)
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
-    if abilityMod.PlayerAnchorTime > 0 then
-        require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", abilityMod.PlayerAnchorTime)
+    if abilityMod.InputBlockTime > 0 then
+        require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", abilityMod.InputBlockTime)
     end
     
-    -- run server
-    BasicProjectile.Run_Server(params, abilityDefs)
-
-end
-
---// Execute
-function BasicProjectile.Execute(params, abilityDefs)
-
-    -- run client
-	BasicProjectile.Run_Client(params, abilityDefs)
-
-end
-
-
---// --------------------------------------------------------------------
---// Ability Functions
---// --------------------------------------------------------------------
-
-function BasicProjectile.Setup(params, abilityDefs)
-
-    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-
-    local abilityMod = require(abilityDefs.AbilityMod)
-
-    if abilityMod.PlayerAnchorTime > 0 then
-        local lockParams = {}
-        lockParams.Duration = abilityMod.PlayerAnchorTime
-        lockParams.ShiftLock_NoSpin = true
-        lockParams.AnchorCharacter = true
-        MobilityLock.Client_AddLock(lockParams)
-    end
-
-    params.HRPOrigin = initPlayer.Character.HumanoidRootPart.CFrame
-
-end
-
-function BasicProjectile.Run_Server(params, abilityDefs)
-
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     local abilityMod = require(abilityDefs.AbilityMod)
 
@@ -142,13 +111,6 @@ function BasicProjectile.Run_Server(params, abilityDefs)
     for _, v in pairs(customIgnores) do
         table.insert(ignoreList, v)
     end
-
-    -- player animations
-    spawn(function()
-        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Point:Play()
-        wait(abilityMod.PlayerAnchorTime)
-        Knit.Services.PlayerUtilityService.PlayerAnimations[initPlayer.UserId].Point:Stop()
-    end)
 
     -- get projectile origin
     local projectileOrigin = params.HRPOrigin:ToWorldSpace(abilityMod.CFrameOffest)
@@ -171,15 +133,16 @@ function BasicProjectile.Run_Server(params, abilityDefs)
     projectileData["Velocity"] = abilityMod.Velocity
     projectileData["Lifetime"] = abilityMod.Lifetime
     projectileData["Iterations"] = abilityMod.Iterations
-    --projectileData["Visualize"] = true
     projectileData["Ignore"] = ignoreList
+
     projectileData["BreakOnHit"] = abilityMod.BreakOnHit
-    projectileData["BreakifNotHuman"] = abilityMod.BreakifNotHuman
     projectileData["BreakifHuman"] = abilityMod.BreakifHuman
     projectileData["BreakOnBlockAbility"] = abilityMod.BreakOnBlockAbility
 
+    --projectileData["Visualize"] = true
+
     -- insert hitEffects into abilityDefs
-    abilityDefs.HitEffects = abilityMod.HitEffects
+    --abilityDefs.HitEffects = abilityMod.HitEffects
     
     -- raycast result handling
     local hitCharacters = {}
@@ -198,18 +161,55 @@ function BasicProjectile.Run_Server(params, abilityDefs)
         end
     end
 
-    hitboxMod:CastProjectileHitbox(projectileData)
+    spawn(function()
+
+        wait(abilityMod.InitialDelay)
+        hitboxMod:CastProjectileHitbox(projectileData)
+    end)
+
 
 end
 
-function BasicProjectile.Run_Client(params, abilityDefs)
+------------------------------------------------------------------------------------------------------------------------------
+--// Execute -----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+function BasicProjectile.Execute(params, abilityDefs)
 
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     local abilityMod = require(abilityDefs.AbilityMod)
 
+    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+
+    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    --local delayOffset = playerPing / 2
+    local delayOffset = playerPing
+    --local delayOffset = playerPing * 2
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if initPlayer and initPlayer ~= Players.LocalPlayer then
+
+        print("I SHOULDNT SEE THIS")
+        abilityMod.CharacterAnimations(params, abilityDefs, -delayOffset)
+    end
+
     -- setup cosmetic projectile
     local projectile = abilityMod.SetupCosmetic(initPlayer, params, abilityDefs)
+
+    --[[
+    local delay = abilityMod.InitialDelay - delayOffset
+    if delay > 0 then
+        --wait(delay)
+        print("DID A WAIT")
+    end
+
+    print("PLAYER PING", playerPing)
+    print("DELAY OFFSET", delayOffset)
+    print("INITIAL DELAY", abilityMod.InitialDelay)
+    print("DELAY @@@", delay)
+    ]]--
+
+    wait(abilityMod.InitialDelay)
   
     -- run effects
     if abilityMod.FireEffects then
@@ -223,6 +223,13 @@ function BasicProjectile.Run_Client(params, abilityDefs)
     projectile.CFrame = params.projectileOrigin
     projectile.Name = params.projectileID
     projectile.Parent = Workspace.RenderedEffects
+
+    wait(abilityMod.Lifetime)
+    if projectile then
+        abilityMod.EndCosmetic(projectile)
+    end
+    
+
 
 end
 

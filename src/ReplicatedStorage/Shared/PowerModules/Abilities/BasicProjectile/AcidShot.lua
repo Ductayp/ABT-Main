@@ -4,65 +4,100 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
+
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local ManageStand = require(Knit.Abilities.ManageStand)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local utils = require(Knit.Shared.Utils)
 
-local AcidShotMod = {}
+local module = {}
+
+module.InputBlockTime = .5
+
+module.MobilityLockParams = {}
+module.MobilityLockParams.Duration = .5
+module.MobilityLockParams.ShiftLock_NoSpin = true
+module.MobilityLockParams.AnchorCharacter = true
 
 -- projectile origin
-AcidShotMod.CFrameOffest = CFrame.new(0, 0, -2) -- offset from the initPlayers HRP
+module.CFrameOffest = CFrame.new(0, 0, -2) -- offset from the initPlayers HRP
 
 -- hitbox data points
-AcidShotMod.HitBox_Size_X = 3
-AcidShotMod.HitBox_Size_Y = 2
-AcidShotMod.HitBox_Resolution_X = 1
-AcidShotMod.HitBox_Resolution_Y = 1 -- having this larger than the Y size will make it a flat plane
+module.HitBox_Size_X = 3
+module.HitBox_Size_Y = 2
+module.HitBox_Resolution_X = 1
+module.HitBox_Resolution_Y = 1 -- having this larger than the Y size will make it a flat plane
 
 -- ray data
-AcidShotMod.Velocity = 300
-AcidShotMod.Lifetime = 3
-AcidShotMod.Iterations = 500
-AcidShotMod.BreakOnHit = true
---AcidShotMod.BreakifHuman = true
---AcidShotMod.BreakOnBlockAbility = true
+module.Velocity = 300
+module.Lifetime = 3
+module.Iterations = 500
+module.BreakOnHit = true
 
 -- ignore list
-AcidShotMod.CustomIgnoreList = {}
+module.CustomIgnoreList = {}
 
--- animation stuff
-AcidShotMod.PlayerAnchorTime = .5
 
 -- pin/camera duration
-AcidShotMod.PinDuration = 5
+module.PinDuration = 5
 
 -- cosmetic projectile
-AcidShotMod.CosmeticProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.Projectile
+module.CosmeticProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.Projectile
 
 -- hit effects
-AcidShotMod.HitEffects = {Damage = {Damage = 20}}
+module.HitEffects = {Damage = {Damage = 20}}
 
-function AcidShotMod.FireEffects(initPlayer, projectile, params, abilityDefs)
-
-    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-    if not targetStand then
-        targetStand = ManageStand.QuickRender(params)
-    end
-
-    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
+function module.CharacterAnimations(params, abilityDefs, delayOffset)
 
     spawn(function()
-        ManageStand.MoveStand(params, "Front")
-        ManageStand.PlayAnimation(params, "Point")
-        ManageStand.Aura_On(params)
-        wait(AcidShotMod.PlayerAnchorTime)
-        ManageStand.MoveStand(params, "Idle")
-        ManageStand.StopAnimation(params, "Point")
-        ManageStand.Aura_Off(params)
+    
+        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+        if not initPlayer and initPlayer.Character then return end
+
+        if initPlayer == Players.LocalPlayer then
+            spawn(function()
+
+                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
+                wait(module.MobilityLockParams.Duration)
+                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
+
+            end)
+        end
+
+        local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+        if not targetStand then
+            targetStand = ManageStand.QuickRender(params)
+        end
+
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicWandCast7)
+
+        spawn(function()
+            ManageStand.MoveStand(params, "Front")
+            ManageStand.PlayAnimation(params, "Point")
+            ManageStand.Aura_On(params)
+            
+            local delay = module.MobilityLockParams.Duration + delayOffset
+            if delay > 0 then wait(delay) end
+
+            ManageStand.MoveStand(params, "Idle")
+            ManageStand.StopAnimation(params, "Point")
+            ManageStand.Aura_Off(params)
+        end)
+    
     end)
+    
+
 end
 
-function AcidShotMod.HitBoxResult(initPlayer, params, abilityDefs, result)
+function module.FireEffects(initPlayer, projectile, params, abilityDefs)
+
+
+end
+
+function module.HitBoxResult(initPlayer, params, abilityDefs, result)
+
+    --abilityDefs.HitEffects = module.HitEffects
 
     -- destroy the cosmetic
     local abilityScript = script.Parent
@@ -105,21 +140,21 @@ function AcidShotMod.HitBoxResult(initPlayer, params, abilityDefs, result)
 
         abilityDefs.HitEffects = {}
         abilityDefs.HitEffects.Damage = {Damage = 10}
-        abilityDefs.HitEffects.PinCharacter = {Duration = AcidShotMod.PinDuration}
-        abilityDefs.HitEffects.CameraMove = {Duration = AcidShotMod.PinDuration, TargetPart = cameraAnchor}
+        abilityDefs.HitEffects.PinCharacter = {Duration = module.PinDuration}
+        abilityDefs.HitEffects.CameraMove = {Duration = module.PinDuration, TargetPart = cameraAnchor}
 
         Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
         local newParticle = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.WhiteBubbleParticle:Clone()
-        Debris:AddItem(newParticle, AcidShotMod.PinDuration + 5)
+        Debris:AddItem(newParticle, module.PinDuration + 5)
         newParticle.Parent = character.HumanoidRootPart
-        wait(AcidShotMod.PinDuration)
+        wait(module.PinDuration)
         newParticle.Enabled = false
     end
 end
 
-function AcidShotMod.SetupCosmetic(initPlayer, params, abilityDefs)
+function module.SetupCosmetic(initPlayer, params, abilityDefs)
 
-    local newProjectile = AcidShotMod.CosmeticProjectile:Clone()
+    local newProjectile = module.CosmeticProjectile:Clone()
     newProjectile.CFrame = params.projectileOrigin
     for _, v in pairs(newProjectile:GetDescendants()) do
         if v:IsA("BasePart") then
@@ -133,7 +168,7 @@ function AcidShotMod.SetupCosmetic(initPlayer, params, abilityDefs)
     end
 
     spawn(function()
-        wait(AcidShotMod.Lifetime)
+        wait(module.Lifetime)
         newProjectile:Destroy()
     end)
 
@@ -141,7 +176,7 @@ function AcidShotMod.SetupCosmetic(initPlayer, params, abilityDefs)
 end
 
 -- destroy cosmetic
-function AcidShotMod.DestroyCosmetic(params)
+function module.DestroyCosmetic(params)
 
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
@@ -164,6 +199,8 @@ function AcidShotMod.DestroyCosmetic(params)
     newBurst.Parent = Workspace.RenderedEffects
     Debris:AddItem(newBurst, 10)
 
+    WeldedSound.NewSound(newBurst, ReplicatedStorage.Audio.General.GlassBoom)
+
     local sizeTween = TweenService:Create(newBurst, TweenInfo.new(.5),{Size = Vector3.new(9,9,9)})
     local transparencyTween = TweenService:Create(newBurst, TweenInfo.new(.5),{Transparency = 1})
 
@@ -174,4 +211,9 @@ function AcidShotMod.DestroyCosmetic(params)
 
 end
 
-return AcidShotMod
+-- end cosmetic
+function module.EndCosmetic(projectile)
+    projectile:Destroy()
+end
+
+return module

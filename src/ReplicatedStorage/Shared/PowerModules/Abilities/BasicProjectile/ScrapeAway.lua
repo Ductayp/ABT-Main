@@ -13,35 +13,37 @@ local utils = require(Knit.Shared.Utils)
 
 local module = {}
 
-module.InputBlockTime = .5
+module.InputBlockTime = 1
 
 module.MobilityLockParams = {}
-module.MobilityLockParams.Duration = .5
+module.MobilityLockParams.Duration = 1
 module.MobilityLockParams.ShiftLock_NoSpin = true
 module.MobilityLockParams.AnchorCharacter = true
 
-module.InitialDelay = 0
-
--- projectile origin
+-- projectile offset
 module.CFrameOffest = CFrame.new(0, 0, -2) -- offset from the initPlayers HRP
 
+module.InitialDelay = .3
+
 -- hitbox data points
-module.HitBox_Size_X = 4.5
-module.HitBox_Size_Y = 1
+module.HitBox_Size_X = 4
+module.HitBox_Size_Y = 4
 module.HitBox_Resolution_X = 1
 module.HitBox_Resolution_Y = 2 -- having this larger than the Y size will make it a flat plane
 
 -- ray data
-module.Velocity = 250
+module.Velocity = 70
 module.Lifetime = .5
 module.Iterations = 500
-module.BreakOnHit = true
+module.BreakOnHit = false
+module.BreakifHuman = false
+module.BreakOnBlockAbility = false
 
 -- ignore list
 module.CustomIgnoreList = {}
 
 -- hit effects
-module.HitEffects = {Damage = {Damage = 15}}
+module.HitEffects = {Damage = {Damage = 40}}
 
 function module.CharacterAnimations(params, abilityDefs, delayOffset)
 
@@ -64,50 +66,35 @@ function module.CharacterAnimations(params, abilityDefs, delayOffset)
         if not targetStand then
             targetStand = ManageStand.QuickRender(params)
         end
-    
-        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
 
-        ManageStand.MoveStand(params, "Front")
-        ManageStand.PlayAnimation(params, "KnifeThrow")
         ManageStand.Aura_On(params)
+        ManageStand.PlayAnimation(params, "HandSwipe")
+        ManageStand.MoveStand(params, "Front")
 
         local delay = module.MobilityLockParams.Duration + delayOffset
         if delay > 0 then wait(delay) end
 
         ManageStand.MoveStand(params, "Idle")
-        ManageStand.StopAnimation(params, "KnifeThrow")
         ManageStand.Aura_Off(params)
     end)
 
 end
 
 function module.SetupCosmetic(initPlayer, params, abilityDefs)
-    local projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.KnifeAssembly:Clone()
-    spawn(function()
-        wait(module.Lifetime)
-        projectile:Destroy()
-    end)
+    local projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.ScrapeAway.Scrape:Clone()
     return projectile
 end
 
 function module.FireEffects(initPlayer, projectile, params, abilityDefs)
 
-
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicDoubleWoosh)
 end
 
 function module.HitBoxResult(initPlayer, params, abilityDefs, result)
 
-    local abilityScript = script.Parent
-    local resultParams = {}
-    resultParams.Position = result.Position
-    resultParams.ProjectileID = params.projectileID
-    resultParams.AbilityMod = abilityDefs.AbilityMod
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "DestroyCosmetic", resultParams)
-
     abilityDefs.HitEffects = module.HitEffects
 
     if result.Instance.Parent:FindFirstChild("Humanoid") then
-        --print("HIT A HUMANOID", result.Instance.Parent)
         Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
     end
 end

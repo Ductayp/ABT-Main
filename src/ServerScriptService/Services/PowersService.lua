@@ -170,7 +170,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end

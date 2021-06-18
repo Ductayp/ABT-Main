@@ -36,9 +36,9 @@ function PowersController:InitializePower(params)
         end
     end
 
-    local powerData = PowersService:GetCurrentPower(Players.LocalPlayer)
-    params.PowerID = powerData.Power
-    params.PowerRank = powerData.Rank
+    local playerFolder = ReplicatedStorage.CurrentPowerData:FindFirstChild(Players.LocalPlayer.UserId)
+    params.PowerID = playerFolder.Power.Value
+    params.PowerRank = playerFolder.Rank.Value
 
     -- find the powerModule
     local powerModule

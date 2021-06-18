@@ -531,6 +531,9 @@ function InventoryService:CraftItem(player, params)
             if outputItem.Key == "Cash" or outputItem.Key == "SoulOrbs" then
                 playerData.Currency[outputItem.Key] += outputItem.Value
             else
+                if not playerData.ItemInventory[outputItem.Key] then
+                    playerData.ItemInventory[outputItem.Key] = 0
+                end
                 playerData.ItemInventory[outputItem.Key] += outputItem.Value
             end
 

@@ -15,7 +15,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 --local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
---local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local BlockInput = require(Knit.PowerUtils.BlockInput)
 local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
 
 local projectileSerial = 1 -- incremented ever time e fire a projectile
@@ -29,34 +29,19 @@ function BasicProjectile.Initialize(params, abilityDefs)
 
     params.RenderRange = 700
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-    -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-    end
-
-    if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-            params.CanRun = false
-            return params
-        end
-    end
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
 
     local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
-    local delayOffset = playerPing / 2
-    abilityMod.CharacterAnimations(params, abilityDefs, delayOffset)
+    abilityMod.Client_Initialize(params, abilityDefs, playerPing)
+    abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
 
     params.HRPOrigin = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 
@@ -69,34 +54,15 @@ function BasicProjectile.Activate(params, abilityDefs)
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return params
-    end
-    
-    -- check cooldown
-    if not Cooldown.Server_IsCooled(params) then
-        params.CanRun = false
-        return params
-    end
-    
-    if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-            params.CanRun = false
-            return params
-        end
-    end
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
 
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-
-    -- block input
-    if abilityMod.InputBlockTime > 0 then
-        require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicProjectile", abilityMod.InputBlockTime)
-    end
+    BlockInput.AddBlock(params.InitUserId, "BasicProjectile", abilityMod.InputBlockTime)
     
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     local abilityMod = require(abilityDefs.AbilityMod)
@@ -141,9 +107,6 @@ function BasicProjectile.Activate(params, abilityDefs)
 
     --projectileData["Visualize"] = true
 
-    -- insert hitEffects into abilityDefs
-    --abilityDefs.HitEffects = abilityMod.HitEffects
-    
     -- raycast result handling
     local hitCharacters = {}
     projectileData["Function"] = function(result)
@@ -175,46 +138,17 @@ end
 ------------------------------------------------------------------------------------------------------------------------------
 function BasicProjectile.Execute(params, abilityDefs)
 
-    -- get initPlayer
-    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     local abilityMod = require(abilityDefs.AbilityMod)
-
-    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
-
-    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
-    --local delayOffset = playerPing / 2
-    local delayOffset = playerPing
-    --local delayOffset = playerPing * 2
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if initPlayer and initPlayer ~= Players.LocalPlayer then
-
-        print("I SHOULDNT SEE THIS")
-        abilityMod.CharacterAnimations(params, abilityDefs, -delayOffset)
+        abilityMod.Client_Stage_1(params, abilityDefs)
     end
-
-    -- setup cosmetic projectile
-    local projectile = abilityMod.SetupCosmetic(initPlayer, params, abilityDefs)
-
-    --[[
-    local delay = abilityMod.InitialDelay - delayOffset
-    if delay > 0 then
-        --wait(delay)
-        print("DID A WAIT")
-    end
-
-    print("PLAYER PING", playerPing)
-    print("DELAY OFFSET", delayOffset)
-    print("INITIAL DELAY", abilityMod.InitialDelay)
-    print("DELAY @@@", delay)
-    ]]--
 
     wait(abilityMod.InitialDelay)
-  
-    -- run effects
-    if abilityMod.FireEffects then
-        abilityMod.FireEffects(initPlayer, projectile, params, abilityDefs)
-    end
+
+    local projectile = abilityMod.Projectile_Setup(initPlayer, params, abilityDefs)
+    abilityMod.Projectie_FireEffects(initPlayer, projectile, params, abilityDefs)
 
     -- shoot it
     projectile.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
@@ -226,11 +160,9 @@ function BasicProjectile.Execute(params, abilityDefs)
 
     wait(abilityMod.Lifetime)
     if projectile then
-        abilityMod.EndCosmetic(projectile)
+        abilityMod.Projectile_Destroy(projectile)
     end
     
-
-
 end
 
 return BasicProjectile

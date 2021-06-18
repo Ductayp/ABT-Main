@@ -96,7 +96,7 @@ end
 --// SetPower -- sets the players current power
 function PowersService:SetCurrentPower(player, params)
 
-    print("PowersService:SetCurrentPower(player,params)", player,params)
+    ---print("PowersService:SetCurrentPower(player,params)", player,params)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -110,6 +110,10 @@ function PowersService:SetCurrentPower(player, params)
     else
         print("no power exists with that name, cant run the REMOVE POWER function")
         --return
+    end
+
+    if params.Power == "Standless" then
+        params.Rank = 1
     end
 
     if Knit.Powers:FindFirstChild(params.Power) then
@@ -128,7 +132,20 @@ function PowersService:SetCurrentPower(player, params)
         
     end
 
+    -- create value objects in replciated to show what power a player has
+    local playerFolder = ReplicatedStorage.CurrentPowerData:FindFirstChild(player.UserId)
+    if playerFolder then playerFolder:Destroy() end
+    playerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.CurrentPowerData})
     
+    for name, value in pairs(playerData.CurrentStand) do
+        if name ~= "Xp" then
+            local newValueObject = utils.NewValueObject(name, value, playerFolder)
+        end
+
+        if name == "Standless" then
+            local newValueObject = utils.NewValueObject("Rank", 1, playerFolder)
+        end
+    end
 
     Knit.Services.GuiService:Update_Gui(player, "StandData")
     Knit.Services.GuiService:Update_Gui(player, "AbilityBar")
@@ -296,6 +313,7 @@ function PowersService:PlayerSetup(player)
     local playerStandFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.PlayerStands})
     local playerStatusFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.PowerStatus})
     local playerHitboxServerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = workspace.ServerHitboxes})
+    
 
 end
 
@@ -450,6 +468,7 @@ function PowersService:KnitInit()
     serverHitboxes:SetAttribute("IgnoreProjectiles", true)
 
     local statusFolder = utils.EasyInstance("Folder", {Name = "PowerStatus",Parent = ReplicatedStorage})
+    local powerDataFolder = utils.EasyInstance("Folder", {Name = "CurrentPowerData",Parent = ReplicatedStorage})
 
     -- Player Removing event
     Players.PlayerRemoving:Connect(function(player)

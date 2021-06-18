@@ -3,9 +3,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local Debris = game:GetService("Debris")
-
+local RunService = game:GetService("RunService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
@@ -209,6 +207,21 @@ function StandSteal.Client_Start(params, abilityDefs, initPlayer)
     end
 end
 
+--// Client_Tick
+function StandSteal.Client_Tick(params, abilityDefs, initPlayer)
+    for _, character in pairs(params.HitCharacters) do
+
+    end
+
+end
+
+--// Client_End
+function StandSteal.Client_End(params, abilityDefs, initPlayer)
+    for _, character in pairs(params.HitCharacters) do
+
+    end
+
+end
 
 
 

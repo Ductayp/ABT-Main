@@ -190,14 +190,6 @@ function ProjectileBarrage.Execute(params, abilityDefs)
         projectileDef.Model.BodyVelocity.Velocity = projectileDef.Origin.LookVector * abilityMod.Velocity
         projectileDef.Model.Name = projectileDef.ID
 
-        --[[
-        projectileDef.Model.Touched:Connect(function(hit)
-            if hit.Parent.Name == "RenderedEffects_BlockAbility" then
-                projectileDef.Model:Destroy()
-            end
-        end)
-        ]]--
-
         spawn(function()
             local waitTime = (abilityMod.ShotDelay * projectileCount) - abilityMod.ShotDelay
             print("WAiT 2", waitTime)

@@ -17,9 +17,9 @@ local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 -- Default Stand Anchor Offsets
 local anchors = {}
 anchors.Idle = CFrame.new(-2, -1.75, -3)
---anchors.Idle = CFrame.new(2, 1.75, 3)
 anchors.Front = CFrame.new(0, 0, 4)
 anchors.StandJump = CFrame.new(0, -1.25, -3)
+anchors.IdleHigh = CFrame.new(-2, -5, -3)
 
 local ManageStand = {}
 

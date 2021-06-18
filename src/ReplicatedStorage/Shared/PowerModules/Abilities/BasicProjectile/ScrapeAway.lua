@@ -32,8 +32,8 @@ module.HitBox_Resolution_X = 1
 module.HitBox_Resolution_Y = 2 -- having this larger than the Y size will make it a flat plane
 
 -- ray data
-module.Velocity = 70
-module.Lifetime = .5
+module.Velocity = 50
+module.Lifetime = 1.3
 module.Iterations = 500
 module.BreakOnHit = false
 module.BreakifHuman = false
@@ -45,22 +45,44 @@ module.CustomIgnoreList = {}
 -- hit effects
 module.HitEffects = {Damage = {Damage = 40}}
 
-function module.CharacterAnimations(params, abilityDefs, delayOffset)
+-----------------------------------------------------------------------------------------------------------------------
+-- SERVER FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+--// HitBoxResults
+function module.HitBoxResult(initPlayer, params, abilityDefs, result)
+
+    abilityDefs.HitEffects = module.HitEffects
+
+    if result.Instance.Parent:FindFirstChild("Humanoid") then
+        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+    end
+end
+
+-----------------------------------------------------------------------------------------------------------------------
+-- CLIENT FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+--// Client_Initialize
+function module.Client_Initialize(params, abilityDefs, delayOffset)
+
+    local character = Players.LocalPlayer.Character
+    if not character and character.HumanoidRootPart then return end
 
     spawn(function()
 
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        if not initPlayer and initPlayer.Character then return end
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
+        wait(module.MobilityLockParams.Duration)
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
 
-        if initPlayer == Players.LocalPlayer then
-            spawn(function()
+    end)
 
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
-                wait(module.MobilityLockParams.Duration)
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
+end
 
-            end)
-        end
+--// Client_Stage_1
+function module.Client_Stage_1(params, abilityDefs, delayOffset)
+
+    spawn(function()
 
         local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
         if not targetStand then
@@ -76,54 +98,28 @@ function module.CharacterAnimations(params, abilityDefs, delayOffset)
 
         ManageStand.MoveStand(params, "Idle")
         ManageStand.Aura_Off(params)
-    end)
 
+    end)
 end
 
-function module.SetupCosmetic(initPlayer, params, abilityDefs)
+function module.Projectile_Setup(initPlayer, params, abilityDefs)
     local projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.ScrapeAway.Scrape:Clone()
     return projectile
 end
 
-function module.FireEffects(initPlayer, projectile, params, abilityDefs)
-
+function module.Projectie_FireEffects(initPlayer, projectile, params, abilityDefs)
     WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicDoubleWoosh)
 end
 
-function module.HitBoxResult(initPlayer, params, abilityDefs, result)
-
-    abilityDefs.HitEffects = module.HitEffects
-
-    if result.Instance.Parent:FindFirstChild("Humanoid") then
-        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
-    end
-end
 
 -- destroy cosmetic
-function module.DestroyCosmetic(params)
+function module.Projectile_Hit(params)
 
-    local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
-    local newBurst = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.Burst:Clone()
-    newBurst.Position = params.Position
-    newBurst.Parent = Workspace.RenderedEffects
-    Debris:AddItem(newBurst, 5)
-
-    local sizeTween = TweenService:Create(newBurst, TweenInfo.new(.5),{Size = Vector3.new(5,5,5)})
-    local transparencyTween = TweenService:Create(newBurst, TweenInfo.new(.5),{Transparency = 1})
-
-    sizeTween:Play()
-    transparencyTween:Play()
-
-    newBurst.Part.ParticleEmitter:Emit(100)
-    if projectilePart then
-        projectilePart:Destroy()
-    end
-    
 end
 
 -- end cosmetic
-function module.EndCosmetic(projectile)
+function module.Projectile_Destroy(projectile)
 
     projectile.Anchored = true
     for _, v in pairs(projectile:GetDescendants()) do

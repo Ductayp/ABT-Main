@@ -146,12 +146,13 @@ end
 -- defs
 TheHand.Defs.Abilities.T = {
     Id = "BlackHole",
-    Cooldown = 20,
+    Cooldown = 1,
     RequireToggle_On = {"Q"},
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
 }
 
 function TheHand.T(params)
-    --params = require(Knit.Abilities.SummonMinion)[params.SystemStage](params, TheHand.Defs.Abilities.T)
+    params = require(Knit.Abilities.BasicAbility)[params.SystemStage](params, TheHand.Defs.Abilities.T)
 end
 
 

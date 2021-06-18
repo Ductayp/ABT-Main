@@ -47,9 +47,11 @@ end
 --// Client_RenderEffect
 function Burn.Client_RenderEffect(params)
 
-    local particle = ReplicatedStorage.EffectParts.Effects.Burn:FindFirstChild("Orange") -- default color green
+    local particle
     if params.Color then
         particle = ReplicatedStorage.EffectParts.Effects.Burn:FindFirstChild(params.Color)
+    else
+        particle = ReplicatedStorage.EffectParts.Effects.Burn:FindFirstChild("Orange")
     end
 
     local newParticle = particle:Clone()

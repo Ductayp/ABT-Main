@@ -43,6 +43,32 @@ module.CustomIgnoreList = {}
 -- hit effects
 module.HitEffects = {Damage = {Damage = 15}}
 
+-----------------------------------------------------------------------------------------------------------------------
+-- SERVER FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+--// HitBoxResult
+function module.HitBoxResult(initPlayer, params, abilityDefs, result)
+
+    local abilityScript = script.Parent
+    local resultParams = {}
+    resultParams.Position = result.Position
+    resultParams.ProjectileID = params.projectileID
+    resultParams.AbilityMod = abilityDefs.AbilityMod
+    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "DestroyCosmetic", resultParams)
+
+    abilityDefs.HitEffects = module.HitEffects
+
+    if result.Instance.Parent:FindFirstChild("Humanoid") then
+        --print("HIT A HUMANOID", result.Instance.Parent)
+        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
+    end
+end
+
+-----------------------------------------------------------------------------------------------------------------------
+-- CLIENT FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
 function module.CharacterAnimations(params, abilityDefs, delayOffset)
 
     spawn(function()
@@ -95,22 +121,7 @@ function module.FireEffects(initPlayer, projectile, params, abilityDefs)
 
 end
 
-function module.HitBoxResult(initPlayer, params, abilityDefs, result)
 
-    local abilityScript = script.Parent
-    local resultParams = {}
-    resultParams.Position = result.Position
-    resultParams.ProjectileID = params.projectileID
-    resultParams.AbilityMod = abilityDefs.AbilityMod
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "DestroyCosmetic", resultParams)
-
-    abilityDefs.HitEffects = module.HitEffects
-
-    if result.Instance.Parent:FindFirstChild("Humanoid") then
-        --print("HIT A HUMANOID", result.Instance.Parent)
-        Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
-    end
-end
 
 -- destroy cosmetic
 function module.DestroyCosmetic(params)

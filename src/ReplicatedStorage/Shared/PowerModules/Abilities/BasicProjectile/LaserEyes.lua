@@ -15,7 +15,7 @@ local module = {}
 module.InputBlockTime = .1
 
 module.MobilityLockParams = {}
-module.MobilityLockParams.Duration = 0
+module.MobilityLockParams.Duration = .5
 module.MobilityLockParams.ShiftLock_NoSpin = true
 module.MobilityLockParams.AnchorCharacter = true
 
@@ -43,31 +43,11 @@ module.CustomIgnoreList = {}
 -- hit effects
 module.HitEffects = {Damage = {Damage = 15}}
 
-function module.CharacterAnimations(params, abilityDefs, delayOffset)
+-----------------------------------------------------------------------------------------------------------------------
+-- SERVER FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 
-    spawn(function()
-
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        if not initPlayer and initPlayer.Character then return end
-
-        if initPlayer == Players.LocalPlayer then
-            spawn(function()
-
-                print("YEET")
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.HandsOnHead:Play()
-                wait(.4 + delayOffset)
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.HandsOnHead:Stop()
-
-            end)
-        end
-
-        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
-
-
-    end)
-
-end
-
+--// HitBoxResult
 function module.HitBoxResult(initPlayer, params, abilityDefs, result)
 
     abilityDefs.HitEffects = module.HitEffects
@@ -86,56 +66,101 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
 
 end
 
--- setup cosmetic
-function module.SetupCosmetic(initPlayer, params, abilityDefs)
+-----------------------------------------------------------------------------------------------------------------------
+-- CLIENT FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+--// Client_Initialize
+function module.Client_Initialize(params, abilityDefs, playerPing)
+
+    print("BEEP2")
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer and initPlayer.Character then return end
+
+    spawn(function()
+
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
+        wait(.5)
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
+
+    end)
+end
+
+--// Client_Stage_1
+function module.Client_Stage_1(params, abilityDefs, delayOffset)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer and initPlayer.Character then return end
+
+    spawn(function()
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicWandCast6)
+
+        local newEyeBlast = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.EyeBlast:Clone()
+
+        local newWeld2 = Instance.new("Weld")
+        newWeld2.C1 =  CFrame.new(0,.2,0)
+        newWeld2.Part0 = newEyeBlast
+        newWeld2.Part1 = initPlayer.Character.Head
+        newWeld2.Parent = newEyeBlast
+        newEyeBlast.Parent = Workspace.RenderedEffects
+        Debris:AddItem(newEyeBlast, 2)
+
+        local tween1 = TweenService:Create(newEyeBlast.Blast_Left, TweenInfo.new(.7),{Transparency = 1})
+        local tween2 = TweenService:Create(newEyeBlast.Blast_Right, TweenInfo.new(.7),{Transparency = 1})
+        tween1:Play()
+        tween2:Play()
+
+    end)
+end
+
+
+
+--// Projectile_Setup
+function module.Projectile_Setup(initPlayer, params, abilityDefs)
 
     local newProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.LaserEyesAssembly:Clone()
-    local newEyeBlast = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.EyeBlast:Clone()
 
+    --[[
     local newWeld1 = Instance.new("Weld")
     newWeld1.C1 =  CFrame.new(0,.2,0)
     newWeld1.Part0 = newProjectile.BeamAnchor
     newWeld1.Part1 = initPlayer.Character.Head
     newWeld1.Parent = newProjectile.BeamAnchor
 
-    local newWeld2 = Instance.new("Weld")
-    newWeld2.C1 =  CFrame.new(0,.2,0)
-    newWeld2.Part0 = newEyeBlast
-    newWeld2.Part1 = initPlayer.Character.Head
-    newWeld2.Parent = newEyeBlast
-    newEyeBlast.Parent = Workspace.RenderedEffects
-    Debris:AddItem(newEyeBlast, 2)
+    ]]--
 
-    local tween1 = TweenService:Create(newEyeBlast.Blast_Left, TweenInfo.new(.7),{Transparency = 1})
-    local tween2 = TweenService:Create(newEyeBlast.Blast_Right, TweenInfo.new(.7),{Transparency = 1})
-    tween1:Play()
-    tween2:Play()
+    newProjectile.BeamAnchor.CFrame = params.projectileOrigin
+    newProjectile.BeamAnchor.Anchored = true
 
     spawn(function()
-        wait(0.1)
+        wait(0.05)
 
         if not newProjectile then return end
         if not newProjectile.BeamAnchor then return end
         if not newProjectile.BeamAnchor.BodyVelocity then return end
         if not newWeld1 then return end
 
-        newWeld1:Destroy()
+        --newWeld1:Destroy()
         newProjectile.BeamAnchor.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
         newProjectile.BeamAnchor.BodyVelocity.P = module.Velocity
         newProjectile.BeamAnchor.BodyVelocity.Velocity = params.projectileOrigin.LookVector * module.Velocity
+
+        newProjectile.BeamAnchor.Anchored = false
 
     end)
 
     return newProjectile
 end
 
--- fire effects
-function module.FireEffects(initPlayer, projectile, params, abilityDefs)
+--// Projectile_FireEffects
+function module.Projectile_FireEffects(initPlayer, projectile, params, abilityDefs)
 
-    --WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
 
 end
 
+--// ParticlePop
 function module.ParticlePop(params)
 
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
@@ -150,7 +175,7 @@ function module.ParticlePop(params)
 end
 
 -- end cosmetic
-function module.EndCosmetic(projectile)
+function module.Projectile_Destroy(projectile)
 
     projectile:Destroy()
 

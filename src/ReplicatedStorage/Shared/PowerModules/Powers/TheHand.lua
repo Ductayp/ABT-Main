@@ -48,7 +48,7 @@ TheHand.Defs = {
             AbilityName = "Stand Jump" -- done
         },
         C = {
-            AbilityName = "Void Pull" -- done
+            AbilityName = "Void Pull"
         }
     }
 }
@@ -212,12 +212,12 @@ end
 -- defs
 TheHand.Defs.Abilities.Z = {
     Id = "StandJump",
-    Cooldown = 3,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
 }
 
 function TheHand.Z(params)
-    params = require(Knit.Abilities.StandJump_Spec)[params.SystemStage](params, TheHand.Defs.Abilities.Z)
+    params = require(Knit.Abilities.StandJump)[params.SystemStage](params, TheHand.Defs.Abilities.Z)
 end
 
 --------------------------------------------------------------------------------------------------

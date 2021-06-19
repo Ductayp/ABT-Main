@@ -21,7 +21,7 @@ module.MobilityLockParams.ShiftLock_NoSpin = true
 module.MobilityLockParams.AnchorCharacter = true
 
 -- projectile offset
-module.CFrameOffest = CFrame.new(0, 0, -2) -- offset from the initPlayers HRP
+module.CFrameOffest = CFrame.new(0, 0, -6) -- offset from the initPlayers HRP
 
 module.InitialDelay = .3
 
@@ -64,7 +64,7 @@ end
 -----------------------------------------------------------------------------------------------------------------------
 
 --// Client_Initialize
-function module.Client_Initialize(params, abilityDefs, delayOffset)
+function module.Client_Initialize(params, abilityDefs, playerPing)
 
     local character = Players.LocalPlayer.Character
     if not character and character.HumanoidRootPart then return end
@@ -80,45 +80,83 @@ function module.Client_Initialize(params, abilityDefs, delayOffset)
 end
 
 --// Client_Stage_1
-function module.Client_Stage_1(params, abilityDefs, delayOffset)
+function module.Client_Stage_1(params, abilityDefs, playerPing)
 
+    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+    if not targetStand then
+        targetStand = ManageStand.QuickRender(params)
+    end
+
+    local delay
+    if playerPing then
+        delay = module.MobilityLockParams.Duration + (playerPing / 2)
+    else
+        delay = module.MobilityLockParams.Duration
+    end
+
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Slow)
+
+    -- animate stand
     spawn(function()
-
-        local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-        if not targetStand then
-            targetStand = ManageStand.QuickRender(params)
-        end
 
         ManageStand.Aura_On(params)
         ManageStand.PlayAnimation(params, "HandSwipe")
         ManageStand.MoveStand(params, "Front")
 
-        local delay = module.MobilityLockParams.Duration + delayOffset
         if delay > 0 then wait(delay) end
 
         ManageStand.MoveStand(params, "Idle")
         ManageStand.Aura_Off(params)
 
     end)
+
+    -- aniamte scrape hole
+    spawn(function()
+
+        wait(.4)
+
+        print("TEST")
+
+        local newPart = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.ScrapeAway.ScrapeHole:Clone()
+        newPart.Parent = Workspace.RenderedEffects
+        newPart.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0, 0, -4))
+        Debris:AddItem(newPart, 7)
+
+        WeldedSound.NewSound(newPart, ReplicatedStorage.Audio.General.MagicWandCast7)
+
+        newPart.Burst:Emit(50)
+
+        local tween1 = TweenService:Create(newPart,TweenInfo.new(2), {CFrame = newPart.CFrame:ToWorldSpace(CFrame.new(0,0,-2))})
+        local tween2 = TweenService:Create(newPart.MeshTop,TweenInfo.new(.5), {Transparency = 1})
+        local tween3 = TweenService:Create(newPart.MeshBottom,TweenInfo.new(.5), {Transparency = 1})
+        tween1:Play()
+        tween2:Play()
+        tween3:Play()
+        tween1:Destroy()
+        tween2:Destroy()
+        tween3:Destroy()
+
+        wait(.5)
+        newPart.GravityBlue.Enabled = false
+        newPart.WhiteBack.Enabled = false
+        
+    end)
 end
 
+
+--// Projectile_Setup
 function module.Projectile_Setup(initPlayer, params, abilityDefs)
     local projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.ScrapeAway.Scrape:Clone()
     return projectile
 end
 
-function module.Projectie_FireEffects(initPlayer, projectile, params, abilityDefs)
+--// Projectile_FireEffects
+function module.Projectile_FireEffects(initPlayer, projectile, params, abilityDefs)
     WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicDoubleWoosh)
 end
 
 
--- destroy cosmetic
-function module.Projectile_Hit(params)
-
-
-end
-
--- end cosmetic
+--// Projectile_Destroy
 function module.Projectile_Destroy(projectile)
 
     projectile.Anchored = true

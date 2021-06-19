@@ -48,53 +48,11 @@ module.CosmeticProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProject
 -- hit effects
 module.HitEffects = {Damage = {Damage = 20}}
 
-function module.CharacterAnimations(params, abilityDefs, delayOffset)
+-----------------------------------------------------------------------------------------------------------------------
+-- SERVER FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 
-    spawn(function()
-    
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        if not initPlayer and initPlayer.Character then return end
-
-        if initPlayer == Players.LocalPlayer then
-            spawn(function()
-
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
-                wait(module.MobilityLockParams.Duration)
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
-
-            end)
-        end
-
-        local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-        if not targetStand then
-            targetStand = ManageStand.QuickRender(params)
-        end
-
-        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicWandCast7)
-
-        spawn(function()
-            ManageStand.MoveStand(params, "Front")
-            ManageStand.PlayAnimation(params, "Point")
-            ManageStand.Aura_On(params)
-            
-            local delay = module.MobilityLockParams.Duration + delayOffset
-            if delay > 0 then wait(delay) end
-
-            ManageStand.MoveStand(params, "Idle")
-            ManageStand.StopAnimation(params, "Point")
-            ManageStand.Aura_Off(params)
-        end)
-    
-    end)
-    
-
-end
-
-function module.FireEffects(initPlayer, projectile, params, abilityDefs)
-
-
-end
-
+--// HitBoxResult
 function module.HitBoxResult(initPlayer, params, abilityDefs, result)
 
     --abilityDefs.HitEffects = module.HitEffects
@@ -105,7 +63,7 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
     resultParams.Position = result.Position
     resultParams.ProjectileID = params.projectileID
     resultParams.AbilityMod = abilityDefs.AbilityMod
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "DestroyCosmetic", resultParams)
+    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Projectile_Impact", resultParams)
 
     local hitCharacters = {}
     -- hit all players in range, subject to immunity
@@ -152,7 +110,90 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
     end
 end
 
-function module.SetupCosmetic(initPlayer, params, abilityDefs)
+-----------------------------------------------------------------------------------------------------------------------
+-- CLIENT FUNCTIONS ---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+--// Client_Initialize
+function module.Client_Initialize(params, abilityDefs, delayOffset)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer and initPlayer.Character then return end
+
+    spawn(function()
+
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
+        wait(module.MobilityLockParams.Duration)
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
+
+    end)
+    
+end
+
+--// Client_Stage_1
+function module.Client_Stage_1(params, abilityDefs, playerPing)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer and initPlayer.Character then return end
+
+    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+    if not targetStand then
+        targetStand = ManageStand.QuickRender(params)
+    end
+
+
+    -- animate stand
+    spawn(function()
+    
+        WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
+
+        ManageStand.MoveStand(params, "Front")
+        ManageStand.PlayAnimation(params, "Point")
+        ManageStand.Aura_On(params)
+        
+        local delay = 0
+        if playerPing then
+            delay = module.MobilityLockParams.Duration + (playerPing / 2)
+        else
+            delay = module.MobilityLockParams.Duration
+        end
+        if delay > 0 then wait(delay) end
+
+        ManageStand.MoveStand(params, "Idle")
+        ManageStand.StopAnimation(params, "Point")
+        ManageStand.Aura_Off(params)
+
+    end)
+
+    -- animate ball
+    spawn(function()
+        
+        wait(.1)
+
+        local newBall = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.Ball:Clone()
+        newBall.Parent = Workspace.RenderedEffects
+        newBall.CFrame = initPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0, 0, -7.5))
+        Debris:AddItem(newBall, 4)
+
+        WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.PowerUpStinger3)
+        newBall.ParticleEmitter:Emit(50)
+
+        local tween = TweenService:Create(newBall,TweenInfo.new(1), {Transparency = 1, Size = Vector3.new(3,3,3)})
+        tween:Play()
+        tween:Destroy()
+        newBall.ParticleEmitter.Enabled = false
+
+    end)
+    
+end
+
+--// Projectile_FireEffects
+function module.Projectile_FireEffects(initPlayer, projectile, params, abilityDefs)
+    WeldedSound.NewSound(projectile, ReplicatedStorage.Audio.General.MagicWandCast7)
+end
+
+--// Projectile_Setup
+function module.Projectile_Setup(initPlayer, params, abilityDefs)
 
     local newProjectile = module.CosmeticProjectile:Clone()
     newProjectile.CFrame = params.projectileOrigin
@@ -175,8 +216,8 @@ function module.SetupCosmetic(initPlayer, params, abilityDefs)
     return newProjectile
 end
 
--- destroy cosmetic
-function module.DestroyCosmetic(params)
+--// Projectile_Impact
+function module.Projectile_Impact(params)
 
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
@@ -212,7 +253,7 @@ function module.DestroyCosmetic(params)
 end
 
 -- end cosmetic
-function module.EndCosmetic(projectile)
+function module.Projectile_Destroy(projectile)
     projectile:Destroy()
 end
 

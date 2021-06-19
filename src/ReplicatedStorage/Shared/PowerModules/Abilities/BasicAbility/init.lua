@@ -23,7 +23,7 @@ function BasicAttack.Initialize(params, abilityDefs)
 	-- checks
 	if params.KeyState == "InputBegan" then params.CanRun = true end
     if params.KeyState == "InputEnded" then params.CanRun = false return end
-    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
     if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
 
     local abilityMod = require(abilityDefs.AbilityMod)

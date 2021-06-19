@@ -18,7 +18,7 @@ local MobilityLock = require(Knit.PowerUtils.MobilityLock)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
 local hitboxMod = require(Knit.Shared.RaycastProjectileHitbox)
 
-local projectileSerial = 1 -- incremented ever time e fire a projectile
+local projectileSerial = 1 -- incremented evere time ee fire a projectile
 
 local BasicProjectile = {}
 
@@ -32,9 +32,11 @@ function BasicProjectile.Initialize(params, abilityDefs)
 	-- checks
 	if params.KeyState == "InputBegan" then params.CanRun = true end
     if params.KeyState == "InputEnded" then params.CanRun = false return end
-    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
-
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
+    
     local abilityMod = require(abilityDefs.AbilityMod)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
@@ -58,7 +60,9 @@ function BasicProjectile.Activate(params, abilityDefs)
 	if params.KeyState == "InputBegan" then params.CanRun = true end
     if params.KeyState == "InputEnded" then params.CanRun = false return end
     if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
 
 	-- set cooldown
     Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
@@ -130,13 +134,14 @@ function BasicProjectile.Activate(params, abilityDefs)
         hitboxMod:CastProjectileHitbox(projectileData)
     end)
 
-
 end
 
 ------------------------------------------------------------------------------------------------------------------------------
 --// Execute -----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 function BasicProjectile.Execute(params, abilityDefs)
+
+    print("TEST")
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
@@ -148,7 +153,8 @@ function BasicProjectile.Execute(params, abilityDefs)
     wait(abilityMod.InitialDelay)
 
     local projectile = abilityMod.Projectile_Setup(initPlayer, params, abilityDefs)
-    abilityMod.Projectie_FireEffects(initPlayer, projectile, params, abilityDefs)
+
+    print("PROJECTILE", projectile)
 
     -- shoot it
     projectile.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
@@ -157,6 +163,8 @@ function BasicProjectile.Execute(params, abilityDefs)
     projectile.CFrame = params.projectileOrigin
     projectile.Name = params.projectileID
     projectile.Parent = Workspace.RenderedEffects
+
+    abilityMod.Projectile_FireEffects(initPlayer, projectile, params, abilityDefs)
 
     wait(abilityMod.Lifetime)
     if projectile then

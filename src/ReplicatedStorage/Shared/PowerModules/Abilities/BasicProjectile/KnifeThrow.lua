@@ -55,7 +55,7 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
     resultParams.Position = result.Position
     resultParams.ProjectileID = params.projectileID
     resultParams.AbilityMod = abilityDefs.AbilityMod
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "DestroyCosmetic", resultParams)
+    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Projectile_Impact", resultParams)
 
     abilityDefs.HitEffects = module.HitEffects
 
@@ -69,35 +69,44 @@ end
 -- CLIENT FUNCTIONS ---------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------
 
-function module.CharacterAnimations(params, abilityDefs, delayOffset)
+--// Client_Initialize
+function module.Client_Initialize(params, abilityDefs, playerPing)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer and initPlayer.Character then return end
 
     spawn(function()
 
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        if not initPlayer and initPlayer.Character then return end
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
+        wait(module.MobilityLockParams.Duration)
+        Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
 
-        if initPlayer == Players.LocalPlayer then
-            spawn(function()
+    end)
 
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Play()
-                wait(module.MobilityLockParams.Duration)
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Point:Stop()
+end
 
-            end)
-        end
+--// Client_Stage_1
+function module.Client_Stage_1(params, abilityDefs, playerPing)
+
+    spawn(function()
 
         local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
         if not targetStand then
             targetStand = ManageStand.QuickRender(params)
         end
     
-        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
+        WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
 
         ManageStand.MoveStand(params, "Front")
         ManageStand.PlayAnimation(params, "KnifeThrow")
         ManageStand.Aura_On(params)
 
-        local delay = module.MobilityLockParams.Duration + delayOffset
+        local delay = 0
+        if playerPing then
+            delay = module.MobilityLockParams.Duration + (playerPing / 2)
+        else
+            delay = module.MobilityLockParams.Duration
+        end
         if delay > 0 then wait(delay) end
 
         ManageStand.MoveStand(params, "Idle")
@@ -107,7 +116,8 @@ function module.CharacterAnimations(params, abilityDefs, delayOffset)
 
 end
 
-function module.SetupCosmetic(initPlayer, params, abilityDefs)
+--// Projectile_Setup
+function module.Projectile_Setup(initPlayer, params, abilityDefs)
     local projectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.KnifeThrow.KnifeAssembly:Clone()
     spawn(function()
         wait(module.Lifetime)
@@ -116,15 +126,14 @@ function module.SetupCosmetic(initPlayer, params, abilityDefs)
     return projectile
 end
 
-function module.FireEffects(initPlayer, projectile, params, abilityDefs)
-
-
+--// Projectile_FireEffects
+function module.Projectile_FireEffects(initPlayer, projectile, params, abilityDefs)
+    WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.MagicWandCast6)
 end
 
 
-
--- destroy cosmetic
-function module.DestroyCosmetic(params)
+--// Projectile_Destroy
+function module.Projectile_Impact(params)
 
     local projectilePart = Workspace.RenderedEffects:FindFirstChild(params.ProjectileID)
 
@@ -147,7 +156,7 @@ function module.DestroyCosmetic(params)
 end
 
 -- end cosmetic
-function module.EndCosmetic(projectile)
+function module.Projectile_Destroy(projectile)
 
     projectile.Anchored = true
     for _, v in pairs(projectile:GetDescendants()) do

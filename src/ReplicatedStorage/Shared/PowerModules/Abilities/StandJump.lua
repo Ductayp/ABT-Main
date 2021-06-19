@@ -107,7 +107,6 @@ end
 
 function StandJump.Run_Initialize(params, abilityDefs)
 
-    
     -- get initPlayer
     local initPlayer = Players.LocalPlayer
 
@@ -148,6 +147,7 @@ function StandJump.Run_Initialize(params, abilityDefs)
         RunService.Heartbeat:Wait()
     end
     bodyPosition:Destroy()
+
 
 end
 
@@ -201,68 +201,6 @@ function StandJump.Run_Effects(params, abilityDefs, initPlayer)
 
     sizeTween:Play()
     fadeTween:Play()
-
-    --[[
-    -- apply deffect to the initPlayer
-    if initPlayer == Players.LocalPlayer then
-
-        -- depth of field effect
-        local newDepthOfField = ReplicatedStorage.EffectParts.Effects.DepthOfField.Default:Clone()
-        newDepthOfField.Name = "newDepthOfField"
-        newDepthOfField.Parent = game:GetService("Lighting")
-        Debris:AddItem(newDepthOfField, 1)
-
-        -- declare here for use everywhere
-        local velocityX
-        local velocityZ
-        local velocityY
-        local duration
-
-        -- grab the LookVector before we do anything else
-        local lookVector = initPlayer.Character.HumanoidRootPart.CFrame.LookVector
-        velocityX = lookVector.X * defaultVelocityX 
-        velocityZ = lookVector.Z * defaultVelocityZ
-        velocityY = defaultVelocityY
-        duration = defaultDuration
-
-        -- do the body mover
-        local bodyPosition = Instance.new("BodyPosition")
-        bodyPosition.MaxForce = Vector3.new(10000,10000,10000)
-        bodyPosition.P = 50000
-        bodyPosition.D = 6000
-        bodyPosition.Position = (initPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 150, -300)).Position
-        bodyPosition.Parent = initPlayer.Character.HumanoidRootPart
-
-        local duration = 0.4
-        local startTime = tick()
-        while tick() < startTime + duration do
-            RunService.Heartbeat:Wait()
-        end
-        bodyPosition:Destroy()
-
-    end
-    ]]--
-
-
-
-    --[[ -- trails commented out because they didnt look great, but im leaving them here justin case :)
-    -- add some trails
-    local locations = {"Head","UpperTorso","LeftLowerLeg","RightLowerLeg","LeftHand","RightHand"}
-    for count = 1, 6 do
-        local newTrail = ReplicatedStorage.EffectParts.Abilities.StandJump.StandJumpTrail:Clone()
-        local thisLocation = locations[count]
-        newTrail.CFrame = initPlayer.Character[thisLocation].CFrame
-        newTrail.Parent = initPlayer.Character[thisLocation]
-        utils.EasyWeld(newTrail,initPlayer.Character[thisLocation],newTrail)
-        spawn(function()
-            wait(.1)
-            newTrail.Trail.MaxLength = 0
-            wait(1)
-            newTrail:Destroy()
-        end)
-    end
-    ]]--
-
 
 end
 

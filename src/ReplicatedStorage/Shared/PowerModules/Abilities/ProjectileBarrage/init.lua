@@ -28,28 +28,18 @@ local ProjectileBarrage = {}
 --// Initialize
 function ProjectileBarrage.Initialize(params, abilityDefs)
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
-    
-    -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-    end
-
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
-    end
-
-    if not Players.LocalPlayer.Character then return end
 
     local abilityMod = require(abilityDefs.AbilityMod)
+
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
     abilityMod.CharacterAnimations(params, abilityDefs, playerPing)
@@ -63,26 +53,17 @@ end
 --// Activate
 function ProjectileBarrage.Activate(params, abilityDefs)
 
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return params
-    end
-    
-    if not Cooldown.Server_IsCooled(params) then
-        params.CanRun = false
-        return params
-    end
-    
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-        params.CanRun = false
-        return params
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
     BlockInput.AddBlock(params.InitUserId, "ProjectileBarrage", abilityMod.InputBlockTime)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)

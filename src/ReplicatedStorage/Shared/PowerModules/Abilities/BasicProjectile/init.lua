@@ -33,10 +33,13 @@ function BasicProjectile.Initialize(params, abilityDefs)
 	if params.KeyState == "InputBegan" then params.CanRun = true end
     if params.KeyState == "InputEnded" then params.CanRun = false return end
     if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
     if abilityDefs.RequireToggle_On then
         if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
-    
+
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+
     local abilityMod = require(abilityDefs.AbilityMod)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
@@ -64,8 +67,8 @@ function BasicProjectile.Activate(params, abilityDefs)
         if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
 
-	-- set cooldown
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    
     BlockInput.AddBlock(params.InitUserId, "BasicProjectile", abilityMod.InputBlockTime)
     
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)

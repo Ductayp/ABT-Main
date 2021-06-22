@@ -9,6 +9,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
+local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 
 local ScrapePunch = {}
 
@@ -27,8 +28,22 @@ local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 --// HitCharacter
 function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    local blackHolePosition = hitCharacter.HumanoidRootPart.Position
-    abilityDefs.HitEffects = {Damage = {Damage = 10}, PinCharacter = {Duration = 5.5}, BlackHole = {Duration = 5}, Invulnerable = {Duration = 5}}
+    
+    abilityDefs.HitEffects = {
+        Damage = {Damage = 20},
+        PinCharacter = {Duration = 5.2},
+        Invulnerable = {Duration = 5},
+        RemoveStand = {},
+        HideCharacter = {Duration = 5},
+        RunFunction = {
+            RunOn = "Client",
+            Script = script,
+            FunctionName = "BlackHole",
+            FunctionParams = {
+                Position = hitCharacter.HumanoidRootPart.Position,
+                HitCharacter = hitCharacter}
+            }
+    }
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
     return params
@@ -88,9 +103,45 @@ function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
 
 end
 
+function ScrapePunch.BlackHole(params)
 
+    --AnchoredSound.NewSound(params.TargetPosition, ReplicatedStorage.Audio.General.MagicBoom)
+    local droneSound = AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.EnergySource20sec)
+    AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.PowerUpStinger3)
 
+    -- setup black hole parts
+    local blackHoleParts = {
+        newBlackBall = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.ScrapePunch.BlackBall:Clone(),
+        newWhisps = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.ScrapePunch.Whisps:Clone(),
+        newParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.ScrapePunch.Particle:Clone(),
+    }
+    blackHoleParts.newWhisps.BodyPosition.Position = params.Position
 
+    -- render black hole parts
+    for i,v in pairs (blackHoleParts) do
+        v.CFrame = CFrame.new(params.Position)
+        v.Parent = Workspace.RenderedEffects
+    end
 
+    local newBurst = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.ScrapePunch.Burst:Clone()
+    newBurst.CFrame = CFrame.new(params.Position)
+    newBurst.Parent = Workspace.RenderedEffects
+    newBurst.Pop:Emit(50)
+
+    wait(5)
+
+    droneSound:Destroy()
+    AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.MagicBoom, soundParams)
+
+    newBurst.Pop:Emit(50)
+    newBurst.Purple.Enabled = false
+    Debris:AddItem(newBurst, 5)
+
+    blackHoleParts.newBlackBall:Destroy()
+    blackHoleParts.newWhisps:Destroy()
+    blackHoleParts.newParticle.ParticleEmitter.Enabled = false
+    Debris:AddItem(blackHoleParts.newParticle, 3)
+
+end
 
 return ScrapePunch

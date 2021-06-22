@@ -28,56 +28,31 @@ local BasicGrenade = {}
 --// Initialize
 function BasicGrenade.Initialize(params, abilityDefs)
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-    -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
 
-    if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-            params.CanRun = false
-            return params
-        end
-    end
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
     
 end
 
 --// Activate
 function BasicGrenade.Activate(params, abilityDefs)
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-    -- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-    end
-    
-
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
     if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-            params.CanRun = false
-            return params
-        end
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
 
-	-- set cooldown
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "BasicGrenade", 1.5)

@@ -85,7 +85,7 @@ function Barrage.Activate(params, abilityDefs)
 				wait(abilityDefs.Duration)
 				if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) then
 					AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-					Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+					Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 					BlockInput.RemoveBlock(params.InitUserId, params.InputId)
 					Barrage.DestroyHitbox(params, abilityDefs)
 					params.BarrageOn = false
@@ -100,7 +100,7 @@ function Barrage.Activate(params, abilityDefs)
 
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+			Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 			BlockInput.RemoveBlock(params.InitUserId, params.InputId)
 			Barrage.DestroyHitbox(params)
 			params.BarrageOn = false

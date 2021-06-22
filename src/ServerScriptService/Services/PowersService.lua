@@ -187,7 +187,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end
@@ -196,6 +196,12 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
     if not initPlayer then return end
     local intiPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[initPlayer.UserId]
+
+    --check if initPlayer is in a safe zone
+    if Knit.Services.ZoneService:IsPlayerInZone(initPlayer, "SafeZone") then return end
+
+    -- check if initPlayer has PvP off, if so then return
+    if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then return end
 
     -- setup some variables
     local canHit = false
@@ -213,11 +219,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
         if intiPlayer_MapZone ~= targetPlayer_MapZone then 
             print("players not in the same zone")
-            return
-        end
-
-        -- check if initPlayer has PvP off, if so then return
-        if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then
             return
         end
 

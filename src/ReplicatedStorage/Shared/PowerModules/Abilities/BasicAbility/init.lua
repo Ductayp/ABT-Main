@@ -24,9 +24,14 @@ function BasicAttack.Initialize(params, abilityDefs)
 	if params.KeyState == "InputBegan" then params.CanRun = true end
     if params.KeyState == "InputEnded" then params.CanRun = false return end
     if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
 
     local abilityMod = require(abilityDefs.AbilityMod)
+
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
 
@@ -45,14 +50,16 @@ function BasicAttack.Activate(params, abilityDefs)
 	if params.KeyState == "InputBegan" then params.CanRun = true end
     if params.KeyState == "InputEnded" then params.CanRun = false return end
     if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
-    if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer then return end
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
     BlockInput.AddBlock(params.InitUserId, "BasicAttack", abilityMod.InputBlockTime)
     
     abilityMod.Server_Setup(params, abilityDefs, initPlayer)

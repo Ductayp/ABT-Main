@@ -38,8 +38,8 @@ function PowerUtils.GetCooldown(player,params)
     return thisCooldown
 end
 
--- // SetCooldown - just sets it
-function PowerUtils.SetCooldown(player,params,value)
+-- // Server_SetCooldown - just sets it
+function PowerUtils.Server_SetCooldown(player,params,value)
 
     local cooldownFolder =  ReplicatedStorage.PowerStatus[player.UserId]:FindFirstChild("Cooldowns")
     if not cooldownFolder then

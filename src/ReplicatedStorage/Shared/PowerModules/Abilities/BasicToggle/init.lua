@@ -21,25 +21,17 @@ local BasicToggle = {}
 --// Initialize
 function BasicToggle.Initialize(params, abilityDefs)
 
-	if params.ForceRemoveStand then
-		params.CanRun = false
-		return
-	end
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-	end
-
-	-- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		print("not cooled down")
-		return
-	end
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+	
 end
 
 --// Activate
@@ -52,22 +44,15 @@ function BasicToggle.Activate(params, abilityDefs)
 		return
 	end
 
-
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-	end
-
-	-- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-	end
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
 
 	-- set the toggles and StandTracker
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
@@ -79,7 +64,7 @@ function BasicToggle.Activate(params, abilityDefs)
 	end
 
 	-- set cooldown
-	Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+	Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
 	BasicToggle.RunServer(params, abilityDefs)
 

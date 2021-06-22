@@ -1,16 +1,12 @@
 -- KillerQueen
--- PDab
--- 11/12/2020
---[[
-Handles all thing related to the power and is triggered by BOTH PowersController AND PowerService
-]]
+
 
 -- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
---local utils = require(Knit.Shared.Utils)
+
 
 local KillerQueen = {}
 
@@ -34,13 +30,13 @@ KillerQueen.Defs = {
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
         Q = {
-            AbilityName = "Summon Stand"
+            AbilityName = "Summon Stand" -- done
         },
         E = {
-            AbilityName = "Barrage"
+            AbilityName = "Barrage" -- done
         },
         F = {
-            AbilityName = "Bites The Dust"
+            AbilityName = "Bomb Touch"
         },
         T = {
             AbilityName = "Coin Toss"
@@ -52,7 +48,7 @@ KillerQueen.Defs = {
             AbilityName = "Sheer Heart Attack"
         },
         Z = {
-            AbilityName = "Stand Jump"
+            AbilityName = "Stand Jump" -- done
         },
         C = {
             AbilityName = "-"

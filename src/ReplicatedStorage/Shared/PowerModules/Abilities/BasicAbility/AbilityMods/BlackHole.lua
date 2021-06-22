@@ -9,6 +9,7 @@ local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
@@ -83,8 +84,7 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
         targetStand = ManageStand.QuickRender(params)
     end
 
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
-
+    
     -- black hole animations
     spawn(function()
 
@@ -93,6 +93,8 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
         ManageStand.PlayAnimation(params, "HandSwipe")
 
         wait(HIT_DELAY)
+
+        WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
 
         local swipeBall = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.SwipeBall:Clone()
         swipeBall.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(3, 3, 1))
@@ -118,6 +120,9 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
         newBurst.Parent = Workspace.RenderedEffects
         newBurst.Pop:Emit(50)
 
+        AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.MagicBoom, soundParams)
+        local droneSound = AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.EnergySource20sec)
+
         -- render black hole parts
         for i,v in pairs (blackHoleParts) do
             v.CFrame = params.BlackHoleCFrame
@@ -126,6 +131,8 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
         spawn(function()
             wait(TICK_COUNT * TICK_DURATION)
+            droneSound:Destroy()
+            AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.PowerUpStinger3)
             blackHoleParts.newBlackBall:Destroy()
             blackHoleParts.newWhisps:Destroy()
             newBurst:Destroy()
@@ -151,6 +158,9 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
     mainBubble.Parent = Workspace.RenderedEffects
 
     for count = 1, TICK_COUNT do
+
+        AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.Whoosh92)
+
         local newBubble = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.PurpleBubble:Clone()
         newBubble.CFrame = params.BlackHoleCFrame
         newBubble.Size = Vector3.new(RANGE * 2, RANGE * 2, RANGE * 2)
@@ -170,14 +180,7 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
 
     mainBubble:Destroy()
 
-
-
-    print("CLIENT STAGE 2")
 end
-
-
-
-
 
 
 return module

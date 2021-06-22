@@ -1,35 +1,29 @@
--- WeldedSound
--- PDab
--- 12-8-2020
+-- AnchoredSound
 
---Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
 
--- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-
---modules
 local utils = require(Knit.Shared.Utils)
 
-local WeldedSound = {}
+local AnchoredSound = {}
 
-function WeldedSound.NewSound(parent, sound, params)
+function AnchoredSound.NewSound(position, sound, params)
 
     -- options params
     --params.fadeTime
     --params.DebrisTime
 
     -- clone new part
-	local thisSpeaker = SoundService.WeldedSoundPart:Clone()
+	local thisSpeaker = SoundService.AnchoredSoundPart:Clone()
     thisSpeaker.Name = sound.Name
-    thisSpeaker.CFrame = parent.CFrame
-    thisSpeaker.Parent = parent
-    utils.EasyWeld(thisSpeaker, parent, thisSpeaker)
-
+    thisSpeaker.Position = position
+    thisSpeaker.Parent = Workspace.RenderedEffects
+    
     -- clone the sound
     local thisSound = sound:Clone()
 	thisSound.Parent = thisSpeaker
@@ -72,7 +66,7 @@ function WeldedSound.NewSound(parent, sound, params)
 end
 
 --// StopSpeakerSound - stops a sound by name by destroying its speaker, can also optionally fade
-function WeldedSound.StopSound(parent, name, fadeTime)
+function AnchoredSound.StopSound(parent, name, fadeTime)
 	local thisSpeaker = parent:FindFirstChild(name)
 	
 	if thisSpeaker then
@@ -97,4 +91,4 @@ function WeldedSound.StopSound(parent, name, fadeTime)
 	end 
 end
 
-return WeldedSound
+return AnchoredSound

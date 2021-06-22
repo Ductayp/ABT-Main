@@ -247,6 +247,7 @@ function MobBrain.State_Home(mobData)
     if mobData.AttackTarget then
 
         if mobData.Defs.IsMobile then
+            print("IS_MOBILE")
             mobData.Model.HumanoidRootPart.Anchored = false
             mobData.Model.HumanoidRootPart:SetNetworkOwner(nil)
         end

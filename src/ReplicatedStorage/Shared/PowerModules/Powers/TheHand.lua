@@ -11,8 +11,8 @@ TheHand.Defs = {
     PowerName = "TheHand",
     MaxXp = {
         [1] = 10000,
-        [2] = 15000,
-        [3] = 20000
+        [2] = 20000,
+        [3] = 30000
     },
     DamageMultiplier = {
         [1] = 1,
@@ -130,7 +130,7 @@ end
 --defs
 TheHand.Defs.Abilities.R = {
     Id = "ScrapePunch",
-    Cooldown = 1,
+    Cooldown = 10,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("ScrapePunch", true),
 }
@@ -146,7 +146,7 @@ end
 -- defs
 TheHand.Defs.Abilities.T = {
     Id = "BlackHole",
-    Cooldown = 1,
+    Cooldown = 60,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
 }
@@ -163,7 +163,7 @@ end
 -- defs
 TheHand.Defs.Abilities.F = {
     Id = "FlowerPotBarrage",
-    Cooldown = 2,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("FlowerPotBarrage", true),
 }
@@ -180,7 +180,7 @@ end
 -- defs
 TheHand.Defs.Abilities.X = {
     Id = "ScrapeAway",
-    Cooldown = 1,
+    Cooldown = 8,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicProjectile:FindFirstChild("ScrapeAway", true),
 }
@@ -196,7 +196,7 @@ end
 -- defs
 TheHand.Defs.Abilities.C = {
     Id = "VoidPull",
-    Cooldown = 1,
+    Cooldown = 8,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("VoidPull", true),
 }

@@ -30,51 +30,30 @@ local HeavyPunch = {}
 --// Initialize
 function HeavyPunch.Initialize(params, abilityDefs)
 
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-    if not Cooldown.Client_IsCooled(params) then
-        print("not cooled down", params)
-		params.CanRun = false
-		return
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
 
-    if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-            params.CanRun = false
-            return params
-        end
-    end
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 end
 
 --// Activate
 function HeavyPunch.Activate(params, abilityDefs)
 
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-    end
-    
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-    end
-    
-
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
     if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
-            params.CanRun = false
-            return params
-        end
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
     end
 
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "HeavyPunch", 1)
 

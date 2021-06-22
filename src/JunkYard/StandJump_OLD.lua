@@ -83,7 +83,7 @@ function StandJump.Activate(params, abilityDefs)
     end
 
 	-- set cooldown
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "StandJump", 2)

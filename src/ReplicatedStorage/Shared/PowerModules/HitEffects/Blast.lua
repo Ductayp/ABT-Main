@@ -1,8 +1,4 @@
 -- Blast Effect
--- PDab
--- 1-22-2020
-
--- applies both pracitcal effects such as actual damage in numbers as well as the visual effects
 
 --Roblox Services
 local Workspace = game:GetService("Workspace")

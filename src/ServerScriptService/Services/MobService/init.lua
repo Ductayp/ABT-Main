@@ -53,8 +53,10 @@ function MobService:WakeMob(initPlayer, thisMob)
     if not thisMob.Model and thisMob.Model.HumanoidRootPart then return end
 
     thisMob.AttackTarget = initPlayer
-    thisMob.Model.HumanoidRootPart.Anchored = false
-
+    if thisMob.Defs.IsMobile then
+        thisMob.Model.HumanoidRootPart.Anchored = false
+    end
+    
 end
 
 --// DamageMob

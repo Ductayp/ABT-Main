@@ -18,6 +18,7 @@ end
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
 local ScrapePunch = {}
@@ -31,7 +32,7 @@ ScrapePunch.HitboxSize = Vector3.new(6, 5, 32)
 ScrapePunch.HitboxOffset = CFrame.new(0, 0, 25)
 ScrapePunch.HitboxDestroyTime = .4
 
-local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
+--local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 
 -- variables
 local damage = 1
@@ -98,7 +99,9 @@ end
 
 function ScrapePunch.RenderPull(params)
 
-    WeldedSound.NewSound(params.Hitbox, punchSound)
+    AnchoredSound.NewSound(params.TargetPosition, ReplicatedStorage.Audio.General.MagicBoom)
+    AnchoredSound.NewSound(params.TargetPosition, ReplicatedStorage.Audio.General.PowerUpStinger3)
+    
 
     local hitBoxSize_X = params.Hitbox.Size.X
     local hitBoxSize_Y = params.Hitbox.Size.Y
@@ -112,40 +115,39 @@ function ScrapePunch.RenderPull(params)
 
     local rodCount = 30
     local rodThickness = 0.3
-    local rodOffset = 5
-    local rodLength = hitBoxSize_Z - rodOffset
-
-
+    --local rodOffset = 0
+    local rodLength = hitBoxSize_Z -- - rodOffset
 
     for count = 1, rodCount do
 
-        local rand_X = math.random(  (-hitBoxSize_X * 100), (hitBoxSize_X * 100) ) / 100
-        local rand_Y = math.random( (-hitBoxSize_Y * 100), (hitBoxSize_Y * 100) ) / 100
-        local randColor = math.random(1,3)
+        spawn(function()
 
+            local rand_X = math.random(  (-hitBoxSize_X * 100), (hitBoxSize_X * 100) ) / 100
+            local rand_Y = math.random( (-hitBoxSize_Y * 100), (hitBoxSize_Y * 100) ) / 100
+            local randColor = math.random(1,3)
 
-        local newRod = Instance.new("Part")
-        newRod.Material = "Neon"
-        newRod.Anchored = true
-        newRod.CanCollide = false
-        newRod.CanTouch = false
-        newRod.Transparency = .5
-        newRod.Color = colors[randColor]
-        newRod.Size = Vector3.new(rodThickness, rodThickness, rodLength)
-        newRod.CFrame = params.Hitbox.CFrame:ToWorldSpace(CFrame.new(rand_X, rand_Y, -rodOffset))
-        newRod.Parent = Workspace.RenderedEffects
-        Debris:AddItem(newRod, 3)
+            local newRod = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.VoidPull.Rod:Clone()
+            newRod.Color = colors[randColor]
+            newRod.Size = Vector3.new(rodThickness, rodThickness, rodLength)
+            newRod.CFrame = params.Hitbox.CFrame:ToWorldSpace(CFrame.new(rand_X, rand_Y, 0))
+            newRod.Parent = Workspace.RenderedEffects
+            Debris:AddItem(newRod, 3)
 
-        local tweenInfo = TweenInfo.new(.5)
-        local tweenParams = {
-            Transparency = 1,
-            Size = Vector3.new(rodThickness, rodThickness, rodLength / 10),
-            CFrame = params.Hitbox.CFrame:ToWorldSpace(CFrame.new(rand_X, rand_Y, rodLength / 3 ))
-        }
+            local tweenInfo = TweenInfo.new(.5)
+            local tweenParams = {
+                Transparency = 1,
+                Size = Vector3.new(rodThickness, rodThickness, rodLength / 10),
+                CFrame = params.Hitbox.CFrame:ToWorldSpace(CFrame.new(rand_X, rand_Y, rodLength / 2 ))
+            }
 
-        local tween = TweenService:Create(newRod, tweenInfo, tweenParams)
-        tween:Play()
-        tween:Destroy()
+            local tween = TweenService:Create(newRod, tweenInfo, tweenParams)
+            tween:Play()
+            tween:Destroy()
+
+            wait(.5)
+
+            newRod.ParticleEmitter.Enabled = false
+        end)
 
     end
 
@@ -173,6 +175,7 @@ function ScrapePunch.RenderPull(params)
     burstParts.ballBlack.Particle.Enabled = false
     wait(3)
     burstParts.ballBlack:Destroy()
+    burstParts.burstBlue:Destroy()
 
 
  

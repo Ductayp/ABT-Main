@@ -59,7 +59,7 @@ function MeleeAttack.Activate(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     -- set cooldown and input block
-    Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
     BlockInput.AddBlock(params.InitUserId, "MeleeAttack", abilityMod.InputBlockTime)
 
     -- server start

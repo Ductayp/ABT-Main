@@ -84,7 +84,7 @@ function Barrage_Spec.Activate(params, abilityDefs)
 				wait(abilityDefs.Duration)
 				if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) then
 					AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-					Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+					Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 					BlockInput.RemoveBlock(params.InitUserId, params.InputId)
 					Barrage_Spec.EndServer(params, abilityDefs)
 					params.Barrage_SpecOn = false
@@ -99,7 +99,7 @@ function Barrage_Spec.Activate(params, abilityDefs)
 
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+			Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 			BlockInput.RemoveBlock(params.InitUserId, params.InputId)
 			Barrage_Spec.EndServer(params)
 			params.Barrage_SpecOn = false

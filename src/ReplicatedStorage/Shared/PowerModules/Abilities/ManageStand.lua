@@ -32,31 +32,27 @@ function ManageStand.Initialize(params, abilityDefs)
 
 	params.RenderRange = 999999 -- force it!
 
-	if params.ForceRemoveStand then
-		params.CanRun = true
-		return
-	end
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+    if params.KeyState == "InputEnded" then params.CanRun = false return end
+    if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
+    if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
+    if abilityDefs.RequireToggle_On then
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+    end
 
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-	end
-
-	-- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		print("not cooled down")
-		return
-	end
+    Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 end
 
 --// Activate
 function ManageStand.Activate(params, abilityDefs)
 
 	--print("ManageStand.Activate(params, abilityDefs)", params, abilityDefs)
+
+	-- checks
+	if params.KeyState == "InputBegan" then params.CanRun = true end
+	if params.KeyState == "InputEnded" then params.CanRun = false return end
+	if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
 
 	-- definitions
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
@@ -66,7 +62,7 @@ function ManageStand.Activate(params, abilityDefs)
 	if params.ForceRemoveStand then
 		if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 			AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
-			Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+			Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 			if equippedStand then
 				equippedStand:Destroy()
 			end
@@ -78,21 +74,7 @@ function ManageStand.Activate(params, abilityDefs)
 			return params
 		end
 	end
-
-	-- check KeyState
-	if params.KeyState == "InputBegan" then
-		params.CanRun = true
-	else
-		params.CanRun = false
-		return
-	end
-
-	-- check cooldown
-	if not Cooldown.Client_IsCooled(params) then
-		params.CanRun = false
-		return
-	end
-
+    
 	-- set the toggles and StandTracker
 	if AbilityToggle.GetToggleValue(params.InitUserId, params.InputId) == true then
 		AbilityToggle.SetToggle(params.InitUserId, params.InputId, false)
@@ -108,7 +90,7 @@ function ManageStand.Activate(params, abilityDefs)
 	end
 
 	-- set cooldown
-	Cooldown.SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+	Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
 end
 

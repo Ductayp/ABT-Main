@@ -28,10 +28,16 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
     -- do the damage
     hitCharacter.Humanoid:TakeDamage(actualDamage)
 
+    local canKnockback = true
+
     -- if it is a mob
     if hitParams.IsMob then
+        local thisMob = Knit.Services.MobService:GetMobById(hitParams.MobId)
+        if thisMob.Defs.IsMobile == false then
+            canKnockback = false
+        end
         if hitCharacter.Humanoid then 
-            Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage)
+            Knit.Services.MobService:DamageMob(initPlayer, hitParams.MobId, actualDamage) -- this is just to set the player aggro for damage done
         end
     end
 
@@ -50,7 +56,7 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
     end
 
-    if effectParams.KnockBack then 
+    if effectParams.KnockBack and canKnockback then 
         spawn(function()
             local existingVelocity = hitCharacter.HumanoidRootPart:FindFirstChild("DamageKnockBack")
             if not existingVelocity then

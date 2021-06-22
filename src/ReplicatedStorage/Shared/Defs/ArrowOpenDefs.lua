@@ -7,5 +7,5 @@ return {
     --GoldExperience = 1,
     WhiteSnake = 1,
     CrazyDiamond = 3,
-    --TheHand = 1,
+    TheHand = 1,
 }

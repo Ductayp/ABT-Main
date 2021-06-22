@@ -99,6 +99,7 @@ function SpawnLoop.Run()
                         mobData.Model.PrimaryPart.CFrame = mobData.SpawnCFrame
                         mobData.Model.Parent = Workspace.SpawnedMobs
     
+                        --[[
                         for _,object in pairs(mobData.Model:GetDescendants()) do
                             if object:IsA("BasePart") then
                                 object.Anchored = false
@@ -112,6 +113,7 @@ function SpawnLoop.Run()
                                 end
                             end
                         end
+                        ]]--
     
                         Knit.Services.MobService.SpawnedMobs[mobData.MobId] = mobData
     

@@ -150,7 +150,7 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
 end
 
 --// Client_Stage_2
-function module.Client_Stage_2(params, abilityDefs, initPlayer)
+function module.Client_Stage_2(params, abilityDefs)
 
     local mainBubble = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.BlackBubble:Clone()
     mainBubble.CFrame = params.BlackHoleCFrame

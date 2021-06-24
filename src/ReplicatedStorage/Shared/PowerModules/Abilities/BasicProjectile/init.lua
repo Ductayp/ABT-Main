@@ -144,8 +144,6 @@ end
 ------------------------------------------------------------------------------------------------------------------------------
 function BasicProjectile.Execute(params, abilityDefs)
 
-    print("TEST")
-
     local abilityMod = require(abilityDefs.AbilityMod)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
@@ -156,8 +154,10 @@ function BasicProjectile.Execute(params, abilityDefs)
     wait(abilityMod.InitialDelay)
 
     local projectile = abilityMod.Projectile_Setup(initPlayer, params, abilityDefs)
-
-    print("PROJECTILE", projectile)
+    if not projectile then
+        warn("BasicPojectile - No Projectile Returned from AbilityMod")
+        return
+    end
 
     -- shoot it
     projectile.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)

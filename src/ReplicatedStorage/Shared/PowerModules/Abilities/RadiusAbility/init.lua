@@ -1,4 +1,4 @@
--- BasicAttack
+-- RadiusAbility
 
 --Roblox Services
 local Workspace = game:GetService("Workspace")
@@ -13,12 +13,12 @@ local Cooldown = require(Knit.PowerUtils.Cooldown)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
 
-local BasicAttack = {}
+local RadiusAbility = {}
 
 ------------------------------------------------------------------------------------------------------------------------------
 --// Initialize --------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-function BasicAttack.Initialize(params, abilityDefs)
+function RadiusAbility.Initialize(params, abilityDefs)
 
 	-- checks
 	if params.KeyState == "InputBegan" then params.CanRun = true end
@@ -44,7 +44,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------
 --// Activate ----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-function BasicAttack.Activate(params, abilityDefs)
+function RadiusAbility.Activate(params, abilityDefs)
 
 	-- checks
 	if params.KeyState == "InputBegan" then params.CanRun = true end
@@ -60,7 +60,7 @@ function BasicAttack.Activate(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-    BlockInput.AddBlock(params.InitUserId, "BasicAttack", abilityMod.InputBlockTime)
+    BlockInput.AddBlock(params.InitUserId, "RadiusAbility", abilityMod.InputBlockTime)
     
     abilityMod.Server_Setup(params, abilityDefs, initPlayer)
 
@@ -73,7 +73,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------
 --// Execute -----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-function BasicAttack.Execute(params, abilityDefs)
+function RadiusAbility.Execute(params, abilityDefs)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer then return end
@@ -81,11 +81,22 @@ function BasicAttack.Execute(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     if initPlayer ~= Players.LocalPlayer then
-        abilityMod.Client_Stage_1(params, abilityDefs)
+        abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
     end
     
-    abilityMod.Client_Stage_2(params, abilityDefs)
+    abilityMod.Client_Stage_2(params, abilityDefs, initPlayer)
 
 end
 
-return BasicAttack
+------------------------------------------------------------------------------------------------------------------------------
+--// Utility -----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+function RadiusAbility.GetAllInRange(origin)
+
+    targets = TargetByZone.GetAllInRange(initPlayer, origin, abilityMod.Range, true)
+    return targets
+end
+
+
+return RadiusAbility

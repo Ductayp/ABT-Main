@@ -326,12 +326,17 @@ end
 --// ShowStandIcon
 function Storage.ShowStandIcon(iconName, iconParent)
 
-    local newIcon = mainGui.Stand_Icons:FindFirstChild(iconName):Clone()
-    newIcon.BorderSizePixel = 0
-    newIcon.BackgroundColor3 = Color3.fromRGB(47, 47, 47)
-    newIcon.Visible = true
-    newIcon.Name = "StandIcon"
-    newIcon.Parent = iconParent
+    local standIcon = mainGui.Stand_Icons:FindFirstChild(iconName)
+    if standIcon then
+        local newIcon = mainGui.Stand_Icons:FindFirstChild(iconName):Clone()
+        newIcon.BorderSizePixel = 0
+        newIcon.BackgroundColor3 = Color3.fromRGB(47, 47, 47)
+        newIcon.Visible = true
+        newIcon.Name = "StandIcon"
+        newIcon.Parent = iconParent
+    else 
+        warn("GuiModule:Storage - Cannot find stand icon for GUI: ", iconName)
+    end
 
 end
 

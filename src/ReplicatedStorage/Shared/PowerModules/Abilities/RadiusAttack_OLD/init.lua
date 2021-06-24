@@ -121,8 +121,6 @@ end
 
 function RadiusAttack.Run_Client(params, abilityDefs)
 
-    print("YESSS!", params, abilityDefs)
-
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer then
         return

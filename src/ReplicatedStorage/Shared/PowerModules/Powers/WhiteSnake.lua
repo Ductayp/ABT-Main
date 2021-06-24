@@ -165,11 +165,11 @@ WhiteSnake.Defs.Abilities.StandSteal = {
     Id = "StandSteal",
     Cooldown = 15,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.RadiusAttack.StandSteal
+    AbilityMod = Knit.Abilities.RadiusAttack_OLD.StandSteal
 }
 
 function WhiteSnake.StandSteal(params)
-    params = require(Knit.Abilities.RadiusAttack)[params.SystemStage](params, WhiteSnake.Defs.Abilities.StandSteal)
+    params = require(Knit.Abilities.RadiusAttack_OLD)[params.SystemStage](params, WhiteSnake.Defs.Abilities.StandSteal)
 end
 
 

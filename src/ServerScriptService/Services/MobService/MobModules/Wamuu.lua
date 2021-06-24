@@ -18,7 +18,7 @@ module.RespawnClock = os.clock()
 module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Z_Offset = 5
-module.Max_Spawned = 8
+module.Max_Spawned = 5
 
 --/ Animations
 module.Animations = {
@@ -31,8 +31,8 @@ module.Animations = {
 module.Defs = {}
 module.Defs.Name = "Wham"
 module.Defs.MapZone = "SkeletonHeelStone"
-module.Defs.XpValue = 450
-module.Defs.Health = 350
+module.Defs.XpValue = 225
+module.Defs.Health = 300
 module.Defs.WalkSpeed = 18
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = true

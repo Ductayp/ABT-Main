@@ -1,16 +1,11 @@
 -- TheWorld
--- PDab
--- 11/12/2020
---[[
-Handles all thing related to the power and is triggered by BOTH PowersController AND PowerService
-]]
 
 -- roblox services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
---local utils = require(Knit.Shared.Utils)
+
 
 local TheWorld = {}
 

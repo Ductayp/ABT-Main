@@ -74,12 +74,17 @@ function StandData.Update(data, params)
     local currentPowerModule = require(Knit.Powers[data.CurrentStand.Power])
 
     -- make a new icon
-    local newStandIcon =  mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. tostring(data.CurrentStand.Rank)):Clone()
-    newStandIcon.Name = "StandIcon"
-    newStandIcon.Parent = StandData.Frame_Stand
-    newStandIcon.Visible = true
-    newStandIcon.BackgroundTransparency = 1
-
+    local standIcon =  mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. tostring(data.CurrentStand.Rank))
+    if standIcon then
+        local newStandIcon = mainGui.Stand_Icons:FindFirstChild(data.CurrentStand.Power .. "_" .. tostring(data.CurrentStand.Rank)):Clone()
+        newStandIcon.Name = "StandIcon"
+        newStandIcon.Parent = StandData.Frame_Stand
+        newStandIcon.Visible = true
+        newStandIcon.BackgroundTransparency = 1
+    else
+        warn("GuiModule:StandData - Cannot find stand icon for GUI: ", data.CurrentStand.Power, data.CurrentStand.Rank)
+    end
+    
     -- set the XP bar
     local maxExperience = currentPowerModule.Defs.MaxXp[data.CurrentStand.Rank]
     StandData.Text_Xp.Text = data.CurrentStand.Xp .. " / " .. maxExperience

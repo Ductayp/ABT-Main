@@ -19,6 +19,8 @@ MobService.SpawnedMobs = {} -- table of all spawned mobs
 
 MobService.DebugMode = false
 
+--MobService.MobUtils = script.MobUtils -- expose the MobUtilities folder to the service table
+
 --// GetMobById
 function MobService:GetMobById(sentMobId)
     return MobService.SpawnedMobs[sentMobId]
@@ -53,7 +55,7 @@ function MobService:WakeMob(initPlayer, thisMob)
     if not thisMob.Model and thisMob.Model.HumanoidRootPart then return end
 
     thisMob.AttackTarget = initPlayer
-    if thisMob.Defs.IsMobile then
+    if thisMob.Defs.IsMobile and not thisMob.IsPinned then
         thisMob.Model.HumanoidRootPart.Anchored = false
     end
     
@@ -148,9 +150,7 @@ function MobService:KillMob(mobData)
                         if thisItemDef then
                             local notificationParams_2 = {}
                             notificationParams_2.Icon = "Item"
-                            print("mobData 1", mobData)
                             notificationParams_2.Text = mobData.Defs.Name .. " Dropped Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemValue)
-                            print("mobData 2", mobData)
                             Knit.Services.GuiService:Update_Notifications(player, notificationParams_2)
                             Knit.Services.InventoryService:Give_Item(player, itemKey, itemValue)
                         end
@@ -165,63 +165,6 @@ function MobService:KillMob(mobData)
         mobData.Model:Destroy()
         MobService.SpawnedMobs[mobData.MobId] = nil
     end)
-
-end
-
-function MobService:PinMob(mobId, duration)
-
-    local thisMob = MobService.SpawnedMobs[mobId]
-    if not thisMob then return end
-
-    if thisMob and thisMob.Model.Humanoid then
-
-        thisMob.Model.Humanoid:MoveTo(thisMob.Model.HumanoidRootPart.Position)
-
-        local newValueObject = Instance.new("BoolValue")
-        newValueObject.Name = "IsPinned"
-        newValueObject.Value = true
-        newValueObject.Parent = thisMob.Model.HumanoidRootPart
-
-        spawn(function()
-            wait(duration)
-            newValueObject:Destroy()
-        end)
-
-        self:PauseAnimations(mobId, duration)
-
-    end
-
-
-
-end
-
-
---// PauseAnimations
-function MobService:PauseAnimations(mobId, duration)
-
-    local thisMob 
-    for _, mobData in pairs(MobService.SpawnedMobs) do
-        if mobData.MobId == mobId then
-            thisMob = mobData
-            break
-        end
-    end
-
-    if thisMob then
-        spawn(function()
-
-            for _, animation in pairs(thisMob.Animations) do
-                if animation.IsPlaying then
-                    animation:Stop()
-                end
-            end
-
-            thisMob.DisableAnimations = true
-            wait(duration)
-            thisMob.DisableAnimations = false
-
-        end)
-    end
 
 end
 
@@ -243,17 +186,6 @@ end
 --// PlayerAdded
 function MobService:PlayerAdded(player)
 
-    -- set players collision group according to Config
-    if config.PlayerCollide == false then
-
-        local character = player.Character or player.CharacterAdded:Wait()
-		self:SetCollisionGroup(character, "Mob_NoCollide");
-
-		player.CharacterAdded:Connect(function(character)
-
-			self:SetCollisionGroup(character, "Mob_NoCollide");
-		end)
-    end
 
 end
 

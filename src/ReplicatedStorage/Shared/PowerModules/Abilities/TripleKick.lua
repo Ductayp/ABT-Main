@@ -72,7 +72,6 @@ end
 function TripleKick.Execute(params, abilityDefs)
 
 	if Players.LocalPlayer.UserId == params.InitUserId then
-		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
 	end
 

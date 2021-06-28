@@ -73,8 +73,6 @@ end
 --// Client_Initialize
 function module.Client_Initialize(params, abilityDefs, playerPing)
 
-    print("BEEP2")
-
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer and initPlayer.Character then return end
 

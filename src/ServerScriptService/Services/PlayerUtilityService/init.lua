@@ -13,7 +13,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 PlayerUtilityService.Client.Event_PlayerUtility = RemoteEvent.new()
 
 -- modules
-local pingTime = require(Knit.Shared.PingTime)
+--local pingTime = require(Knit.Shared.PingTime)
 local utils = require(Knit.Shared.Utils)
 
 -- public variables
@@ -22,8 +22,9 @@ PlayerUtilityService.PlayerMapZone = {}
 
 
 -- local variables
-local updatePlayerTime = 1
+local updatePlayerTime = 3
 
+--[[
 function PlayerUtilityService:GetPing(player)
     
     local ping
@@ -36,10 +37,12 @@ function PlayerUtilityService:GetPing(player)
 
     return ping
 end
+]]--
 
 --// UpdatePlayerLoop
 function PlayerUtilityService:UpdatePlayerLoop()
 
+    --[[
     spawn(function()
         while game:GetService("RunService").Heartbeat:Wait() do
 
@@ -47,7 +50,6 @@ function PlayerUtilityService:UpdatePlayerLoop()
 
                 if ReplicatedStorage.PlayerPings:FindFirstChild(player.UserId) then
                     ReplicatedStorage.PlayerPings[player.UserId].Value = pingTime[player]
-                    --print("PING: ",player.Name, pingTime[player])
                 end
 
             end
@@ -55,12 +57,12 @@ function PlayerUtilityService:UpdatePlayerLoop()
             wait(updatePlayerTime)
         end
     end) 
+    ]]--
 end
 
 function PlayerUtilityService:SetPlayerMapZone(player, params)
 
     if not player or not params then return end
-    print(player, params)
     PlayerUtilityService.PlayerMapZone[player.UserId] = params.MapZone
 
 end
@@ -126,6 +128,7 @@ function PlayerUtilityService:PlayerAdded(player)
     
     Knit.Services.StateService:AddEntryToState(player, "HealthTick", "Default", true, {Day = 1, Night = 1})
 
+    --[[
     -- setup the ping tracker
     local pingFolder = ReplicatedStorage:FindFirstChild("PlayerPings")
     if not pingFolder then
@@ -137,15 +140,18 @@ function PlayerUtilityService:PlayerAdded(player)
     playerValue.Name = player.UserId
     playerValue.Parent = pingFolder
     playerValue.Value = 0
+    ]]--
 
 end
 
 --// PlayerRemoved
 function PlayerUtilityService:PlayerRemoved(player)
     
+    --[[
     if ReplicatedStorage.PlayerPings[player.UserId] then
         ReplicatedStorage.PlayerPings[player.UserId]:Destroy()
     end
+    ]]--
     
     PlayerUtilityService.PlayerAnimations[player.UserId] = nil
     PlayerUtilityService.PlayerMapZone[player.UserId] = nil
@@ -212,10 +218,12 @@ end
 --// KnitInit
 function PlayerUtilityService:KnitInit()
 
+    --[[
     -- setup the pings folder
     local pingFolder = Instance.new("Folder")
     pingFolder.Name = "PlayerPings"
     pingFolder.Parent = ReplicatedStorage
+    ]]--
 
     local healthScript = script:FindFirstChild("Health")
     if healthScript then

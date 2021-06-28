@@ -74,7 +74,6 @@ end
 function BitesTheDust.Execute(params, abilityDefs)
 
 	if Players.LocalPlayer.UserId == params.InitUserId then
-		print("Players.LocalPlayer == initPlayer: DO NOT RENDER")
 		return
 	end
 
@@ -142,6 +141,10 @@ function BitesTheDust.HitCharacter(initPlayer, hitCharacter, abilityDefs)
     spawn(function()
 
         for count = 1, countdownLength do
+
+            if not newCountdown then return end
+            if not newCountdown:FindFirstChild("TextLabel") then return end
+
             newCountdown.TextLabel.Text = (countdownLength - count) + 1
             if count ~= 1 then
                 WeldedSound.NewSound(hitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.KillerQueen.BombClick, {SoundProperties = {Volume = 0.25}})
@@ -165,9 +168,9 @@ function BitesTheDust.HitCharacter(initPlayer, hitCharacter, abilityDefs)
         
                 -- put all mobs in targetTable
                 for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-                    if mob.Model:FindFirstChild("Humanoid") then
+                    if mob.Model:FindFirstChild("Humanoid") and mob.Model:FindFirstChild("HumanoidRootPart") then
                         if mob.Model.Humanoid.Health > 0 then
-                            if (hitCharacter.HumanoidRootPart.Position - mob.Model.HumanoidRootPart.Position).Magnitude < blastRange then
+                            if (mob.Model.HumanoidRootPart.Position - mob.Model.HumanoidRootPart.Position).Magnitude < blastRange then
                                 table.insert(targetTable, mob.Model)
                             end
                         end

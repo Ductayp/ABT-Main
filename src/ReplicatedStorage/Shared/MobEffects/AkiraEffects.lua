@@ -13,8 +13,6 @@ local AkiraEffects = {}
 
 function AkiraEffects.SoundWaves(params)
 
-    --print("ElectroBall", params)
-
     local mobHRP = params.MobModel:FindFirstChild("HumanoidRootPart", true)
     if not mobHRP then return end
 

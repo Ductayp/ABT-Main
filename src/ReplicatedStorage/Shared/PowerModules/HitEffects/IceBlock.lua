@@ -33,7 +33,7 @@ function AngeloRock.Client_RenderEffect(params)
 
     WeldedSound.NewSound(params.HitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.General.Freeze)
     
-    local icePart = ReplicatedStorage.EffectParts.Effects.IceBlock.Ice:Clone()
+    local icePart = ReplicatedStorage.EffectParts.Abilities.BasicAbility.TimeFreeze.Ice:Clone()
     icePart.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
     icePart.Parent = Workspace.RenderedEffects
     icePart.CanCollide = false

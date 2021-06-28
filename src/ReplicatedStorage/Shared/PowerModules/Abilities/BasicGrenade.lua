@@ -96,8 +96,6 @@ function BasicGrenade.Run_Server(params, abilityDefs)
     spawn(function()
         wait(newGrenade.DetonationDelay)
 
-        print("SERVER - boom!")
-
         -- add all players in range
         for _,player in pairs(Players:GetPlayers()) do
             if player:DistanceFromCharacter(newGrenade.MainPart.Position) <= newGrenade.HitRadius then
@@ -139,8 +137,6 @@ end
 
 function BasicGrenade.Run_Effects(params, abilityDefs)
 
-    print("EXECUTE", params)
-
     -- get initPlayer
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 
@@ -154,7 +150,6 @@ function BasicGrenade.Run_Effects(params, abilityDefs)
     -- wait for detonation
     spawn(function()
         wait(params.Grenade.DetonationDelay - ping)
-        print("CLIENT - boom!")
         abilityMod.Client_Explode(initPlayer, params.Grenade)
     
     end)

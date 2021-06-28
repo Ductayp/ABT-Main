@@ -62,10 +62,7 @@ end
 
 function TargetByZone.GetAll(initPlayer, excludeInitPlayer)
 
-	print("GET ALL - initPlayer", initPlayer)
-
 	local initPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[initPlayer.UserId]
-	print("initPlayer_MapZone", initPlayer_MapZone)
 
 	local hitCharacters = {}
 
@@ -91,7 +88,6 @@ function TargetByZone.GetAll(initPlayer, excludeInitPlayer)
 
 	-- hit all Mobs in range
 	local mobsInZone = Knit.Services.MobService:GetMobsInMapZone(initPlayer_MapZone)
-	print("MOBS IN ZONE", mobsInZone)
 	for _, mob in pairs(mobsInZone) do
 		if mob.Model:FindFirstChild("Humanoid") then
 			if mob.Model.Humanoid.Health > 0 then

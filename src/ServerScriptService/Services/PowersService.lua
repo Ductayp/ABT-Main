@@ -15,6 +15,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
+local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
@@ -50,7 +51,7 @@ function PowersService:ActivatePower(player, params)
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
     if not playerData.CurrentStand.Power == params.PowerId then
-        print("PlayerData doesn't match the PowerID sent")
+        warn("PlayerData doesn't match the PowerID sent: PowersService:ActivatePower(player, params)", player, params)
         return
     end
     params.PowerID = playerData.CurrentStand.Power
@@ -91,12 +92,10 @@ function PowersService:ForceRemoveStand(player)
 
 end
 
-
-
 --// SetPower -- sets the players current power
 function PowersService:SetCurrentPower(player, params)
 
-    ---print("PowersService:SetCurrentPower(player,params)", player,params)
+    --print("PowersService:SetCurrentPower(player,params)", player,params)
 
     -- get the players current power and run the remove function if it exists
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
@@ -108,10 +107,17 @@ function PowersService:SetCurrentPower(player, params)
             removePowerModule.RemovePower(player,removePowerParams)
         end
     else
-        print("no power exists with that name, cant run the REMOVE POWER function")
-        --return
+        -- no power exists with that name, cant run the REMOVE POWER function
     end
 
+    -- cleanup the player by runnning setup again
+    self:PlayerSetup(player)
+
+    -- remove any status effects from the last power, such as rage boosts
+    Knit.Services.StateService:PowerChanged(player) -- removes states
+    self.Client.PowerChanged:FireAll(player, params) -- removes visual effects
+
+    -- we always need a Rank for lets make it for "Standless"
     if params.Power == "Standless" then
         params.Rank = 1
     end
@@ -122,21 +128,21 @@ function PowersService:SetCurrentPower(player, params)
         setupPowerParams.Rank = params.Rank
         if setupPowerModule.SetupPower then
             setupPowerModule.SetupPower(player, setupPowerParams)
+
+            -- force cooldown on all abilities
+            local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
+            for _, key in pairs(cooldownKeys) do
+                Cooldown.Server_SetCooldown(player.UserId, key, 10)
+            end
         end
 
         playerData.CurrentStand = params
-
-        Knit.Services.StateService:PowerChanged(player)
-
-        self.Client.PowerChanged:FireAll(player, params)
-        
     end
 
     -- create value objects in replciated to show what power a player has
     local playerFolder = ReplicatedStorage.CurrentPowerData:FindFirstChild(player.UserId)
     if playerFolder then playerFolder:Destroy() end
     playerFolder = utils.EasyInstance("Folder",{Name = player.UserId,Parent = ReplicatedStorage.CurrentPowerData})
-    
     for name, value in pairs(playerData.CurrentStand) do
         if name ~= "Xp" then
             local newValueObject = utils.NewValueObject(name, value, playerFolder)
@@ -147,11 +153,12 @@ function PowersService:SetCurrentPower(player, params)
         end
     end
 
+
     Knit.Services.GuiService:Update_Gui(player, "StandData")
     Knit.Services.GuiService:Update_Gui(player, "AbilityBar")
     Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
 
-    self:PlayerSetup(player)
+    --self:PlayerSetup(player)
 
 end
 
@@ -218,7 +225,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
         local targetPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[targetPlayer.UserId]
 
         if intiPlayer_MapZone ~= targetPlayer_MapZone then 
-            print("players not in the same zone")
             return
         end
 
@@ -231,7 +237,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
         -- check if the player is Immune to this ability
         if require(Knit.StateModules.Immunity).Has_Immunity(targetPlayer, abilityDefs.Id) then
-            --print(targetPlayer, " is immune to: ", abilityDefs.Id)
             return
         end
 
@@ -242,8 +247,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
             local thisMob = Knit.Services.MobService:GetMobById(mobIdObject.Value)
             if thisMob then
-
-                --print("mapzones", thisMob.Defs.MapZone,intiPlayer_MapZone )
 
                 if thisMob.Defs.MapZone == intiPlayer_MapZone then
                     canHit = true
@@ -259,7 +262,9 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     -- do hitEffects if canHit is true
     if canHit == true then
         for effect, effectParams in pairs(abilityDefs.HitEffects) do
-            require(Knit.HitEffects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
+            spawn(function()
+                require(Knit.HitEffects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
+            end)
         end
     end
 
@@ -398,8 +403,7 @@ function PowersService:CharacterAdded(player)
             module.SetupPower(player, params)
         end
     else
-        print("no power exists with that name, cant run the REMOVE POWER function")
-        --return
+        -- no power exists with that name, cant run the REMOVE POWER function
     end
 
 end

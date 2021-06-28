@@ -5,6 +5,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
+local PhysicsService = game:GetService("PhysicsService")
 
 
 -- setup Knit
@@ -77,23 +78,45 @@ end
 --// CustomSpawn
 function PlayerSpawnService:CustomSpawn(player)
 
-    if not player then return end
+    wait(respawnDelay)
 
-    if player.Parent ~= game.Players then
-        local p = game.Players:WaitForChild(player.Name, 5)
-        if not p then warn("PlayerSpawnService:CustomSpawn", player.Name, " not loaded in world") return false end
-    end
+    if not player then return end
 
     local spawnGroupName = PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn
     local spawnerGroup = PlayerSpawnService.SpawnerGroups[spawnGroupName]:GetChildren()
     local randPick = math.random(1, #spawnerGroup)
     local targetSpawner = spawnerGroup[randPick]
 
-    wait(respawnDelay)
+    if player.Parent ~= game.Players then
+        local p = game.Players:WaitForChild(player.Name, 5)
+        if not p then warn("PlayerSpawnService:CustomSpawn", player.Name, " not loaded in world") return false end
+    end
 
     if player then
+
         player:LoadCharacter()
+
+        for _, object in pairs(player.Character:GetChildren()) do
+            if object:IsA("BasePart") then
+                PhysicsService:SetPartCollisionGroup(object, "Player_NoCollide")
+            end
+        end
+
         player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
+
+        -- set max health
+        local maxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
+
+        --[[
+        print("maxHealth", maxHealth)
+        print("HEALTH", player.Character.Humanoid.Health)
+        print("MAX HEALTH", player.Character.Humanoid.MaxHealth)
+        ]]--
+
+        player.Character.Humanoid.MaxHealth = maxHealth
+        player.Character.Humanoid.Health = maxHealth
+        --print(require(Knit.StateModules.Health).GetMaxHealth(player))
+
     end
 
 end
@@ -170,6 +193,10 @@ end
 function PlayerSpawnService:KnitInit()
 
     Players.CharacterAutoLoads = false
+
+    PhysicsService:CreateCollisionGroup("Player_NoCollide")
+    PhysicsService:CollisionGroupSetCollidable("Player_NoCollide", "Player_NoCollide", false)
+    PhysicsService:CollisionGroupSetCollidable("Player_NoCollide", "Mob_NoCollide", false)
 
 end
 

@@ -57,7 +57,7 @@ return {
     {
         CodeString = "400likesboom",
         ActionType = "GiveItem",
-        Key = "DunegonKey",
+        Key = "DungeonKey",
         Quantity = 10,
         Expiration = 1625148506,
         Message = "Thanks for 400 Likes! 10 Dunegon Keys!"

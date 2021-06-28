@@ -58,6 +58,7 @@ function CrazyDiamond.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CrazyDiamond_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rank], nil)
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped

@@ -31,6 +31,7 @@ local FULL_COOLDOWN_SIZE = UDim2.new(1,0,1,0)
 --// Setup ------------------------------------------------------------
 function BottomGui.Setup()
 
+    --[[
     -- connect the ping
     local pingValue = ReplicatedStorage.PlayerPings:WaitForChild(Players.LocalPlayer.UserId)
     pingValue.Changed:Connect(function()
@@ -38,6 +39,7 @@ function BottomGui.Setup()
         --print(roundedNumber)
         BottomGui.Text_Ping.Text = tostring(roundedNumber)
     end)
+    ]]--
 
 end
 

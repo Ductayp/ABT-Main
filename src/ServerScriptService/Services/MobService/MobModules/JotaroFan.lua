@@ -138,7 +138,7 @@ function  module.Attack(mobData)
         mobData.Model.Humanoid.WalkSpeed = 2
         local rand = math.random(1, #mobData.Animations.Attack)
         wait(.25)
-        mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
+        mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
 
         Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
     end)  

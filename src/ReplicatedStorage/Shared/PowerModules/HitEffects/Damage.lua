@@ -58,6 +58,9 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
 
     if effectParams.KnockBack and canKnockback then 
         spawn(function()
+
+            if not hitCharacter:FindFirstChild("HumanoidRootPart") then return end
+
             local existingVelocity = hitCharacter.HumanoidRootPart:FindFirstChild("DamageKnockBack")
             if not existingVelocity then
                 local force = effectParams.KnockBack

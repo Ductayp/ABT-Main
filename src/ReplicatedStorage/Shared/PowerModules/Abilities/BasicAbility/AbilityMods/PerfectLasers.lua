@@ -36,8 +36,6 @@ end
 
 function module.Client_Initialize(params, abilityDefs, delayOffset)
 
-    print("PERFECT LASERS")
-
     local character = Players.LocalPlayer.Character
     if not character and character.HumanoidRootPart then return end
 

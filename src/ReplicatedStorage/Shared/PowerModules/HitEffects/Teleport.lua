@@ -26,7 +26,6 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
     if hitParams.IsMob then
 
         local thisMob = Knit.Services.MobService:GetMobById(hitParams.MobId)
-        print("IS MOB!", thisMob)
 
         if thisMob and thisMob.Defs.IsMobile then
             hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)

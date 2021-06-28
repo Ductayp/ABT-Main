@@ -109,8 +109,6 @@ end
 
 function  MainMenu.Update_PvPButton(pvpToggle, params)
 
-    print("Update_PvPButton(pvpToggle, params)", pvpToggle, params)
-
     if pvpToggle == true then
         MainMenu.PVP_TOGGLE_TEXT.Text = "ON"
         MainMenu.PVP_TOGGLE_TEXT.TextColor3 = color_Green

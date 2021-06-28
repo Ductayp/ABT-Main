@@ -10,8 +10,6 @@ local VampiricRage = {}
 -- Server_AbilityOn
 function VampiricRage.Server_AbilityOn(params, abilityDefs)
 
-    print("VR - ON")
-
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer then return end
 
@@ -25,8 +23,6 @@ end
 
 -- Server_AbilityOff
 function VampiricRage.Server_AbilityOff(params, abilityDefs)
-
-    print("VR - OFF")
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer then return end

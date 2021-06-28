@@ -100,13 +100,12 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
         abilityDefs.HitEffects.Damage = {Damage = 10}
         abilityDefs.HitEffects.PinCharacter = {Duration = module.PinDuration}
         abilityDefs.HitEffects.CameraMove = {Duration = module.PinDuration, TargetPart = cameraAnchor}
+        abilityDefs.HitEffects.RenderEffects = {
+            {Script = script, Function = "HitParticles", Arguments = {HitCharacter = character}}
+        }
 
         Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
-        local newParticle = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.WhiteBubbleParticle:Clone()
-        Debris:AddItem(newParticle, module.PinDuration + 5)
-        newParticle.Parent = character.HumanoidRootPart
-        wait(module.PinDuration)
-        newParticle.Enabled = false
+
     end
 end
 
@@ -255,6 +254,19 @@ end
 -- end cosmetic
 function module.Projectile_Destroy(projectile)
     projectile:Destroy()
+end
+
+function module.HitParticles(params)
+
+    if not params.HitCharacter then return end
+    if not params.HitCharacter.HumanoidRootPart then return end
+
+    local newParticle = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.AcidShot.WhiteBubbleParticle:Clone()
+    Debris:AddItem(newParticle, module.PinDuration + 5)
+    newParticle.Parent = params.HitCharacter.HumanoidRootPart
+    wait(module.PinDuration)
+    newParticle.Enabled = false
+
 end
 
 return module

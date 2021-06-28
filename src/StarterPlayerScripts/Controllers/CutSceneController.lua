@@ -18,9 +18,6 @@ local utils = require(Knit.Shared.Utils)
 
 function CutSceneController:LoadScene(params)
 
-
-    print("LOAD SCENE - CLENT", params)
-
     local findModule = Knit.CutScenes:FindFirstChild(params.SceneName)
     if not findModule then return end
 

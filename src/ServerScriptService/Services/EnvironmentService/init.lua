@@ -12,6 +12,7 @@ local TweenService = game:GetService("TweenService")
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local EnvironmentService = Knit.CreateService { Name = "EnvironmentService", Client = {}}
+local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 -- modules
 local utils = require(Knit.Shared.Utils)
@@ -19,7 +20,7 @@ local utils = require(Knit.Shared.Utils)
 -- Lighting variables
 EnvironmentService.CurrentCycle = "Day"
 EnvironmentService.CurrentCycleSetTime = os.time() -- this gets updated whenever the cycyle is changed
-EnvironmentService.DayCycleTime = 600 -- 600 = 10 minutes in seconds
+EnvironmentService.DayCycleTime = 600
 EnvironmentService.TransitionTime = 20
 EnvironmentService.DayTime = 14.6
 EnvironmentService.NightTime = 19.6
@@ -33,8 +34,9 @@ local manageWindow_Off_Color = Color3.fromRGB(48, 48, 49)
 local manageWindow_Off_Material = "Glass"
 
 -- Swim variables
-EnvironmentService.PlayerSwimStates = {}
-EnvironmentService.SwimCheckTime = 1
+EnvironmentService.PlayerSwimToggle = {}
+local SWIM_CHECK_TIME = .5
+local SWIM_DAMAGE = 5
 
 -- Load all zone:
 local EnvironmentZones = {}
@@ -47,14 +49,14 @@ end
 function EnvironmentService:EnvironmentClock()
 
     local last_DayCycleTime = os.clock() + EnvironmentService.DayCycleTime
-    local last_SwimCheckTime = os.clock() + EnvironmentService.SwimCheckTime
+    local last_SwimCheckTime = os.clock() + SWIM_CHECK_TIME
 
     spawn(function()
         while game:GetService("RunService").Heartbeat:Wait() do
 
             -- swim checks
             if os.clock() > last_SwimCheckTime then
-                last_SwimCheckTime = os.clock() + EnvironmentService.SwimCheckTime
+                last_SwimCheckTime = os.clock() + SWIM_CHECK_TIME
                 self:SwimCheck()
             end
 
@@ -80,8 +82,6 @@ function EnvironmentService:TogglePlayerInZone(player, zoneName, toggle)
 
     local zoneModule = require(script.EnvironmentZones[zoneName])
     if not zoneModule then return end
-
-    print("TOGGLE CHECK", player)
 
     if toggle == true then
         zoneModule.EnterZone(player)
@@ -181,35 +181,34 @@ end
 --// swim check
 function EnvironmentService:SwimToggle(player, boolean)
 
-    if boolean == true then
-        EnvironmentService.PlayerSwimStates[player.userId].UpdateTime = os.clock()
-        EnvironmentService.PlayerSwimStates[player.userId].IsSwimming = true
-    else
-        EnvironmentService.PlayerSwimStates[player.userId].UpdateTime = os.clock() + 3
-        EnvironmentService.PlayerSwimStates[player.userId].IsSwimming = false
-    end
+    if not player then return end
+    EnvironmentService.PlayerSwimToggle[player.UserId] = boolean
 
 end
 
+
 function EnvironmentService:SwimCheck()
-    for userId, settings in pairs(EnvironmentService.PlayerSwimStates) do
-        if settings.UpdateTime <= os.clock() then
-            if settings.IsSwimming then
-                local player = utils.GetPlayerByUserId(userId)
+
+    for UserId, toggle in pairs(EnvironmentService.PlayerSwimToggle) do
+
+        if toggle == true then
+            local player = utils.GetPlayerByUserId(UserId)
+            if player then
                 Knit.Services.PowersService:ForceRemoveStand(player)
-                require(Knit.PowerUtils.BlockInput).AddBlock(userId, "Swimming", 2)
-                player.Character.Humanoid:TakeDamage(settings.Damage)
-                settings.Damage = settings.Damage + 2
-            else
-                settings.Damage = 0
+                BlockInput.AddBlock(UserId, "Swimming", 2)
+                player.Character.Humanoid:TakeDamage(SWIM_DAMAGE)
             end
         end
     end
+
+
 end
+
 
 --// PlayerAdded
 function EnvironmentService:PlayerAdded(player)
-    EnvironmentService.PlayerSwimStates[player.userId] = {IsSwimming = false, UpdateTime = os.clock(), Damage = 0}
+
+    EnvironmentService.PlayerSwimToggle[player.UserId] = false
 
     for moduleName, requiredModule in pairs(EnvironmentZones) do
         requiredModule.PlayerJoin(player)
@@ -219,7 +218,8 @@ end
 
 --// PlayerRemoved
 function EnvironmentService:PlayerRemoved(player)
-    EnvironmentService.PlayerSwimStates[player.userId] = nil
+
+    EnvironmentService.PlayerSwimToggle[player.UserId] = nil
 
     for moduleName, requiredModule in pairs(EnvironmentZones) do
         requiredModule.PlayerLeave(player)

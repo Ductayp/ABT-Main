@@ -91,8 +91,6 @@ end
 --// Update ------------------------------------------------------------
 function StandReveal.Update(standData, params)
 
-    print("STAND REVEAL UPDATE", data, params)
-
     -- hide the current stand text until after the reveal
     --require(Knit.GuiModules.BottomGui).HideStand()
 

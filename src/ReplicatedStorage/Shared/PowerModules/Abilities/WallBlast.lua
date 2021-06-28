@@ -353,8 +353,6 @@ function WallBlast.Run_Effects(params, abilityDefs)
     -- setup and tween
     for _, partTable in pairs(allTweens) do
 
-        print("partTable", partTable)
-
         Debris:AddItem(partTable.Part, partTable.DebrisTime)
 
         for _,tween in pairs(partTable.Tweens) do
@@ -363,7 +361,6 @@ function WallBlast.Run_Effects(params, abilityDefs)
                 wait(tween.Delay)
                 local thisTween = TweenService:Create(partTable.Part, tween.Tween_Info, tween.Tween_Params)
                 thisTween:Play()
-                print("YEET")
                 --thisTween = nil
             end)
 

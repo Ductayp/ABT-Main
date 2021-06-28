@@ -10,8 +10,6 @@ local UseArrow = {}
 --// Server_Run
 function UseArrow.Server_Run(params)
 
-    --print("UseArrow.Server_Run", params)
-
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(params.TargetPlayer)
     if not playerData then return end
 
@@ -72,17 +70,16 @@ end
 --// Client_Run
 function UseArrow.Client_Run(params)
 
-    --print("UseArrow.Client_Run", params)
-
     if not Players.LocalPlayer.Character then return end
 
     Knit.Controllers.GuiController.Modules.StandData.HideStand()
     Knit.Controllers.GuiController.Modules.AbilityBar.HideAbilities()
 
-    --print("MODULE RUN SCENE", params)
     Knit.Controllers.GuiController.Modules.ShiftLock.SetOff()
     local camera = Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Scriptable
+
+    game:GetService("StarterGui"):SetCore("ResetButtonCallback", false)
 
     local target = Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 1, 0)
     local eye = Players.LocalPlayer.Character.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(6, 3, -11)).Position
@@ -96,6 +93,9 @@ end
 function UseArrow.Client_End(params)
     local camera = Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Custom 
+
+    game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
+
     Knit.Controllers.GuiController.Modules.StandData.ShowStand()
     Knit.Controllers.GuiController.Modules.AbilityBar.ShowAbilities()
 end

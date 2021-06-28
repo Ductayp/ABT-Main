@@ -75,9 +75,7 @@ function Cooldown.Server_IsCooled(params)
         thisCooldown = utils.EasyInstance("NumberValue", {Name = params.InputId, Value = os.time() - 1, Parent = cooldownFolder})
     end
 
-    local cooldown = thisCooldown.Value
-    --print(os.time(), cooldown)
-    if os.time() >= cooldown then
+    if os.time() >= thisCooldown.Value then
         isCooled = true
     end
 

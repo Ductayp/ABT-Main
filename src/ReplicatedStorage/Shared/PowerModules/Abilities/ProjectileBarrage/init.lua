@@ -41,7 +41,8 @@ function ProjectileBarrage.Initialize(params, abilityDefs)
 
     Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
-    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    --local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    local playerPing = 0
     abilityMod.CharacterAnimations(params, abilityDefs, playerPing)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
@@ -117,7 +118,6 @@ function ProjectileBarrage.Activate(params, abilityDefs)
                 resultParams.Position = result.Position
                 resultParams.ProjectileID = projectileID
 
-                print("TEST", abilityDefs.AbilityMod)
                 Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityDefs.AbilityMod, "ProjectileImpact", resultParams)
 
                 if result.Instance.Parent:FindFirstChild("Humanoid") then
@@ -154,11 +154,14 @@ function ProjectileBarrage.Execute(params, abilityDefs)
         abilityMod.CharacterAnimations(params, abilityDefs)
     end
 
+    --[[
     local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
     local initialWait = abilityMod.InitialDelay - (playerPing / 2)
     if initialWait > 0 then
         wait(initialWait)
     end
+    ]]--
+    wait(abilityMod.InitialDelay)
 
     --local shotCount = 1
     for projectileCount, projectileDef in pairs(params.ProjectilesFired) do
@@ -173,7 +176,6 @@ function ProjectileBarrage.Execute(params, abilityDefs)
 
         spawn(function()
             local waitTime = (abilityMod.ShotDelay * projectileCount) - abilityMod.ShotDelay
-            print("WAiT 2", waitTime)
             wait(waitTime)
             projectileDef.Model.Parent = Workspace.RenderedEffects
             projectileDef.Model.CFrame = projectileDef.Origin

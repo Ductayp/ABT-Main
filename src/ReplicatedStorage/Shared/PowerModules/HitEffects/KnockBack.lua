@@ -18,8 +18,6 @@ local KnockBack = {}
 
 function KnockBack.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
-    print("KB params", params)
-
     -- just a final check to be sure were hitting a humanoid
     if  not hitCharacter:FindFirstChild("Humanoid") then return end
 

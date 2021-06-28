@@ -37,26 +37,28 @@ end
 --// Server_Run
 function module.Server_Run(params, abilityDefs, initPlayer)
 
-    wait(HIT_DELAY)
+    spawn(function()
+        wait(HIT_DELAY)
 
-    local duration = TICK_COUNT * TICK_DURATION
-    for count = 1, TICK_COUNT do
-
-        abilityDefs.HitEffects = {
-            Damage = {Damage = 1},
-            Pull = {Position = params.BlackHoleCFrame.Position, Force = 3000, Duration = duration, Name = "BlackHole"},
-        }
-
-        local hitCharacters = TargetByZone.GetAllInRange(initPlayer, params.BlackHoleCFrame.Position, RANGE, true)
-        for _, character in pairs(hitCharacters) do
-            Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+        local duration = TICK_COUNT * TICK_DURATION
+        for count = 1, TICK_COUNT do
+    
+            abilityDefs.HitEffects = {
+                Damage = {Damage = 1},
+                Pull = {Position = params.BlackHoleCFrame.Position, Force = 3000, Duration = duration, Name = "BlackHole"},
+            }
+    
+            local hitCharacters = TargetByZone.GetAllInRange(initPlayer, params.BlackHoleCFrame.Position, RANGE, true)
+            for _, character in pairs(hitCharacters) do
+                Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+            end
+    
+            wait(TICK_DURATION)
+            duration = duration - TICK_DURATION
+    
         end
-
-        wait(TICK_DURATION)
-        duration = duration - TICK_DURATION
-
-    end
-
+    end)
+    
 end
 
 function module.Client_Initialize(params, abilityDefs, delayOffset)
@@ -96,7 +98,7 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
         WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
 
-        local swipeBall = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.SwipeBall:Clone()
+        local swipeBall = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.SwipeBall:Clone()
         swipeBall.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(3, 3, 1))
         swipeBall.Parent = Workspace.RenderedEffects
         Debris:AddItem(swipeBall, 1)
@@ -107,15 +109,15 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
         -- setup black hole parts
         local blackHoleParts = {
-            newBlackBall = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.BlackBall:Clone(),
-            newWhisps = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.Whisps:Clone(),
-            newParticle = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.Particle:Clone(),
+            newBlackBall = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.BlackBall:Clone(),
+            newWhisps = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.Whisps:Clone(),
+            newParticle = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.Particle:Clone(),
         }
         blackHoleParts.newWhisps.BodyPosition.Position = params.BlackHoleCFrame.Position
 
         wait(.1)
 
-        local newBurst = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.Burst:Clone()
+        local newBurst = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.Burst:Clone()
         newBurst.CFrame = params.BlackHoleCFrame
         newBurst.Parent = Workspace.RenderedEffects
         newBurst.Pop:Emit(50)
@@ -152,7 +154,7 @@ end
 --// Client_Stage_2
 function module.Client_Stage_2(params, abilityDefs)
 
-    local mainBubble = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.BlackBubble:Clone()
+    local mainBubble = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.BlackBubble:Clone()
     mainBubble.CFrame = params.BlackHoleCFrame
     mainBubble.Size = Vector3.new(RANGE * 2, RANGE * 2, RANGE * 2)
     mainBubble.Parent = Workspace.RenderedEffects
@@ -161,7 +163,7 @@ function module.Client_Stage_2(params, abilityDefs)
 
         AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.Whoosh92)
 
-        local newBubble = ReplicatedStorage.EffectParts.Abilities.BasicAttack.BlackHole.PurpleBubble:Clone()
+        local newBubble = ReplicatedStorage.EffectParts.Abilities.BasicAbility.BlackHole.PurpleBubble:Clone()
         newBubble.CFrame = params.BlackHoleCFrame
         newBubble.Size = Vector3.new(RANGE * 2, RANGE * 2, RANGE * 2)
         newBubble.Parent = Workspace.RenderedEffects

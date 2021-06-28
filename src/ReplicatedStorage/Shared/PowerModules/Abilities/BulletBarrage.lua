@@ -145,7 +145,6 @@ function BulletLaunch.Run_Server(params, abilityDefs)
                 resultParams.BulletID = bulletID
                 Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "BulletImpact", resultParams)
                 if result.Instance.Parent:FindFirstChild("Humanoid") then
-                    --print("HIT A HUMANOID", result.Instance.Parent)
                     Knit.Services.PowersService:RegisterHit(initPlayer, result.Instance.Parent, abilityDefs)
                 end
             end
@@ -154,7 +153,6 @@ function BulletLaunch.Run_Server(params, abilityDefs)
         spawn(function()
             local waitTime = (shotDelay * count) - shotDelay
             wait(waitTime)
-            --print(waitTime)
             hitboxMod:CastProjectileHitbox(projectileData)
         end)
 
@@ -187,8 +185,6 @@ function BulletLaunch.Run_Client(params, abilityDefs)
  
     -- play the sound when it is fired
 	WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
-
-    --print(params.BulletsFired)
 
     for count = 1, shotCount do
 

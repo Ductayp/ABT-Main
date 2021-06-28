@@ -14,6 +14,7 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
+
 local PinCharacter = {}
 
 function PinCharacter.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
@@ -23,8 +24,9 @@ function PinCharacter.Server_ApplyEffect(initPlayer, hitCharacter, effectParams,
     -- if this is a mob, then stop its animation here
     if hitParams.IsMob then
         if hitCharacter.Humanoid then
-            
-            Knit.Services.MobService:PinMob(hitParams.MobId, effectParams.Duration)
+
+            require(Knit.MobUtils.MobPin).Pin_Duration(hitParams.MobId, effectParams.Duration)
+
             local blockAttackBool = Instance.new("Part")
             blockAttackBool.Name = "BlockAttacks"
             blockAttackBool.Parent = hitCharacter.HumanoidRootPart

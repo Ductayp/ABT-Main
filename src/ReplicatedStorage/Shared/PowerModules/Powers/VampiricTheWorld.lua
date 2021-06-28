@@ -132,7 +132,7 @@ end
 --defs
 VampiricTheWorld.Defs.Abilities.R = {
     Id = "WitherPunch",
-    Cooldown = 10,
+    Cooldown = 1,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("WitherPunch", true),
 }
@@ -148,7 +148,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.T = {
     Id = "TimeFreeze",
-    Cooldown = 60,
+    Cooldown = 1,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("TimeFreeze", true),
 }
@@ -165,7 +165,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.F = {
     Id = "BloodKnives",
-    Cooldown = 6,
+    Cooldown = 1,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("BloodKnives", true),
 }
@@ -182,7 +182,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.X = {
     Id = "PerfecLasers",
-    Cooldown = 8,
+    Cooldown = 1,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("PerfectLasers", true),
 }
@@ -234,7 +234,7 @@ end
 VampiricTheWorld.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 15, KnockBack = 10,}}
+    HitEffects = {Damage = {Damage = 10, KnockBack = 10,}, LifeSteal = {Quantity = 8}}
 }
 
 function VampiricTheWorld.Punch(params)

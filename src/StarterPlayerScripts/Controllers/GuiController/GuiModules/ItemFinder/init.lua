@@ -92,8 +92,6 @@ end
 --// Update ------------------------------------------------------------
 function ItemFinder.Update(hasGamePass, mapZone)
 
-    print("ItemFinder.Update(hasGamePass, mapZone)", hasGamePass, mapZone)
-
     if hasGamePass then
         ItemFinder.Frame_Blocker.Visible = false
         ItemFinder.HasAccess = true
@@ -204,8 +202,6 @@ function ItemFinder.DeSelectAll()
             ItemFinder.ActiveKeys[listItem:GetAttribute("ItemKey")] = false
         end
     end
-
-    print("TEST", ItemFinder.ActiveKeys)
 
     --Knit.Controllers.ItemSpawnController:UpdateItemFinder()
     GuiService:Request_GuiUpdate("ItemFinderWindow")

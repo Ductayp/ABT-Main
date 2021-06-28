@@ -19,7 +19,7 @@ local DEFAULT_WALKSPEED = 18
 local WalkSpeed = {}
 
 --// AddState - fires after AddState from 
-function WalkSpeed.Entry_Added(player, thisEntry, params, duplicateEntry)
+function WalkSpeed.Entry_Added(player, thisEntry, params)
 
     local newWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
     for _,valueObject in pairs(thisEntry.Parent:GetChildren()) do
@@ -48,23 +48,19 @@ end
 function WalkSpeed.GetModifiedValue(player, params)
 
     local totalWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
-    local walkSpeedState = ReplicatedStorage.StateService[player.UserId]:FindFirstChild("WalkSpeed")
-    if walkSpeedState then
-        for _,valueObject in pairs(walkSpeedState:GetChildren()) do
-            totalWalkSpeed = totalWalkSpeed + valueObject.Value
+
+    local playerFolder = ReplicatedStorage.StateService[player.UserId]
+    if playerFolder then
+        local walkSpeedState = playerFolder:FindFirstChild("WalkSpeed")
+        if walkSpeedState then
+            for _,valueObject in pairs(walkSpeedState:GetChildren()) do
+                totalWalkSpeed = totalWalkSpeed + valueObject.Value
+            end
         end
-    else
-        print("No STATES or MODIFIERS found for walkspeed, giving the default value")
     end
+
     
     return totalWalkSpeed
 end
-
-function WalkSpeed.Test()
-    print("test BOOPIE!")
-end
-
-
-
 
 return WalkSpeed

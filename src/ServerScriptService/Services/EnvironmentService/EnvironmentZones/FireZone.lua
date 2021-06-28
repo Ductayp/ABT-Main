@@ -71,8 +71,6 @@ end
 
 function FireZone.LeaveZone(player)
 
-    --print("FIRE ZONE - ZoneLeave", player)
-
     playerToggles[player.UserId] = false
 
     if player and player.Character then
@@ -84,18 +82,15 @@ function FireZone.LeaveZone(player)
                 if humanoid then
                     humanoid:TakeDamage(5)
                 end
-                --print(count)
             end
 
             local oldFire = player.Character:FindFirstChild("Environment_Fire", true)
-            print(oldFire)
             if oldFire then
                 oldFire.Enabled = false
                 Debris:AddItem(oldFire, 10)
             end
 
             local oldSmoke = player.Character:FindFirstChild("Environment_Smoke", true)
-            print(oldSmoke)
             if oldSmoke then
                 oldSmoke.Enabled = false
                 Debris:AddItem(oldSmoke, 10)
@@ -109,15 +104,11 @@ end
 
 function FireZone.PlayerJoin(player)
 
-    -- print("FIRE ZONE - PlayerJoin", player)
-
     playerToggles[player.UserId] = false
 
 end
 
 function FireZone.PlayerLeave(player)
-
-    --print("FIRE ZONE - PlayerLeave", player)
 
     playerToggles[player.UserId] = nil
 

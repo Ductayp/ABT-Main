@@ -15,8 +15,6 @@ local utils = require(Knit.Shared.Utils)
 
 --// BuyAccess
 function DungeonService:BuyAccess(player, params)
-
-    print("DUNEGON SERVICE", player, params)
       
     local dialogueModule = require(Knit.DialogueModules[params.ModuleName])
     if not dialogueModule then return end

@@ -53,8 +53,7 @@ function MobBrain.Run()
                         if mobData.Defs.IsMobile then
                             if mobData.MoveTarget then
 
-                                local isPinned = mobData.Model.HumanoidRootPart:FindFirstChild("IsPinned")
-                                if not isPinned then
+                                if not mobData.IsPinned then
 
                                     -- do the move
                                     mobData.Model.Humanoid:MoveTo(mobData.MoveTarget)
@@ -175,6 +174,14 @@ function MobBrain.Run()
 
 end
 
+---------------------------------------------------------------------------------------------------------------------------
+--// EVENT FUNCTIONS ------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------------------------------
+--// STATE FUNCTIONS ------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+
 --// State_Attack
 function MobBrain.State_Attack(mobData)
 
@@ -205,6 +212,10 @@ function MobBrain.State_Wait(mobData)
     -- set move
     mobData.MoveTarget = nil
 
+    if mobData.IsPinned then 
+        return
+    end
+
     -- set chase if we have a target
     if mobData.AttackTarget then
         mobData.BrainState = "Chase"
@@ -231,8 +242,6 @@ function MobBrain.State_Wait(mobData)
         end
     end
 
-    print("WAIT DEAD")
-
 end
 
 --// State_Home
@@ -247,7 +256,6 @@ function MobBrain.State_Home(mobData)
     if mobData.AttackTarget then
 
         if mobData.Defs.IsMobile then
-            print("IS_MOBILE")
             mobData.Model.HumanoidRootPart.Anchored = false
             mobData.Model.HumanoidRootPart:SetNetworkOwner(nil)
         end
@@ -255,6 +263,7 @@ function MobBrain.State_Home(mobData)
         mobData.BrainState = "Chase"
         mobData.StateTime = os.clock()
         return
+
     end
 
 end
@@ -276,8 +285,6 @@ function MobBrain.State_Return(mobData)
 
     -- if we get stuck in the return state too long, kill the mob
     if os.clock() > mobData.StateTime + 10 then
-
-        print("STATE RETURN", mobData)
 
         mobData.PlayerDamage = nil
         mobData.IsDead = true

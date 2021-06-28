@@ -1,4 +1,4 @@
--- ScrapePunch
+-- module
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -10,31 +10,45 @@ local utils = require(Knit.Shared.Utils)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
-local ScrapePunch = {}
+local module = {}
 
 -- timing
-ScrapePunch.HitDelay = 0.4
-ScrapePunch.InputBlockTime = 1
-ScrapePunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
+module.HitDelay = 0.4
+module.InputBlockTime = 1
+module.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
 
 -- hitbox
-ScrapePunch.HitboxSize = Vector3.new(5, 5, 12)
-ScrapePunch.HitboxOffset = CFrame.new(0, 0, 6)
-ScrapePunch.HitboxDestroyTime = .3
+module.HitboxSize = Vector3.new(5, 5, 12)
+module.HitboxOffset = CFrame.new(0, 0, 6)
+module.HitboxDestroyTime = .3
 
 local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
 
 --// HitCharacter
-function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
+function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    abilityDefs.HitEffects = {Damage = {Damage = 7}, Burn = {TickTime = 1, TickCount = 7, Damage = 4, Color = "GreenPurple"}}
+    abilityDefs.HitEffects = {
+        --Damage = {Damage = 7},
+        LifeSteal = {Quantity = 15},
+        Slow = {WalkSpeedModifier = -11, Duration = 7},
+        RunFunction = {RunOn = "Client", Script = script, FunctionName = "WitherEffects", FunctionParams = {HitCharacter = hitCharacter}}
+    }
+
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+
+    spawn(function()
+        abilityDefs.HitEffects = {Damage = {Damage = 3, HideEffects = true}}
+        for count = 1, 7 do
+            Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+            wait(1)
+        end
+    end)
 
     return params
 end
 
 --// Client_Start
-function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
+function module.Client_Start(params, abilityDefs, initPlayer)
 
     local initCharacter = initPlayer.Character
     if not initCharacter then return end
@@ -55,7 +69,7 @@ function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
         ManageStand.Aura_Off(params)
     end)
 
-    wait(ScrapePunch.HitDelay)
+    wait(module.HitDelay)
 
     WeldedSound.NewSound(targetStand.HumanoidRootPart, punchSound)
 
@@ -83,9 +97,27 @@ function ScrapePunch.Client_Start(params, abilityDefs, initPlayer)
 
 end
 
+function module.WitherEffects(functionParams)
+
+    if not functionParams.HitCharacter and functionParams.HitCharacter.HumanoidRootPart then return end
+
+    local redParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.WitherPunch.RedParticle:Clone()
+    local blackParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.WitherPunch.BlackParticle:Clone()
+
+    redParticle.Parent = functionParams.HitCharacter.HumanoidRootPart
+    blackParticle.Parent = functionParams.HitCharacter.HumanoidRootPart
+
+    wait(7)
+
+    redParticle.Enabled = false
+    blackParticle.Enabled = false
+
+    wait(10)
+
+    redParticle:Destroy()
+    blackParticle:Destroy()
+
+end
 
 
-
-
-
-return ScrapePunch
+return module

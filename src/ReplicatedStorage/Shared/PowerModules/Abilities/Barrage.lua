@@ -50,6 +50,18 @@ function Barrage.Initialize(params, abilityDefs)
 
 	-- InputEnded
 	if params.KeyState == "InputEnded" then
+
+		if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then
+			params.CanRun = false
+			return params
+		end
+
+		-- require the barrage ot be on before sending InutEnded to the server
+		if not AbilityToggle.RequireOn(params.InitUserId, {"E"}) then
+			params.CanRun = false
+			return params
+		end
+
 		params.CanRun = true
 	end
 
@@ -62,6 +74,7 @@ function Barrage.Activate(params, abilityDefs)
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
 
+		print(Cooldown.Server_IsCooled(params))
 		if not Cooldown.Server_IsCooled(params) then
 			params.CanRun = false
 			return params
@@ -202,8 +215,6 @@ end
 --// Run Effect
 function Barrage.RunEffect(params, abilityDefs)
 
-	--print("BARRAGE - RUN EFFECT", params, abilityDefs)
-
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer.Character.HumanoidRootPart then return end
 
@@ -239,8 +250,6 @@ end
 
 --// End Effect
 function Barrage.EndEffect(params, abilityDefs)
-
-	--print("BARRAGE - END EFFECT", params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	if not initPlayer.Character.HumanoidRootPart then return end

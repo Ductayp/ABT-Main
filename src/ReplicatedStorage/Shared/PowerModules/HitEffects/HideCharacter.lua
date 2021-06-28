@@ -14,15 +14,11 @@ local utils = require(Knit.Shared.Utils)
 local HideCharacter = {}
 
 function HideCharacter.Server_ApplyEffect(initPlayer, hitCharacter, params)
-
-    print("BEEP")
     
     local hideCharacterTag = hitCharacter:FindFirstChild("CharacterHidden", true)
     if hideCharacterTag then 
-        print("NOPE", hideCharacterTag)
         return
     else
-        print("Lets GO!")
         hideCharacterTag = Instance.new("BoolValue")
         hideCharacterTag.Name = "CharacterHidden"
         hideCharacterTag.Value = true
@@ -40,8 +36,6 @@ function HideCharacter.Server_ApplyEffect(initPlayer, hitCharacter, params)
 end
 
 function HideCharacter.Client_RenderEffect(params)
-
-    print("DUBBLE BEEP", params)
 
     if not params.HitCharacter then return end
 

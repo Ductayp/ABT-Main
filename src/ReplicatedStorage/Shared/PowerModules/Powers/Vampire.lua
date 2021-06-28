@@ -67,6 +67,7 @@ function Vampire.SetupPower(initPlayer,params)
 
     newFistAura_1.Parent = initPlayer.Character.RightHand
     newFistAura_2.Parent = initPlayer.Character.LeftHand
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped

@@ -17,8 +17,6 @@ CutSceneService.Client.Event_LoadScene = RemoteEvent.new()
 --// LoadScene_SinglePlayer
 function CutSceneService:LoadScene_SinglePlayer(player, params)
 
-    print("CUTSCENE SERVICE", player, params)
-
     local findModule = Knit.CutScenes:FindFirstChild(params.SceneName)
     if not findModule then return end
 

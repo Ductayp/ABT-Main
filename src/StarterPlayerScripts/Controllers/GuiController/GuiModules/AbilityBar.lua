@@ -82,7 +82,6 @@ function AbilityBar.Setup()
     for buttonName,buttonInstance in pairs(AbilityBar.Buttons) do
         buttonInstance.Active = true
         buttonInstance.MouseButton1Down:Connect(function()
-            print("MobileClicked", buttonInstance.Name)
             Knit.Controllers.InputController:SendToPowersService({InputId = buttonName, KeyState = "InputBegan"})
         end)
     end
@@ -114,15 +113,10 @@ function AbilityBar.UpdateCooldown(params)
 
     local thisCooldown = AbilityBar.Cooldowns[params.CooldownName] 
     if not thisCooldown then
-        print("AbilityBar.UpdateCooldown: CANT FIND COOLDOWN", params)
         return
     end
 
     thisCooldown.Size = FULL_COOLDOWN_SIZE
-
-    --print("AbilityBar.UpdateCooldown - params: ", params)
-    --print("AbilityBar.UpdateCooldown - thisCooldown: ", thisCooldown)
-    --print("AbilityBar.UpdateCooldown - params.CooldownTime: ", params.CooldownTime)
 
     -- get a length of time for the tween based on the actual 
     local tweenTime = params.CooldownTime - (os.time())

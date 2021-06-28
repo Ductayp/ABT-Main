@@ -4,14 +4,14 @@ local module = {}
 
 -- Initialize is run fresh every time this NPC Dialogue is started
 function module.Initialize()
-    -- print("BEEEP BEEP!")
+    -- nothign here yet
 end
 
 module.DungeonTravel = {
     SkeletonHeelStone = {
         Input = {
             Key = "DungeonKey",
-            Value = 6
+            Value = 3
         },
         SpawnName = "SkeletonHeelStone",
         MapZone = "SkeletonHeelStone",

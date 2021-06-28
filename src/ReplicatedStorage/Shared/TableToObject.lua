@@ -78,8 +78,6 @@ NewObject = function(table1, fold)
 end
 
 module.CreateObject = function(table1, tableName)
-	print("yeet")
-	print(table1,tableName)
 	if type(table1) == "table" and tableName and not module.storage:FindFirstChild(tableName) then
 		local fold = Instance.new("Folder")
 		fold.Name = tostring(tableName)

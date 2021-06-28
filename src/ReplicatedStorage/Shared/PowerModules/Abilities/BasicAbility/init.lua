@@ -35,7 +35,8 @@ function BasicAttack.Initialize(params, abilityDefs)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
 
-    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    --local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    local playerPing = 0
     abilityMod.Client_Initialize(params, abilityDefs, playerPing)
     abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
 
@@ -62,11 +63,10 @@ function BasicAttack.Activate(params, abilityDefs)
     Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
     BlockInput.AddBlock(params.InitUserId, "BasicAttack", abilityMod.InputBlockTime)
     
-    abilityMod.Server_Setup(params, abilityDefs, initPlayer)
-
-    spawn(function()
-        abilityMod.Server_Run(params, abilityDefs, initPlayer)
-    end)
+    --abilityMod.Server_Setup(params, abilityDefs, initPlayer)
+    
+    abilityMod.Server_Run(params, abilityDefs, initPlayer)
+    
 
 end
 

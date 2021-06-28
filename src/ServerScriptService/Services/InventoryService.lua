@@ -23,7 +23,7 @@ local utils = require(Knit.Shared.Utils)
 --// Give_Currency ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:Give_Currency(player, key, value, source)
 
-    print("InventoryService:Give_Currency(player, key, value, source)", player, key, value, source)
+    --print("InventoryService:Give_Currency(player, key, value, source)", player, key, value, source)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
@@ -35,19 +35,15 @@ function InventoryService:Give_Currency(player, key, value, source)
         if key == "Cash" then
             local multiplier = require(Knit.StateModules.Multiplier_Cash).GetTotalMultiplier(player)
             value = value * multiplier
-            --print("multiplier is: ", multiplier)
-            --print("value is: ", value)
         end
 
         -- Double sould orbs if they have the gamepass
         if key == "SoulOrbs" then
             local multiplier = require(Knit.StateModules.Multiplier_Orbs).GetTotalMultiplier(player)
             value = value * multiplier
-            --print("multiplier is: ", multiplier)
-            --print("value is: ", value)
         end
     else
-        print("Bought currency as a dev product, gamepass mutlipliers do not work!")
+        -- Bought currency as a dev product, gamepass mutlipliers do not work!
     end
 
     -- add it to the playerData
@@ -74,7 +70,7 @@ function InventoryService:Give_Item(player, key, quantity)
 
     -- if theres no item with this key, then return
     if not thisItemDef then
-        warn("NO ITEM WITH THIS KEY")
+        warn("NO ITEM WITH THIS KEY: InventoryService:Give_Item(player, key, quantity)", player, key, quantity)
         return
     end
 
@@ -83,7 +79,6 @@ function InventoryService:Give_Item(player, key, quantity)
         playerData.ItemInventory[key] = 0
     end
 
-    print("CHECK", key, quantity, playerData.ItemInventory[key])
     -- increment the key
     playerData.ItemInventory[key] += quantity
 
@@ -99,7 +94,6 @@ function InventoryService:Give_Xp(player, xpValue)
 
     -- check if player has any bonuses
     local multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
-    print("XP Multiplier is: ", multiplier)
 
     -- multiply the value
     xpValue = xpValue * multiplier
@@ -147,8 +141,6 @@ end
 --// USeItem
 function InventoryService:UseItem(player, key)
 
-    print(player, " is trying to use: ", key)
-
     local returnMessage
 
     -- get player data
@@ -157,7 +149,6 @@ function InventoryService:UseItem(player, key)
 
     -- check if the player has the item to use
     if playerData.ItemInventory[key] == nil or playerData.ItemInventory[key] < 1 then
-        print(player, ": tried to use special but there is item in the players data")
         local returnMessage = "None Owned"
         return returnMessage
     end
@@ -170,13 +161,11 @@ function InventoryService:UseItem(player, key)
     end
 
     if thisItem.Type == "Collectable" then
-        print(player, ": Collectabe items cant be used")
         local returnMessage = "Can't Use This"
         return returnMessage
     end
 
     if thisItem.Type == "Special" then
-        print(player, ": SPECIAL!")
 
         -- check in player is standless
         if playerData.CurrentStand.Power ~= "Standless" then
@@ -339,45 +328,10 @@ function InventoryService:GenerateNewStand(player)
 
 end
 
---// StoreStand ---------------------------------------------------------------------------------------------------------------------------
-function InventoryService:StoreStand(player, GUID)
-
-    -- sanity check to see if player has access
-    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
-    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
-    print("isInZone", isInZone)
-    if hasGamePass or isInZone then
-        print("You can manage the stands, homie!")
-    else
-        print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
-        return
-    end
-
-    -- get player data
-    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if not playerData then return end
-
-    -- if the ucrrent power is standless, we dont store it obviously!
-    if playerData.CurrentStand.Power == "Standless" then
-        return
-    end
-
-    -- store the current stand in the player has space
-    if playerData.StandStorage.SlotsUnlocked > #playerData.StandStorage.StoredStands then
-        table.insert(playerData.StandStorage.StoredStands, 1, playerData.CurrentStand)
-        Knit.Services.PowersService:SetCurrentPower(player, {Power = "Standless"})
-    else
-        print("no space in storage for this stand")
-        return
-    end
-
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-end
 
 --// SellStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:SellStand(player, GUID)
 
-    print("SELL STAND", player, GUID)
     -- return is GUID is nil
     if not GUID then
         return
@@ -411,6 +365,41 @@ function InventoryService:SellStand(player, GUID)
 
 end
 
+
+--// StoreStand ---------------------------------------------------------------------------------------------------------------------------
+function InventoryService:StoreStand(player, GUID)
+
+    -- sanity check to see if player has access
+    local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
+    local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
+    if hasGamePass or isInZone then
+        --print("You can manage the stands, homie!")
+    else
+        --print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
+        return
+    end
+
+    -- get player data
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData then return end
+
+    -- if the ucrrent power is standless, we dont store it obviously!
+    if playerData.CurrentStand.Power == "Standless" then
+        return
+    end
+
+    -- store the current stand in the player has space
+    if playerData.StandStorage.SlotsUnlocked > #playerData.StandStorage.StoredStands then
+        table.insert(playerData.StandStorage.StoredStands, 1, playerData.CurrentStand)
+        Knit.Services.PowersService:SetCurrentPower(player, {Power = "Standless"})
+    else
+        --warn("no space in storage for this stand")
+        return
+    end
+
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+end
+
 --// EquipStand ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:EquipStand(player, GUID)
 
@@ -418,9 +407,9 @@ function InventoryService:EquipStand(player, GUID)
     local hasGamePass = Knit.Services.GamePassService:Has_GamePass(player, "MobileStandStorage")
     local isInZone = Knit.Services.ZoneService:IsPlayerInZone(player, "StorageZone")
     if hasGamePass or isInZone then
-        print("You can manage the stands, homie!")
+        --print("You can manage the stands, homie!")
     else
-        print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
+        --print("You cant MANAGE STAND: Either no Mobile Storage or you are not at Puccis")
         return
     end
 
@@ -429,7 +418,7 @@ function InventoryService:EquipStand(player, GUID)
     if not playerData then return end
 
     -- save the current stand in a variable to store it after we equip the new one
-    tempStoredStand = playerData.CurrentStand
+    local tempStoredStand = playerData.CurrentStand
 
     --find the stand by GUID and set some variable we need
     for index, stand in pairs(playerData.StandStorage.StoredStands) do
@@ -445,6 +434,7 @@ function InventoryService:EquipStand(player, GUID)
             if tempStoredStand.Power ~= "Standless" then
                 table.insert(playerData.StandStorage.StoredStands, tempStoredStand)
             end
+
             break
         end
     end

@@ -72,11 +72,14 @@ function AbilityToggle.GetToggleValue(userId, toggleName)
 
     local returnValue = false
 
-    local toggleFolder = ReplicatedStorage.PowerStatus[userId]:FindFirstChild("Toggles")
-    if toggleFolder then
-        thisToggle = toggleFolder:FindFirstChild(toggleName)
-        if thisToggle then
-            returnValue = thisToggle.Value
+    local playerFolder = ReplicatedStorage.PowerStatus:FindFirstChild(userId)
+    if playerFolder then
+        local toggleFolder = playerFolder:FindFirstChild("Toggles")
+        if toggleFolder then
+            thisToggle = toggleFolder:FindFirstChild(toggleName)
+            if thisToggle then
+                returnValue = thisToggle.Value
+            end
         end
     end
 

@@ -127,7 +127,6 @@ function NPCDialogue.ConnectDialogue(idObject, proximityPrompt)
     if findModule then
         NPCDialogue.DialogueModules[idObject.Value] = require(findModule)
     else
-        print("No NPC Dialgue Module Found: ", idObject.Value )
         return
     end
 

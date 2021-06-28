@@ -77,7 +77,7 @@ module.ShopItems = {
 
         InputName = "Cash",
         InputKey = "Cash",
-        InputValue = 500,
+        InputValue = 1000,
 
         Description = "Opens up dungeons. What else do you need to know?",
 
@@ -91,7 +91,7 @@ module.ShopItems = {
 
         InputName = "Cash",
         InputKey = "Cash",
-        InputValue = 4750,
+        InputValue = 9000,
 
         Description = "Opens up dungeons. What else do you need to know?",
 

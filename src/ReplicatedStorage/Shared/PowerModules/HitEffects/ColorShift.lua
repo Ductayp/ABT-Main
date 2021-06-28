@@ -15,27 +15,41 @@ local Lighting = game:GetService("Lighting")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
-local ColorShift = {}
+local ColorShift = {} 
 
 function ColorShift.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
     -- only apply this effect to players
     local player = utils.GetPlayerFromCharacter(hitCharacter)
     if player then
+
+        params.DayCycle = Knit.Services.EnvironmentService.CurrentCycle
         Knit.Services.PowersService:RenderHitEffect_SinglePlayer(player, "ColorShift", params)
+
     end
+
 end
 
 function ColorShift.Client_RenderEffect(params)
 
     spawn(function()
+
+        if Lighting:FindFirstChild("New_ColorCorrection") then return end
+
         local originalColorCorrection = Lighting:FindFirstChild("ColorCorrection_Main")
         local originalContrast = originalColorCorrection.Contrast
         local newColorCorrection = originalColorCorrection:Clone()
-        newColorCorrection.Name = "newColorCorrection"
+        newColorCorrection.Name = "New_ColorCorrection"
         newColorCorrection.Parent = Lighting
 
-        local colorTween1 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = -3})
+        local targetBrightness
+        if params.DayCycle == "Day" then
+            targetBrightness = 0
+        else
+            targetBrightness = -0.5
+        end
+
+        local colorTween1 = TweenService:Create(newColorCorrection,TweenInfo.new(.5),{Contrast = -3, Brightness = targetBrightness})
         colorTween1:Play()
 
         originalColorCorrection.Enabled = false

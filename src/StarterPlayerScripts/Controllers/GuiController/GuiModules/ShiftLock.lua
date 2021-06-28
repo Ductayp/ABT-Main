@@ -61,7 +61,6 @@ end
 function ShiftLock.SetOff()
 
     if IsMobile and MOBILE_ENABLED then
-        print("SET OFF")
         ShiftLock.Enabled = false
         ShiftLock.Button_ShiftLock.Image = SHIFT_LOCK_OFF
         ShiftLock.Cursor_ShiftLock.Visible = false

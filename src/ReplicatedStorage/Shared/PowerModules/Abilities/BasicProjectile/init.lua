@@ -44,7 +44,8 @@ function BasicProjectile.Initialize(params, abilityDefs)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
 
-    local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    --local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
+    local playerPing = 0
     abilityMod.Client_Initialize(params, abilityDefs, playerPing)
     abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
 

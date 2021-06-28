@@ -4,7 +4,7 @@ local module = {}
 
 -- Initialize is run fresh every time this NPC Dialogue is started
 function module.Initialize()
-    -- print("BEEEP BEEP!")
+    -- nothign here yet
 end
 
 

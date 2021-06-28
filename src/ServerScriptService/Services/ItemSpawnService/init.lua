@@ -221,7 +221,6 @@ function ItemSpawnService:GiveItem(player, itemParams)
         if itemParams.Random then
             local randomPick = math.random(1, #itemParams.PickList)
             local pickedBoost = itemParams.PickList[randomPick]
-            print(pickedBoost)
             Knit.Services.BoostService:AddBoost(player, pickedBoost.Key, pickedBoost.Duration)
 
             -- update notifications
@@ -231,7 +230,7 @@ function ItemSpawnService:GiveItem(player, itemParams)
             Knit.Services.GuiService:Update_Notifications(player, notificationParams)
         end
     else    
-        print("This spawn item had no matching DataCategory. Nothing given to player")
+        warn("This spawn item had no matching DataCategory. ItemSpawnService:GiveItem(player, itemParams)", player, itemParams)
     end
     
 end

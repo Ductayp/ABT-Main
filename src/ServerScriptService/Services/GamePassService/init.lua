@@ -146,7 +146,6 @@ local devProducts = require(script.DevProducts)
 
 --// Prompt_ProductPurchase
 function GamePassService:Prompt_ProductPurchase(player, productName)
-    print(player, productName)
     local productId = devProducts[productName].ProductId
     MarketplaceService:PromptProductPurchase(player, productId)
 end
@@ -158,8 +157,6 @@ end
 
 --// ProcessReceipt
 function GamePassService:ProcessReceipt(receiptInfo)
-
-    print(receiptInfo)
 
     if receiptInfo then
         -- get the player by their PlayerId
@@ -179,8 +176,6 @@ function GamePassService:ProcessReceipt(receiptInfo)
 
             -- process the results
             if purchaseExists then
-                print("purchase already existed, NOPERS!")
-
                 -- return to Roblox that we did not give the product
                 return Enum.ProductPurchaseDecision.NotProcessedYet
             else
@@ -202,8 +197,6 @@ function GamePassService:ProcessReceipt(receiptInfo)
                             Knit.Services.BoostService:AddBoost(player, productTable.Params.DataKey, productTable.Params.Duration, "GamePassService")
                         end
 
-                        print("Match!")
-                        print(productTable.ProductId, productTable.Params.DataKey, productTable.Params.Value, productTable.Params.DataCategory)
                     end
                 end
 
@@ -238,7 +231,6 @@ function GamePassService:PlayerAdded(player)
 
             -- create state in StateService 
             if passTable.CreateState then
-                print("GAMEPASS SEVRIE SETUP: ", passName,passTable)
                 Knit.Services.StateService:AddEntryToState(player, passTable.CreateState, "GamePassService", passTable.StateValue)
             end
         else

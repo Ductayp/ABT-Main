@@ -22,7 +22,7 @@ module.RespawnClock = os.clock()
 module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
-module.Max_Spawned = 9
+module.Max_Spawned = 6
 
 --/ Animations
 module.Animations = {
@@ -143,7 +143,7 @@ function  module.Attack(mobData)
         mobData.Model.Humanoid.WalkSpeed = 2
         local rand = math.random(1, #mobData.Animations.Attack)
         wait(.25)
-        mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
+        mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
 
         Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
     end)  

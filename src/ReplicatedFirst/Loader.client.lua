@@ -97,8 +97,6 @@ PlayButton.MouseButton1Down:Connect(function()
     end
 end)
 
-print("TESET", isTestServer.Value, isTester)
-
 local accessAllowed
 if isTestServer.Value == true and isTester == false then
     LoadingInfo.Text = "You must have the TESTER role to join this game"

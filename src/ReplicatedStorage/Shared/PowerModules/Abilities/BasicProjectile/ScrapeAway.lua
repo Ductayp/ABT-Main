@@ -115,8 +115,6 @@ function module.Client_Stage_1(params, abilityDefs, playerPing)
 
         wait(.4)
 
-        print("TEST")
-
         local newPart = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.ScrapeAway.ScrapeHole:Clone()
         newPart.Parent = Workspace.RenderedEffects
         newPart.CFrame = targetStand.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0, 0, -4))

@@ -28,7 +28,7 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
     -- see if the state exists and make it if it doesnt
     local stateFolder = playerFolder:FindFirstChild(stateName)
     if not stateFolder then
-        print("State Class does not exist")
+        --print("State Class does not exist")
         return
     end
 
@@ -41,7 +41,7 @@ function StateService:AddEntryToState(player, stateName, entryName, entryValue, 
         duplicateEntry = false
         thisEntry = utils.NewValueObject(entryName, entryValue, stateFolder)
 
-        -- iterate through params and create new values also based ont their types and parent to the new entry
+        -- iterate through params and create new values also based on their types and parent to the new entry
         if params then
             for key,value in pairs(params) do
                 utils.NewValueObject(key, value, thisEntry)

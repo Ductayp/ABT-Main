@@ -215,8 +215,6 @@ function ManageStand.EquipStand(params, abilityDefs)
 		if idleAnimation then
 			local newTrack = animationController:LoadAnimation(idleAnimation)
 			newTrack:Play()
-		else
-			print("cant find animation")
 		end
 	end
 
@@ -224,8 +222,6 @@ end
 
 --// removes the stand for the target player
 function ManageStand.RemoveStand(params, abilityDefs)
-
-	print("RemoveStand", params, abilityDefs)
 
 	local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(initPlayer.UserId)
@@ -295,8 +291,6 @@ end
 --// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. It also returns the stand
 function ManageStand.QuickRender(params)
 
-	print("QUICK RENDER PARAMS: ", params)
-
 	-- be sure the player has an equipped stand, if not then just return
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
 	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand")
@@ -306,7 +300,6 @@ function ManageStand.QuickRender(params)
 
 	-- some setup and definitions
 	local initPlayer = utils.GetPlayerByUserId(tonumber(params.InitUserId))
-	print("initPlayer", initPlayer)
 	local initPlayerRoot = initPlayer.Character.HumanoidRootPart
 
 	-- define then clear the players stand folder, just in case :)
@@ -320,8 +313,6 @@ function ManageStand.QuickRender(params)
 	else
 		thisStand = ReplicatedStorage.EffectParts.StandModels:FindFirstChild(params.PowerID .. "_" .. params.PowerRank)
 	end
-
-	print("thisStand", thisStand)
 
 	local newStand = utils.EasyClone(thisStand, {Parent = playerStandFolder})
 	newStand.Parent = playerStandFolder
@@ -349,8 +340,6 @@ function ManageStand.QuickRender(params)
 		if idleAnimation then
 			local newTrack = animationController:LoadAnimation(idleAnimation)
 			newTrack:Play()
-		else
-			print("cant find animation")
 		end
 	end
 

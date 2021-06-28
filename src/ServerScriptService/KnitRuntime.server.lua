@@ -19,6 +19,8 @@ Knit.PowerUtils = ReplicatedStorage.GameFiles.Shared.PowerModules.PowerUtils
 
 Knit.ServerModules = ServerScriptService.GameFiles.Modules
 
+Knit.MobUtils = ServerScriptService.GameFiles.Services.MobService.MobUtils
+
 Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
 Knit.ShopModules = ReplicatedStorage.GameFiles.Shared.ShopModules
 

@@ -4,7 +4,7 @@ local module = {}
 
 -- Initialize is run fresh every time this NPC Dialogue is started
 function module.Initialize()
-    -- print("BEEEP BEEP!")
+    -- nothign here yet
 end
 
 
@@ -25,10 +25,10 @@ module.Stage.Start = {
     },
     Choice_2 = {
         Display = true,
-        Text = "Dunegon Keys?",
+        Text = "Dungeon Keys?",
         Action = {
             Type = "ChangeStage",
-            Stage = "DunegonKeys"
+            Stage = "DungeonKeys"
         }
     },
     Choice_3 = {
@@ -40,13 +40,13 @@ module.Stage.NotWater = {
     IconName = "Icon_Giorno",
     Title = "Gang Star",
     Body = "This all around me is NOT water. It's PINK after all. It seems to be some substance that connects different times in the Rift." ..
-        "<br/><br/>Don't try to swim, it's highly unstable and your body will be ripped to pieces. We need the <b>Dunegon Keys.</b> to travel off this island.",
+        "<br/><br/>Don't try to swim, it's highly unstable and your body will be ripped to pieces. We need the <b>Dungeon Keys.</b> to travel off this island.",
     Choice_1 = {
         Display = true,
-        Text = "Dunegon Keys?",
+        Text = "Dungeon Keys?",
         Action = {
             Type = "ChangeStage",
-            Stage = "DunegonKeys"
+            Stage = "DungeonKeys"
         }
     },
     Choice_2 = {
@@ -57,10 +57,10 @@ module.Stage.NotWater = {
     },
 }
 
-module.Stage.DunegonKeys = {
+module.Stage.DungeonKeys = {
     IconName = "Icon_Giorno",
     Title = "Gang Star",
-    Body = "A <b>Dunegon Key</b> is concentrated collection of power, in the shape of a key. We use them to stablize the time rift and travel into areas that are highly unstable." ..
+    Body = "A <b>Dungeon Key</b> is concentrated collection of power, in the shape of a key. We use them to stablize the time rift and travel into areas that are highly unstable." ..
         "<br/><br/>You can find them around or you can buy them at the shop, dont ask where they come from.",
     Choice_1 = {
         Display = true,

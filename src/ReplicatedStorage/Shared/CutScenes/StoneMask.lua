@@ -12,8 +12,6 @@ local StoneMask = {}
 --// Server_Run
 function StoneMask.Server_Run(params)
 
-    --print("StoneMask.Server_Run", params)
-
     if not params.TargetPlayer.Character then return end
     params.TargetPlayer.Character.HumanoidRootPart.Anchored = true
 
@@ -35,10 +33,6 @@ end
 
 --// Client_Run
 function StoneMask.Client_Run(params)
-
-    --print("StoneMask.Client_Run", params)
-
-    
 
     if params.TargetPlayer == Players.LocalPlayer then
 

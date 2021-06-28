@@ -184,7 +184,7 @@ function  module.Attack(mobData)
                 wait(.5)
             end
             
-            mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
+            mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
             mobData.Animations.SpinArmsAttack:Stop()
 
         else

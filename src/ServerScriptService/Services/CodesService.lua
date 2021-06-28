@@ -100,7 +100,6 @@ end
 --// Client:RedeemCode
 function CodesService.Client:RedeemCode(player, code)
     local returnMessage = self.Server:RedeemCode(player, code)
-    print("SERVER RETURN: ", returnMessage)
     return returnMessage
 end
 

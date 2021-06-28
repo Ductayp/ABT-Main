@@ -149,7 +149,8 @@ function PowersController:RenderExistingStands()
     end
 end 
 
---// PowerChanged
+--// PowerChanged - this event gets fired when a player changes their stand/power.
+-- its primary purpse is to remove any visual status effects on the player.Character such as rage boosts, etc
 function PowersController:PowerChanged(targetPlayer, params)
 
     local character = targetPlayer.Character

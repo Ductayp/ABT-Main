@@ -60,8 +60,6 @@ function Health.GetMaxHealth(player, params)
         for _,valueObject in pairs(healthState:GetChildren()) do
             maxHealth = maxHealth + valueObject.Value
         end
-    else
-        print("No STATES or MODIFIERS found for walkspeed, giving the default value")
     end
 
     return maxHealth

@@ -22,8 +22,10 @@ end
 function RenderEffects.Client_RenderEffect(params)
 
     for _, effect in pairs(params) do
-        local thisScript = require(effect.Script)
-        thisScript[effect.Function](effect.Arguments)
+        spawn(function()
+            local thisScript = require(effect.Script)
+            thisScript[effect.Function](effect.Arguments)
+        end)
     end
     
 end

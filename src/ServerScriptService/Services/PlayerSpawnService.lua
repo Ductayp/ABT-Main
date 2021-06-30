@@ -83,6 +83,8 @@ function PlayerSpawnService:CustomSpawn(player)
     if not player then return end
 
     local spawnGroupName = PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn
+    --if not spawnerGroupName then return end
+
     local spawnerGroup = PlayerSpawnService.SpawnerGroups[spawnGroupName]:GetChildren()
     local randPick = math.random(1, #spawnerGroup)
     local targetSpawner = spawnerGroup[randPick]
@@ -103,19 +105,6 @@ function PlayerSpawnService:CustomSpawn(player)
         end
 
         player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
-
-        -- set max health
-        local maxHealth = require(Knit.StateModules.Health).GetMaxHealth(player)
-
-        --[[
-        print("maxHealth", maxHealth)
-        print("HEALTH", player.Character.Humanoid.Health)
-        print("MAX HEALTH", player.Character.Humanoid.MaxHealth)
-        ]]--
-
-        player.Character.Humanoid.MaxHealth = maxHealth
-        player.Character.Humanoid.Health = maxHealth
-        --print(require(Knit.StateModules.Health).GetMaxHealth(player))
 
     end
 
@@ -145,6 +134,8 @@ end
 --// PlayerAdded
 function PlayerSpawnService:PlayerAdded(player)
 
+    --repeat wait() until player.UserId
+    
     PlayerSpawnService.PlayerSpawnSettigns[player.UserId] = {CurrentSpawn = "Morioh"}
     self:CustomSpawn(player)
 

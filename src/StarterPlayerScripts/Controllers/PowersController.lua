@@ -221,6 +221,20 @@ function PowersController:KnitStart()
         end)
     end
 
+    spawn(function()
+    
+        local effectFolder = Workspace:WaitForChild("RenderedEffects", 15)
+
+        if effectFolder then
+            while true do
+                local children = effectFolder:GetChildren()
+                print("RenderedEffects Child Count = ", #children)
+                wait(10)
+            end
+        end
+
+    end)
+
 end
 
 --// KnitInit

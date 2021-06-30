@@ -29,12 +29,15 @@ function Health.Entry_Added(player, thisEntry, params, duplicateEntry)
         end
     end
 
-
     local humanoid = player.Character:WaitForChild("Humanoid")
     humanoid.MaxHealth = newMaxHealth
+    humanoid.Health = newMaxHealth
+
+    --[[
     if humanoid.Health > humanoid.MaxHealth then
         humanoid.Health = humanoid.MaxHealth
     end
+    ]]--
  
 end
 

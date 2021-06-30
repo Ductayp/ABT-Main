@@ -15,7 +15,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 -- modules
 local utils = require(Knit.Shared.Utils)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
-local Cooldown = require(Knit.PowerUtils.Cooldown)
+--local Cooldown = require(Knit.PowerUtils.Cooldown)
 
 -- events
 PowersService.Client.ExecutePower = RemoteEvent.new()
@@ -128,13 +128,8 @@ function PowersService:SetCurrentPower(player, params)
         setupPowerParams.Rank = params.Rank
         if setupPowerModule.SetupPower then
             setupPowerModule.SetupPower(player, setupPowerParams)
-
-            -- force cooldown on all abilities
-            local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
-            for _, key in pairs(cooldownKeys) do
-                Cooldown.Server_SetCooldown(player.UserId, key, 10)
-            end
         end
+
 
         playerData.CurrentStand = params
     end
@@ -479,6 +474,7 @@ function PowersService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         self:PlayerRemoving(player)
     end)
+
     
 end
 

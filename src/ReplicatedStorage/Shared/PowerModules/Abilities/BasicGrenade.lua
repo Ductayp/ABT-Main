@@ -144,12 +144,9 @@ function BasicGrenade.Run_Effects(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
     abilityMod.Client_Launch(initPlayer, params.Grenade)
 
-    -- get the local palyers ping
-    local ping = Knit.Controllers.PlayerUtilityController:GetPing()
-
     -- wait for detonation
     spawn(function()
-        wait(params.Grenade.DetonationDelay - ping)
+        wait(params.Grenade.DetonationDelay)
         abilityMod.Client_Explode(initPlayer, params.Grenade)
     
     end)

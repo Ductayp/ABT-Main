@@ -141,15 +141,7 @@ function TimeStop.Run_Client(params, abilityDefs)
     -- play the sound
     WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, abilityDefs.Sounds.TimeStop)
 
-    -- get Localplayer ping
-    local ping = Knit.Controllers.PlayerUtilityController:GetPing()
-
-    --wait for animation and audio
-    if params.SystemStage == "Initialize" then
-        wait(effectDelay + ping)
-    else
-        wait(effectDelay - ping)
-    end
+    wait(effectDelay)
 
     --[[
     -- color shift effect for all players in range

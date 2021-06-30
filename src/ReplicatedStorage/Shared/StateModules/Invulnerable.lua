@@ -36,7 +36,7 @@ end
 function Invulnerable.Entry_Removed(player, thisState)
 
     if not player.Character then return end
-    if not player.Character.Head then return end
+    if not player.Character:FindFirstChild("Head") then return end
 
     -- if player is no longer invulnerable, turn it off
     if Invulnerable.IsInvulnerable(player) then

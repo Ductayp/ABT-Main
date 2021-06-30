@@ -38,8 +38,10 @@ function BasicAttack.Initialize(params, abilityDefs)
     --local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
     local playerPing = 0
     abilityMod.Client_Initialize(params, abilityDefs, playerPing)
-    abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
-
+    spawn(function()
+        abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
+    end)
+    
 end
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -57,16 +59,17 @@ function BasicAttack.Activate(params, abilityDefs)
 
     local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
     if not initPlayer then return end
+    if not initPlayer.Character then return end
 
     local abilityMod = require(abilityDefs.AbilityMod)
 
     Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
     BlockInput.AddBlock(params.InitUserId, "BasicAttack", abilityMod.InputBlockTime)
     
-    --abilityMod.Server_Setup(params, abilityDefs, initPlayer)
-    
-    abilityMod.Server_Run(params, abilityDefs, initPlayer)
-    
+    abilityMod.Server_Setup(params, abilityDefs, initPlayer)
+    spawn(function()
+        abilityMod.Server_Run(params, abilityDefs, initPlayer)
+    end)
 
 end
 
@@ -81,10 +84,12 @@ function BasicAttack.Execute(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     if initPlayer ~= Players.LocalPlayer then
-        abilityMod.Client_Stage_1(params, abilityDefs)
+        spawn(function()
+            abilityMod.Client_Stage_1(params, abilityDefs)
+        end)
     end
     
-    abilityMod.Client_Stage_2(params, abilityDefs)
+    abilityMod.Client_Stage_2(params, abilityDefs, initPlayer)
 
 end
 

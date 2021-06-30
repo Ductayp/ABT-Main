@@ -68,6 +68,13 @@ function Vampire.SetupPower(initPlayer,params)
     newFistAura_1.Parent = initPlayer.Character.RightHand
     newFistAura_2.Parent = initPlayer.Character.LeftHand
 
+    -- force cooldown on all abilities
+    local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
+    --local cooldownKeys = {"E", "R", "T", "F", "Z", "X", "C"}
+    for _, key in pairs(cooldownKeys) do
+        require(Knit.PowerUtils.Cooldown).Server_SetCooldown(initPlayer.UserId, key, 15)
+    end
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped

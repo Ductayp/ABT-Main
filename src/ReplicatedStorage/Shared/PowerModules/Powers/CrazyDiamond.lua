@@ -59,6 +59,13 @@ function CrazyDiamond.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CrazyDiamond_Setup", CrazyDiamond.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CrazyDiamond_Setup", CrazyDiamond.Defs.DamageMultiplier[params.Rank], nil)
 
+    -- force cooldown on all abilities
+    --local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
+    local cooldownKeys = {"E", "R", "T", "F", "Z", "X", "C"}
+    for _, key in pairs(cooldownKeys) do
+        require(Knit.PowerUtils.Cooldown).Server_SetCooldown(initPlayer.UserId, key, 15)
+    end
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped

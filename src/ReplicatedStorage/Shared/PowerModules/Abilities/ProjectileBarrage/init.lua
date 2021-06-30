@@ -129,11 +129,15 @@ function ProjectileBarrage.Activate(params, abilityDefs)
 
         spawn(function()
 
+            --[[
             local playerPing = Knit.Services.PlayerUtilityService:GetPing(initPlayer)
             local initialWait = abilityMod.InitialDelay - (playerPing / 2)
             if initialWait > 0 then
                 wait(initialWait)
             end
+            ]]--
+
+            wait(abilityMod.InitialDelay)
 
             local shotWait = (abilityMod.ShotDelay * count) - abilityMod.ShotDelay
             wait(shotWait)

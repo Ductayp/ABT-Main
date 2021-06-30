@@ -59,6 +59,13 @@ function VampiricTheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "VampiricTheWorld_Setup", 2, {TimeStop = true})
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "VampiricTheWorld_Setup", VampiricTheWorld.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "VampiricTheWorld_Setup", VampiricTheWorld.Defs.DamageMultiplier[params.Rank], nil)
+
+    -- force cooldown on all abilities
+    --local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
+    local cooldownKeys = {"E", "R", "T", "F", "Z", "X", "C"}
+    for _, key in pairs(cooldownKeys) do
+        require(Knit.PowerUtils.Cooldown).Server_SetCooldown(initPlayer.UserId, key, 15)
+    end
 end
 
 --// REMOVE - run this once when the stand is un-equipped
@@ -148,7 +155,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.T = {
     Id = "TimeFreeze",
-    Cooldown = 1,
+    Cooldown = 5,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("TimeFreeze", true),
 }
@@ -182,7 +189,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.X = {
     Id = "PerfecLasers",
-    Cooldown = 1,
+    Cooldown = 5,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("PerfectLasers", true),
 }

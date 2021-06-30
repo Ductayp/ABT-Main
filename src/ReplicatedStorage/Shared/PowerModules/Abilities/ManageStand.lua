@@ -386,6 +386,8 @@ end
 function ManageStand.StopAnimation(params, animationName)
 
 	local playerStandFolder = workspace.PlayerStands:FindFirstChild(params.InitUserId)
+	if not playerStandFolder then return end
+	
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	if not targetStand then
 		return

@@ -60,6 +60,13 @@ function TheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "TheWorld_Setup", 2, {TimeStop = true})
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "TheWorld_Setup", TheWorld.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "TheWorld_Setup", TheWorld.Defs.DamageMultiplier[params.Rank], nil)
+
+    -- force cooldown on all abilities
+    --local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
+    local cooldownKeys = {"E", "R", "T", "F", "Z", "X", "C"}
+    for _, key in pairs(cooldownKeys) do
+        require(Knit.PowerUtils.Cooldown).Server_SetCooldown(initPlayer.UserId, key, 15)
+    end
 end
 
 --// REMOVE - run this once when the stand is un-equipped
@@ -187,7 +194,7 @@ end
 --defs
 TheWorld.Defs.Abilities.HeavyPunch = {
     Id = "TimePunch",
-    Cooldown = 5,
+    Cooldown = 7,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("TimePunch", true),
 }

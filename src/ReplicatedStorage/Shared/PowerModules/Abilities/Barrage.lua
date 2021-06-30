@@ -161,22 +161,27 @@ function Barrage.CreateHitbox(params, abilityDefs)
 	hitPart.Touched:Connect(function() end)
 
 	spawn(function()
-		while hitPart.Parent == Workspace.ServerHitboxes[params.InitUserId] do
-			local hitParts = hitPart:GetTouchingParts()
-			local hitCharacters = {}
-			for _, part in pairs(hitParts) do
-				if part.Parent:FindFirstChild("Humanoid") then
-					hitCharacters[part.Parent] = true
+		
+		local playerHitboxFolder = Workspace.ServerHitboxes[params.InitUserId]
+		if playerHitboxFolder ~= nil then
+			while hitPart.Parent == Workspace.ServerHitboxes[params.InitUserId] do
+				local hitParts = hitPart:GetTouchingParts()
+				local hitCharacters = {}
+				for _, part in pairs(hitParts) do
+					if part.Parent:FindFirstChild("Humanoid") then
+						hitCharacters[part.Parent] = true
+					end
 				end
-			end
-			for character, _ in pairs(hitCharacters) do
-				local thisPlayer = utils.GetPlayerFromCharacter(character)
-				if thisPlayer ~= initPlayer then
-					Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+				for character, _ in pairs(hitCharacters) do
+					local thisPlayer = utils.GetPlayerFromCharacter(character)
+					if thisPlayer ~= initPlayer then
+						Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+					end
 				end
+				wait(.25)
 			end
-			wait(.25)
 		end
+
 	end)
 end
 

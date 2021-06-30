@@ -14,7 +14,7 @@ local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
-local RANGE = 80
+local RANGE = 60
 local EFFECT_DELAY = 2
 local DURATION = 7
 
@@ -30,51 +30,52 @@ module.MobilityLockParams.AnchorCharacter = true
 
 --// Server_Setup
 function module.Server_Setup(params, abilityDefs, initPlayer)
-
+    params.Origin = initPlayer.Character.HumanoidRootPart.Position
 end
 
 --// Server_Run
 function module.Server_Run(params, abilityDefs, initPlayer)
 
-    spawn(function()
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then return end
+    if not initPlayer.Character then return end
 
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        if not initPlayer then return end
-        if not initPlayer.Character then return end
-    
-        local dayCycle = Knit.Services.EnvironmentService.CurrentCycle
-    
-        wait(EFFECT_DELAY)
-    
-        local hitPlayers = TargetByZone.GetPlayers(initPlayer, params.Origin, RANGE, true)
-        local hitCharacters = TargetByZone.GetAllInRange(initPlayer, params.Origin, RANGE, true)
+    local dayCycle = Knit.Services.EnvironmentService.CurrentCycle
 
-        -- set HitEffects to ColorShift function only
-        abilityDefs.HitEffects = {
-            RenderEffects = {
-                {Script = script, Function = "ColorShiftEffect", Arguments = {DayCycle = dayCycle}}
-            }
+    wait(EFFECT_DELAY)
+
+    --local hitPlayers = TargetByZone.GetPlayers(initPlayer, params.Origin, RANGE, true)
+    local hitCharacters = TargetByZone.GetAllInRange(initPlayer, params.Origin, RANGE, true)
+
+    -- set HitEffects to ColorShift function only
+    abilityDefs.HitEffects = {
+        RenderEffects = {
+            {Script = script, Function = "ColorShiftEffect", Arguments = {DayCycle = dayCycle, HitCharacter = initPlayer.Character}},
         }
-        
-        -- run colorshift on intiPlayer
-        Knit.Services.PowersService:RegisterHit(initPlayer, initPlayer.Character, abilityDefs)
+    }
+    
+    -- run colorshift on intiPlayer
+    Knit.Services.PowersService:RegisterHit(initPlayer, initPlayer.Character, abilityDefs)
 
-        -- run other effects for all hitCharacters
-        for _, character in pairs(hitCharacters) do
+    -- run other effects for all hitCharacters
+    for _, character in pairs(hitCharacters) do
+
+        if character ~= initPlayer.Character then
 
             abilityDefs.HitEffects = {
                 RenderEffects = {
-                    {Script = script, Function = "ColorShiftEffect", Arguments = {DayCycle = dayCycle}},
+                    {Script = script, Function = "ColorShiftEffect", Arguments = {DayCycle = dayCycle, HitCharacter = character}},
                     {Script = script, Function = "FreezeEffect", Arguments = {HitCharacter = character}}
                 },
-                Damage = {Damage = 1},
+                Damage = {Damage = 10},
                 PinCharacter = {Duration = DURATION},
             }
 
             Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
-        end
 
-    end)
+        end
+    end
+
 
 end
 
@@ -82,7 +83,7 @@ function module.Client_Initialize(params, abilityDefs, delayOffset)
 
     local character = Players.LocalPlayer.Character
     if not character and character.HumanoidRootPart then return end
-    params.Origin = character.HumanoidRootPart.Position
+    --params.Origin = character.HumanoidRootPart.Position
 
 
     spawn(function()
@@ -99,106 +100,111 @@ end
 --// Client_Stage_1
 function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
-    spawn(function()
+    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+    if not targetStand then
+        targetStand = ManageStand.QuickRender(params)
+    end
 
-        local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-        if not targetStand then
-            targetStand = ManageStand.QuickRender(params)
-        end
-    
-        local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
-        if not initPlayer then return end
-        if not initPlayer.Character then return end
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then return end
+    if not initPlayer.Character then return end
 
-        ManageStand.PlayAnimation(params, "TimeStop")
-        ManageStand.Aura_On(params, 6)
+    ManageStand.PlayAnimation(params, "TimeStop")
+    ManageStand.Aura_On(params, 6)
 
-        -- play the sound
-        AnchoredSound.NewSound(params.Origin, ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop)
+    -- play the sound
+    AnchoredSound.NewSound(initPlayer.Character.HumanoidRootPart.Position, ReplicatedStorage.Audio.StandSpecific.TheWorld.TimeStop)
 
-
-    end)
- 
 end
 
 --// Client_Stage_2
 function module.Client_Stage_2(params, abilityDefs, initPlayer)
 
-   spawn(function()
-        -- animate spheres
-        local sphereParams = {}
-        sphereParams.CFrame = CFrame.new(params.Origin)
-        sphereParams.Size = Vector3.new(1,1,1)
-        sphereParams.Shape = "Ball"
-        sphereParams.Parent = workspace.RenderedEffects
-        sphereParams.Anchored = true
-        sphereParams.CanCollide = false
-        sphereParams.Transparency = -.5
-        sphereParams.Material = Enum.Material.ForceField
-        sphereParams.CastShadow = false
+    -- particles
+    local snowPart = ReplicatedStorage.EffectParts.Abilities.BasicAbility.TimeFreeze.SnowParticles:Clone()
+    snowPart.Parent = workspace.RenderedEffects
+    snowPart.Position = params.Origin
+    Debris:AddItem(snowPart, 30)
 
-        local sphere1 = utils.EasyInstance("Part", sphereParams)
-        local sphere2 = utils.EasyInstance("Part", sphereParams)
-        local sphere3 = utils.EasyInstance("Part", sphereParams)
+    snowPart.Particle:Emit(300)
 
-        sphere1.Color = Color3.fromRGB(255, 255, 255)
-        sphere2.Color = Color3.fromRGB(114, 236, 236)
-        sphere3.Color = Color3.fromRGB(76, 76, 255)
-        
-        Debris:AddItem(sphere1, abilityDefs.Duration)
-        Debris:AddItem(sphere2, abilityDefs.Duration)
-        Debris:AddItem(sphere3, abilityDefs.Duration)
+    -- animate spheres
+    local sphereParams = {}
+    sphereParams.CFrame = CFrame.new(params.Origin)
+    sphereParams.Size = Vector3.new(1,1,1)
+    sphereParams.Shape = "Ball"
+    sphereParams.Parent = workspace.RenderedEffects
+    sphereParams.Anchored = true
+    sphereParams.CanCollide = false
+    sphereParams.Transparency = -.5
+    sphereParams.Material = Enum.Material.ForceField
+    sphereParams.CastShadow = false
+
+    local sphere1 = utils.EasyInstance("Part", sphereParams)
+    local sphere2 = utils.EasyInstance("Part", sphereParams)
+    local sphere3 = utils.EasyInstance("Part", sphereParams)
+
+    sphere1.Color = Color3.fromRGB(255, 255, 255)
+    sphere2.Color = Color3.fromRGB(114, 236, 236)
+    sphere3.Color = Color3.fromRGB(76, 76, 255)
+    
+    Debris:AddItem(sphere1, abilityDefs.Duration)
+    Debris:AddItem(sphere2, abilityDefs.Duration)
+    Debris:AddItem(sphere3, abilityDefs.Duration)
 
 
-        local size = RANGE * 2
+    local size = RANGE * 2
 
-        local tweenInfo = TweenInfo.new(
-            1, -- Time
-            Enum.EasingStyle.Linear, -- EasingStyle
-            Enum.EasingDirection.In -- EasingDirection
-        )
+    local tweenInfo = TweenInfo.new(
+        1, -- Time
+        Enum.EasingStyle.Linear, -- EasingStyle
+        Enum.EasingDirection.In -- EasingDirection
+    )
 
-        local sphereTween1 = TweenService:Create(sphere1,tweenInfo,{Size = Vector3.new(size,size,size)})
-        local sphereTween2 = TweenService:Create(sphere2,tweenInfo,{Size = Vector3.new(size,size,size)})
-        local sphereTween3 = TweenService:Create(sphere3,tweenInfo,{Size = Vector3.new(size,size,size)})
-        sphereTween1:Play()
-        wait(.005)
-        sphereTween2:Play()
-        wait(.005)
-        sphereTween3:Play()
+    local sphereTween1 = TweenService:Create(sphere1,tweenInfo,{Size = Vector3.new(size,size,size)})
+    local sphereTween2 = TweenService:Create(sphere2,tweenInfo,{Size = Vector3.new(size,size,size)})
+    local sphereTween3 = TweenService:Create(sphere3,tweenInfo,{Size = Vector3.new(size,size,size)})
+    sphereTween1:Play()
+    wait(.005)
+    sphereTween2:Play()
+    wait(.005)
+    sphereTween3:Play()
 
-        wait(2)
+    wait(2)
 
-        local tweenInfo = TweenInfo.new(
-            .25, -- Time
-            Enum.EasingStyle.Linear, -- EasingStyle
-            Enum.EasingDirection.Out -- EasingDirection
-        )
+    local tweenInfo = TweenInfo.new(
+        .25, -- Time
+        Enum.EasingStyle.Linear, -- EasingStyle
+        Enum.EasingDirection.Out -- EasingDirection
+    )
 
-        local sphereTween4 = TweenService:Create(sphere1,tweenInfo,{Size = Vector3.new(1,1,1)})
-        local sphereTween5 = TweenService:Create(sphere2,tweenInfo,{Size = Vector3.new(1,1,1)})
-        local sphereTween6 = TweenService:Create(sphere3,tweenInfo,{Size = Vector3.new(1,1,1)})
+    local sphereTween4 = TweenService:Create(sphere1,tweenInfo,{Size = Vector3.new(1,1,1)})
+    local sphereTween5 = TweenService:Create(sphere2,tweenInfo,{Size = Vector3.new(1,1,1)})
+    local sphereTween6 = TweenService:Create(sphere3,tweenInfo,{Size = Vector3.new(1,1,1)})
 
-        sphereTween6.Completed:Connect(function(playbackState)
-            if playbackState == Enum.PlaybackState.Completed then
-                sphere1:Destroy()
-                sphere2:Destroy()
-                sphere3:Destroy()
-            end
-        end)
-
-        sphereTween4:Play()
-        wait(.005)
-        sphereTween5:Play()
-        wait(.005)
-        sphereTween6:Play()
-
+    sphereTween6.Completed:Connect(function(playbackState)
+        if playbackState == Enum.PlaybackState.Completed then
+            sphere1:Destroy()
+            sphere2:Destroy()
+            sphere3:Destroy()
+            snowPart.Particle.Enabled = false
+        end
     end)
+
+    sphereTween4:Play()
+    wait(.005)
+    sphereTween5:Play()
+    wait(.005)
+    sphereTween6:Play()
+
 
 end
 
 
 function module.ColorShiftEffect(params)
+
+    -- only plays this effect for the player if they are the one hit.
+    if Players.LocalPlayer.Character ~= params.HitCharacter then return end
 
     if Lighting:FindFirstChild("New_ColorCorrection") then return end
 

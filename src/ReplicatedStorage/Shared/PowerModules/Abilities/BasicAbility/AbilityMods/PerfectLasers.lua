@@ -12,53 +12,59 @@ local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local TargetByZone = require(Knit.PowerUtils.TargetByZone)
+local SanityChecks = require(Knit.PowerUtils.SanityChecks)
 
-local HIT_DELAY = .1
-local RANGE = 15
+local HIT_DELAY = .8
+local RANGE = 30
 
 local module = {}
 
 -- MobilityLock params
 module.MobilityLockParams = {}
-module.MobilityLockParams.Duration = 1
+module.MobilityLockParams.Duration = .5
 module.MobilityLockParams.ShiftLock_NoSpin = true
 module.MobilityLockParams.AnchorCharacter = true
 
 
 --// Server_Setup
 function module.Server_Setup(params, abilityDefs, initPlayer)
-    params.Origin = initPlayer.Character.HumanoidRootPart.Position
+
+    params.Origin = SanityChecks.TestPosition(initPlayer, params.Origin)
+    
 end
 
 --// Server_Run
 function module.Server_Run(params, abilityDefs, initPlayer)
 
-    wait(HIT_DELAY)
-
-
-
     local hitCharacters = TargetByZone.GetAllInRange(initPlayer, params.Origin, RANGE, true)
+
+    wait(HIT_DELAY)
 
     for _, character in pairs(hitCharacters) do
 
-        abilityDefs.HitEffects = {
-            RenderEffects = {
-                {Script = script, Function = "LaserHit", Arguments = {InitPlayer = initPlayer, HitCharacter = character}}
-            },
-            Damage = {Damage = 30},
-        }
-
         if character ~= initPlayer.Character then
+
+            abilityDefs.HitEffects = {
+                RenderEffects = {
+                    {Script = script, Function = "LaserHit", Arguments = {InitPlayer = initPlayer, HitCharacter = character}}
+                },
+                Damage = {Damage = 30, HideEffects = true}
+            }
+
             Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
+
+            wait(.2)
+
         end
     end
-
 end
 
 function module.Client_Initialize(params, abilityDefs, delayOffset)
 
     local character = Players.LocalPlayer.Character
-    if not character and character.HumanoidRootPart then return end
+    if not character and character then return end
+
+    params.Origin = character.HumanoidRootPart.Position
 
     spawn(function()
 
@@ -75,24 +81,39 @@ end
 --// Client_Stage_1
 function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then return end
+    if not initPlayer.Character then return end
+
     local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
     if not targetStand then
         targetStand = ManageStand.QuickRender(params)
     end
 
     spawn(function()
+
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.Wry)
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GlassBoom)
+
         ManageStand.PlayAnimation(params, "RotateAttack")
         ManageStand.MoveStand(params, "IdleHigh")
         ManageStand.Aura_On(params)
+
+        wait(.5)
+
+        WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.PowerUpStinger3)
         
-        wait(2.2)
+        wait(2)
 
         ManageStand.MoveStand(params, "Idle")
         ManageStand.Aura_Off(params)
     end)
 
+    
+    
+
     -- particles
-    local newParticles = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.Particles:Clone()
+    local newParticles = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.BeamParticles:Clone()
     newParticles.Parent = Workspace.RenderedEffects
     newParticles.CFrame = targetStand.Head.CFrame
     utils.EasyWeld(newParticles, targetStand.Head, newParticles)
@@ -106,22 +127,40 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
         end
     end
 
-    -- laser ball
+    -- laser ball -----------------------------------------------------------
     local laserBall = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.LaserBall:Clone()
     laserBall.Parent = Workspace.RenderedEffects
-    laserBall.CFrame = initPlayer.Character.HumanoidRootPart.CFrame
+    laserBall.CFrame = CFrame.new(params.Origin)
 
     local headAttach = Instance.new("Attachment")
-    headAttach.Paent = targetStand.Head
+    headAttach.Parent = targetStand.Head
 
-    local beamAttachments = laserBall:GetChildren()
-    for i, attachment in pairs(beamAttachments) do
-
-        local newBeam = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.Beam:Clone()
-        newBeam.Parent = laserBall
-        newBeam.Attachment0 = headAttach
-        newBeam.Attachment1 = attachment
+    local beamTargets = laserBall:GetChildren()
+    for i, part in pairs(beamTargets) do
+        if part:IsA("BasePart") then
+            local newBeam = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.SkinnyBeam:Clone()
+            newBeam.Parent = laserBall
+            newBeam.Attachment0 = headAttach
+            newBeam.Attachment1 = part.Attachment
+        end
     end
+
+    local ballSpin = TweenService:Create(laserBall, TweenInfo.new(1), { CFrame = laserBall.CFrame * CFrame.Angles(0,math.rad(-120),0) })
+    local ballEnd = TweenService:Create(laserBall, TweenInfo.new(.25), { CFrame = targetStand.Head.CFrame, Size = Vector3.new(.1,.1,.1)})
+
+    ballSpin:Play()
+
+    wait(1)
+
+    for i, part in pairs(beamTargets) do
+        part:Destroy()
+    end
+
+    ballEnd:Play() 
+
+    wait(.3)
+
+    laserBall:Destroy()
 
 end
 
@@ -131,23 +170,20 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
     if not initPlayer then return end
     if not initPlayer.Character then return end
 
-    --[[
-    local newBubble = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.Bubble:Clone()
-    newBubble.Parent = Workspace.RenderedEffects
-    newBubble.CFrame = initPlayer.Character.HumanoidRootPart.CFrame
+    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+    if not targetStand then
+        targetStand = ManageStand.QuickRender(params)
+    end
 
-    local tween1 = TweenService:Create(newBubble, TweenInfo.new(2), {Transparency = 1, Size = Vector3.new(5,5,5)})
-    local tween2 = TweenService:Create(newBubble.Mesh, TweenInfo.new(2.5), {Transparency = 1})
-    tween1:Play()
-    tween2:Play()
-    tween1:Destroy()
-    tween2:Destroy()
+    wait(HIT_DELAY)
 
-    wait(2.1)
-
-    newBubble:Destroy()
-    ]]--
-
+    local newParticles = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.PopParticles:Clone()
+    newParticles.Parent = Workspace.RenderedEffects
+    newParticles.CFrame = targetStand.Head.CFrame
+    utils.EasyWeld(newParticles, targetStand.HumanoidRootPart, newParticles)
+    Debris:AddItem(newParticles, 10)
+    newParticles.RingBolts:Emit(2)
+    newParticles.Hex:Emit(50)
 
    
 end
@@ -159,7 +195,7 @@ function module.LaserHit(params)
 
     if not params.HitCharacter then return end
 
-    WeldedSound.NewSound(params.HitCharacter.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
+    WeldedSound.NewSound(params.InitPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
 
     local targetStand = Workspace.PlayerStands[params.InitPlayer.UserId]:FindFirstChildWhichIsA("Model")
     if not targetStand then
@@ -170,20 +206,30 @@ function module.LaserHit(params)
     attach0.Parent = targetStand.Head
 
     local attach1 = Instance.new("Attachment")
-    attach1.Parent = params.HitCharacter.Head
+    attach1.Parent = params.HitCharacter.HumanoidRootPart
 
-    local newBeam = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.Beam:Clone()
+    local newBeam = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.FatBeam:Clone()
     newBeam.Parent = targetStand.Head
     newBeam.Attachment0 = attach0
     newBeam.Attachment1 = attach1
 
-    wait(1.5)
+    local hitParticles = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.HitParticles:Clone()
+    hitParticles.Parent = Workspace.RenderedEffects
+    hitParticles.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
+    utils.EasyWeld(hitParticles, params.HitCharacter.UpperTorso, hitParticles)
+    Debris:AddItem(hitParticles, 5)
+
+    for _, v in pairs(hitParticles:GetDescendants()) do
+        if v:IsA("ParticleEmitter") then
+            v:Emit(50)
+        end
+    end
+
+    wait(.25)
 
     attach0:Destroy()
     attach1:Destroy()
     newBeam:Destroy()
-
-
 
 
 

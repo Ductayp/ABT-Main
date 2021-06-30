@@ -21,8 +21,8 @@ module.MobilityLockParams.AnchorCharacter = true
 
 -- shot pattern params
 module.InitialDelay = 0
-module.ShotDelay = 0.25
-module.ShotCount = 4
+module.ShotDelay = 0.4
+module.ShotCount = 3
 module.Offset_X = 1.5
 module.Offset_Y = 1
 module.Offset_Z = -8
@@ -30,8 +30,8 @@ module.Offset_Z = -8
 -- ray box params
 module.Size_X = 1
 module.Size_Y = 1
-module.Velocity = 90
-module.Lifetime = .8
+module.Velocity = 100
+module.Lifetime = 1.5
 module.Iterations = 700
 
 module.BreakOnHit = true
@@ -39,14 +39,7 @@ module.BreakifNotHuman = true
 module.BreakifHuman = true
 module.BreakOnBlockAbility = true
 
-module.HitEffects = {Damage = {Damage = 10}}
-
-module.Projectiles = {
-    [1] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot1,
-    [2] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot2,
-    [3] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot3,
-    [4] = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.Pot4,
-}
+module.HitEffects = {Damage = {Damage = 15}, LifeSteal = {Quantity = 15}}
 
 
 --// CharacterAnimations - client
@@ -87,7 +80,7 @@ function module.CharacterAnimations(params, abilityDefs, playerPing)
             wait(delay)
         end
 
-        ManageStand.PlayAnimation(params, "Barrage", .25)
+        ManageStand.PlayAnimation(params, "Barrage", .18)
         
         wait(module.MobilityLockParams.Duration)
 
@@ -96,21 +89,21 @@ function module.CharacterAnimations(params, abilityDefs, playerPing)
         ManageStand.Aura_Off(params)
     end)
  
-	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
+	WeldedSound.NewSound(initPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.GenericWhoosh_Slow)
 
 end
 
 --// GetProjectile - server
 function module.GetProjectile()
-    return module.Projectiles[math.random(1,4)]:Clone()
+    return ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.BloodKnives.Knife:Clone()
 end
 
 --// ProjectileAnimations - client
 function module.ProjectileEffects(projectileDef)
 
-    WeldedSound.NewSound(projectileDef.Model, ReplicatedStorage.Audio.General.Thwump)
+    WeldedSound.NewSound(projectileDef.Model, ReplicatedStorage.Audio.General.GenericWhoosh_Fast)
 
-    local newBurst = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.FlowerPotBarrage.FatBurst:Clone()
+    local newBurst = ReplicatedStorage.EffectParts.Abilities.ProjectileBarrage.BloodKnives.FatBurst:Clone()
     newBurst.Parent = Workspace.RenderedEffects
     newBurst.CFrame = projectileDef.Origin
     Debris:AddItem(newBurst, 3)

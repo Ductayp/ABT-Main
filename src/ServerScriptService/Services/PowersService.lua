@@ -475,6 +475,13 @@ function PowersService:KnitInit()
         self:PlayerRemoving(player)
     end)
 
+    -- stand givers
+    for i, v in pairs(Workspace.StandGivers:GetChildren()) do
+        v.Touched:Connect(function()
+            print(v.Name)
+        end)
+    end
+
     
 end
 

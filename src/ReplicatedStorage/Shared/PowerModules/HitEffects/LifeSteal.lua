@@ -18,18 +18,20 @@ local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 
 local Blast = {}
 
-function Blast.Server_ApplyEffect(initPlayer, hitCharacter, params)
+function Blast.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
     if not initPlayer then return end
 
     -- just a final check to be sure were hitting a humanoid
     if hitCharacter:FindFirstChild("Humanoid") then
 
-        initPlayer.Character.Humanoid.Health += params.Quantity
+        local actualHeal = effectParams.Quantity * hitParams.DamageMultiplier
+
+        initPlayer.Character.Humanoid.Health += actualHeal
 
         -- send the visual effects to all clients
-        params.HitCharacter = hitCharacter
-        Knit.Services.PowersService:RenderHitEffect_AllPlayers("LifeSteal", params)
+        effectParams.HitCharacter = hitCharacter
+        Knit.Services.PowersService:RenderHitEffect_AllPlayers("LifeSteal", effectParams)
         
     end
 
@@ -41,7 +43,7 @@ function Blast.Client_RenderEffect(params)
     thisPart.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
     thisPart.Parent = Workspace.RenderedEffects
     thisPart.Anchored = false
-    utils.EasyWeld(params.HitCharacter.HumanoidRootPart, thisPart, thisPart)
+    utils.EasyWeld(params.HitCharacter.UpperTorso, thisPart, thisPart)
     Debris:AddItem(thisPart, 7)
 
     thisPart.Blood_Particle:Emit(20)

@@ -175,6 +175,10 @@ function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
     if not targetPlayer then return end
     if not targetPlayer.Character then return end
 
+    
+    --check if initPlayer is in a safe zone
+    if Knit.Services.ZoneService:IsPlayerInZone(targetPlayer, "SafeZone") then return end
+
     -- default hitParams
     local hitParams = {}
     hitParams.DamageMultiplier = 1
@@ -202,9 +206,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     --check if initPlayer is in a safe zone
     if Knit.Services.ZoneService:IsPlayerInZone(initPlayer, "SafeZone") then return end
 
-    -- check if initPlayer has PvP off, if so then return
-    if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then return end
-
     -- setup some variables
     local canHit = false
     local hitParams = {} -- additional params we need to pass into the effects
@@ -216,6 +217,9 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     -- test if a player or a mob, then set variables
     local targetPlayer = utils.GetPlayerFromCharacter(characterHit)
     if targetPlayer then
+
+        -- check if initPlayer has PvP off, if so then return
+        if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then return end
 
         local targetPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[targetPlayer.UserId]
 
@@ -477,8 +481,37 @@ function PowersService:KnitInit()
 
     -- stand givers
     for i, v in pairs(Workspace.StandGivers:GetChildren()) do
-        v.Touched:Connect(function()
-            print(v.Name)
+
+        local dbValue = utils.EasyInstance("BoolValue",{Name = "Debounce",Parent = v,Value = false})
+
+        v.Touched:Connect(function(hit)
+            
+            if dbValue.Value == false then
+                dbValue.Value = true
+
+                print(v.Name)
+                local humanoid = hit.Parent:FindFirstChild("Humanoid")
+                    if humanoid then
+                        local player = game.Players:GetPlayerFromCharacter(humanoid.Parent)
+                        if player then
+
+                            local params = {}
+                            params.Power = v.Power.Value
+                            params.Rank = v.Rank.Value
+                            params.Xp = 0
+
+                            local HttpService = game:GetService("HttpService")
+                            params.GUID = HttpService:GenerateGUID(false)
+
+                            print("button goes beep")
+                            self:SetCurrentPower(player, params)    
+                        end
+                    end
+
+                wait(5)
+                dbValue.Value = false
+            end
+            
         end)
     end
 

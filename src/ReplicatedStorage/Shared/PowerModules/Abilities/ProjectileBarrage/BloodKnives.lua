@@ -39,7 +39,7 @@ module.BreakifNotHuman = true
 module.BreakifHuman = true
 module.BreakOnBlockAbility = true
 
-module.HitEffects = {Damage = {Damage = 15}, LifeSteal = {Quantity = 15}}
+module.HitEffects = {Damage = {Damage = 12}, LifeSteal = {Quantity = 6}}
 
 
 --// CharacterAnimations - client
@@ -127,9 +127,7 @@ function module.ProjectileImpact(params)
         destroyPart.Position = params.Position
         Debris:AddItem(destroyPart, 6)
 
-        soundParams = {}
-        soundParams.SoundProperties = {TimePosition = 0.2}
-        WeldedSound.NewSound(destroyPart, ReplicatedStorage.Audio.General.CeramicBreak)
+        WeldedSound.NewSound(destroyPart, ReplicatedStorage.Audio.General.PaintCanHit1)
 
         destroyPart.Particle:Emit(100)
 

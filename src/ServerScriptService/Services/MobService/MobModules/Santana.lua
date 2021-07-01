@@ -181,7 +181,7 @@ function module.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
-    local itemDropPercent = 25
+    local itemDropPercent = 50
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
         rewards.Items["MaskFragment"] = 1

@@ -56,7 +56,7 @@ end
 
 
 function PlayerUtilityController:KnitStart()
-    Players.LocalPlayer.CameraMaxZoomDistance = 30
+    Players.LocalPlayer.CameraMaxZoomDistance = 50
 
     local character = Players.LocalPlayer.Character
     if not character or not character.Parent then

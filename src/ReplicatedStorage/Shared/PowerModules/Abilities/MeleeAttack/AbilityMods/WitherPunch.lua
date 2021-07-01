@@ -29,7 +29,7 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
     abilityDefs.HitEffects = {
         --Damage = {Damage = 7},
-        LifeSteal = {Quantity = 15},
+        --LifeSteal = {Quantity = 15},
         Slow = {WalkSpeedModifier = -11, Duration = 7},
         RunFunction = {RunOn = "Client", Script = script, FunctionName = "WitherEffects", FunctionParams = {HitCharacter = hitCharacter}}
     }
@@ -37,7 +37,10 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
     spawn(function()
-        abilityDefs.HitEffects = {Damage = {Damage = 3, HideEffects = true}}
+        abilityDefs.HitEffects = {
+            Damage = {Damage = 4, HideEffects = true},
+            LifeSteal = {Quantity = 2},
+        }
         for count = 1, 7 do
             Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
             wait(1)

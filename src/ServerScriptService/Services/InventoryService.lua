@@ -165,7 +165,7 @@ function InventoryService:UseItem(player, key)
         return returnMessage
     end
 
-    if thisItem.Type == "Special" then
+    if thisItem.Type == "Evolution" then
 
         -- check in player is standless
         if playerData.CurrentStand.Power ~= "Standless" then
@@ -198,7 +198,7 @@ function InventoryService:UseItem(player, key)
 
     end
 
-    if thisItem.Type == "Evolution" then
+    if thisItem.Type == "Special" then
 
         if key == "GoldStar" then
 

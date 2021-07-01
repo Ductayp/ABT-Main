@@ -74,7 +74,6 @@ function Barrage.Activate(params, abilityDefs)
 	-- InputBegan
 	if params.KeyState == "InputBegan" then
 
-		print(Cooldown.Server_IsCooled(params))
 		if not Cooldown.Server_IsCooled(params) then
 			params.CanRun = false
 			return params

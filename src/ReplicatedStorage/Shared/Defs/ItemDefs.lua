@@ -4,24 +4,36 @@ return {
 
     Arrow = {
         Name = "Arrow",
-        Type = "Special",
-        GivePower = "Stand",
+        Type = "Evolution",
+        EvolutionPaths = {
+            Standless = {
+               GivePower = "GenerateStand",
+               CutScene = "UseArrow",
+            },
+        },
         Description = "Use this arrow while STANDLESS to gain a stand.<br /><br />You will get a Rank 1 stand unless you have the Super Arrow pass.",
         LayoutOrder = 1,
     },
 
     GoldStar = {
         Name = "Gold Star",
-        Type = "Evolution",
+        Type = "Special",
         Description = "Unlocks the potential of a stand/spec.<br /><br />Use this item when your XP bar is full to rank-up. Rank 3 is max.",
         LayoutOrder = 2,
     },
 
     StoneMask = {
         Name = "Stone Mask",
-        Type = "Special",
-        GivePower = "Vampire",
-        CutScene = "StoneMask",
+        Type = "Evolution",
+        EvolutionPaths = {
+            Standless = {
+               GivePower = "Vampire",
+               CutScene = "StoneMask",
+            },
+            TheWorld = {
+                GivePower = "VampiricTheWorld",
+            },
+        },
         Description = "Use this item while STANDLESS to get Vampire Spec.<br/><br/>Can be crafted from Mask Fragments dropped by the Pillar Men on the Beach.",
         LayoutOrder = 3
     },

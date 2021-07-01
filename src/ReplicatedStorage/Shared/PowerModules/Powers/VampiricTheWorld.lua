@@ -59,15 +59,15 @@ function VampiricTheWorld.SetupPower(initPlayer,params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Immunity", "VampiricTheWorld_Setup", 2, {TimeStop = true})
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "VampiricTheWorld_Setup", VampiricTheWorld.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "VampiricTheWorld_Setup", VampiricTheWorld.Defs.DamageMultiplier[params.Rank], nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "HealthTick", "VampiricTheWorld_Setup", true, {Day = -1, Night = 1})
 
-    --[[
     -- force cooldown on all abilities
     --local cooldownKeys = {"Q", "E", "R", "T", "F", "Z", "X", "C"}
     local cooldownKeys = {"E", "R", "T", "F", "Z", "X", "C"}
     for _, key in pairs(cooldownKeys) do
         require(Knit.PowerUtils.Cooldown).Server_SetCooldown(initPlayer.UserId, key, 15)
     end
-    ]]--
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped
@@ -76,6 +76,7 @@ function VampiricTheWorld.RemovePower(initPlayer,params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Immunity", "VampiricTheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "VampiricTheWorld_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "VampiricTheWorld_Setup")
+    Knit.Services.StateService:RemoveEntryFromState(initPlayer, "HealthTick", "VampiricTheWorld_Setup")
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -141,7 +142,7 @@ end
 --defs
 VampiricTheWorld.Defs.Abilities.R = {
     Id = "WitherPunch",
-    Cooldown = 1,
+    Cooldown = 12,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("WitherPunch", true),
 }
@@ -157,7 +158,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.T = {
     Id = "TimeFreeze",
-    Cooldown = 5,
+    Cooldown = 60,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("TimeFreeze", true),
 }
@@ -174,7 +175,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.F = {
     Id = "BloodKnives",
-    Cooldown = 1,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("BloodKnives", true),
 }
@@ -191,7 +192,7 @@ end
 -- defs
 VampiricTheWorld.Defs.Abilities.X = {
     Id = "PerfecLasers",
-    Cooldown = 5,
+    Cooldown = 20,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("PerfectLasers", true),
 }

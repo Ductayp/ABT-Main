@@ -17,6 +17,7 @@ local ManageStand = require(Knit.Abilities.ManageStand)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local RayHitbox = require(Knit.PowerUtils.RayHitbox)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
+local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
 local abilityDuration = 5
 local countdownLength = 5
@@ -164,30 +165,10 @@ function BitesTheDust.HitCharacter(initPlayer, hitCharacter, abilityDefs)
                 end
                 
         
-                local targetTable = {}
-        
-                -- put all mobs in targetTable
-                for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-                    if mob.Model:FindFirstChild("Humanoid") and mob.Model:FindFirstChild("HumanoidRootPart") then
-                        if mob.Model.Humanoid.Health > 0 then
-                            if (mob.Model.HumanoidRootPart.Position - mob.Model.HumanoidRootPart.Position).Magnitude < blastRange then
-                                table.insert(targetTable, mob.Model)
-                            end
-                        end
-                    end
-                end
-        
-                -- put all players in targetTable
-                for _, player in pairs(game.Players:GetPlayers()) do
-                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        if (hitCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude < blastRange then
-                            table.insert(targetTable, player.Character)
-                        end
-                    end
-                end
-        
                 -- setup HitEffects for the secondary targets
-                for _,character in pairs(targetTable) do
+                local hitCharacters = TargetByZone.GetAllInRange(initPlayer, hitCharacter.HumanoidRootPart.Position, blastRange, false)
+                for _,character in pairs(hitCharacters) do
+                    print("CHARACTER", character)
                     local newLookVector = (hitCharacter.HumanoidRootPart.Position - character.HumanoidRootPart.Position).unit
                     abilityDefs.HitEffects = {Damage = {Damage = 35, HideEffects = true}, Blast = {}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
                     Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)

@@ -36,6 +36,10 @@ end
 --// Server_Run
 function module.Server_Run(params, abilityDefs, initPlayer)
 
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+    if not initPlayer then return end
+    if not initPlayer.Character then return end
+
     local hitCharacters = TargetByZone.GetAllInRange(initPlayer, params.Origin, RANGE, true)
 
     wait(HIT_DELAY)
@@ -44,11 +48,14 @@ function module.Server_Run(params, abilityDefs, initPlayer)
 
         if character ~= initPlayer.Character then
 
+            local newLookVector = (character.HumanoidRootPart.Position - initPlayer.Character.HumanoidRootPart.Position).unit
+
             abilityDefs.HitEffects = {
                 RenderEffects = {
                     {Script = script, Function = "LaserHit", Arguments = {InitPlayer = initPlayer, HitCharacter = character}}
                 },
-                Damage = {Damage = 30, HideEffects = true}
+                KnockBack = {Force = 50, ForceY = 35, LookVector = newLookVector},
+                Damage = {Damage = 20, HideEffects = true}
             }
 
             Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
@@ -134,6 +141,7 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
     local headAttach = Instance.new("Attachment")
     headAttach.Parent = targetStand.Head
+    Debris:AddItem(headAttach, 20)
 
     local beamTargets = laserBall:GetChildren()
     for i, part in pairs(beamTargets) do
@@ -185,7 +193,6 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
     newParticles.RingBolts:Emit(2)
     newParticles.Hex:Emit(50)
 
-   
 end
 
 function module.LaserHit(params)
@@ -206,7 +213,7 @@ function module.LaserHit(params)
     attach0.Parent = targetStand.Head
 
     local attach1 = Instance.new("Attachment")
-    attach1.Parent = params.HitCharacter.HumanoidRootPart
+    attach1.Parent = params.HitCharacter.UpperTorso
 
     local newBeam = ReplicatedStorage.EffectParts.Abilities.BasicAbility.PerfectLasers.FatBeam:Clone()
     newBeam.Parent = targetStand.Head
@@ -221,11 +228,16 @@ function module.LaserHit(params)
 
     for _, v in pairs(hitParticles:GetDescendants()) do
         if v:IsA("ParticleEmitter") then
-            v:Emit(50)
+            if v.Name == "RingBolts" then
+                v:Emit(2)
+            else
+                v:Emit(50)
+            end
+            
         end
     end
 
-    wait(.25)
+    wait(.75)
 
     attach0:Destroy()
     attach1:Destroy()

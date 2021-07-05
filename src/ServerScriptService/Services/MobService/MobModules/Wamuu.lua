@@ -146,10 +146,10 @@ function  module.Attack(mobData)
         local mobHRP = mobData.Model:FindFirstChild("HumanoidRootPart")
         if not mobHRP then return end
 
-        local randAttack = math.random(1, 5)
+        local randAttack = math.random(1, 8)
         local distance = (targetHRP.Position - mobHRP.Position).magnitude
 
-        if randAttack == 5 then
+        if randAttack == 8 then
 
             --print("SPECIAL ATTACK!")
 
@@ -238,6 +238,7 @@ function module.Drop(player, mobData)
     ]]--
     
     rewards.Items["Antidote"] = math.random(1, 3)
+    rewards.Items["MaskFragment"] = math.random(1, 3)
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 

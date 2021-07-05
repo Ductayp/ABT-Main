@@ -479,6 +479,7 @@ function PowersService:KnitInit()
         self:PlayerRemoving(player)
     end)
 
+    --[[
     -- stand givers
     for i, v in pairs(Workspace.StandGivers:GetChildren()) do
 
@@ -514,6 +515,7 @@ function PowersService:KnitInit()
             
         end)
     end
+    ]]--
 
     
 end

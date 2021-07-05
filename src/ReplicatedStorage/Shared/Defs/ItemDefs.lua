@@ -11,7 +11,7 @@ return {
                CutScene = "UseArrow",
             },
         },
-        Description = "Use this arrow while STANDLESS to gain a stand.<br /><br />You will get a Rank 1 stand unless you have the Super Arrow pass.",
+        Description = "Evolve from STANDLESS into a new stand user.<br /><br />You will get a Rank 1 stand unless you have the Super Arrow pass.",
         LayoutOrder = 1,
     },
 
@@ -34,7 +34,7 @@ return {
                 GivePower = "VampiricTheWorld",
             },
         },
-        Description = "Use this item while STANDLESS to get Vampire Spec.<br/><br/>Can be crafted from Mask Fragments dropped by the Pillar Men on the Beach.",
+        Description = "Can be crafted from Mask Fragments dropped by the Pillar Men on the Beach.<br/><br/><b>EVOLUTIONS:</b><br/>Standless = Vampire<br/>The World = Vampiric The World",
         LayoutOrder = 3
     },
 

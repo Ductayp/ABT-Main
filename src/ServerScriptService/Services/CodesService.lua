@@ -87,7 +87,12 @@ function CodesService:RedeemCode(player, code)
         end
         
         if codeDef.ActionType == "GiveItemFinder" then
-            Knit.Services.BoostService:AddBoost(player, "ItemFinder", codeDef.Duration)
+            return
+            --Knit.Services.BoostService:AddBoost(player, "ItemFinder", codeDef.Duration)
+        end
+
+        if codeDef.ActionType == "GiveExperience" then
+            Knit.Services.InventoryService:Give_Xp(player, codeDef.Value, "Code")
         end
 
         returnMessage = codeDef.Message

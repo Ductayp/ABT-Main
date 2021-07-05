@@ -131,22 +131,24 @@ function AbilityBar.UpdateCooldown(params)
 end
 
 function AbilityBar.HideAbilities()
+
+    AbilityBar.Frame_Main.Visible = false
+    --[[
     for _, abilityName in pairs(AbilityBar.AbilityNames) do
         abilityName.Visible = false
     end
+
+    ]]--
 end
 
 function AbilityBar.ShowAbilities()
+
+    AbilityBar.Frame_Main.Visible = true
+    --[[
     for _, abilityName in pairs(AbilityBar.AbilityNames) do
         abilityName.Visible = true
-        --[[
-        if abilityName.Text == "-" then
-            abilityName.Visible = false
-        else
-            abilityName.Visible = true
-        end
-        ]]--
     end
+    ]]--
 end
 
 return AbilityBar

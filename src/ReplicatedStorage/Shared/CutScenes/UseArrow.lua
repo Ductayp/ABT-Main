@@ -72,6 +72,7 @@ function UseArrow.Client_Run(params)
 
     if not Players.LocalPlayer.Character then return end
 
+    Knit.Controllers.GuiController:CloseAllWindows()
     Knit.Controllers.GuiController.Modules.StandData.HideStand()
     Knit.Controllers.GuiController.Modules.AbilityBar.HideAbilities()
 

@@ -41,7 +41,7 @@ module.Defs.JumpPower = 50
 module.Defs.Aggressive = false
 module.Defs.AttackSpeed = 2
 module.Defs.AttackRange = 4.5
-module.Defs.HitEffects = {Damage = {Damage = 20}}
+module.Defs.HitEffects = {Damage = {Damage = 15}}
 module.Defs.SeekRange = 60 -- In Studs
 module.Defs.ChaseRange = 80 -- In Studs
 module.Defs.IsMobile = true
@@ -180,12 +180,15 @@ function module.Drop(player, mobData)
 
     local rewards = {}
     rewards.Items = {}
+    rewards.Items["MaskFragment"] = 1
 
-    local itemDropPercent = 50
+    --[[
+    local itemDropPercent = 65
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        rewards.Items["MaskFragment"] = 1
+        
     end
+    ]]--
 
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1

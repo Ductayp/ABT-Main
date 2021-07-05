@@ -65,6 +65,7 @@ function GameChatService:MutePlayer(player, muteBoolean)
 
 end
 
+
 --// PlayerAdded
 function GameChatService:PlayerAdded(player)
     repeat wait() until player.Character

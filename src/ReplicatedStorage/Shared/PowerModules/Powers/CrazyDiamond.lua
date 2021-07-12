@@ -9,11 +9,7 @@ local CrazyDiamond = {}
 
 CrazyDiamond.Defs = {
     PowerName = "Crazy Diamond",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 20000,
-        [3] = 30000
-    },
+    MaxXp = 30000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -26,30 +22,36 @@ CrazyDiamond.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Summon Stand"
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Wall Blast"},
+            T = {AbilityName = "Bullet Barrage"},
+            R = {AbilityName = "Stone Punch"},
+            X = {AbilityName = "Rage Boost"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        E = {
-            AbilityName = "Barrage"
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Wall Blast"},
+            T = {AbilityName = "Bullet Barrage"},
+            R = {AbilityName = "Stone Punch"},
+            X = {AbilityName = "Rage Boost"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        F = {
-            AbilityName = "Wall Blast"
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Wall Blast"},
+            T = {AbilityName = "Bullet Barrage"},
+            R = {AbilityName = "Stone Punch"},
+            X = {AbilityName = "Rage Boost"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        T = {
-            AbilityName = "Bullet Barrage"
-        },
-        R = {
-            AbilityName = "Stone Punch"
-        },
-        X = {
-            AbilityName = "Rage Boost"
-        },
-        Z = {
-            AbilityName = "Stand Jump"
-        },
-        C = {
-            AbilityName = "-"
-        }
     }
 }
 

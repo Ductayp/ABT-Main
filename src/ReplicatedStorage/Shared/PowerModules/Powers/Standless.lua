@@ -20,30 +20,36 @@ Standless.Defs = {
     BaseSacrificeValue = 0,
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "-"
+        [1] = {
+            Q = {AbilityName = "-"},
+            E = {AbilityName = "-"},
+            F = {AbilityName = "-"},
+            T = {AbilityName = "-"},
+            R = {AbilityName = "-"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "-"},
+            C = {AbilityName = "-"}
         },
-        E = {
-            AbilityName = "-"
+        [2] = {
+            Q = {AbilityName = "-"},
+            E = {AbilityName = "-"},
+            F = {AbilityName = "-"},
+            T = {AbilityName = "-"},
+            R = {AbilityName = "-"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "-"},
+            C = {AbilityName = "-"}
         },
-        F = {
-            AbilityName = "-"
+        [3] = {
+            Q = {AbilityName = "-"},
+            E = {AbilityName = "-"},
+            F = {AbilityName = "-"},
+            T = {AbilityName = "-"},
+            R = {AbilityName = "-"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "-"},
+            C = {AbilityName = "-"}
         },
-        T = {
-            AbilityName = "-"
-        },
-        R = {
-            AbilityName = "-"
-        },
-        X = {
-            AbilityName = "-"
-        },
-        Z = {
-            AbilityName = "-"
-        },
-        C = {
-            AbilityName = "-"
-        }
     }
 }
 

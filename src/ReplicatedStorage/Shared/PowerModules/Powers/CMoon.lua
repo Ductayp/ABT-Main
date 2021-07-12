@@ -9,11 +9,7 @@ local CMoon = {}
 
 CMoon.Defs = {
     PowerName = "C-Moon",
-    MaxXp = {
-        [1] = 30000,
-        [2] = 40000,
-        [3] = 50000
-    },
+    MaxXp = 50000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -24,44 +20,51 @@ CMoon.Defs = {
         [2] = 50,
         [3] = 90
     },
+    KeyMap = {
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Gravity Collapse"},
+            T = {AbilityName = "-" },
+            R = {AbilityName = "Gravity Punch"},
+            X = {AbilityName = "Inversion"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
+        },
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Gravity Collapse"},
+            T = {AbilityName = "Gravity Shift" },
+            R = {AbilityName = "Gravity Punch"},
+            X = {AbilityName = "Inversion"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
+        },
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Gravity Collapse"},
+            T = {AbilityName = "Gravity Shift" },
+            R = {AbilityName = "Gravity Punch"},
+            X = {AbilityName = "Inversion"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
+        },
+
+    },
     Abilities = {}, -- ability defs are inside each ability function area
-        KeyMap = {
-            Q = {
-                AbilityName = "Summon Stand"
-            },
-            E = {
-                AbilityName = "Barrage"
-            },
-            F = {
-                AbilityName = "Gravity Collapse" 
-            },
-            T = {
-                AbilityName = "Accelerate Time" 
-            },
-            R = {
-                AbilityName = "Gravity Punch" 
-            },
-            X = {
-                AbilityName = "Gravity Shift"
-            },
-            Z = {
-                AbilityName = "Stand Jump"
-            },
-            C = {
-                AbilityName = "-"
-            }
-        }
 }
 
 --// SETUP - run this once when the stand is equipped
-function CMoon.SetupPower(initPlayer,params)
+function CMoon.SetupPower(initPlayer, params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CMoon_Setup", 6, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CMoon_Setup", CMoon.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CMoon_Setup", CMoon.Defs.DamageMultiplier[params.Rank], nil)
 end
 
 --// REMOVE - run this once when the stand is un-equipped
-function CMoon.RemovePower(initPlayer,params)
+function CMoon.RemovePower(initPlayer, params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "CMoon_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CMoon_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CMoon_Setup")
@@ -132,11 +135,11 @@ CMoon.Defs.Abilities.R = {
     Id = "GravityPunch",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("GravityPunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("GravityPunch", true),
 }
 
 function CMoon.R(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, CMoon.Defs.Abilities.R)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, CMoon.Defs.Abilities.R)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -148,7 +151,7 @@ CMoon.Defs.Abilities.T = {
     Id = "TimeAcceleration",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = ReplicatedStorage.TempScripts:FindFirstChild("TimeAcceleration", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
 }
 
 function CMoon.T(params)
@@ -165,7 +168,7 @@ CMoon.Defs.Abilities.F = {
     Id = "GravityCollapse",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = ReplicatedStorage.TempScripts:FindFirstChild("GravityCollapse", true),
+    AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("FlowerPotBarrage", true),
 }
 
 function CMoon.F(params)
@@ -182,7 +185,7 @@ CMoon.Defs.Abilities.X = {
     Id = "GravityShift",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = ReplicatedStorage.TempScripts:FindFirstChild("GravityShift", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
 }
 
 function CMoon.X(params)

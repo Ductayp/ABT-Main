@@ -9,11 +9,7 @@ local Vampire = {}
 
 Vampire.Defs = {
     PowerName = "Vampire",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 20000,
-        [3] = 30000
-    },
+    MaxXp = 30000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -26,30 +22,37 @@ Vampire.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Vampiric Sacrifice"
+        [1] = {
+            Q = {AbilityName = "Vampiric Sacrifice"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Laser Eyes"},
+            T = {AbilityName = "Zombie Summon"},
+            R = {AbilityName = "Freeze Punch"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "Power Jump"},
+            C = {AbilityName = "-"}
         },
-        E = {
-            AbilityName = "Barrage"
+        [2] = {
+            Q = {AbilityName = "Vampiric Sacrifice"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Laser Eyes"},
+            T = {AbilityName = "Zombie Summon"},
+            R = {AbilityName = "Freeze Punch"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "Power Jump"},
+            C = {AbilityName = "-"}
         },
-        F = {
-            AbilityName = "Laser Eyes"
+        [3] = {
+            Q = {AbilityName = "Vampiric Sacrifice"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Laser Eyes"},
+            T = {AbilityName = "Zombie Summon"},
+            R = {AbilityName = "Freeze Punch"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "Power Jump"},
+            C = {AbilityName = "-"}
         },
-        T = {
-            AbilityName = "Zombie Summon"
-        },
-        R = {
-            AbilityName = "Freeze Punch"
-        },
-        X = {
-            AbilityName = "-"
-        },
-        Z = {
-            AbilityName = "Power Jump"
-        },
-        C = {
-            AbilityName = "-"
-        }
+
     }
 }
 

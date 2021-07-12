@@ -29,6 +29,7 @@ function GameChatService:SpeakerAdded(speakerName)
     local player = speaker:GetPlayer()
 
     local playerRole = player:GetRoleInGroup(3486129)
+    if not playerRole then return end
 
     if TAG_DEFS[playerRole] then
         speaker:SetExtraData("Tags", {TAG_DEFS[playerRole]})

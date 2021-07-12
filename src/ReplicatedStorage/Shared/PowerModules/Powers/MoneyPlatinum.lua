@@ -9,11 +9,7 @@ local MoneyPlatinum = {}
 
 MoneyPlatinum.Defs = {
     PowerName = "Money Platinum",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 15000,
-        [3] = 20000
-    },
+    MaxXp = 10000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -26,30 +22,36 @@ MoneyPlatinum.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Summon Stand"
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "YEET"},
+            T = {AbilityName = "Sub 2 Planet Milo"},
+            R = {AbilityName = "TROLL"},
+            X = {AbilityName = "ABT"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "<3"}
         },
-        E = {
-            AbilityName = "Barrage"
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "YEET"},
+            T = {AbilityName = "Sub 2 Planet Milo"},
+            R = {AbilityName = "TROLL"},
+            X = {AbilityName = "ABT"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "<3"}
         },
-        F = {
-            AbilityName = "YEET"
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "YEET"},
+            T = {AbilityName = "Sub 2 Planet Milo"},
+            R = {AbilityName = "TROLL"},
+            X = {AbilityName = "ABT"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "<3"}
         },
-        T = {
-            AbilityName = "Sub 2 Planet Milo"
-        },
-        R = {
-            AbilityName = "TROLL"
-        },
-        X = {
-            AbilityName = "ABT"
-        },
-        Z = {
-            AbilityName = "Stand Jump"
-        },
-        C = {
-            AbilityName = "<3"
-        }
     }
 }
 

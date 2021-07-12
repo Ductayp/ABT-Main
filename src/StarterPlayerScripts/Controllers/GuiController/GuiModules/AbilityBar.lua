@@ -96,7 +96,7 @@ function AbilityBar.Update(data, params)
     local currentPowerModule = require(Knit.Powers[data.CurrentStand.Power])
 
     -- setup the ability buttons
-    for i, v in pairs(currentPowerModule.Defs.KeyMap) do
+    for i, v in pairs(currentPowerModule.Defs.KeyMap[data.CurrentStand.Rank]) do
         if v.AbilityName == "-" then
             AbilityBar.Buttons[i].Parent.Visible = false
             AbilityBar.AbilityNames[i].Text = v.AbilityName

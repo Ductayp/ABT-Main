@@ -9,11 +9,7 @@ local VampiricTheWorld = {}
 
 VampiricTheWorld.Defs = {
     PowerName = "Vampiric The World",
-    MaxXp = {
-        [1] = 30000,
-        [2] = 40000,
-        [3] = 50000
-    },
+    MaxXp = 50000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -26,30 +22,37 @@ VampiricTheWorld.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
         KeyMap = {
-            Q = {
-                AbilityName = "Summon Stand"
+            [1] = {
+                Q = {AbilityName = "Summon Stand"},
+                E = {AbilityName = "Barrage"},
+                F = {AbilityName = "Blood Knives"},
+                T = {AbilityName = "Time Freeze"},
+                R = {AbilityName = "Wither Punch"},
+                X = {AbilityName = "Perfect Lasers"},
+                Z = {AbilityName = "Stand Jump"},
+                C = {AbilityName = "-"}
             },
-            E = {
-                AbilityName = "Barrage"
+            [2] = {
+                Q = {AbilityName = "Summon Stand"},
+                E = {AbilityName = "Barrage"},
+                F = {AbilityName = "Blood Knives"},
+                T = {AbilityName = "Time Freeze"},
+                R = {AbilityName = "Wither Punch"},
+                X = {AbilityName = "Perfect Lasers"},
+                Z = {AbilityName = "Stand Jump"},
+                C = {AbilityName = "-"}
             },
-            F = {
-                AbilityName = "Blood Knives" -- knife projectile barrage that drians blood an heals attacker
+            [3] = {
+                Q = {AbilityName = "Summon Stand"},
+                E = {AbilityName = "Barrage"},
+                F = {AbilityName = "Blood Knives"},
+                T = {AbilityName = "Time Freeze"},
+                R = {AbilityName = "Wither Punch"},
+                X = {AbilityName = "Perfect Lasers"},
+                Z = {AbilityName = "Stand Jump"},
+                C = {AbilityName = "-"}
             },
-            T = {
-                AbilityName = "Time Freeze" -- works liek timestop but puts player in ice ad does damage
-            },
-            R = {
-                AbilityName = "Wither Punch" -- ages the target, makes them slow and does damage over time
-            },
-            X = {
-                AbilityName = "Perfect Lasers"
-            },
-            Z = {
-                AbilityName = "Stand Jump"
-            },
-            C = {
-                AbilityName = "-"
-            }
+
         }
 }
 

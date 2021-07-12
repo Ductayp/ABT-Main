@@ -86,7 +86,7 @@ function StandData.Update(data, params)
     end
     
     -- set the XP bar
-    local maxExperience = currentPowerModule.Defs.MaxXp[data.CurrentStand.Rank]
+    local maxExperience = currentPowerModule.Defs.MaxXp
     StandData.Text_Xp.Text = data.CurrentStand.Xp .. " / " .. maxExperience
     local percent = data.CurrentStand.Xp / maxExperience
     StandData.Frame_Xp.Size = UDim2.new(percent,StandData.Frame_Health.Size.X.Offset,StandData.Frame_Health.Size.Y.Scale,StandData.Frame_Health.Size.Y.Offset)

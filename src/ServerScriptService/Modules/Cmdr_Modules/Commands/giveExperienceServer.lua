@@ -5,7 +5,7 @@ return function (_, player, value)
 
 	--print("TESTING THE COMMAAND!", player, boostName, timeSeconds)
 
-	Knit.Services.InventoryService:Give_Xp(player, value)
+	Knit.Services.InventoryService:Give_Xp(player, value, "Admin")
 
 	return ("gave Expereince/ Soul Orbs")
 end

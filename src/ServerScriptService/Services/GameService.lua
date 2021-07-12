@@ -50,6 +50,8 @@ function GameService:PlayerAdded(player)
     if not player then return end
     
     local playerRole = player:GetRoleInGroup(3486129)
+    if not playerRole then return end
+    
     local isTester
     if table.find(testerRoles, playerRole) then
         isTester = true

@@ -9,11 +9,7 @@ local TheHand = {}
 
 TheHand.Defs = {
     PowerName = "TheHand",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 20000,
-        [3] = 30000
-    },
+    MaxXp = 30000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -26,30 +22,36 @@ TheHand.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Summon Stand" -- done
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Flower Pot Barrage"},
+            T = {AbilityName = "Black Hole"},
+            R = {AbilityName = "Scrape Punch"},
+            X = {AbilityName = "Scrape Away"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "Void Pull"}
         },
-        E = {
-            AbilityName = "Barrage" -- done
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Flower Pot Barrage"},
+            T = {AbilityName = "Black Hole"},
+            R = {AbilityName = "Scrape Punch"},
+            X = {AbilityName = "Scrape Away"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "Void Pull"}
         },
-        F = {
-            AbilityName = "Flower Pot Barrage" -- done
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Flower Pot Barrage"},
+            T = {AbilityName = "Black Hole"},
+            R = {AbilityName = "Scrape Punch"},
+            X = {AbilityName = "Scrape Away"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "Void Pull"}
         },
-        T = {
-            AbilityName = "Black Hole"
-        },
-        R = {
-            AbilityName = "Scrape Punch" -- done
-        },
-        X = {
-            AbilityName = "Scrape Away" -- done
-        },
-        Z = {
-            AbilityName = "Stand Jump" -- done
-        },
-        C = {
-            AbilityName = "Void Pull"
-        }
     }
 }
 

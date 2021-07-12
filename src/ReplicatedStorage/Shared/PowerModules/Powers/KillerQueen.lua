@@ -11,11 +11,7 @@ local KillerQueen = {}
 
 KillerQueen.Defs = {
     PowerName = "Killer Queen",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 20000,
-        [3] = 30000
-    },
+    MaxXp = 30000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -28,30 +24,37 @@ KillerQueen.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Summon Stand" -- done
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Bomb Touch"},
+            T = {AbilityName = "Coin Toss"},
+            R = {AbilityName = "Bomb Punch"},
+            X = {AbilityName = "Sheer Heart Attack"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        E = {
-            AbilityName = "Barrage" -- done
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Bomb Touch"},
+            T = {AbilityName = "Coin Toss"},
+            R = {AbilityName = "Bomb Punch"},
+            X = {AbilityName = "Sheer Heart Attack"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        F = {
-            AbilityName = "Bomb Touch"
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Bomb Touch"},
+            T = {AbilityName = "Coin Toss"},
+            R = {AbilityName = "Bomb Punch"},
+            X = {AbilityName = "Sheer Heart Attack"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        T = {
-            AbilityName = "Coin Toss"
-        },
-        R = {
-            AbilityName = "Bomb Punch"
-        },
-        X = {
-            AbilityName = "Sheer Heart Attack"
-        },
-        Z = {
-            AbilityName = "Stand Jump" -- done
-        },
-        C = {
-            AbilityName = "-"
-        }
+
     }
 }
 

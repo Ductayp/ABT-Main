@@ -10,11 +10,7 @@ local TheWorld = {}
 
 TheWorld.Defs = {
     PowerName = "The World",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 20000,
-        [3] = 30000
-    },
+    MaxXp = 30000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -27,30 +23,37 @@ TheWorld.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Summon Stand"
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Knife Throw"},
+            T = {AbilityName = "Time Stop"},
+            R = {AbilityName = "Time Punch"},
+            X = {AbilityName = "Bullet Kick"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        E = {
-            AbilityName = "Barrage"
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Knife Throw"},
+            T = {AbilityName = "Time Stop"},
+            R = {AbilityName = "Time Punch"},
+            X = {AbilityName = "Bullet Kick"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        F = {
-            AbilityName = "Knife Throw"
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Knife Throw"},
+            T = {AbilityName = "Time Stop"},
+            R = {AbilityName = "Time Punch"},
+            X = {AbilityName = "Bullet Kick"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        T = {
-            AbilityName = "Time Stop"
-        },
-        R = {
-            AbilityName = "Time Punch"
-        },
-        X = {
-            AbilityName = "Bullet Kick"
-        },
-        Z = {
-            AbilityName = "Stand Jump"
-        },
-        C = {
-            AbilityName = "-"
-        }
+
     }
 }
 

@@ -96,13 +96,10 @@ function InventoryService:Give_Xp(player, xpValue, source)
     local multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
 
     -- multiply the value
-    if source == "Code" then
-        -- yeah nothign here
-    else
+    if source ~= "Code" and source ~= "Admin" then
         xpValue = xpValue * multiplier
     end
     
-
     -- get player data
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end
@@ -117,10 +114,11 @@ function InventoryService:Give_Xp(player, xpValue, source)
         return
     end
 
+    local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
+
     local maxXpReached = false
     local currentExperience = playerData.CurrentStand.Xp
-    local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
-    local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
+    local maxExperience = powerModule.Defs.MaxXp
     if currentExperience >= maxExperience then
         playerData.CurrentStand.Xp = maxExperience
         maxXpReached = true
@@ -129,17 +127,20 @@ function InventoryService:Give_Xp(player, xpValue, source)
         xpValue = maxExperience - playerData.CurrentStand.Xp
     end
 
-    playerData.CurrentStand.Xp += xpValue
-
-    Knit.Services.GuiService:Update_Gui(player, "StandData")
-    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
-
     if maxXpReached then
         local notificationParams = {}
         notificationParams.Icon = "XP"
         notificationParams.Text = "MAX XP for this stand. Time to EVOLVE!"
         Knit.Services.GuiService:Update_Notifications(player, notificationParams)
+        return
     end
+
+    playerData.CurrentStand.Xp += xpValue
+
+    Knit.Services.GuiService:Update_Gui(player, "StandData")
+    Knit.Services.GuiService:Update_Gui(player, "StoragePanel")
+
+
     
 end
 
@@ -189,17 +190,7 @@ function InventoryService:UseItem(player, key)
             return returnMessage
         end
 
-        --[[
-        if evolutionDef.GivePower == "GenerateStand" then
-            playerData.ItemInventory[key] += - 1
-            Knit.Services.GuiService:Update_Gui(player, "CraftingWindow")
-            Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
-            self:GenerateNewStand(player)
-            return
-        end
-        ]]--
-
-        -- handle al evolution that start at Standless
+        -- handle all evolution that start at Standless
         if evolutionName == "Standless" then
 
             playerData.ItemInventory[key] += - 1
@@ -217,16 +208,11 @@ function InventoryService:UseItem(player, key)
 
         else
 
-            if playerData.CurrentStand.Rank ~= 3 then
-                local returnMessage = "Need Max Rank and XP"
-                return returnMessage
-            end
-
             local currentExperience = playerData.CurrentStand.Xp
             local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
-            local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
+            local maxExperience = powerModule.Defs.MaxXp
             if currentExperience < maxExperience then
-                local returnMessage = "Need Max Rank and XP"
+                local returnMessage = "Need Max XP"
                 return returnMessage
             end
     
@@ -246,18 +232,11 @@ function InventoryService:UseItem(player, key)
         if key == "GoldStar" then
 
             if playerData.CurrentStand.Power == "Standless" then
-                local returnMessage = "You are Standless"
+                local returnMessage = "Cant Rank Standless"
                 return returnMessage
             end
 
-            local currentExperience = playerData.CurrentStand.Xp
             local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
-            local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
-            
-            if currentExperience < maxExperience then
-                local returnMessage = "Not Enough XP"
-                return returnMessage
-            end
 
             local newRank
             if playerData.CurrentStand.Rank == 1 then
@@ -271,11 +250,10 @@ function InventoryService:UseItem(player, key)
 
             playerData.ItemInventory.GoldStar += -1
 
-    
             local standData = {}
             standData.Power = playerData.CurrentStand.Power
             standData.Rank = newRank
-            standData.Xp = 0
+            standData.Xp = playerData.CurrentStand.Xp
             standData.GUID = playerData.CurrentStand.GUID
             Knit.Services.PowersService:SetCurrentPower(player, standData)
             
@@ -292,7 +270,7 @@ end
 
 function InventoryService:GiveNewPower(player, itemDef)
 
-    print("GIVE SPECIAL", player, itemDef)
+    --print("GIVE SPECIAL", player, itemDef)
 
     if itemDef.CutScene then
         local sceneParams = {}

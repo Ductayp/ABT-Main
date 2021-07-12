@@ -9,11 +9,7 @@ local WhiteSnake = {}
 
 WhiteSnake.Defs = {
     PowerName = "White Snake",
-    MaxXp = {
-        [1] = 10000,
-        [2] = 20000,
-        [3] = 30000
-    },
+    MaxXp = 30000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,
@@ -26,30 +22,36 @@ WhiteSnake.Defs = {
     },
     Abilities = {}, -- ability defs are inside each ability function area
     KeyMap = {
-        Q = {
-            AbilityName = "Summon Stand"
+        [1] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Acid Shot"},
+            T = {AbilityName = "Stand Steal"},
+            R = {AbilityName = "Burn Punch"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        E = {
-            AbilityName = "Barrage"
+        [2] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Acid Shot"},
+            T = {AbilityName = "Stand Steal"},
+            R = {AbilityName = "Burn Punch"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        F = {
-            AbilityName = "Acid Shot"
+        [3] = {
+            Q = {AbilityName = "Summon Stand"},
+            E = {AbilityName = "Barrage"},
+            F = {AbilityName = "Acid Shot"},
+            T = {AbilityName = "Stand Steal"},
+            R = {AbilityName = "Burn Punch"},
+            X = {AbilityName = "-"},
+            Z = {AbilityName = "Stand Jump"},
+            C = {AbilityName = "-"}
         },
-        T = {
-            AbilityName = "Stand Steal"
-        },
-        R = {
-            AbilityName = "Burn Punch"
-        },
-        X = {
-            AbilityName = "-"
-        },
-        Z = {
-            AbilityName = "Stand Jump"
-        },
-        C = {
-            AbilityName = "-"
-        }
     }
 }
 

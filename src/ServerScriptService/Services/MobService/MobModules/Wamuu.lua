@@ -178,7 +178,7 @@ function  module.Attack(mobData)
                             local newLookVector = (player.Character.HumanoidRootPart.Position - mobHRP.Position).unit
                             local hitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
         
-                            Knit.Services.MobService:HitPlayer(player, hitEffects)
+                            Knit.Services.MobService:HitPlayer(player, hitEffects, mobData)
                         end
                     end
                 end
@@ -197,7 +197,7 @@ function  module.Attack(mobData)
 
 
             local HitEffects_Attack = {Damage = {Damage = 20}}
-            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack)
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack, mobData)
         end
 
     end) 

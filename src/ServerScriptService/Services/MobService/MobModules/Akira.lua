@@ -162,7 +162,7 @@ function  module.Attack(mobData)
                     table.insert(hitCharacters, player.Character)
 
                     local hitEffects = {Damage = {Damage = 10}, Slow = {WalkSpeedModifier = -11, Duration = 2}}
-                    Knit.Services.MobService:HitPlayer(player, hitEffects)
+                    Knit.Services.MobService:HitPlayer(player, hitEffects, mobData)
                 end
             end
         end

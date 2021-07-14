@@ -38,7 +38,7 @@ module.Defs.WalkSpeed = 16
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = false
 module.Defs.AttackSpeed = 2
-module.Defs.AttackRange = 4.5
+module.Defs.AttackRange = 4
 module.Defs.HitEffects = {Damage = {Damage = 15}}
 module.Defs.SeekRange = 60 -- In Studs
 module.Defs.ChaseRange = 80 -- In Studs
@@ -143,7 +143,7 @@ function  module.Attack(mobData)
         wait(.25)
         mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
 
-        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
+        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects, mobData)
     end)  
                                
 end

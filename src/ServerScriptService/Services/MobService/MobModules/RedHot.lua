@@ -158,7 +158,7 @@ function  module.Attack(mobData)
                 if distance <= module.Defs.AttackRange then
 
                     local hitEffects = {Damage = {Damage = 5}}
-                    Knit.Services.MobService:HitPlayer(player, hitEffects)
+                    Knit.Services.MobService:HitPlayer(player, hitEffects, mobData)
                 end
             end
         end

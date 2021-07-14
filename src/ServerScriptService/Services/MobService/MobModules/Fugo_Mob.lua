@@ -142,9 +142,9 @@ function  Fugo_Mob.Attack(mobData)
         
         local rand = math.random(1,100)
         if rand <= 75 then
-            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, Fugo_Mob.Special_HitEffects)
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, Fugo_Mob.Special_HitEffects, mobData)
         else
-            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, Fugo_Mob.HitEffects)
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, Fugo_Mob.HitEffects, mobData)
         end
     
     end) 

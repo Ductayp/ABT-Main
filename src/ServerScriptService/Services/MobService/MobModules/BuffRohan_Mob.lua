@@ -141,7 +141,7 @@ function  BuffRohan_Mob.Attack(mobData)
         wait(.25)
         mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed
 
-        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects)
+        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects, mobData)
     end)  
                                
 end

@@ -1,4 +1,4 @@
--- PinMob
+-- MobAnimations
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))

@@ -42,7 +42,6 @@ end
 function RunFunctions.Client_RenderEffect(params)
 
     local thisScript = require(params.Script)
-    print("THIS SCRIPT", thisScript, params)
     thisScript[params.FunctionName](params.Arguments)
 
 end

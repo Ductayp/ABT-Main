@@ -24,7 +24,7 @@ module.Stage.Start = {
     IconName = "Icon_Koichi",
     Title = "Smol Guy",
     Body = "Akira and Hot Tamale have been shooting arrows all over the island! Maybe you can collect some <b>BROKEN ARROWS</b> inside?" ..
-        "<br/><br/>I can get you in for <b>2 DUNGEON KEYS.</b>",
+        "<br/><br/>I can get you in for <b>1 DUNGEON KEY.</b>",
     Choice_1 = {
         Display = true,
         Text = "ENTER DUNGEON",

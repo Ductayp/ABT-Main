@@ -134,7 +134,7 @@ function module.ProjectileImpact(params)
         destroyPart.Position = params.Position
         Debris:AddItem(destroyPart, 6)
 
-        soundParams = {}
+        local soundParams = {}
         soundParams.SoundProperties = {TimePosition = 0.2}
         WeldedSound.NewSound(destroyPart, ReplicatedStorage.Audio.General.CeramicBreak)
 

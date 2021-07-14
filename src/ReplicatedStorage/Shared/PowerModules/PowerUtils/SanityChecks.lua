@@ -39,7 +39,7 @@ function module.TestCFrame(initPlayer, targetCFrame, maxRange)
     local HRP = initPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not HRP then return end
 
-    finalCFrame = targetCFrame
+    local finalCFrame = targetCFrame
 
     local sanityCheck = (targetCFrame.Position - HRP.Position).magnitude
     if maxRange then

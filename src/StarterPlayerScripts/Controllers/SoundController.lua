@@ -138,9 +138,10 @@ function SoundController:IncrementGroupVolume(groupName, value)
         end
         
         thisGroup.Volume = newVolume
+        
+        return newVolume
     end
 
-    return scaledVolume
 end
 
 --// KnitStart ------------------------------------------------------------

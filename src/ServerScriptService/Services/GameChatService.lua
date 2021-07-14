@@ -119,7 +119,7 @@ function GameChatService:KnitInit()
     end)
 
     for _, speaker in ipairs(ChatService:GetSpeakerList()) do
-        self:SpeakerAdded(speakerName)
+        self:SpeakerAdded(speaker)
     end
 
 

@@ -48,7 +48,7 @@ module.Stage.Dungeon = {
     IconName = "Icon_Joseph",
     Title = "Joseph",
     Body = "Stabilizing the Time Rift to get you there won't be easy. I need Dunegon Keys and they dont grow on trees!" ..
-        "<br/><br/>Do you want to pend <b>6 Dunegon Keys</b> to get there?",
+        "<br/><br/>Do you want to pend <b>3 Dunegon Keys</b> to get there?",
         Choice_1 = {
             Display = true,
             Text = "YES",

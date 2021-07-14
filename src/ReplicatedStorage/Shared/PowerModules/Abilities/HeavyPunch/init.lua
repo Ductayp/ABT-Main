@@ -16,6 +16,7 @@ local BlockInput = require(Knit.PowerUtils.BlockInput)
 local SanityChecks = require(Knit.PowerUtils.SanityChecks)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
 local CameraShaker = require(Knit.Shared.CameraShaker)
+local CamShakeTools = require(Knit.PowerUtils.CamShakeTools)
 
 local HITBOX_DURATION = .2
 local HITBOX_SIZE = Vector3.new(5, 5, 12)
@@ -45,8 +46,12 @@ function HeavyPunch.Initialize(params, abilityDefs)
     -- run abilityMod setup
     local abilityMod = require(abilityDefs.AbilityMod)
     abilityMod.Client_Initialize(params, abilityDefs)
+
     spawn(function()
         abilityMod.Client_Stage_1(params, abilityDefs)
+    end)
+
+    spawn(function()
 
         wait(.4)
         local lockParams = {}
@@ -55,13 +60,8 @@ function HeavyPunch.Initialize(params, abilityDefs)
         lockParams.AnchorCharacter = true
         MobilityLock.Client_AddLock(lockParams)
 
-        local camera = Workspace.CurrentCamera
-        local camShake = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCf)
-            camera.CFrame = camera.CFrame * shakeCf
-        end)
+        CamShakeTools.Client_PresetShake("SmallRumble")
 
-        camShake:Start()
-        camShake:Shake(CameraShaker.Presets.Rumble)
     end)
 
 
@@ -135,8 +135,9 @@ function HeavyPunch.Activate(params, abilityDefs)
 
         hitBox.Touched:Connect(function(part)
             if part.Parent:FindFirstChild("Humanoid") then
-                if not hitCharacters[part.Parent] then
-                    hitCharacters[part.Parent] = true
+                local character = part.Parent
+                if not hitCharacters[character] then
+                    hitCharacters[character] = true
                     abilityMod.HitCharacter(params, abilityDefs, initPlayer, character, hitBox)
                 end
             end
@@ -160,6 +161,7 @@ function HeavyPunch.Execute(params, abilityDefs)
     if initPlayer ~= Players.LocalPlayer then
         spawn(function()
             abilityMod.Client_Stage_1(params, abilityDefs, initPlayer)
+            CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server, 20, "SmallRumble")
         end)
     end
 

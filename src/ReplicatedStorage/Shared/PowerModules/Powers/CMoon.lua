@@ -97,7 +97,7 @@ CMoon.Defs.Abilities.Q = {
         [3] = ReplicatedStorage.EffectParts.StandModels.CMoon_3,
     },
     Sounds = {
-        Equip = ReplicatedStorage.Audio.StandSpecific.TheWorld.Summon,
+        Equip = ReplicatedStorage.Audio.Abilities.StandSummon,
         Remove =  ReplicatedStorage.Audio.Abilities.StandSummon,
     }
 }

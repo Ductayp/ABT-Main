@@ -196,7 +196,6 @@ CrazyDiamond.Defs.Abilities.WallBlast = {
     Cooldown = 6,
     Duration = 3,
     HitEffects = {Damage = {Damage = 30}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}},
-    RequireToggle_On = {"Q"},
 }
 
 function CrazyDiamond.WallBlast(params)

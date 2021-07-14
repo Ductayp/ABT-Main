@@ -143,12 +143,12 @@ function RadiusAttack.Run_Client(params, abilityDefs)
     for count = 1, abilityMod.TickCount do
         wait(abilityMod.TickTime)
         if abilityMod.Server_Tick then
-            abilityMod.Client_Tick(params, abilityDefs, initPlayer, hitCharacters)
+            abilityMod.Client_Tick(params, abilityDefs, initPlayer, params.HitCharacters)
         end
     end
 
     if abilityMod.Server_End then
-        abilityMod.Client_End(params, abilityDefs, initPlayer, hitCharacters)
+        abilityMod.Client_End(params, abilityDefs, initPlayer, params.HitCharacters)
     end
 
 

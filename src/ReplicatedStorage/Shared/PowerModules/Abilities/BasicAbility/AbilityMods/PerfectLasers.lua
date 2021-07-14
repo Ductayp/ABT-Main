@@ -51,8 +51,8 @@ function module.Server_Run(params, abilityDefs, initPlayer)
             local newLookVector = (character.HumanoidRootPart.Position - initPlayer.Character.HumanoidRootPart.Position).unit
 
             abilityDefs.HitEffects = {
-                RenderEffects = {
-                    {Script = script, Function = "LaserHit", Arguments = {InitPlayer = initPlayer, HitCharacter = character}}
+                RunFunctions = {
+                    {RunOn = "Client", Script = script, FunctionName = "LaserHit", Arguments = {}}
                 },
                 KnockBack = {Force = 50, ForceY = 35, LookVector = newLookVector},
                 Damage = {Damage = 20, HideEffects = true}

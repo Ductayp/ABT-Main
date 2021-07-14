@@ -55,7 +55,6 @@ module.Stage.PlanetIntro = {
         }
     },
     Choice_2 = {
-        Display = false,
         Display = true,
         Text = "Did you say CODES?",
         CustomProperties = {Size = UDim2.new(0.4, 0, 0.9, 0)},

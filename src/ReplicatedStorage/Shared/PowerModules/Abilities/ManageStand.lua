@@ -201,7 +201,6 @@ function ManageStand.EquipStand(params, abilityDefs)
 	local noTweenFolder = newStand.StandParts:FindFirstChild("NoTween")
 	if noTweenFolder then
 		spawn(function()
-			wait(tweenDuration)
 			for i,v in pairs (noTweenFolder:GetChildren()) do
 				v.Transparency = 0
 			end
@@ -375,7 +374,7 @@ function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 				newTrack:AdjustSpeed(animationSpeed)
 				--print("newTrack.Speed",newTrack.Speed)
 			end
-			animationTime = newTrack.Length
+			animationLength = newTrack.Length
 		end
 	end
 

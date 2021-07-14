@@ -96,6 +96,16 @@ end
 
 --// RenderEffect -- render general effects
 function PowersController:RenderHitEffect(effect, params)
+
+    --print("PowersController:RenderHitEffect", effect, params)
+
+    if params.HitCharacter then
+        local distance = (Players.LocalPlayer.Character.HumanoidRootPart.Position - params.HitCharacter.HumanoidRootPart.Position).magnitude
+        if distance > defaultRenderDistance then 
+            return
+        end
+    end
+
     local effectModule = require(Knit.HitEffects[effect])
     effectModule.Client_RenderEffect(params)
 end
@@ -108,7 +118,7 @@ function PowersController:RenderAbilityEffect(abilityModule, functionName, param
     if not Players.LocalPlayer.Character then return end
 
     -- render distance check
-    if params.Position then
+    if params and params.Position then
         local effectRange
         if params.RenderRange then
             effectRange = params.RenderRange

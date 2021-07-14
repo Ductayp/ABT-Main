@@ -45,6 +45,7 @@ end
 --// CommaValue - converts a number to have commas
 function module.CommaValue(amount)
 	local formatted = amount
+	local k
 	while true do  
 	  formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
 	  if (k==0) then
@@ -144,6 +145,7 @@ end
 
 --// shallow copy table
 function module.ShallowCopy(orig)
+	--[[
 	local orig_type = type(orig)
 	local copy
 	if orig_type == 'table' then
@@ -155,10 +157,12 @@ function module.ShallowCopy(orig)
 		copy = orig
 	end
 	return copy
+	]]--
 end
 
 --// deep copy table
 function module.DeepCopy(orig)
+	--[[
     local orig_type = type(orig)
     local copy
     if orig_type == 'table' then
@@ -171,6 +175,7 @@ function module.DeepCopy(orig)
         copy = orig
     end
     return copy
+	]]--
 end
 
 return module

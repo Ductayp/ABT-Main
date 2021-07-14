@@ -1,5 +1,6 @@
 -- TargetByZone
 
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
@@ -109,6 +110,8 @@ end
 
 function TargetByZone.GetPlayers(initPlayer)
 
+	local initPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[initPlayer.UserId]
+
 	local hitCharacters = {}
 
 	local playersInZone = Knit.Services.PlayerUtilityService:GetPlayersInMapZone(initPlayer_MapZone)
@@ -130,6 +133,8 @@ function TargetByZone.GetPlayers(initPlayer)
 end
 
 function TargetByZone.GetMobs(initPlayer)
+
+	local initPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[initPlayer.UserId]
 
 	local hitCharacters = {}
 

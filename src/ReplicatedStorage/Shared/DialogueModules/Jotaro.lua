@@ -13,7 +13,7 @@ module.Stage.Start = {
     IconName = "Icon_Jotaro",
     Title = "Funny Hat Guy",
     Body = "This island seems to be at the nexus of a TIME RIFT where many timelines cross. As the timelines overlap, it's common to see time-clones walking around." .. 
-        "<br/><br/>Dio must be up to soemthing.",
+        "<br/><br/>Dio must be up to something.",
     Choice_1 = {
         Display = true,
         Text = "Time Rift?",

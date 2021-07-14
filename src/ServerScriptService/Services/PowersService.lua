@@ -262,7 +262,7 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     if canHit == true then
         for effect, effectParams in pairs(abilityDefs.HitEffects) do
             spawn(function()
-                require(Knit.HitEffects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
+                effectParams = require(Knit.HitEffects[effect]).Server_ApplyEffect(initPlayer, characterHit, effectParams, hitParams)
             end)
         end
     end

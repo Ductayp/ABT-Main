@@ -35,14 +35,13 @@ function ScrapePunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
         Invulnerable = {Duration = 5},
         RemoveStand = {},
         HideCharacter = {Duration = 5},
-        RunFunction = {
-            RunOn = "Client",
-            Script = script,
-            FunctionName = "BlackHole",
-            FunctionParams = {
-                Position = hitCharacter.HumanoidRootPart.Position,
-                HitCharacter = hitCharacter}
+        RunFunctions = {
+            {
+                RunOn = "Client",
+                Script = script, FunctionName = "BlackHole",
+                Arguments = {Position = hitCharacter.HumanoidRootPart.Position, HitCharacter = hitCharacter}
             }
+        }
     }
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
@@ -105,6 +104,8 @@ end
 
 function ScrapePunch.BlackHole(params)
 
+    print("YEETER!")
+
     --AnchoredSound.NewSound(params.TargetPosition, ReplicatedStorage.Audio.General.MagicBoom)
     local droneSound = AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.EnergySource20sec)
     AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.PowerUpStinger3)
@@ -131,7 +132,7 @@ function ScrapePunch.BlackHole(params)
     wait(5)
 
     droneSound:Destroy()
-    AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.MagicBoom, soundParams)
+    AnchoredSound.NewSound(params.Position, ReplicatedStorage.Audio.General.MagicBoom)
 
     newBurst.Pop:Emit(50)
     newBurst.Purple.Enabled = false

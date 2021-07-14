@@ -1,4 +1,4 @@
--- GravityPunch
+-- DestabilizingPunch
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -20,10 +20,18 @@ end
 --// HitCharacter ------------------------------------------------------------------------------------
 function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    abilityDefs.HitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 40, ForceY = 100}}
+    
+    abilityDefs.HitEffects = {
+        RunFunctions = {
+            {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {}},
+            {RunOn = "Client", Script = script, FunctionName = "Client_GhostEffect", Arguments = {}}
+        },
+        Damage = {Damage = 20},
+        RemoveStand = {},
+    }
+
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
-    return params
 end
 
 --// Client_Initialize ------------------------------------------------------------------------------------
@@ -89,6 +97,62 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
     ballTrans:Play()
     ballMove:Play()
     shockTween:Play()
+
+end
+
+function module.Server_GhostEffect(params)
+
+    print("SERVER", params)
+
+    local originCFRame = params.HitCharacter.HumanoidRootPart.CFrame
+    wait(7)
+    params.HitCharacter.HumanoidRootPart.CFrame = originCFRame
+
+end
+
+function module.Client_GhostEffect(params)
+
+    print("GHOST EFFECTS", params)
+
+    if not params.InitPlayer then return end
+    if not params.InitPlayer.Character then return end
+
+    if not params.HitCharacter then return end
+
+    AnchoredSound.NewSound(params.InitPlayer.Character.HumanoidRootPart.Position, ReplicatedStorage.Audio.General.LaserBeamDescend)
+
+    spawn(function()
+
+        local characterCopy = params.HitCharacter:Clone()
+        for _, object in pairs(characterCopy:GetDescendants()) do
+            if object:IsA("BasePart") then
+                object.Anchored = true
+            end
+        end
+        characterCopy.Parent = Workspace.RenderedEffects
+
+        for _, object in pairs(params.HitCharacter:GetDescendants()) do
+            if object:IsA("BasePart") then
+                object.Transparency = .8
+            end
+        end
+
+        wait(7)
+
+        params.HitCharacter.HumanoidRootPart.CFrame = characterCopy.HumanoidRootPart.CFrame
+
+        characterCopy:Destroy()
+
+        for _, object in pairs(params.HitCharacter:GetDescendants()) do
+            if object:IsA("BasePart") then
+                if object.Name ~= "HumanoidRootPart" then
+                    object.Transparency = 0
+                end
+            end
+        end
+
+    end)
+
 
 
 

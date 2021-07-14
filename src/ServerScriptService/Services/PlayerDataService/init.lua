@@ -80,8 +80,6 @@ function PlayerDataService:Connect(player)
         player:Kick()
     end
 
-    return db
-
 end
 
 function PlayerDataService:Disconnect(player)

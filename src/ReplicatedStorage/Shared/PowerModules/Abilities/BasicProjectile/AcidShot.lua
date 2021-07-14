@@ -100,8 +100,8 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
         abilityDefs.HitEffects.Damage = {Damage = 10}
         abilityDefs.HitEffects.PinCharacter = {Duration = module.PinDuration}
         abilityDefs.HitEffects.CameraMove = {Duration = module.PinDuration, TargetPart = cameraAnchor}
-        abilityDefs.HitEffects.RenderEffects = {
-            {Script = script, Function = "HitParticles", Arguments = {HitCharacter = character}}
+        abilityDefs.HitEffects.RunFunctions = {
+            {RunOn = "Client", Script = script, FunctionName = "HitParticles", Arguments = {HitCharacter = character}}
         }
 
         Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)

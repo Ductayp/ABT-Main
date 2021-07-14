@@ -148,8 +148,6 @@ function AbilityToggle.RequireOff(userId,toggleNamesArray)
                 end
             end
         end
-    else
-        returnValue = true -- this happens if there is no toggles folder yet
     end
 
     return allTogglesOn

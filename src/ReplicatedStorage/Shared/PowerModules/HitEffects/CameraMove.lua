@@ -25,7 +25,7 @@ end
 --// Client_RenderEffect
 function CameraMove.Client_RenderEffect(params)
 
-    player = Players.LocalPlayer
+    local player = Players.LocalPlayer
 
     local camera = Workspace.CurrentCamera
     local originalSubject = camera.CameraSubject

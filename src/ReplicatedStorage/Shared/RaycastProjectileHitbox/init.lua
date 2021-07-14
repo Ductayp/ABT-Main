@@ -3,6 +3,9 @@ local hitboxModule = {}
 local rayMod = require(script.RayModule)
 
 function hitboxModule:GetSquarePoints(CF, x, y, resolutionX, resolutionY)
+
+	local hSizex
+	local hSizey
 	
 	if resolutionX then
 		hSizex = resolutionX

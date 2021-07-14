@@ -66,7 +66,7 @@ function PlayerUtilityController:KnitStart()
     self:CharacterAdded(character)
 
     Players.LocalPlayer.CharacterAdded:Connect(function(character)
-        self:CharacterAdded(player)
+        self:CharacterAdded(character)
     end)
 
     

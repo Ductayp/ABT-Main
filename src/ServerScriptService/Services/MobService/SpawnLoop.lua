@@ -85,10 +85,10 @@ function SpawnLoop.Run()
                         local offsetZ
                         if thisModule.RandomPlacement then
                             offsetX = math.random(-mobData.Spawner.Size.X / 2, mobData.Spawner.Size.X / 2)
-                            offsetX = math.random(-mobData.Spawner.Size.Z / 2, mobData.Spawner.Size.Z / 2)
+                            offsetZ = math.random(-mobData.Spawner.Size.Z / 2, mobData.Spawner.Size.Z / 2)
                         else
                             offsetX = 0
-                            offsetX = 0
+                            offsetZ = 0
                         end
                         mobData.SpawnCFrame = pickedSpawner.CFrame * CFrame.new(offsetX, thisModule.Spawn_Y_Offset, offsetZ)
     

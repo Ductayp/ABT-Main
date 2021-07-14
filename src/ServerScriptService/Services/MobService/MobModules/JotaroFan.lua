@@ -1,6 +1,7 @@
 -- JotaroFan
 
 -- Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 

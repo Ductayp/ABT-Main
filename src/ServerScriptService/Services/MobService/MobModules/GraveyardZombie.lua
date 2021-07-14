@@ -1,8 +1,6 @@
--- module Mob
--- Pdab
--- 1/10/21
 
 -- Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit
@@ -54,7 +52,7 @@ module.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when th
 
 function module.GetModel()
 
-    pick = math.random(1,4)
+    local pick = math.random(1,4)
     return module.MobModels[pick]
 
 end

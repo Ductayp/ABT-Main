@@ -1,5 +1,5 @@
+--[[
 local dataPoints = hitboxMod:GetSquarePoints(rootPart.CFrame,8,8)
-    
     
 local projectileData = {}
 projectileData["Points"] = dataPoints
@@ -18,3 +18,4 @@ projectileData["Function"] = function(result)
 end
 
 hitboxMod:CastProjectileHitbox(projectileData)
+]]--

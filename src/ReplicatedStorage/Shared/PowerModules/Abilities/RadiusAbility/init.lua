@@ -12,6 +12,7 @@ local AbilityToggle = require(Knit.PowerUtils.AbilityToggle)
 local Cooldown = require(Knit.PowerUtils.Cooldown)
 local MobilityLock = require(Knit.PowerUtils.MobilityLock)
 local BlockInput = require(Knit.PowerUtils.BlockInput)
+local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
 local RadiusAbility = {}
 
@@ -36,8 +37,8 @@ function RadiusAbility.Initialize(params, abilityDefs)
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
 
     local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
-    abilityMod.Client_Initialize(params, abilityDefs, playerPing)
-    abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
+    abilityMod.Client_Initialize(params, abilityDefs)
+    abilityMod.Client_Stage_1(params, abilityDefs)
 
 end
 
@@ -81,7 +82,7 @@ function RadiusAbility.Execute(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     if initPlayer ~= Players.LocalPlayer then
-        abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
+        abilityMod.Client_Stage_1(params, abilityDefs)
     end
     
     abilityMod.Client_Stage_2(params, abilityDefs, initPlayer)
@@ -94,8 +95,10 @@ end
 
 function RadiusAbility.GetAllInRange(origin)
 
-    targets = TargetByZone.GetAllInRange(initPlayer, origin, abilityMod.Range, true)
+    --[[
+    local targets = TargetByZone.GetAllInRange(initPlayer, origin, abilityMod.Range, true)
     return targets
+    ]]--
 end
 
 

@@ -195,9 +195,6 @@ function GuiService:PlayerAdded(player)
     Knit.Services.StateService:RemoveEntryFromState(player, "Invulnerable", "GuiService")
     Knit.Services.StateService:AddEntryToState(player, "Multiplier_Experience", "GuiService", 2)
 
-    local params = {CanToggle = canToggle}
-    self:Update_Gui(player, "RightGui", params)
-
 end
 
 function GuiService:PlayerRemoved(player)

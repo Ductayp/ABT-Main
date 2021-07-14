@@ -1,8 +1,6 @@
--- module Mob
--- Pdab
--- 1/10/21
 
 -- Roblox Services
+local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Knit

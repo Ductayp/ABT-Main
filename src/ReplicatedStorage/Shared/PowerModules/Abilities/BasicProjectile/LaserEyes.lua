@@ -119,15 +119,6 @@ function module.Projectile_Setup(initPlayer, params, abilityDefs)
 
     local newProjectile = ReplicatedStorage.EffectParts.Abilities.BasicProjectile.LaserEyes.LaserEyesAssembly:Clone()
 
-    --[[
-    local newWeld1 = Instance.new("Weld")
-    newWeld1.C1 =  CFrame.new(0,.2,0)
-    newWeld1.Part0 = newProjectile.BeamAnchor
-    newWeld1.Part1 = initPlayer.Character.Head
-    newWeld1.Parent = newProjectile.BeamAnchor
-
-    ]]--
-
     newProjectile.BeamAnchor.CFrame = params.projectileOrigin
     newProjectile.BeamAnchor.Anchored = true
 
@@ -137,9 +128,7 @@ function module.Projectile_Setup(initPlayer, params, abilityDefs)
         if not newProjectile then return end
         if not newProjectile.BeamAnchor then return end
         if not newProjectile.BeamAnchor.BodyVelocity then return end
-        if not newWeld1 then return end
 
-        --newWeld1:Destroy()
         newProjectile.BeamAnchor.BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
         newProjectile.BeamAnchor.BodyVelocity.P = module.Velocity
         newProjectile.BeamAnchor.BodyVelocity.Velocity = params.projectileOrigin.LookVector * module.Velocity

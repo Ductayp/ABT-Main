@@ -336,7 +336,7 @@ function InventoryService:GenerateNewStand(player)
     Knit.Services.PowersService:SetCurrentPower(player, newParams)
 
     -- fire Show_StandReveal to the player
-    revealParams = {}
+    local revealParams = {}
     revealParams.AllStands = arrowOpenDefs
     revealParams.RevealDelay = 3
     Knit.Services.GuiService:Update_Gui(player, "StandReveal", revealParams)

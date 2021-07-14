@@ -118,7 +118,7 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
     newBurst.Parent = Workspace.RenderedEffects
     newBurst.Pop:Emit(50)
 
-    AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.MagicBoom, soundParams)
+    AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.MagicBoom)
     local droneSound = AnchoredSound.NewSound(params.BlackHoleCFrame.Position, ReplicatedStorage.Audio.General.EnergySource20sec)
 
     -- render black hole parts

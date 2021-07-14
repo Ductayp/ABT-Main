@@ -43,7 +43,7 @@ function AngeloRock.Client_RenderEffect(params)
         tweenIn_1:Play()
     
         local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
-        if hitPlayer == Players.LocalPlayer or hitPlayer == initPlayer then
+        if hitPlayer == Players.LocalPlayer then
             effectHolder.AngeloRock.CanCollide = false
         end
 

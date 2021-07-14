@@ -40,8 +40,8 @@ local CameraShakePresets = {
 	end;
 
 
-	Rumble = function()
-		local c = CameraShakeInstance.new(1.5, 6, 0, 1)
+	SmallRumble = function()
+		local c = CameraShakeInstance.new(1, 4, 0, .75)
 		c.PositionInfluence = Vector3.new(0.15, 0.15, 0.15)
 		c.RotationInfluence = Vector3.new(1, 1, 1)
 		return c

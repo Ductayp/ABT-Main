@@ -49,8 +49,8 @@ function module.Server_Run(params, abilityDefs, initPlayer)
 
     -- set HitEffects to ColorShift function only
     abilityDefs.HitEffects = {
-        RenderEffects = {
-            {Script = script, Function = "ColorShiftEffect", Arguments = {DayCycle = dayCycle, HitCharacter = initPlayer.Character}},
+        RunFunctions = {
+            {RunOn = "Client", Script = script, FunctionName = "ColorShiftEffect", Arguments = {DayCycle = dayCycle, HitCharacter = initPlayer.Character}},
         }
     }
     
@@ -63,9 +63,9 @@ function module.Server_Run(params, abilityDefs, initPlayer)
         if character ~= initPlayer.Character then
 
             abilityDefs.HitEffects = {
-                RenderEffects = {
-                    {Script = script, Function = "ColorShiftEffect", Arguments = {DayCycle = dayCycle, HitCharacter = character}},
-                    {Script = script, Function = "FreezeEffect", Arguments = {HitCharacter = character}}
+                RunFunctions = {
+                    {RunOn = "Client", Script = script, FunctionName = "ColorShiftEffect", Arguments = {DayCycle = dayCycle}},
+                    {RunOn = "Client", Script = script, FunctionName = "FreezeEffect", Arguments = {}}
                 },
                 Damage = {Damage = 10},
                 PinCharacter = {Duration = DURATION},

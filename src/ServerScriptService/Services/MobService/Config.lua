@@ -4,10 +4,10 @@ Config.MobCollide = false -- Great For Optimization, turn it off for NPC-NPC col
 --Config.PlayerCollide = false -- Greate For Optimization, turn it off for Player-Player and Player-NPC collision;
 Config.NetworkOwner_Server = true
 Config.HumanoidStates = { -- | To optimize
-	[Enum.HumanoidStateType.Climbing] = false,
+	[Enum.HumanoidStateType.Climbing] = true,
 	[Enum.HumanoidStateType.Dead] = false,
 	[Enum.HumanoidStateType.FallingDown] = false,
-	[Enum.HumanoidStateType.Freefall] = false,
+	[Enum.HumanoidStateType.Freefall] = true,
 	[Enum.HumanoidStateType.Flying] = false,
 	[Enum.HumanoidStateType.GettingUp] = true,
 	[Enum.HumanoidStateType.Jumping] = true,
@@ -19,7 +19,7 @@ Config.HumanoidStates = { -- | To optimize
 	[Enum.HumanoidStateType.RunningNoPhysics] = true,
 	[Enum.HumanoidStateType.Seated] = false,
 	[Enum.HumanoidStateType.StrafingNoPhysics] = true,
-	[Enum.HumanoidStateType.Swimming] = false,	
+	[Enum.HumanoidStateType.Swimming] = true,	
 };
 
 return Config

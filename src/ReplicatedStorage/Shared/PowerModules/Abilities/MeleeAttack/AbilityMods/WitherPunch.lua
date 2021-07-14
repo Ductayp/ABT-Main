@@ -31,7 +31,9 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
         --Damage = {Damage = 7},
         --LifeSteal = {Quantity = 15},
         Slow = {WalkSpeedModifier = -11, Duration = 7},
-        RunFunction = {RunOn = "Client", Script = script, FunctionName = "WitherEffects", FunctionParams = {HitCharacter = hitCharacter}}
+        RunFunctions = {
+            {RunOn = "Client", Script = script, FunctionName = "WitherEffects", Arguments = {HitCharacter = hitCharacter}}
+        }
     }
 
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)

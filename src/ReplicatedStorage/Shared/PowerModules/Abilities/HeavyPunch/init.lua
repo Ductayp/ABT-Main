@@ -161,7 +161,7 @@ function HeavyPunch.Execute(params, abilityDefs)
     if initPlayer ~= Players.LocalPlayer then
         spawn(function()
             abilityMod.Client_Stage_1(params, abilityDefs, initPlayer)
-            CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server, 20, "SmallRumble")
+            CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server.Position, 20, "SmallRumble")
         end)
     end
 

@@ -24,7 +24,7 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
     
     abilityDefs.HitEffects = {
-        --Invulnerable = {Duration = 1},
+        GiveImmunity = {AbilityName = "DestabilizingPunch", Duration = GHOST_DURATION + 1},
         Damage = {Damage = 20},
         RemoveStand = {},
         RunFunctions = {
@@ -109,19 +109,24 @@ function module.Server_GhostEffect(params)
     if params.HitParams.IsMob then
 
         require(Knit.MobUtils.HideHealth).Hide_Duration(params.HitParams.MobId, GHOST_DURATION)
-        require(Knit.MobUtils.BlockHits).Block_Duration(params.HitParams.MobId, GHOST_DURATION)
+        require(Knit.MobUtils.BlockHits).Block_Duration(params.HitParams.MobId, GHOST_DURATION + 1)
 
     end
 
     local originCFRame = params.HitCharacter.HumanoidRootPart.CFrame
 
+    params.HitCharacter.Archivable = true
     local characterCopy = params.HitCharacter:Clone()
+
+    print("CHARACTER COPY", characterCopy)
+
     for _, object in pairs(characterCopy:GetDescendants()) do
         if object:IsA("BasePart") then
             object.Anchored = true
         end
     end
 
+    --[[
     local invulnerableBool_1 = Instance.new("BoolValue")
     invulnerableBool_1.Value = true
     invulnerableBool_1.Name = "Invulnerable_HitEffect"
@@ -130,6 +135,7 @@ function module.Server_GhostEffect(params)
         wait(.5)
         invulnerableBool_1:Destroy()
     end)
+    ]]--
 
     characterCopy.Parent = Workspace.RenderedEffects
 
@@ -157,21 +163,23 @@ function module.Server_GhostEffect(params)
     --print("TEST 2", characterCopy.Parent, characterCopy:GetChildren())
 
     if params.HitCharacter then
+
         params.HitCharacter.HumanoidRootPart.CFrame = originCFRame
         params.HitCharacter.Humanoid.Health = characterCopy.Humanoid.Health
+
         invulnerableBool_2:Destroy()
+
+        for _, object in pairs(params.HitCharacter:GetDescendants()) do
+            if object:IsA("BasePart") then
+                if object.Name ~= "HumanoidRootPart" then
+                    object.Transparency = 0
+                end
+            end
+        end
     end
     
     characterCopy:Destroy()
     
-    for _, object in pairs(params.HitCharacter:GetDescendants()) do
-        if object:IsA("BasePart") then
-            if object.Name ~= "HumanoidRootPart" then
-                object.Transparency = 0
-            end
-        end
-    end
-
 end
 
 function module.Client_GhostEffect(params)

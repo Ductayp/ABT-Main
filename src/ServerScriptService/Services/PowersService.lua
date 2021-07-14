@@ -247,13 +247,24 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
             local thisMob = Knit.Services.MobService:GetMobById(mobIdObject.Value)
             if thisMob then
 
-                if thisMob.Defs.MapZone == intiPlayer_MapZone then
-                    canHit = true
-                    hitParams.IsMob = true
-                    hitParams.MobId = mobIdObject.Value
-
-                    Knit.Services.MobService:WakeMob(initPlayer, thisMob)
+                if thisMob.Immunity then
+                    for abilityName, _ in pairs(thisMob.Immunity) do
+                        if abilityName == abilityDefs.Id then
+                            return
+                        end
+                    end
                 end
+
+                if thisMob.Defs.MapZone ~= intiPlayer_MapZone then
+                    return
+                end
+
+                canHit = true
+                hitParams.IsMob = true
+                hitParams.MobId = mobIdObject.Value
+
+                Knit.Services.MobService:WakeMob(initPlayer, thisMob)
+
             end
         end
     end

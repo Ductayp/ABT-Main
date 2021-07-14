@@ -20,11 +20,7 @@ function GiveImmunity.Server_ApplyEffect(initPlayer, hitCharacter, effectParams,
 
     if hitParams.IsMob then
 
-        local thisMob = Knit.Services.MobService:GetMobById(hitParams.MobId)
-
-        if thisMob then
-            
-        end
+        require(Knit.MobUtils.Immunity).Give_Duration(hitParams.MobId, effectParams.AbilityName, effectParams.Duration)
         
     else
 

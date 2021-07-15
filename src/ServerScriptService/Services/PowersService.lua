@@ -193,7 +193,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end
@@ -214,24 +214,28 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     local damageMultiplier = require(Knit.StateModules.Multiplier_Damage).GetTotalMultiplier(initPlayer)
     hitParams.DamageMultiplier = damageMultiplier
 
-    -- test if a player or a mob, then set variables
+    print("TEST 1", initPlayer, characterHit, abilityDefs)
+
+    -- test if a player
     local targetPlayer = utils.GetPlayerFromCharacter(characterHit)
     if targetPlayer then
 
+        print("TEST 2", initPlayer, characterHit, abilityDefs)
+
         -- check if initPlayer has PvP off, if so then return
-        if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then return end
+        if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then
+            return
+        end
 
         local targetPlayer_MapZone = Knit.Services.PlayerUtilityService.PlayerMapZone[targetPlayer.UserId]
-
         if intiPlayer_MapZone ~= targetPlayer_MapZone then 
             return
         end
 
         -- check if players character is invulnerable
         local isInvulnerable = require(Knit.StateModules.Invulnerable).IsInvulnerable(targetPlayer)
-        if not isInvulnerable then
-            canHit = true
-            hitParams.IsMob = false
+        if isInvulnerable then
+            return
         end
 
         -- check if the player is Immune to this ability
@@ -239,33 +243,53 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
             return
         end
 
-    else
+        canHit = true
+        hitParams.IsMob = false
 
-        local mobIdObject = characterHit:FindFirstChild("MobId")
-        if mobIdObject then
+    end
 
-            local thisMob = Knit.Services.MobService:GetMobById(mobIdObject.Value)
-            if thisMob then
+    -- test if a player proxy
+    local proxyObject = characterHit:FindFirstChild("PlayerProxy", true)
+    if proxyObject then
 
-                if thisMob.Immunity then
-                    for abilityName, _ in pairs(thisMob.Immunity) do
-                        if abilityName == abilityDefs.Id then
-                            return
-                        end
+        print("TEST 4", initPlayer, characterHit, abilityDefs, proxyObject.Value)
+
+        --[[
+        if proxyObject.Value.Character then
+            canHit = true
+            characterHit = proxyObject.Value.Character
+        end
+        ]]--
+
+        canHit = true
+        hitParams.IsMob = false
+    end
+
+    -- test if a mob
+    local mobIdObject = characterHit:FindFirstChild("MobId")
+    if mobIdObject then
+
+        local thisMob = Knit.Services.MobService:GetMobById(mobIdObject.Value)
+        if thisMob then
+
+            if thisMob.Immunity then
+                for abilityName, _ in pairs(thisMob.Immunity) do
+                    if abilityName == abilityDefs.Id then
+                        return
                     end
                 end
-
-                if thisMob.Defs.MapZone ~= intiPlayer_MapZone then
-                    return
-                end
-
-                canHit = true
-                hitParams.IsMob = true
-                hitParams.MobId = mobIdObject.Value
-
-                Knit.Services.MobService:WakeMob(initPlayer, thisMob)
-
             end
+
+            if thisMob.Defs.MapZone ~= intiPlayer_MapZone then
+                return
+            end
+
+            canHit = true
+            hitParams.IsMob = true
+            hitParams.MobId = mobIdObject.Value
+
+            Knit.Services.MobService:WakeMob(initPlayer, thisMob)
+
         end
     end
    

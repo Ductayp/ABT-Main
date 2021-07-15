@@ -49,7 +49,7 @@ function WalkSpeed.GetModifiedValue(player, params)
 
     local totalWalkSpeed = DEFAULT_WALKSPEED -- start with the default and then add the modifers
 
-    local playerFolder = ReplicatedStorage.StateService[player.UserId]
+    local playerFolder = ReplicatedStorage.StateService:FindFirstChild(player.UserId)
     if playerFolder then
         local walkSpeedState = playerFolder:FindFirstChild("WalkSpeed")
         if walkSpeedState then

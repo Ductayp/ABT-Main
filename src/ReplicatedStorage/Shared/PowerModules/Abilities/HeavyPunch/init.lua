@@ -19,7 +19,7 @@ local CameraShaker = require(Knit.Shared.CameraShaker)
 local CamShakeTools = require(Knit.PowerUtils.CamShakeTools)
 
 local HITBOX_DURATION = .2
-local HITBOX_SIZE = Vector3.new(5, 5, 12)
+local HITBOX_SIZE = Vector3.new(6, 5, 12)
 local HITBOX_OFFSET = CFrame.new(0, 0, 6)
 local HITBOX_DELAY = 0.4
 
@@ -48,12 +48,11 @@ function HeavyPunch.Initialize(params, abilityDefs)
     abilityMod.Client_Initialize(params, abilityDefs)
 
     spawn(function()
-        abilityMod.Client_Stage_1(params, abilityDefs)
-    end)
 
-    spawn(function()
+        abilityMod.Client_StandAnimations(params, abilityDefs)
 
-        wait(.4)
+        wait(HITBOX_DELAY)
+
         local lockParams = {}
         lockParams.Duration = .4
         lockParams.ShiftLock_NoSpin = true
@@ -61,6 +60,8 @@ function HeavyPunch.Initialize(params, abilityDefs)
         MobilityLock.Client_AddLock(lockParams)
 
         CamShakeTools.Client_PresetShake("SmallRumble")
+
+        abilityMod.Client_Animation_A(params, abilityDefs, Players.LocalPlayer)
 
     end)
 
@@ -100,7 +101,7 @@ function HeavyPunch.Activate(params, abilityDefs)
     hitBox.CanCollide = false
     hitBox.Massless = true
 	hitBox.Size = HITBOX_SIZE
-	hitBox.Transparency = 1
+	hitBox.Transparency = .7
 	hitBox.Parent = Workspace.ServerHitboxes[params.InitUserId]
     hitBox.Touched:Connect(function() end)
 
@@ -116,7 +117,7 @@ function HeavyPunch.Activate(params, abilityDefs)
 
         wait(HITBOX_DELAY)
 
-        --hitBox.Color = Color3.fromRGB(232, 99, 255)
+        hitBox.Color = Color3.fromRGB(232, 99, 255)
 
         local hit = hitBox:GetTouchingParts()
         local hitCharacters = {}
@@ -159,15 +160,22 @@ function HeavyPunch.Execute(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     if initPlayer ~= Players.LocalPlayer then
-        spawn(function()
-            abilityMod.Client_Stage_1(params, abilityDefs, initPlayer)
-            CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server.Position, 20, "SmallRumble")
-        end)
-    end
 
-    wait(HITBOX_DELAY)
-    
-    abilityMod.Client_Stage_2(params, abilityDefs, initPlayer)
+        abilityMod.Client_StandAnimations(params, abilityDefs, initPlayer)
+
+        wait(HITBOX_DELAY)
+
+        abilityMod.Client_Animation_A(params, abilityDefs, initPlayer)
+        CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server.Position, 20, "SmallRumble")
+        abilityMod.Client_Animation_B(params, abilityDefs, initPlayer)
+        
+    else
+
+        wait(HITBOX_DELAY)
+
+        abilityMod.Client_Animation_B(params, abilityDefs, initPlayer)
+
+    end
 
 end
 

@@ -55,7 +55,7 @@ function PlayerDataService:Connect(player)
             profiles[player] = nil
 
             -- The profile could've been loaded on another Roblox server:
-            print("PlayersDataStore - Kick: profle nil 1")
+            print("PlayersDataStore - Kick: player, profile", player, profile )
             player:Kick()
         end)
 
@@ -112,8 +112,7 @@ function PlayerDataService:WipePlayerData(player)
 end
 
 function PlayerDataService.Client:GetPlayerData(player)
-    --print("yes",player)
-    --self:GetPlayerData(player)
+    warn("You cant get player data from the client")
 end 
 
 function PlayerDataService:PlayerAdded(player)

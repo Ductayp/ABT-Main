@@ -18,6 +18,10 @@ Removed Soul Orbs
     2x Soul Orbs pass converted to 2x Boss Drop pass
     Soul Orbs no longer spawn or drop (obviously)
 
+PvP Toggle Revamp
+    XP only given when PvP is on (no more 2x XP when it is on)
+    this means you gain no XP when PvP is toggled off
+
 Gold Experience
 Started rank system rework (Gold Experiene is the first)
 More rank reworks to existing stands
@@ -26,4 +30,12 @@ NEXT UPDATE --------------
 
 C-Moon
 Dios Crypt Dungeon
+
+Dungeon System rework
+    Dunegns Keys now give timed access to the dungeon that saves when the player leaves
+    timer pauses when the player leaves and resumes on re-entry
+    you get kicked out when the timer is up
+    Player timer will be displayed on the dungeon sign
+    Proposal: dungeon sign will also be the way in and out, remove NPCs as gatekeepers
+    Proposal: 1 key = 1 Hour on all dunegons
 

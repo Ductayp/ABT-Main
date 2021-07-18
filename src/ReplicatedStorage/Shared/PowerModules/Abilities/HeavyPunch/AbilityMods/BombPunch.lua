@@ -1,4 +1,4 @@
--- DestabilizingPunch
+-- SoulPunch
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -8,6 +8,7 @@ local Debris = game:GetService("Debris")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
+local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
 local GHOST_DURATION = 7
@@ -24,8 +25,9 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
     
     abilityDefs.HitEffects = {
-        GiveImmunity = {AbilityName = "DestabilizingPunch", Duration = GHOST_DURATION + 1},
+        GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
         Damage = {Damage = 20},
+        BlockAttacks = {Duration = 7},
         RemoveStand = {},
         RunFunctions = {
             {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {}}
@@ -89,21 +91,6 @@ function module.Client_Animation_A(params, abilityDefs, initPlayer)
         shockTween:Play()
         shockTween:Destroy()
 
-        --[[
-        local newBurst = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FatBurst:Clone()
-        newBurst.Parent = Workspace.RenderedEffects
-        Debris:AddItem(newBurst, 3)
-
-        local burstWeld = Instance.new("Weld")
-        burstWeld.C1 =  CFrame.new(0,0,10)
-        burstWeld.Part0 = HRP
-        burstWeld.Part1 = newBurst
-        burstWeld.Parent = newBurst
-
-        local burstTween = TweenService:Create(newBurst, TweenInfo.new(2),{Size = Vector3.new(3,3,3), Transparency = 1})
-        burstTween:Play()
-        burstTween:Destroy()
-        ]]--
     end)
 
 end
@@ -139,102 +126,5 @@ function module.Client_Animation_B(params, abilityDefs, initPlayer)
 
 
 end
-
-function module.Server_GhostEffect(params)
-
-    if params.HitParams.IsMob then
-
-        require(Knit.MobUtils.HideHealth).Hide_Duration(params.HitParams.MobId, GHOST_DURATION)
-        require(Knit.MobUtils.BlockHits).Block_Duration(params.HitParams.MobId, GHOST_DURATION + 1)
-
-    end
-
-    local originCFRame = params.HitCharacter.HumanoidRootPart.CFrame
-
-    params.HitCharacter.Archivable = true
-    local characterCopy = params.HitCharacter:Clone()
-
-    for _, object in pairs(characterCopy:GetDescendants()) do
-        if object:IsA("BasePart") then
-            object.Anchored = true
-        end
-    end
-
-    local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
-    if hitPlayer then
-
-        local playerProxy = Instance.new("ObjectValue")
-        playerProxy.Value = hitPlayer
-        playerProxy.Name = "PlayerProxy"
-        playerProxy.Parent = characterCopy
-        
-    end
-
-    characterCopy.Parent = Workspace.RenderedEffects
-
-    for _, object in pairs(params.HitCharacter:GetDescendants()) do
-        if object:IsA("BasePart") then
-            if object.Name ~= "HumanoidRootPart" then
-                object.Transparency = .8
-            end
-        end
-    end
-
-    local invulnerableBool_2 = Instance.new("BoolValue")
-    invulnerableBool_2.Value = true
-    invulnerableBool_2.Name = "Invulnerable_HitEffect"
-    invulnerableBool_2.Parent = params.HitCharacter.HumanoidRootPart
-
-    local effectParams = {}
-    effectParams.CharacterCopy = characterCopy
-    effectParams.HitCharacter =  params.HitCharacter
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Client_GhostEffect", effectParams)
-
-    wait(GHOST_DURATION)
-
-    if params.HitCharacter then
-
-        if params.HitCharacter:FindFirstChild("HumanoidRootPart") then
-            params.HitCharacter.HumanoidRootPart.CFrame = originCFRame
-            params.HitCharacter.Humanoid.Health = characterCopy.Humanoid.Health
-        end
-
-        invulnerableBool_2:Destroy()
-
-        for _, object in pairs(params.HitCharacter:GetDescendants()) do
-            if object:IsA("BasePart") then
-                if object.Name ~= "HumanoidRootPart" then
-                    object.Transparency = 0
-                end
-            end
-        end
-    end
-    
-    characterCopy:Destroy()
-    
-end
-
-function module.Client_GhostEffect(params)
-
-    print("GHOST EFFECTS", params)
-
-    if not params.CharacterCopy then return end
-    if not params.HitCharacter then return end
-
-    print("YES")
-
-    AnchoredSound.NewSound(params.HitCharacter.HumanoidRootPart.Position, ReplicatedStorage.Audio.General.LaserBeamDescend)
-
-    --[[
-    spawn(function()
-
-        wait(GHOST_DURATION)
-
-    end)
-    ]]--
-
-end
-
-
 
 return module

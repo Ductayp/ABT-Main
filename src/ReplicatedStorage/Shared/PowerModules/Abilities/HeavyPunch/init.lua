@@ -101,7 +101,7 @@ function HeavyPunch.Activate(params, abilityDefs)
     hitBox.CanCollide = false
     hitBox.Massless = true
 	hitBox.Size = HITBOX_SIZE
-	hitBox.Transparency = .7
+	hitBox.Transparency = 1
 	hitBox.Parent = Workspace.ServerHitboxes[params.InitUserId]
     hitBox.Touched:Connect(function() end)
 
@@ -117,7 +117,7 @@ function HeavyPunch.Activate(params, abilityDefs)
 
         wait(HITBOX_DELAY)
 
-        hitBox.Color = Color3.fromRGB(232, 99, 255)
+        --hitBox.Color = Color3.fromRGB(232, 99, 255)
 
         local hit = hitBox:GetTouchingParts()
         local hitCharacters = {}

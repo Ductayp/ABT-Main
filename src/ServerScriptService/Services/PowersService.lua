@@ -193,7 +193,7 @@ end
 --// RegisterHit
 function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
 
-    print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
+    --print("REGISTER HIT: ", initPlayer, characterHit, abilityDefs)
 
     if not characterHit then return end
     if not characterHit:FindFirstChild("Humanoid") then return end
@@ -214,13 +214,9 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     local damageMultiplier = require(Knit.StateModules.Multiplier_Damage).GetTotalMultiplier(initPlayer)
     hitParams.DamageMultiplier = damageMultiplier
 
-    print("TEST 1", initPlayer, characterHit, abilityDefs)
-
     -- test if a player
     local targetPlayer = utils.GetPlayerFromCharacter(characterHit)
     if targetPlayer then
-
-        print("TEST 2", initPlayer, characterHit, abilityDefs)
 
         -- check if initPlayer has PvP off, if so then return
         if not Knit.Services.GuiService.PvPToggles[initPlayer.UserId] then
@@ -251,16 +247,6 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
     -- test if a player proxy
     local proxyObject = characterHit:FindFirstChild("PlayerProxy", true)
     if proxyObject then
-
-        print("TEST 4", initPlayer, characterHit, abilityDefs, proxyObject.Value)
-
-        --[[
-        if proxyObject.Value.Character then
-            canHit = true
-            characterHit = proxyObject.Value.Character
-        end
-        ]]--
-
         canHit = true
         hitParams.IsMob = false
     end

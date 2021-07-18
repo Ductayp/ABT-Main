@@ -11,11 +11,19 @@ function module.Hide_Duration(mobId, duration)
     if not thisMob then return end
     if not thisMob.Model then return end
 
-    if thisMob.Model.Humanoid then
+    local humanoid = thisMob.Model:FindFirstChild("Humanoid")
+
+    if humanoid then
         spawn(function()
-            thisMob.Model.Humanoid.HealthDisplayDistance = 0
+            
+            humanoid.HealthDisplayDistance = 0
+
             wait(duration)
-            thisMob.Model.Humanoid.HealthDisplayDistance = 50
+
+            if humanoid then
+                humanoid.HealthDisplayDistance = 50
+            end
+
         end)
     end
 

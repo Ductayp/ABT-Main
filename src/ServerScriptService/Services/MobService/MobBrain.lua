@@ -187,16 +187,19 @@ function MobBrain.State_Attack(mobData)
 
     if mobData.LastAttack < os.clock() - mobData.Defs.AttackSpeed then
 
-        if not mobData.Model.HumanoidRootPart:FindFirstChild("BlockAttacks") then
+        if mobData.Model:FindFirstChild("BlockAttacks", true) then
 
-            -- run attack function
+            mobData.BrainState = "Chase"
+            mobData.StateTime = os.clock()
+
+        else
+            
             mobData.Functions.Attack(mobData)
- 
-            -- brain settings
-            --mobData.AttackTarget = nil
+
             mobData.LastAttack = os.clock()
             mobData.BrainState = "Chase"
             mobData.StateTime = os.clock()
+
         end
 
     else

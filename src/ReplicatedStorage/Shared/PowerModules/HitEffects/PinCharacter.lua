@@ -26,15 +26,8 @@ function PinCharacter.Server_ApplyEffect(initPlayer, hitCharacter, effectParams,
         if hitCharacter.Humanoid then
 
             require(Knit.MobUtils.MobPin).Pin_Duration(hitParams.MobId, effectParams.Duration)
-
-            local blockAttackBool = Instance.new("Part")
-            blockAttackBool.Name = "BlockAttacks"
-            blockAttackBool.Parent = hitCharacter.HumanoidRootPart
-
-            spawn(function()
-                wait(effectParams.Duration)
-                blockAttackBool:Destroy()
-            end)
+            require(Knit.MobUtils.BlockAttacks).Block_Duration(hitParams.MobId, effectParams.Duration)
+            
         end
     end
 

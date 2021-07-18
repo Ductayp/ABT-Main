@@ -17,7 +17,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local config = require(script.Config)
 MobService.SpawnedMobs = {} -- table of all spawned mobs
 
-MobService.DebugMode = false
+MobService.DebugMode = true
 
 --MobService.MobUtils = script.MobUtils -- expose the MobUtilities folder to the service table
 
@@ -43,8 +43,6 @@ end
 function MobService:HitPlayer(player, hitEffects, mobData)
 
     if not player then return end
-
-    if mobData.BlockHits then return end
 
     if Players:FindFirstChild(player.Name) then
         Knit.Services.PowersService:NPC_RegisterHit(player, hitEffects)

@@ -47,7 +47,6 @@ return {
         Description = "Gold Stars are used to rank up stands and specs.",
         InputItems = {
             [1] = {Key = "Antidote", Value = 100, Name = "Antidote"},
-            [2] = {Key = "SoulOrbs", Value = 25, Name = "Soul Orbs"},
         },
         OutputItems = {
             [1] = {Key = "GoldStar", Value = 1, Name = "Gold Star"}

@@ -26,7 +26,7 @@ GoldExperience.Defs = {
             E = {AbilityName = "Barrage"},
             F = {AbilityName = "Bug Barrage"},
             T = {AbilityName = "7 Page Muda" },
-            R = {AbilityName = "Destabilizing Punch"},
+            R = {AbilityName = "Soul Punch"},
             X = {AbilityName = "Life Heal"},
             Z = {AbilityName = "Stand Jump"},
             C = {AbilityName = "-"}
@@ -36,7 +36,7 @@ GoldExperience.Defs = {
             E = {AbilityName = "Barrage"},
             F = {AbilityName = "Bug Barrage"},
             T = {AbilityName = "7 Page Muda" },
-            R = {AbilityName = "Destabilizing Punch"},
+            R = {AbilityName = "Soul Punch"},
             X = {AbilityName = "Life Heal"},
             Z = {AbilityName = "Stand Jump"},
             C = {AbilityName = "-"}
@@ -46,7 +46,7 @@ GoldExperience.Defs = {
             E = {AbilityName = "Barrage"},
             F = {AbilityName = "Bug Barrage"},
             T = {AbilityName = "7 Page Muda" },
-            R = {AbilityName = "Destabilizing Punch"},
+            R = {AbilityName = "Soul Punch"},
             X = {AbilityName = "Life Heal"},
             Z = {AbilityName = "Stand Jump"},
             C = {AbilityName = "-"}
@@ -132,10 +132,10 @@ end
 
 --defs
 GoldExperience.Defs.Abilities.R = {
-    Id = "DestabilizingPunch",
+    Id = "SoulPunch",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("DestabilizingPunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("SoulPunch", true),
 }
 
 function GoldExperience.R(params)

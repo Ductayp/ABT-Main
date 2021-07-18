@@ -1,4 +1,4 @@
--- BombPunch
+-- SoulPunch
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -7,85 +7,125 @@ local Debris = game:GetService("Debris")
 
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
+local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
-local BombPunch = {}
+local GHOST_DURATION = 7
 
--- timing
-BombPunch.HitDelay = 0.4
-BombPunch.InputBlockTime = 1
-BombPunch.TickCount = 0 -- if 0 then there wont be any ticks, just a  regular attack
+local module = {}
 
--- hitbox
-BombPunch.HitboxSize = Vector3.new(5, 5, 12)
-BombPunch.HitboxOffset = CFrame.new(0, 0, 6)
-BombPunch.HitboxDestroyTime = .3
+--// ServerSetup ------------------------------------------------------------------------------------
+function module.Server_Setup(params, abilityDefs, initPlayer)
 
-local punchSound = ReplicatedStorage.Audio.Abilities.HeavyPunch
+end
 
---// HitCharacter
-function BombPunch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
+--// HitCharacter ------------------------------------------------------------------------------------
+function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
+
     
-    abilityDefs.HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}}
+    abilityDefs.HitEffects = {
+        GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
+        Damage = {Damage = 20},
+        BlockAttacks = {Duration = 7},
+        RemoveStand = {},
+        RunFunctions = {
+            {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {}}
+        },
+    }
+
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
-    return params
 end
 
---// Client_Start
-function BombPunch.Client_Start(params, abilityDefs, initPlayer)
+--// Client_Initialize ------------------------------------------------------------------------------------
+function module.Client_Initialize(params, abilityDefs, initPlayer)
 
-    local initCharacter = initPlayer.Character
-    if not initCharacter then return end
+end
 
-    local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
-    if not targetStand then
-        targetStand = ManageStand.QuickRender(params)
-    end
+--// Client_Stage1 ------------------------------------------------------------------------------------
+function module.Client_StandAnimations(params, abilityDefs, initPlayer)
 
-    --move the stand and do animations
-    spawn(function()
-        local moveTime = ManageStand.MoveStand(params, "Front")
+    spawn(function() 
+
+        local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
+        if not targetStand then
+            targetStand = ManageStand.QuickRender(params)
+        end
+
+        ManageStand.MoveStand(params, "Front")
         ManageStand.PlayAnimation(params, "HeavyPunch")
         ManageStand.Aura_On(params)
-        wait(1.5)
+        wait(1)
         ManageStand.MoveStand(params, "Idle")
-        wait(.5)
+        wait(1)
         ManageStand.Aura_Off(params)
+
     end)
 
-    wait(BombPunch.HitDelay)
+end
 
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, punchSound)
+--// Client_Animation_A ------------------------------------------------------------------------------------
+function module.Client_Animation_A(params, abilityDefs, initPlayer)
 
-    local fastBall = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.BasicHeavyPunch.FastBall:Clone()
-    local shockRing = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.BasicHeavyPunch.Shock:Clone()
-    Debris:AddItem(fastBall, 3)
-    Debris:AddItem(shockRing, 3)
+    spawn(function()
 
-    fastBall.CFrame = initCharacter.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
-    fastBall.Parent = Workspace.RenderedEffects
+        local initCharacter = initPlayer.Character
+        if not initCharacter then return end
+        local HRP = initCharacter:FindFirstChild("HumanoidRootPart")
+        if not HRP then return end
+    
+        AnchoredSound.NewSound(HRP.Position, ReplicatedStorage.Audio.Abilities.HeavyPunch)
+    
+        local shockRing = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.Shock:Clone()
+        shockRing.Parent = Workspace.RenderedEffects
+        Debris:AddItem(shockRing, 3)
+    
+        local shockWeld = Instance.new("Weld")
+        shockWeld.C1 =  CFrame.new(0,0,9)
+        shockWeld.Part0 = HRP
+        shockWeld.Part1 = shockRing
+        shockWeld.Parent = shockRing
+    
+        local shockTween = TweenService:Create(shockRing.Shock, TweenInfo.new(2), {Transparency = 1, Size = Vector3.new(5, 1.5, 5)})
+        shockTween:Play()
+        shockTween:Destroy()
 
-    shockRing.CFrame = initCharacter.HumanoidRootPart.CFrame:ToWorldSpace(CFrame.new(0,0,-8))
-    shockRing.Parent = Workspace.RenderedEffects
-
-    local ballTransparency = TweenService:Create(fastBall.Fireball, TweenInfo.new(.5), {Transparency = 1})
-    local ballPosition = TweenService:Create(fastBall, TweenInfo.new(.5), {CFrame = fastBall.CFrame:ToWorldSpace(CFrame.new( 0, 0, -5))})
-
-    local shockTransparency = TweenService:Create(shockRing.Shock, TweenInfo.new(1), {Transparency = 1})
-    local shockPosition = TweenService:Create(shockRing.Shock, TweenInfo.new(1), {Size = Vector3.new(5, 1.5, 5)})
-
-    ballTransparency:Play()
-    ballPosition:Play()
-    shockTransparency:Play()
-    shockPosition:Play()
+    end)
 
 end
 
 
+--// Client_Animation_B ------------------------------------------------------------------------------------
+function module.Client_Animation_B(params, abilityDefs, initPlayer)
+
+    spawn(function() 
+
+        local initCharacter = initPlayer.Character
+        if not initCharacter then return end
+        local HRP = initCharacter:FindFirstChild("HumanoidRootPart")
+        if not HRP then return end
+    
+        local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
+        fastBall.Parent = Workspace.RenderedEffects
+        Debris:AddItem(fastBall, 3)
+
+        local ballWeld = Instance.new("Weld")
+        ballWeld.C1 =  CFrame.new(0,0,8)
+        ballWeld.Part0 = HRP
+        ballWeld.Part1 = fastBall
+        ballWeld.Parent = fastBall
+
+        local ballTrans = TweenService:Create(fastBall.Fireball, TweenInfo.new(.5), {Transparency = 1})
+        local ballMove = TweenService:Create(ballWeld, TweenInfo.new(.5), {C1 = CFrame.new( 0, 0, 12)})
+
+        ballTrans:Play()
+        ballMove:Play()
+
+    end)
 
 
+end
 
 
-return BombPunch
+return module

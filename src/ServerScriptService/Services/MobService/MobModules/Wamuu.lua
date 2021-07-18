@@ -238,7 +238,7 @@ function module.Drop(player, mobData)
     end
     ]]--
     
-    rewards.Items["Antidote"] = math.random(1, 3)
+    rewards.Items["Antidote"] = math.random(1, 5)
     rewards.Items["MaskFragment"] = math.random(1, 3)
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1

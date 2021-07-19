@@ -158,11 +158,11 @@ KillerQueen.Defs.Abilities.BombPunch = {
     Id = "BombPunch",
     Cooldown = 5,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("BombPunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("BombPunch", true),
 }
 
 function KillerQueen.BombPunch(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, KillerQueen.Defs.Abilities.BombPunch)
 end
 
 --------------------------------------------------------------------------------------------------

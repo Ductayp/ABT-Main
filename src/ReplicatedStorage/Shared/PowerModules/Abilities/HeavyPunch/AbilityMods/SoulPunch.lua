@@ -87,7 +87,7 @@ function module.Client_Animation_A(params, abilityDefs, initPlayer)
         shockWeld.Part1 = shockRing
         shockWeld.Parent = shockRing
     
-        local shockTween = TweenService:Create(shockRing.Shock, TweenInfo.new(2), {Transparency = 1, Size = Vector3.new(5, 1.5, 5)})
+        local shockTween = TweenService:Create(shockRing.Shock, TweenInfo.new(1), {Transparency = 1, Size = Vector3.new(5, 1.5, 5)})
         shockTween:Play()
         shockTween:Destroy()
 

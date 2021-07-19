@@ -141,11 +141,11 @@ TheHand.Defs.Abilities.R = {
     Id = "ScrapePunch",
     Cooldown = 10,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("ScrapePunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("ScrapePunch", true),
 }
 
 function TheHand.R(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, TheHand.Defs.Abilities.R)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, TheHand.Defs.Abilities.R)
 end
 
 --------------------------------------------------------------------------------------------------

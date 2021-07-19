@@ -23,8 +23,7 @@ end
 --// HitCharacter ------------------------------------------------------------------------------------
 function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    
-    abilityDefs.HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}}
+    abilityDefs.HitEffects = {Damage = {Damage = 7}, Burn = {TickTime = 1, TickCount = 7, Damage = 4, Color = "GreenPurple"}}
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
 end

@@ -22,9 +22,21 @@ end
 
 --// HitCharacter ------------------------------------------------------------------------------------
 function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
-
     
-    abilityDefs.HitEffects = {Damage = {Damage = 10}, Blast = {}, KnockBack = {Force = 70, ForceY = 50}}
+    abilityDefs.HitEffects = {
+        Damage = {Damage = 20},
+        PinCharacter = {Duration = 5.2},
+        Invulnerable = {Duration = 5},
+        RemoveStand = {},
+        HideCharacter = {Duration = 5},
+        RunFunctions = {
+            {
+                RunOn = "Client",
+                Script = script, FunctionName = "BlackHole",
+                Arguments = {Position = hitCharacter.HumanoidRootPart.Position, HitCharacter = hitCharacter}
+            }
+        }
+    }
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
 end
@@ -97,21 +109,37 @@ function module.Client_Animation_B(params, abilityDefs, initPlayer)
         local HRP = initCharacter:FindFirstChild("HumanoidRootPart")
         if not HRP then return end
     
-        local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
-        fastBall.Parent = Workspace.RenderedEffects
-        Debris:AddItem(fastBall, 3)
+        --local fastBall = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FastBall:Clone()
+        --fastBall.Parent = Workspace.RenderedEffects
+        --Debris:AddItem(fastBall, 3)
 
+        local scrapeAssembly = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.ScrapePunch.Scrape:Clone()
+        scrapeAssembly.Parent = Workspace.RenderedEffects
+        Debris:AddItem(scrapeAssembly, 3)
+
+        --[[
         local ballWeld = Instance.new("Weld")
         ballWeld.C1 =  CFrame.new(0,0,8)
         ballWeld.Part0 = HRP
         ballWeld.Part1 = fastBall
         ballWeld.Parent = fastBall
+        ]]--
 
-        local ballTrans = TweenService:Create(fastBall.Fireball, TweenInfo.new(.5), {Transparency = 1})
-        local ballMove = TweenService:Create(ballWeld, TweenInfo.new(.5), {C1 = CFrame.new( 0, 0, 12)})
+        local scrapeWeld = Instance.new("Weld")
+        scrapeWeld.C1 =  CFrame.new(0,0,8)
+        scrapeWeld.Part0 = HRP
+        scrapeWeld.Part1 = scrapeAssembly
+        scrapeWeld.Parent = scrapeAssembly
 
-        ballTrans:Play()
-        ballMove:Play()
+        local scrapeTrans_1 = TweenService:Create(scrapeAssembly.Main, TweenInfo.new(.5), {Transparency = 1})
+        local scrapeTrans_2 = TweenService:Create(scrapeAssembly.Left, TweenInfo.new(.5), {Transparency = 1})
+        local scrapeTrans_3 = TweenService:Create(scrapeAssembly.Right, TweenInfo.new(.5), {Transparency = 1})
+        local scrapeMove = TweenService:Create(scrapeWeld, TweenInfo.new(.5), {C1 = CFrame.new( 0, 0, 12)})
+
+        scrapeTrans_1:Play()
+        scrapeTrans_2:Play()
+        scrapeTrans_3:Play()
+        scrapeMove:Play()
 
     end)
 

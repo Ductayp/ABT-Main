@@ -157,11 +157,11 @@ WhiteSnake.Defs.Abilities.BurnPunch = {
     Id = "BurnPunch",
     Cooldown = 6,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("BurnPunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("BurnPunch", true),
 }
 
 function WhiteSnake.BurnPunch(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, WhiteSnake.Defs.Abilities.BurnPunch)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, WhiteSnake.Defs.Abilities.BurnPunch)
 end
 
 --------------------------------------------------------------------------------------------------

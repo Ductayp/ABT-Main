@@ -23,18 +23,25 @@ end
 --// HitCharacter ------------------------------------------------------------------------------------
 function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    
     abilityDefs.HitEffects = {
-        GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
-        Damage = {Damage = 20},
-        BlockAttacks = {Duration = 7},
-        RemoveStand = {},
+        Slow = {WalkSpeedModifier = -11, Duration = 7},
         RunFunctions = {
-            {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {}}
-        },
+            {RunOn = "Client", Script = script, FunctionName = "WitherEffects", Arguments = {HitCharacter = hitCharacter}}
+        }
     }
 
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+
+    spawn(function()
+        abilityDefs.HitEffects = {
+            Damage = {Damage = 4, HideEffects = true},
+            LifeSteal = {Quantity = 2},
+        }
+        for count = 1, 7 do
+            Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+            wait(1)
+        end
+    end)
 
 end
 
@@ -87,7 +94,7 @@ function module.Client_Animation_A(params, abilityDefs, initPlayer)
         shockWeld.Part1 = shockRing
         shockWeld.Parent = shockRing
     
-        local shockTween = TweenService:Create(shockRing.Shock, TweenInfo.new(2), {Transparency = 1, Size = Vector3.new(5, 1.5, 5)})
+        local shockTween = TweenService:Create(shockRing.Shock, TweenInfo.new(1), {Transparency = 1, Size = Vector3.new(5, 1.5, 5)})
         shockTween:Play()
         shockTween:Destroy()
 
@@ -124,8 +131,28 @@ function module.Client_Animation_B(params, abilityDefs, initPlayer)
 
     end)
 
-
 end
 
+function module.WitherEffects(functionParams)
+
+    if not functionParams.HitCharacter and functionParams.HitCharacter.HumanoidRootPart then return end
+
+    local redParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.WitherPunch.RedParticle:Clone()
+    local blackParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.WitherPunch.BlackParticle:Clone()
+
+    redParticle.Parent = functionParams.HitCharacter.HumanoidRootPart
+    blackParticle.Parent = functionParams.HitCharacter.HumanoidRootPart
+
+    wait(7)
+
+    redParticle.Enabled = false
+    blackParticle.Enabled = false
+
+    wait(10)
+
+    redParticle:Destroy()
+    blackParticle:Destroy()
+
+end
 
 return module

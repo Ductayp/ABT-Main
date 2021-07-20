@@ -23,7 +23,7 @@ GoldExperience.Defs = {
     KeyMap = {
         [1] = {
             Q = {AbilityName = "Summon Stand"},
-            E = {AbilityName = "Barrage"},
+            E = {AbilityName = "Beatdown Barrage"},
             F = {AbilityName = "Bug Barrage"},
             T = {AbilityName = "7 Page Muda" },
             R = {AbilityName = "Soul Punch"},
@@ -33,7 +33,7 @@ GoldExperience.Defs = {
         },
         [2] = {
             Q = {AbilityName = "Summon Stand"},
-            E = {AbilityName = "Barrage"},
+            E = {AbilityName = "Beatdown Barrage"},
             F = {AbilityName = "Bug Barrage"},
             T = {AbilityName = "7 Page Muda" },
             R = {AbilityName = "Soul Punch"},
@@ -43,7 +43,7 @@ GoldExperience.Defs = {
         },
         [3] = {
             Q = {AbilityName = "Summon Stand"},
-            E = {AbilityName = "Barrage"},
+            E = {AbilityName = "Beatdown Barrage"},
             F = {AbilityName = "Bug Barrage"},
             T = {AbilityName = "7 Page Muda" },
             R = {AbilityName = "Soul Punch"},
@@ -113,10 +113,11 @@ end
 -- defs
 GoldExperience.Defs.Abilities.E = {
     Id = "Barrage",
-    Duration = 4,
-    Cooldown = 4,
+    Duration = 7,
+    Cooldown = 7,
     RequireToggle_On = {"Q"},
-    HitEffects = {Damage = {Damage = 7, KnockBack = 15}},
+    DamageRamp = .25,
+    HitEffects = {Damage = {Damage = 3, KnockBack = 15}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
     }
@@ -148,7 +149,7 @@ end
 
 -- defs
 GoldExperience.Defs.Abilities.T = {
-    Id = "TimeAcceleration",
+    Id = "7PageMuda",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
@@ -165,14 +166,14 @@ end
 
 -- defs
 GoldExperience.Defs.Abilities.F = {
-    Id = "GravityCollapse",
+    Id = "BugBarrage",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("FlowerPotBarrage", true),
+    AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("BugBarrage", true),
 }
 
 function GoldExperience.F(params)
-    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, GoldExperience.Defs.Abilities.F)
+    params = require(Knit.Abilities.ProjectileBarrage)[params.SystemStage](params, GoldExperience.Defs.Abilities.F)
 end
 
 
@@ -182,10 +183,10 @@ end
 
 -- defs
 GoldExperience.Defs.Abilities.X = {
-    Id = "GravityShift",
+    Id = "LifeHeal",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("LifeHeal", true),
 }
 
 function GoldExperience.X(params)

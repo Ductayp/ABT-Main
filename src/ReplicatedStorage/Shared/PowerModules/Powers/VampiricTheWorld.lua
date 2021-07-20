@@ -147,11 +147,11 @@ VampiricTheWorld.Defs.Abilities.R = {
     Id = "WitherPunch",
     Cooldown = 12,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("WitherPunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("WitherPunch", true),
 }
 
 function VampiricTheWorld.R(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, VampiricTheWorld.Defs.Abilities.R)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, VampiricTheWorld.Defs.Abilities.R)
 end
 
 --------------------------------------------------------------------------------------------------
@@ -214,13 +214,13 @@ VampiricTheWorld.Defs.Abilities.C = {
     Id = "VoidPull",
     Cooldown = 8,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("VoidPull", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("VoidPull", true),
 }
 ]]--
 
 function VampiricTheWorld.C(params)
     params.CanRun = false
-    --params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, VampiricTheWorld.Defs.Abilities.C)
+    --params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, VampiricTheWorld.Defs.Abilities.C)
 end
 
 

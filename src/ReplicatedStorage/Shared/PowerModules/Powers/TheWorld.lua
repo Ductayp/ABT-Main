@@ -199,11 +199,11 @@ TheWorld.Defs.Abilities.HeavyPunch = {
     Id = "TimePunch",
     Cooldown = 7,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("TimePunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("TimePunch", true),
 }
 
 function TheWorld.HeavyPunch(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, TheWorld.Defs.Abilities.HeavyPunch)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, TheWorld.Defs.Abilities.HeavyPunch)
 end
 
 --------------------------------------------------------------------------------------------------

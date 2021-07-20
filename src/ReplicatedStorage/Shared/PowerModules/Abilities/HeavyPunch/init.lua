@@ -103,7 +103,7 @@ function HeavyPunch.Activate(params, abilityDefs)
     hitBox.CanCollide = false
     hitBox.Massless = true
 	hitBox.Size = HITBOX_SIZE
-	hitBox.Transparency = .7
+	hitBox.Transparency = 1
 	hitBox.Parent = Workspace.ServerHitboxes[params.InitUserId]
     hitBox.Touched:Connect(function() end)
 

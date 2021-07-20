@@ -9,7 +9,7 @@ local utils = require(Knit.Shared.Utils)
 --// AddState - add a modfier value, if one of the same name exists then do nothing
 function StateService:AddEntryToState(player, stateName, entryName, entryValue, params)
 
-    --print("AddEntryToState: ", player, stateName, entryName, entryValue, params)
+    print("AddEntryToState: ", player, stateName, entryName, entryValue, params)
 
     local playerFolder = ReplicatedStorage.StateService:FindFirstChild(player.UserId)
     if not playerFolder then

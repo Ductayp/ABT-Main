@@ -65,10 +65,11 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
 
     ManageStand.Aura_On(params)
     --ManageStand.MoveStand(params, "IdleHigh")
-    ManageStand.PlayAnimation(params, "Rage")
+    ManageStand.PlayAnimation(params, "CastOnUser")
 
     wait(2)
 
+    ManageStand.StopAnimation(params, "CastOnUser")
     --ManageStand.MoveStand(params, "Idle")
     ManageStand.Aura_Off(params)
 

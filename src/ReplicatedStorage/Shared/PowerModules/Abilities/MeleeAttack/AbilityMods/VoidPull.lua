@@ -1,4 +1,4 @@
--- ScrapePunch
+-- VoidPull
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")

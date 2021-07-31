@@ -72,7 +72,7 @@ function MeleeAttack.Activate(params, abilityDefs)
     hitBox.CanCollide = false
     hitBox.Massless = true
 	hitBox.Size = abilityMod.HitboxSize
-	hitBox.Transparency = 1
+	hitBox.Transparency = .7
     hitBox.CFrame = initCharacter.HumanoidRootPart.CFrame:ToWorldSpace(abilityMod.HitboxOffset)
 	hitBox.Parent = Workspace.ServerHitboxes[params.InitUserId]
 

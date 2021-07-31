@@ -120,6 +120,8 @@ function BasicProjectile.Activate(params, abilityDefs)
     projectileData["Function"] = function(result)
         if result.Instance.Parent then
 
+            print("PROJECTILE HIT", result.Instance.Parent)
+
             if not hitCharacters[result.Instance.Parent] then
 
                 if result.Instance.Parent:FindFirstChild("Humanoid") then

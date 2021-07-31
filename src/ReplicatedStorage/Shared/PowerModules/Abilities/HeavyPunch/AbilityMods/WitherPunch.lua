@@ -137,8 +137,8 @@ function module.WitherEffects(functionParams)
 
     if not functionParams.HitCharacter and functionParams.HitCharacter.HumanoidRootPart then return end
 
-    local redParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.WitherPunch.RedParticle:Clone()
-    local blackParticle = ReplicatedStorage.EffectParts.Abilities.MeleeAttack.WitherPunch.BlackParticle:Clone()
+    local redParticle = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.WitherPunch.RedParticle:Clone()
+    local blackParticle = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.WitherPunch.BlackParticle:Clone()
 
     redParticle.Parent = functionParams.HitCharacter.HumanoidRootPart
     blackParticle.Parent = functionParams.HitCharacter.HumanoidRootPart

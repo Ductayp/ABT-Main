@@ -310,7 +310,7 @@ function PowersService:RenderAbilityEffect_AllPlayers(abilityModule, functionNam
 end
 
 --// RenderAbilityEffect_SinglePlayers
-function PowersService:RenderAbilityEffect_SinglePlayers(player, abilityModule, functionName, params)
+function PowersService:RenderAbilityEffect_SinglePlayer(player, abilityModule, functionName, params)
     self.Client.RenderAbilityEffect:Fire(player, abilityModule, functionName, params)
 end
 
@@ -499,6 +499,13 @@ function PowersService:KnitInit()
     Players.PlayerRemoving:Connect(function(player)
         self:PlayerRemoving(player)
     end)
+
+    -- require IngoreList here so the setup will run at server start
+    require(Knit.Shared.RaycastProjectileHitbox.IgnoreList)
+
+    --local ignoreFolder = Instance.new("Folder")
+    --ignoreFolder.Name = "IgnoreProjectiles"
+    --ignoreFolder.Parent = Workspace
 
     --[[
     -- stand givers

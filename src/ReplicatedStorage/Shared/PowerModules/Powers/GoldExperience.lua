@@ -119,7 +119,7 @@ GoldExperience.Defs.Abilities.E = {
     DamageRamp = .25,
     HitEffects = {Damage = {Damage = 3, KnockBack = 15}},
     Sounds = {
-        Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
+        Barrage = ReplicatedStorage.Audio.StandSpecific.GoldExperience.Barrage,
     }
 }
 
@@ -149,10 +149,10 @@ end
 
 -- defs
 GoldExperience.Defs.Abilities.T = {
-    Id = "7PageMuda",
+    Id = "SevenPageMuda",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("SevenPageMuda", true),
 }
 
 function GoldExperience.T(params)

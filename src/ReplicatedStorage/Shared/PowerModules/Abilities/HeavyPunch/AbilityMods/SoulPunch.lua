@@ -27,7 +27,8 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
     abilityDefs.HitEffects = {
         GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
         Damage = {Damage = 20},
-        BlockAttacks = {Duration = 7},
+        --Invulnerable = {Duration = GHOST_DURATION},
+        BlockAttacks = {Duration = GHOST_DURATION},
         RemoveStand = {},
         RunFunctions = {
             {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {}}
@@ -172,7 +173,8 @@ function module.Server_GhostEffect(params)
         
     end
 
-    characterCopy.Parent = Workspace.RenderedEffects
+    characterCopy.Parent = Workspace
+    Debris:AddItem(characterCopy, 60) -- just in case
 
     for _, object in pairs(params.HitCharacter:GetDescendants()) do
         if object:IsA("BasePart") or object:IsA("Decal") then
@@ -192,7 +194,21 @@ function module.Server_GhostEffect(params)
     effectParams.HitCharacter =  params.HitCharacter
     Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Client_GhostEffect_Start", effectParams)
 
+    -- add the hitCharacter to the IgnoreProjectile folder
+    local ignoreFolder = Workspace:FindFirstChild("IgnoreProjectiles")
+    local originalParent = params.HitCharacter.Parent
+    params.HitCharacter.Parent = ignoreFolder
+
     wait(GHOST_DURATION)
+
+    params.HitCharacter.Parent = originalParent
+
+    -- remove the hitCharacter from the ignoreList
+    --for _, v in pairs(ignoreList) do
+        --if v == params.HitCharacter then
+            --v = nil
+        --end
+    --end
 
     if params.HitCharacter then
 
@@ -231,6 +247,7 @@ function module.Client_GhostEffect_Start(params)
     if head1 then
 
         local newSound1 = WeldedSound.NewSound(head1, ReplicatedStorage.Audio.General.EnergySource20sec, {SoundProperties = {PlaybackSpeed = 0.5}})
+
 
         local newParticles = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Particles:Clone()
         newParticles.Parent = Workspace.RenderedEffects

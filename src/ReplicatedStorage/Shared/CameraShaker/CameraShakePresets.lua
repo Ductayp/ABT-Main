@@ -11,6 +11,8 @@
 	CameraShakePresets.HandheldCamera
 	CameraShakePresets.Vibration
 	CameraShakePresets.RoughDriving
+
+	(magnitude, roughness, fadeInTime, fadeOutTime)
 	
 --]]
 
@@ -40,8 +42,8 @@ local CameraShakePresets = {
 	end;
 
 
-	SmallRumble = function()
-		local c = CameraShakeInstance.new(1, 4, 0, .75)
+	HeavyPunch = function()
+		local c = CameraShakeInstance.new(1, 10, 0, .75)
 		c.PositionInfluence = Vector3.new(0.15, 0.15, 0.15)
 		c.RotationInfluence = Vector3.new(1, 1, 1)
 		return c

@@ -61,7 +61,7 @@ function HeavyPunch.Initialize(params, abilityDefs)
         lockParams.AnchorCharacter = true
         MobilityLock.Client_AddLock(lockParams)
 
-        CamShakeTools.Client_PresetShake("SmallRumble")
+        CamShakeTools.Client_PresetShake("HeavyPunch")
 
         abilityMod.Client_Animation_A(params, abilityDefs, Players.LocalPlayer)
 
@@ -168,7 +168,7 @@ function HeavyPunch.Execute(params, abilityDefs)
         wait(HITBOX_DELAY)
 
         abilityMod.Client_Animation_A(params, abilityDefs, initPlayer)
-        CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server.Position, 20, "SmallRumble")
+        CamShakeTools.Client_PresetRadiusShake(params.CFrameOrigin_Server.Position, 8, "HeavyPunch")
         abilityMod.Client_Animation_B(params, abilityDefs, initPlayer)
         
     else

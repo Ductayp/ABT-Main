@@ -288,6 +288,8 @@ function PowersService:RegisterHit(initPlayer, characterHit, abilityDefs)
         end
     end
 
+    return canHit -- we return the value because some functions might need t know if the hitCHaracter was hit
+
 end
 
 -----------------------------------------------------------------------------------------------------------------------------

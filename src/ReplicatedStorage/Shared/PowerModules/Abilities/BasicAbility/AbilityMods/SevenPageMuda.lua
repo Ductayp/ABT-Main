@@ -216,9 +216,10 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
             {RunOn = "Server", Script = script, FunctionName = "Server_MudaEffect", Arguments = {InitPlayer = initPlayer, HitCharacter = hitCharacter}}
         },
     }
-    Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+    local canHit = Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
-    -- handle initPlayer, this willl fire ONCE for the intiPlayer and ONLY if they hit another character
+    -- handle initPlayer, this will fire ONCE for the intiPlayer and ONLY if they hit another character
+    if not canHit then return end
     if initPlayerTracker[initPlayer.UserId] then return end
 
     initPlayerTracker[initPlayer.UserId] = true
@@ -237,7 +238,7 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
         anchorPart:Destroy()
     end)
 
-    require(Knit.PowerUtils.BlockInput).AddBlock(intitPlayer.UserId, "SevenPageMuda", mudaDuration)
+    require(Knit.PowerUtils.BlockInput).AddBlock(initPlayer.UserId, "SevenPageMuda", mudaDuration)
 
     Knit.Services.PowersService:RenderAbilityEffect_SinglePlayer(initPlayer, script, "Client_MudaEffect", params)
 
@@ -245,32 +246,8 @@ end
 
 --// Server_MudaEffect
 function module.Server_MudaEffect(params)
---[[
-    if not params.InitPlayer.Character then return end
 
-    -- handle initPlayer
-    if initPlayerMudaTracker[params.InitPlayer] then return end
-
-    initPlayerMudaTracker[params.InitPlayer] = true
-    spawn(function()
-        wait(mudaDuration)
-        initPlayerMudaTracker[params.InitPlayer] = nil
-    end)
-
-    local anchorPart = Instance.new("Part")
-    anchorPart.Transparency = 1
-    anchorPart.Anchored = true
-    utils.EasyWeld(params.InitPlayer.Character.HumanoidRootPart, anchorPart, anchorPart)
-    anchorPart.Parent = Workspace.RenderedEffects
-    spawn(function()
-        wait(mudaDuration)
-        anchorPart:Destroy()
-    end)
-
-    require(Knit.PowerUtils.BlockInput).AddBlock(params.InitPlayer.UserId, "SevenPageMuda", mudaDuration)
-
-    Knit.Services.PowersService:RenderAbilityEffect_SinglePlayer(params.InitPlayer, script, "Client_MudaEffect", params)
-    ]]--
+    print("SERVER MUDA", params)
 
 end
 

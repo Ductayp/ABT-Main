@@ -15,6 +15,8 @@ local GHOST_DURATION = 7
 
 local module = {}
 
+module.InputBlockTime = 1
+
 --// ServerSetup ------------------------------------------------------------------------------------
 function module.Server_Setup(params, abilityDefs, initPlayer)
 

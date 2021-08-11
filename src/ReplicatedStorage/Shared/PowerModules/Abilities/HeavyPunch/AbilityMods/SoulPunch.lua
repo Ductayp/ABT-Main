@@ -15,6 +15,8 @@ local GHOST_DURATION = 7
 
 local module = {}
 
+module.InputBlockTime = 1
+
 --// ServerSetup ------------------------------------------------------------------------------------
 function module.Server_Setup(params, abilityDefs, initPlayer)
 
@@ -23,7 +25,18 @@ end
 --// HitCharacter ------------------------------------------------------------------------------------
 function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
 
-    
+    local hitPlayer = utils.GetPlayerFromCharacter(hitCHaracter)
+    if hitPlayer then
+
+        print("HIT A PLAYER:", hitPlayer)
+
+        local playerHitboxFolder = workspace.ServerHitboxes[hitPlayer.UserId]
+        if playerHitboxFolder then
+            playerHitboxFolder:ClearAllChildren()
+        end
+
+    end
+
     abilityDefs.HitEffects = {
         GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
         Damage = {Damage = 20},
@@ -146,6 +159,7 @@ end
 
 function module.Server_GhostEffect(params)
 
+
     if params.HitParams.IsMob then
 
         require(Knit.MobUtils.HideHealth).Hide_Duration(params.HitParams.MobId, GHOST_DURATION)
@@ -156,7 +170,10 @@ function module.Server_GhostEffect(params)
 
     params.HitCharacter.Archivable = true
     local characterCopy = params.HitCharacter:Clone()
+    Debris:AddItem(characterCopy, 60) -- just in case
 
+    characterCopy.Humanoid.DisplayName = " "
+    
     for _, object in pairs(characterCopy:GetDescendants()) do
         if object:IsA("BasePart") then
             object.Anchored = true
@@ -173,8 +190,13 @@ function module.Server_GhostEffect(params)
         
     end
 
-    characterCopy.Parent = Workspace
-    Debris:AddItem(characterCopy, 60) -- just in case
+    local cloneFolder = Workspace:FindFirstChild("SoulPunchClones", true)
+    if not cloneFolder then
+        cloneFolder = Instance.new("Folder")
+        cloneFolder.Name = "SoulPunchClones"
+        cloneFolder.Parent = Workspace
+    end
+    characterCopy.Parent = cloneFolder
 
     for _, object in pairs(params.HitCharacter:GetDescendants()) do
         if object:IsA("BasePart") or object:IsA("Decal") then
@@ -184,10 +206,10 @@ function module.Server_GhostEffect(params)
         end
     end
 
-    local invulnerableBool_2 = Instance.new("BoolValue")
-    invulnerableBool_2.Value = true
-    invulnerableBool_2.Name = "Invulnerable_HitEffect"
-    invulnerableBool_2.Parent = params.HitCharacter.HumanoidRootPart
+    local invulnerableBool = Instance.new("BoolValue")
+    invulnerableBool.Value = true
+    invulnerableBool.Name = "Invulnerable_HitEffect"
+    invulnerableBool.Parent = params.HitCharacter.HumanoidRootPart
 
     local effectParams = {}
     effectParams.CharacterCopy = characterCopy
@@ -201,14 +223,28 @@ function module.Server_GhostEffect(params)
 
     wait(GHOST_DURATION)
 
-    params.HitCharacter.Parent = originalParent
+    if params.HitCharacter:FindFirstChild("Humanoid") then
+        if params.HitCharacter.Humanoid.Health < 1 then
 
-    -- remove the hitCharacter from the ignoreList
-    --for _, v in pairs(ignoreList) do
-        --if v == params.HitCharacter then
-            --v = nil
-        --end
-    --end
+            params.HitCharacter:Destroy()
+            characterCopy:Destroy()
+            return
+
+        else
+
+            if hitPlayer then
+                if not game.Players:FindFirstChild(hitPlayer.Name) then
+                    params.HitCharacter:Destroy()
+                    characterCopy:Destroy()
+                    return
+                end
+            end
+
+            params.HitCharacter.Parent = originalParent
+
+        end
+    end
+
 
     if params.HitCharacter then
 
@@ -217,7 +253,7 @@ function module.Server_GhostEffect(params)
             params.HitCharacter.Humanoid.Health = characterCopy.Humanoid.Health
         end
 
-        invulnerableBool_2:Destroy()
+        invulnerableBool:Destroy()
 
         for _, object in pairs(params.HitCharacter:GetDescendants()) do
             if object:IsA("BasePart") or object:IsA("Decal") then
@@ -236,7 +272,7 @@ end
 
 function module.Client_GhostEffect_Start(params)
 
-    print("GHOST EFFECTS START", params)
+    --print("GHOST EFFECTS START", params)
 
     if not params.CharacterCopy then return end
     if not params.HitCharacter then return end
@@ -253,9 +289,10 @@ function module.Client_GhostEffect_Start(params)
         newParticles.Parent = Workspace.RenderedEffects
         newParticles.Dark.Enabled = false
         newParticles.CFrame = head1.CFrame
+        Debris:AddItem(newParticles, 20)
         utils.EasyWeld(newParticles, head1, newParticles)
         spawn(function()
-            wait(GHOST_DURATION - .5)
+            wait(GHOST_DURATION)
             newParticles.Burst:Emit(150)
             WeldedSound.NewSound(head1, ReplicatedStorage.Audio.General.MagicBoom)
             newParticles.Gold.Enabled = false
@@ -287,6 +324,7 @@ function module.Client_GhostEffect_Start(params)
 
         newBeam.Attachment0 = attach0
         newBeam.Attachment1 = attach1
+
     end
 
 end

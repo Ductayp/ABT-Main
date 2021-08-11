@@ -15,9 +15,9 @@ local RunFunctions = {}
 
 function RunFunctions.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 
-    print("TEST YES", hitParams)
+    --print("TEST YES", effectParams, hitParams)
 
-    for i, functionParams in pairs(effectParams) do
+    for _, functionParams in pairs(effectParams) do
 
         functionParams.Arguments.HitCharacter = hitCharacter
         functionParams.Arguments.InitPlayer = initPlayer

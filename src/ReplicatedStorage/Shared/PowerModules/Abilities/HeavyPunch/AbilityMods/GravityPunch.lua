@@ -12,6 +12,8 @@ local ManageStand = require(Knit.Abilities.ManageStand)
 
 local module = {}
 
+module.InputBlockTime = 1
+
 --// ServerSetup ------------------------------------------------------------------------------------
 function module.Server_Setup(params, abilityDefs, initPlayer)
 

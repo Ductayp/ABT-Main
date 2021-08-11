@@ -21,6 +21,8 @@ local DURATION = 7
 
 local module = {}
 
+module.InputBlockTime = 2.5
+
 -- MobilityLock params
 module.MobilityLockParams = {}
 module.MobilityLockParams.Duration = 2.5

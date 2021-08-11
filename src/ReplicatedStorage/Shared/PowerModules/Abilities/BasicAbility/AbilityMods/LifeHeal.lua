@@ -13,10 +13,12 @@ local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
+local healAmount = 7
+local healDuration = 7
+
 local module = {}
 
-local healAmount = 10
-local healDuration = 7
+module.InputBlockTime = 1
 
 -- MobilityLock params
 module.MobilityLockParams = {}

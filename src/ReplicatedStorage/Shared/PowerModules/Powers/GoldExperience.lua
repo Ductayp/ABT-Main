@@ -134,7 +134,7 @@ end
 --defs
 GoldExperience.Defs.Abilities.R = {
     Id = "SoulPunch",
-    Cooldown = 1,
+    Cooldown = 12,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("SoulPunch", true),
 }
@@ -150,7 +150,7 @@ end
 -- defs
 GoldExperience.Defs.Abilities.T = {
     Id = "SevenPageMuda",
-    Cooldown = 1,
+    Cooldown = 30,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("SevenPageMuda", true),
 }
@@ -167,7 +167,7 @@ end
 -- defs
 GoldExperience.Defs.Abilities.F = {
     Id = "BugBarrage",
-    Cooldown = 1,
+    Cooldown = 6,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("BugBarrage", true),
 }
@@ -184,7 +184,7 @@ end
 -- defs
 GoldExperience.Defs.Abilities.X = {
     Id = "LifeHeal",
-    Cooldown = 1,
+    Cooldown = 15,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("LifeHeal", true),
 }
@@ -243,3 +243,5 @@ function GoldExperience.Punch(params)
 end
 
 return GoldExperience
+
+

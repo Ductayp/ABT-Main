@@ -171,7 +171,12 @@ function Barrage.CreateHitbox(params, abilityDefs)
 				local hitCharacters = {}
 				for _, part in pairs(hitParts) do
 					if part.Parent:FindFirstChild("Humanoid") then
-						hitCharacters[part.Parent] = true
+
+						local hitPlayer = utils.GetPlayerFromCharacter(part.Parent)
+						if hitPlayer ~= initPlayer then
+							hitCharacters[part.Parent] = true
+						end
+
 					end
 				end
 
@@ -196,6 +201,7 @@ end
 
 --// Server Destroy Hitbox
 function Barrage.DestroyHitbox(params)
+
 	local playerHitboxFolder = workspace.ServerHitboxes[params.InitUserId]
 	local hitPart = playerHitboxFolder:FindFirstChild("Barrage")
 	if hitPart then

@@ -357,8 +357,6 @@ function ManageStand.PlayAnimation(params, animationName, animationSpeed)
 	local targetStand = playerStandFolder:FindFirstChildWhichIsA("Model")
 	if not targetStand then return end
 
-
-	
 	-- run the animation
 	local animationLength
 	local animationController = targetStand:FindFirstChild("AnimationController")

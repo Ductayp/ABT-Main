@@ -64,7 +64,7 @@ function BasicAttack.Activate(params, abilityDefs)
     local abilityMod = require(abilityDefs.AbilityMod)
 
     Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
-    BlockInput.AddBlock(params.InitUserId, "BasicAttack", abilityMod.InputBlockTime)
+    BlockInput.AddBlock(params.InitUserId, "BasicAbility", abilityMod.InputBlockTime)
     
     abilityMod.Server_Setup(params, abilityDefs, initPlayer)
     spawn(function()

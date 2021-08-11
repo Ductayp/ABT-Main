@@ -25,7 +25,7 @@ local ScrapePunch = {}
 
 -- timing
 ScrapePunch.HitDelay = 0.4
-ScrapePunch.InputBlockTime = 0.5
+ScrapePunch.InputBlockTime = 1
 
 -- hitbox
 ScrapePunch.HitboxSize = Vector3.new(6, 5, 32)

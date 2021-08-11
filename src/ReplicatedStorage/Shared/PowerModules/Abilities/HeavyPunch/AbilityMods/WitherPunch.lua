@@ -11,9 +11,9 @@ local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
-local GHOST_DURATION = 7
-
 local module = {}
+
+module.InputBlockTime = 1
 
 --// ServerSetup ------------------------------------------------------------------------------------
 function module.Server_Setup(params, abilityDefs, initPlayer)

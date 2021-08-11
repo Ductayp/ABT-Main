@@ -69,6 +69,14 @@ function PlayerUtilityController:KnitStart()
         self:CharacterAdded(character)
     end)
 
+    --[[
+    -- preload game assets
+    spawn(function()
+        wait(10)
+        game:GetService('ContentProvider'):PreloadAsync({workspace,game:GetService('ReplicatedStorage'),game:GetService('PlayerGui')}, function() print("Content Preloaded") end)
+    end)
+    ]]--
+
     
 end
 

@@ -8,12 +8,14 @@ Gold Star Overhaul
     you can use a Gold Star at any time, regardless of your current XP
     Gold Stars shop price increased from 3k to 15k
     Gold Star spawn rates on the main map increased slightly
-    Increased Antodote drops from Wamuu (used to craft Gold Stars)
+    Increased Antidote drops from Wamuu (used to craft Gold Stars)
+
+Reworked Heavy Punch hitbox on all stands
+
+NEW STAND - Gold Experience
 
 
 TODO --------------
-
-Reworked Heavy Punch hitbox on all stands
 
 Removed Soul Orbs
     Storage unlocked with cash
@@ -25,9 +27,9 @@ PvP Toggle Rework
     XP only given when PvP is on (no more 2x XP when it is on)
     this means you gain no XP when PvP is toggled off
 
-Gold Experience
-    Started rank system rework (Gold Experiene is the first)
-
+Rank Rework
+    Ranks now have more interesting bonuses
+    some moves will only unlock at higher ranks
 
 NEXT UPDATE --------------
 
@@ -41,4 +43,5 @@ Dungeon System Rework
     Player timer will be displayed on the dungeon sign
     Proposal: dungeon sign will also be the way in and out, remove NPCs as gatekeepers
     Proposal: 1 key = 1 Hour on all dunegons
+
 

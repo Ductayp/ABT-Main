@@ -19,6 +19,8 @@ local RANGE = 30
 
 local module = {}
 
+module.InputBlockTime = 1
+
 -- MobilityLock params
 module.MobilityLockParams = {}
 module.MobilityLockParams.Duration = .5

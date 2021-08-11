@@ -23,18 +23,31 @@ function Teleport.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hit
 
     --hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
 
+    local canTeleport = false
     if hitParams.IsMob then
 
         local thisMob = Knit.Services.MobService:GetMobById(hitParams.MobId)
 
         if thisMob and thisMob.Defs.IsMobile then
-            hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
+            canTeleport = true
         end
         
     else
 
-        hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
+        canTeleport = true
+        
     end
+
+    if canTeleport then
+
+        if effectParams.LookAt then
+            hitCharacter.HumanoidRootPart.CFrame = utils.LookAt(effectParams.TargetPosition, effectParams.LookAt)
+        else
+            hitCharacter.HumanoidRootPart.CFrame = CFrame.new(effectParams.TargetPosition)
+        end
+
+    end
+
 
 
 

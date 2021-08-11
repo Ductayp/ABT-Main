@@ -17,7 +17,7 @@ local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local config = require(script.Config)
 MobService.SpawnedMobs = {} -- table of all spawned mobs
 
-MobService.DebugMode = true
+MobService.DebugMode = false
 
 --MobService.MobUtils = script.MobUtils -- expose the MobUtilities folder to the service table
 

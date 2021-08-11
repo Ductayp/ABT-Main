@@ -70,7 +70,7 @@ function GameService:PlayerAdded(player)
 
     if ReplicatedStorage.TestServer.Value == true and isTester == false then
         wait(60)
-        player:Kick()
+        --player:Kick()
     end
 
     repeat wait() until player.Character

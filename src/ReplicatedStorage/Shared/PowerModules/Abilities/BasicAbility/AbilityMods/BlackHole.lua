@@ -16,6 +16,8 @@ local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 
 local module = {}
 
+module.InputBlockTime = 1
+
 -- MobilityLock params
 module.MobilityLockParams = {}
 module.MobilityLockParams.Duration = 1

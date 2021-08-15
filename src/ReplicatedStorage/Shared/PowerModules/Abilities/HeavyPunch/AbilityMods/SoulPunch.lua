@@ -28,12 +28,10 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
     local hitPlayer = utils.GetPlayerFromCharacter(hitCHaracter)
     if hitPlayer then
 
-        print("HIT A PLAYER:", hitPlayer)
-
-        local playerHitboxFolder = workspace.ServerHitboxes[hitPlayer.UserId]
-        if playerHitboxFolder then
-            playerHitboxFolder:ClearAllChildren()
-        end
+        --local playerHitboxFolder = workspace.ServerHitboxes:FindFirstChild(hitPlayer.UserId)
+        --if playerHitboxFolder then
+            --playerHitboxFolder:ClearAllChildren()
+        --end
 
     end
 
@@ -159,15 +157,9 @@ end
 
 function module.Server_GhostEffect(params)
 
-
-    if params.HitParams.IsMob then
-
-        require(Knit.MobUtils.HideHealth).Hide_Duration(params.HitParams.MobId, GHOST_DURATION)
-
-    end
-
     local originCFRame = params.HitCharacter.HumanoidRootPart.CFrame
 
+    -- create the clone character and set everything
     params.HitCharacter.Archivable = true
     local characterCopy = params.HitCharacter:Clone()
     Debris:AddItem(characterCopy, 60) -- just in case
@@ -180,6 +172,15 @@ function module.Server_GhostEffect(params)
         end
     end
 
+    local cloneFolder = Workspace:FindFirstChild("SoulPunchClones", true)
+    if not cloneFolder then
+        cloneFolder = Instance.new("Folder")
+        cloneFolder.Name = "SoulPunchClones"
+        cloneFolder.Parent = Workspace
+    end
+    characterCopy.Parent = cloneFolder
+
+    -- if its a player
     local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
     if hitPlayer then
 
@@ -190,13 +191,12 @@ function module.Server_GhostEffect(params)
         
     end
 
-    local cloneFolder = Workspace:FindFirstChild("SoulPunchClones", true)
-    if not cloneFolder then
-        cloneFolder = Instance.new("Folder")
-        cloneFolder.Name = "SoulPunchClones"
-        cloneFolder.Parent = Workspace
+    -- if its a mob
+    if params.HitParams.IsMob then
+
+        require(Knit.MobUtils.HideHealth).Hide_Duration(params.HitParams.MobId, GHOST_DURATION)
+
     end
-    characterCopy.Parent = cloneFolder
 
     for _, object in pairs(params.HitCharacter:GetDescendants()) do
         if object:IsA("BasePart") or object:IsA("Decal") then
@@ -223,7 +223,23 @@ function module.Server_GhostEffect(params)
 
     wait(GHOST_DURATION)
 
-    if params.HitCharacter:FindFirstChild("Humanoid") then
+    if params.HitCharacter:FindFirstChild("Humanoid") and params.HitCharacter:FindFirstChild("HumanoidRootPart") then
+
+        params.HitCharacter.HumanoidRootPart.CFrame = originCFRame
+        params.HitCharacter.Humanoid.Health = characterCopy.Humanoid.Health
+
+        invulnerableBool:Destroy()
+
+        for _, object in pairs(params.HitCharacter:GetDescendants()) do
+            if object:IsA("BasePart") or object:IsA("Decal") then
+                if object.Name ~= "HumanoidRootPart" then
+                    object.Transparency = 0
+                end
+            end
+        end
+
+        --[[
+
         if params.HitCharacter.Humanoid.Health < 1 then
 
             params.HitCharacter:Destroy()
@@ -243,9 +259,11 @@ function module.Server_GhostEffect(params)
             params.HitCharacter.Parent = originalParent
 
         end
+        ]]--
     end
 
 
+    --[[
     if params.HitCharacter then
 
         if params.HitCharacter:FindFirstChild("HumanoidRootPart") then
@@ -263,6 +281,7 @@ function module.Server_GhostEffect(params)
             end
         end
     end
+    ]]--
     
     Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Client_GhostEffect_End", effectParams)
     characterCopy:Destroy()
@@ -331,7 +350,7 @@ end
 
 function module.Client_GhostEffect_End(params)
 
-    print("GHOST EFFECTS END", params)
+    --print("GHOST EFFECTS END", params)
 
 end
 

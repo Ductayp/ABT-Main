@@ -82,8 +82,14 @@ function PlayerSpawnService:CustomSpawn(player)
 
     if not player then return end
 
+    local camera = Workspace.CurrentCamera
+    camera.CameraType = Enum.CameraType.Custom
+
     local spawnGroupName = PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn
-    --if not spawnerGroupName then return end
+    if not spawnerGroupName then 
+        PlayerSpawnService.PlayerSpawnSettigns[player.UserId] = {CurrentSpawn = "Morioh"}
+        spawnGroupName = "Morioh"
+    end
 
     local spawnerGroup = PlayerSpawnService.SpawnerGroups[spawnGroupName]:GetChildren()
     local randPick = math.random(1, #spawnerGroup)
@@ -125,7 +131,8 @@ end
 
 --// CharacterAdded
 function PlayerSpawnService:CharacterAdded(player)
-    repeat wait() until player.Character
+    --repeat wait() until player.Character
+    local character = player.Character or player.CharacterAdded:Wait()
     player.Character:WaitForChild("Humanoid").Died:Connect(function()
         self:CustomSpawn(player)
     end)
@@ -139,8 +146,12 @@ function PlayerSpawnService:PlayerAdded(player)
     PlayerSpawnService.PlayerSpawnSettigns[player.UserId] = {CurrentSpawn = "Morioh"}
     self:CustomSpawn(player)
 
-    repeat wait() until player.Character
-    self:CharacterAdded(player)
+    --repeat wait() until player.Character
+    local character = player.Character or player.CharacterAdded:Wait()
+    if character then
+        self:CharacterAdded(player)
+    end
+    
 end
  
 --// PlayerRemoved

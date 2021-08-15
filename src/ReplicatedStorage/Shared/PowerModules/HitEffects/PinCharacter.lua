@@ -34,6 +34,8 @@ function PinCharacter.Server_ApplyEffect(initPlayer, hitCharacter, effectParams,
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitPlayer and hitPlayer.Character then
 
+        require(Knit.Abilities.Barrage).ForceCancel(hitPlayer.UserId)
+
         local newAnchor = Instance.new("Part")
         newAnchor.Transparency = 1
         newAnchor.Parent = hitCharacter.HumanoidRootPart

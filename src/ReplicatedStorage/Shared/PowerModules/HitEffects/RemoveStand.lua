@@ -17,9 +17,11 @@ function RemoveStand.Server_ApplyEffect(initPlayer, hitCharacter, params)
 
     local hitPlayer = utils.GetPlayerFromCharacter(hitCharacter)
     if hitPlayer then
+
+        require(Knit.Abilities.Barrage).ForceCancel(hitPlayer.UserId)
+
         Knit.Services.PowersService:ForceRemoveStand(hitPlayer)
-        --params.HitCharacter = hitCharacter
-        --Knit.Services.PowersService:RenderHitEffect_AllPlayers("RemoveStand", params)
+
     end
     
 end

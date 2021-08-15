@@ -158,11 +158,11 @@ CrazyDiamond.Defs.Abilities.StonePunch = {
     Id = "StonePunch",
     Cooldown = 10,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.MeleeAttack:FindFirstChild("StonePunch", true),
+    AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("StonePunch", true),
 }
 
 function CrazyDiamond.StonePunch(params)
-    params = require(Knit.Abilities.MeleeAttack)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.StonePunch)
+    params = require(Knit.Abilities.HeavyPunch)[params.SystemStage](params, CrazyDiamond.Defs.Abilities.StonePunch)
 end
 
 --------------------------------------------------------------------------------------------------

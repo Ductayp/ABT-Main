@@ -289,5 +289,21 @@ function Barrage.EndEffect(params, abilityDefs)
 	WeldedSound.StopSound(initPlayer.Character.HumanoidRootPart, "Barrage", 1)
 end
 
+--// ForceCancel
+function Barrage.ForceCancel(userId)
+
+	local params = {}
+	params.InitUserId = userId
+
+	Barrage.EndEffect(params)
+	Barrage.DestroyHitbox(params)
+
+	local thisToggle = AbilityToggle.SetToggle(params.InitUserId, "E", false)
+	if thisToggle then
+		thisToggle = false
+	end
+
+end
+
 
 return Barrage

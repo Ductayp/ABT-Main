@@ -183,6 +183,10 @@ function module.Client_MudaEffect(params)
 
         local defaultCamera = Workspace.CurrentCamera
         defaultCamera.CameraType = Enum.CameraType.Scriptable
+        spawn(function()
+            wait(mudaDuration)
+            defaultCamera.CameraType = Enum.CameraType.Custom
+        end)
 
         game:GetService("StarterGui"):SetCore("ResetButtonCallback", false)
 
@@ -204,7 +208,7 @@ function module.Client_MudaEffect(params)
         end)
 
         cameraTween2.Completed:Connect(function()
-            defaultCamera.CameraType = Enum.CameraType.Custom
+            --defaultCamera.CameraType = Enum.CameraType.Custom
             game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
         end)
 

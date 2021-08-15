@@ -3,10 +3,10 @@
 
 return {
     TheWorld = 1,
-    KillerQueen = 3,
-    --GoldExperience = 1,
+    KillerQueen = 1,
+    GoldExperience = 1,
     WhiteSnake = 1,
-    CrazyDiamond = 3,
+    CrazyDiamond = 1,
     TheHand = 1,
 }
 

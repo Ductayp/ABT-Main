@@ -141,6 +141,15 @@ function MobBrain.Run()
                             Knit.Services.MobService:KillMob(mobData)
                         end
 
+                        -- BRAIN EVENT: Is Humanoid Missing?
+                        if not mobData.Model.Humanoid then
+                            mobData.BrainState = "Dead"
+                            mobData.StateTime = os.clock()
+                            mobData.IsDead = true
+                            mobData.DeadTime = os.clock()
+                            Knit.Services.MobService:KillMob(mobData)
+                        end
+
                         -- BRAIN EVENT: LifeSpan  - check the mobs LifeSpan and kill it if its old
                         if mobData.SpawnTime < os.clock() - mobData.Defs.LifeSpan then
                             mobData.BrainState = "Dead"

@@ -78,9 +78,11 @@ function module.HitBoxResult(initPlayer, params, abilityDefs, result)
 
     -- hit all Mobs in range
     for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-        local magnitude = (result.Position - mob.Model.HumanoidRootPart.Position).Magnitude
-        if magnitude <= 10 then
-            table.insert(hitCharacters, mob.Model)
+        if mob.Model and mob.Model:FindFirstChild("HumanoidRootPart") then
+            local magnitude = (result.Position - mob.Model.HumanoidRootPart.Position).Magnitude
+            if magnitude <= 10 then
+                table.insert(hitCharacters, mob.Model)
+            end
         end
     end
 

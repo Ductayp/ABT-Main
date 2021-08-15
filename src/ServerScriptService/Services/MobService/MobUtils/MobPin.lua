@@ -31,6 +31,7 @@ function module.Pin_Duration(mobId, duration)
 
         thisMob.IsPinned = true
         spawn(function()
+
             wait(duration)
 
             if not thisMob then return end
@@ -41,7 +42,10 @@ function module.Pin_Duration(mobId, duration)
             --thisMob.Model.HumanoidRootPart.Anchored = false
             anchorPart:Destroy()
 
-            thisMob.Model.HumanoidRootPart:SetNetworkOwner(nil)
+            if thisMob and thisMob.Model and thisMob.Model.HumanoidRootPart then
+                thisMob.Model.HumanoidRootPart:SetNetworkOwner(nil)
+            end
+            
         end)
 
         MobAnimations.PauseAll(mobId, duration)

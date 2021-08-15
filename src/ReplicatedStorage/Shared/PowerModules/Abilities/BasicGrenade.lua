@@ -105,9 +105,11 @@ function BasicGrenade.Run_Server(params, abilityDefs)
 
         -- add all Mobs in range
         for _,mob in pairs(Knit.Services.MobService.SpawnedMobs) do
-            local distance = (mob.Model.HumanoidRootPart.Position - newGrenade.MainPart.Position).magnitude
-            if distance <= newGrenade.HitRadius then
-                table.insert(newGrenade.HitCharacters, mob.Model)
+            if mob.Model and mob.Model:FindFirstChild("HumanoidRootPart") then
+                local distance = (mob.Model.HumanoidRootPart.Position - newGrenade.MainPart.Position).magnitude
+                if distance <= newGrenade.HitRadius then
+                    table.insert(newGrenade.HitCharacters, mob.Model)
+                end
             end
         end
 

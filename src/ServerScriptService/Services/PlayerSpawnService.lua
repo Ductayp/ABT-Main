@@ -72,7 +72,9 @@ function PlayerSpawnService:TransportHome(player)
     wait(1)
 
     if not player then return end
+
     player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
+
 end
 
 --// CustomSpawn
@@ -86,9 +88,10 @@ function PlayerSpawnService:CustomSpawn(player)
     camera.CameraType = Enum.CameraType.Custom
 
     local spawnGroupName = PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn
-    if not spawnerGroupName then 
+    if not spawnGroupName then 
         PlayerSpawnService.PlayerSpawnSettigns[player.UserId] = {CurrentSpawn = "Morioh"}
         spawnGroupName = "Morioh"
+        Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, {MapZone = "Morioh"})
     end
 
     local spawnerGroup = PlayerSpawnService.SpawnerGroups[spawnGroupName]:GetChildren()
@@ -119,7 +122,6 @@ end
 ----------------------------------------------------------------------------------------------------------
 -- CLIENT METHODS
 ----------------------------------------------------------------------------------------------------------
-
 
 function PlayerSpawnService.Client:TransportHome(player, spawnName)
     self.Server:TransportHome(player, spawnName)

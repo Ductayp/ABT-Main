@@ -207,8 +207,10 @@ function module.LaserHit(params)
     WeldedSound.NewSound(params.InitPlayer.Character.HumanoidRootPart, ReplicatedStorage.Audio.General.LaserBeamDescend)
 
     local targetStand = Workspace.PlayerStands[params.InitPlayer.UserId]:FindFirstChildWhichIsA("Model")
+    quickRenderParams = {}
+    quickRenderParams.InitUserId = params.InitPlayer.UserId
     if not targetStand then
-        targetStand = ManageStand.QuickRender(params)
+        targetStand = ManageStand.QuickRender(quickRenderParams)
     end
 
     local attach0 = Instance.new("Attachment")

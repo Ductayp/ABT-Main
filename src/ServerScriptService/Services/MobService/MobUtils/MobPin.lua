@@ -42,9 +42,9 @@ function module.Pin_Duration(mobId, duration)
             --thisMob.Model.HumanoidRootPart.Anchored = false
             anchorPart:Destroy()
 
-            if thisMob and thisMob.Model and thisMob.Model.HumanoidRootPart then
-                thisMob.Model.HumanoidRootPart:SetNetworkOwner(nil)
-            end
+            --if thisMob and thisMob.Model and thisMob.Model.HumanoidRootPart then
+                --thisMob.Model.HumanoidRootPart:SetNetworkOwner(nil)
+            --end
             
         end)
 

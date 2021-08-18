@@ -1,0 +1,13 @@
+ITEM REWORK 
+
+General Ideas
+    Each item has a max capacity
+    Max capacity can be increased using Soul Orbs
+
+
+Gui Stuff
+    Each item has an icon, located top left
+    Top right features quantity, capacity, and a button to buy more capacity
+    Stand storage is now infinite, use a algorith to set price, new button on stand strage to buy slots
+    Robux Shop gui has Cash and Soul Orbs for sale
+    Main gui cash and soul orbs icons changed to new icons

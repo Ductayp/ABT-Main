@@ -290,6 +290,8 @@ end
 --// QuickRender this is an emergency render, there are no animatons it just renders the stand as quickly as possible. It also returns the stand
 function ManageStand.QuickRender(params)
 
+
+
 	-- be sure the player has an equipped stand, if not then just return
 	local powerStatusFolder = ReplicatedStorage.PowerStatus[params.InitUserId]
 	local equippedStand = powerStatusFolder:FindFirstChild("EquippedStand")
@@ -342,7 +344,7 @@ function ManageStand.QuickRender(params)
 		end
 	end
 
-	ManageStand.Aura_Off(params)
+	--ManageStand.Aura_Off(params)
 
 	return newStand
 

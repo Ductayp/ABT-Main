@@ -11,11 +11,13 @@ local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local WeldedSound = require(Knit.PowerUtils.WeldedSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 
-local GHOST_DURATION = 7
+local GHOST_DURATION = 5
 
 local module = {}
 
 module.InputBlockTime = 1
+
+--// SERVER FUNCTIONS ----------------------------------------------------------------------------------------------------------------------
 
 --// ServerSetup ------------------------------------------------------------------------------------
 function module.Server_Setup(params, abilityDefs, initPlayer)
@@ -23,30 +25,170 @@ function module.Server_Setup(params, abilityDefs, initPlayer)
 end
 
 --// HitCharacter ------------------------------------------------------------------------------------
-function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
-
-    local hitPlayer = utils.GetPlayerFromCharacter(hitCHaracter)
-    if hitPlayer then
-
-        --local playerHitboxFolder = workspace.ServerHitboxes:FindFirstChild(hitPlayer.UserId)
-        --if playerHitboxFolder then
-            --playerHitboxFolder:ClearAllChildren()
-        --end
-
-    end
+function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitBox)
 
     abilityDefs.HitEffects = {
         GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
         Damage = {Damage = 20},
         --Invulnerable = {Duration = GHOST_DURATION},
+        PinCharacter = {Duration = GHOST_DURATION},
         BlockAttacks = {Duration = GHOST_DURATION},
         RemoveStand = {},
         RunFunctions = {
-            {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {}}
+            {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {HitBoxCFrame = hitBox.CFrame}}
         },
     }
 
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
+
+end
+
+--// Server_GhostEffect
+function module.Server_GhostEffect(params)
+
+    local originCFRame = params.HitCharacter.HumanoidRootPart.CFrame
+    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Client_GhostEffect", params)
+
+end
+
+--// CLIENT FUNCTIONS --------------------------------------------------------------------------------------------------------------------
+
+function module.Client_GhostEffect(params)
+
+    print("GHOST EFFECTS START", params)
+
+    if not params.HitCharacter then return end
+
+    params.HitCharacter.Archivable = true
+
+    AnchoredSound.NewSound(params.HitCharacter.HumanoidRootPart.Position, ReplicatedStorage.Audio.General.MagicBoom)
+
+    local head1 = params.HitCharacter:FindFirstChild("Head", true)
+    if head1 then
+
+        local newSound1 = WeldedSound.NewSound(head1, ReplicatedStorage.Audio.General.EnergySource20sec, {SoundProperties = {PlaybackSpeed = 0.5}})
+
+
+        local newParticles = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Particles:Clone()
+        newParticles.Parent = Workspace.RenderedEffects
+        newParticles.Dark.Enabled = false
+        newParticles.CFrame = head1.CFrame
+
+        Debris:AddItem(newParticles, 20)
+        utils.EasyWeld(newParticles, head1, newParticles)
+
+        spawn(function()
+            wait(GHOST_DURATION)
+            newParticles.Burst:Emit(150)
+            WeldedSound.NewSound(head1, ReplicatedStorage.Audio.General.MagicBoom)
+            newParticles.Gold.Enabled = false
+            newSound1:Destroy()
+            wait(5)
+            newParticles:Destroy()
+        end)
+        
+    end
+
+    local characterCopy = params.HitCharacter:Clone()
+
+    for _, object in pairs(characterCopy:GetDescendants()) do
+        if object:IsA("BasePart") or object:IsA("Decal") then
+            if object.Name ~= "HumanoidRootPart" then
+                object.Transparency = .7
+            end
+        end
+    end
+
+    characterCopy.Parent = Workspace.RenderedEffects
+    characterCopy.HumanoidRootPart.CFrame = params.HitCharacter.HumanoidRootPart.CFrame
+    Debris:AddItem(characterCopy, GHOST_DURATION + 10) -- just in case
+
+    local animator = characterCopy.Humanoid.Animator
+    local animation = animator:LoadAnimation(ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.GhostAnimation)
+    animation:Play()
+
+    local head2 = characterCopy:FindFirstChild("Head", true)
+    if head2 then
+
+        local newParticles = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Particles:Clone()
+        newParticles.Parent = head2
+        newParticles.CFrame = head2.CFrame
+        Debris:AddItem(newParticles, GHOST_DURATION + 10)
+
+        utils.EasyWeld(newParticles, head2, newParticles)
+        newParticles.Burst:Emit(200)
+
+        local newBeam = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Beam:Clone()
+        newBeam.Parent = head2
+        Debris:AddItem(newBeam, GHOST_DURATION + 10)
+
+        local attach0 = Instance.new("Attachment")
+        Debris:AddItem(attach0, GHOST_DURATION + 10)
+        local attach1 = Instance.new("Attachment")
+        Debris:AddItem(attach1, GHOST_DURATION + 10)
+
+        attach0.Parent = head2
+        attach1.Parent = head1
+
+        newBeam.Attachment0 = attach0
+        newBeam.Attachment1 = attach1
+
+    end
+
+    local locations = {
+        [1] = "Head",
+        [2] = "UpperTorso",
+        [3] = "LeftLowerLeg",
+        [4] = "RightLowerLeg",
+        [5] = "LeftUpperArm",
+        [6] = "RightUpperArm",
+    }
+
+    for count = 1,6 do
+
+        local bodyPart = characterCopy:FindFirstChild(locations[count], true)
+
+        local trail = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Trail:Clone()
+        trail.Parent = bodyPart
+        trail.CFrame = bodyPart.CFrame
+        --Debris:AddItem(trail, GHOST_DURATION + 10)
+
+        utils.EasyWeld(trail, bodyPart, trail)
+        
+    end
+
+    local destination = params.HitBoxCFrame:ToWorldSpace(CFrame.new(0,0,-15))
+
+    characterCopy.HumanoidRootPart.Anchored = true
+
+    local tween1 = TweenService:Create(characterCopy.HumanoidRootPart, TweenInfo.new(.3), {CFrame = CFrame.new(destination.Position, params.HitCharacter.HumanoidRootPart.Position)})
+    tween1:Play()
+
+
+    --[[
+    tween1.Completed:Connect(function()
+        wait()
+        characterCopy.HumanoidRootPart.Anchored = false
+    end)
+    ]]--
+
+    
+    wait(GHOST_DURATION)
+
+    if params.HitCharacter:FindFirstChild("HumanoidRootPart", true) then
+        characterCopy.HumanoidRootPart.Anchored = true
+        local tween2 = TweenService:Create(characterCopy.HumanoidRootPart, TweenInfo.new(.3), {CFrame = params.HitCharacter.HumanoidRootPart.CFrame})
+        tween2:Play()
+        tween2.Completed:Connect(function()
+            characterCopy:Destroy()
+        end)
+    else
+        characterCopy:Destroy()
+    end
+
+    
+
+    
 
 end
 
@@ -103,22 +245,6 @@ function module.Client_Animation_A(params, abilityDefs, initPlayer)
         shockTween:Play()
         shockTween:Destroy()
 
-        --[[
-        local newBurst = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.FatBurst:Clone()
-        newBurst.Parent = Workspace.RenderedEffects
-        Debris:AddItem(newBurst, 3)
-
-        local burstWeld = Instance.new("Weld")
-        burstWeld.C1 =  CFrame.new(0,0,10)
-        burstWeld.Part0 = HRP
-        burstWeld.Part1 = newBurst
-        burstWeld.Parent = newBurst
-
-        local burstTween = TweenService:Create(newBurst, TweenInfo.new(2),{Size = Vector3.new(3,3,3), Transparency = 1})
-        burstTween:Play()
-        burstTween:Destroy()
-        ]]--
-
     end)
 
 end
@@ -155,204 +281,9 @@ function module.Client_Animation_B(params, abilityDefs, initPlayer)
 
 end
 
-function module.Server_GhostEffect(params)
-
-    local originCFRame = params.HitCharacter.HumanoidRootPart.CFrame
-
-    -- create the clone character and set everything
-    params.HitCharacter.Archivable = true
-    local characterCopy = params.HitCharacter:Clone()
-    Debris:AddItem(characterCopy, 60) -- just in case
-
-    characterCopy.Humanoid.DisplayName = " "
-    
-    for _, object in pairs(characterCopy:GetDescendants()) do
-        if object:IsA("BasePart") then
-            object.Anchored = true
-        end
-    end
-
-    local cloneFolder = Workspace:FindFirstChild("SoulPunchClones", true)
-    if not cloneFolder then
-        cloneFolder = Instance.new("Folder")
-        cloneFolder.Name = "SoulPunchClones"
-        cloneFolder.Parent = Workspace
-    end
-    characterCopy.Parent = cloneFolder
-
-    -- if its a player
-    local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
-    if hitPlayer then
-
-        local playerProxy = Instance.new("ObjectValue")
-        playerProxy.Value = hitPlayer
-        playerProxy.Name = "PlayerProxy"
-        playerProxy.Parent = characterCopy
-        
-    end
-
-    -- if its a mob
-    if params.HitParams.IsMob then
-
-        require(Knit.MobUtils.HideHealth).Hide_Duration(params.HitParams.MobId, GHOST_DURATION)
-
-    end
-
-    for _, object in pairs(params.HitCharacter:GetDescendants()) do
-        if object:IsA("BasePart") or object:IsA("Decal") then
-            if object.Name ~= "HumanoidRootPart" then
-                object.Transparency = .8
-            end
-        end
-    end
-
-    local invulnerableBool = Instance.new("BoolValue")
-    invulnerableBool.Value = true
-    invulnerableBool.Name = "Invulnerable_HitEffect"
-    invulnerableBool.Parent = params.HitCharacter.HumanoidRootPart
-
-    local effectParams = {}
-    effectParams.CharacterCopy = characterCopy
-    effectParams.HitCharacter =  params.HitCharacter
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Client_GhostEffect_Start", effectParams)
-
-    -- add the hitCharacter to the IgnoreProjectile folder
-    local ignoreFolder = Workspace:FindFirstChild("IgnoreProjectiles")
-    local originalParent = params.HitCharacter.Parent
-    params.HitCharacter.Parent = ignoreFolder
-
-    wait(GHOST_DURATION)
-
-    if params.HitCharacter:FindFirstChild("Humanoid") and params.HitCharacter:FindFirstChild("HumanoidRootPart") then
-
-        params.HitCharacter.HumanoidRootPart.CFrame = originCFRame
-        params.HitCharacter.Humanoid.Health = characterCopy.Humanoid.Health
-
-        invulnerableBool:Destroy()
-
-        for _, object in pairs(params.HitCharacter:GetDescendants()) do
-            if object:IsA("BasePart") or object:IsA("Decal") then
-                if object.Name ~= "HumanoidRootPart" then
-                    object.Transparency = 0
-                end
-            end
-        end
-
-        --[[
-
-        if params.HitCharacter.Humanoid.Health < 1 then
-
-            params.HitCharacter:Destroy()
-            characterCopy:Destroy()
-            return
-
-        else
-
-            if hitPlayer then
-                if not game.Players:FindFirstChild(hitPlayer.Name) then
-                    params.HitCharacter:Destroy()
-                    characterCopy:Destroy()
-                    return
-                end
-            end
-
-            params.HitCharacter.Parent = originalParent
-
-        end
-        ]]--
-    end
 
 
-    --[[
-    if params.HitCharacter then
 
-        if params.HitCharacter:FindFirstChild("HumanoidRootPart") then
-            params.HitCharacter.HumanoidRootPart.CFrame = originCFRame
-            params.HitCharacter.Humanoid.Health = characterCopy.Humanoid.Health
-        end
-
-        invulnerableBool:Destroy()
-
-        for _, object in pairs(params.HitCharacter:GetDescendants()) do
-            if object:IsA("BasePart") or object:IsA("Decal") then
-                if object.Name ~= "HumanoidRootPart" then
-                    object.Transparency = 0
-                end
-            end
-        end
-    end
-    ]]--
-    
-    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(script, "Client_GhostEffect_End", effectParams)
-    characterCopy:Destroy()
-    
-end
-
-
-function module.Client_GhostEffect_Start(params)
-
-    --print("GHOST EFFECTS START", params)
-
-    if not params.CharacterCopy then return end
-    if not params.HitCharacter then return end
-
-    AnchoredSound.NewSound(params.HitCharacter.HumanoidRootPart.Position, ReplicatedStorage.Audio.General.MagicBoom)
-
-    local head1 = params.HitCharacter:FindFirstChild("Head", true)
-    if head1 then
-
-        local newSound1 = WeldedSound.NewSound(head1, ReplicatedStorage.Audio.General.EnergySource20sec, {SoundProperties = {PlaybackSpeed = 0.5}})
-
-
-        local newParticles = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Particles:Clone()
-        newParticles.Parent = Workspace.RenderedEffects
-        newParticles.Dark.Enabled = false
-        newParticles.CFrame = head1.CFrame
-        Debris:AddItem(newParticles, 20)
-        utils.EasyWeld(newParticles, head1, newParticles)
-        spawn(function()
-            wait(GHOST_DURATION)
-            newParticles.Burst:Emit(150)
-            WeldedSound.NewSound(head1, ReplicatedStorage.Audio.General.MagicBoom)
-            newParticles.Gold.Enabled = false
-            newSound1:Destroy()
-            wait(5)
-            newParticles:Destroy()
-        end)
-        
-    end
-
-    local head2 = params.CharacterCopy:FindFirstChild("Head", true)
-    if head2 then
-
-        local newParticles = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Particles:Clone()
-        newParticles.Parent = Workspace.RenderedEffects
-        newParticles.CFrame = head2.CFrame
-        utils.EasyWeld(newParticles, head2, newParticles)
-        newParticles.Burst:Emit(200)
-
-        local newBeam = ReplicatedStorage.EffectParts.Abilities.HeavyPunch.SoulPunch.Beam:Clone()
-        newBeam.Parent = head2
-
-        local attach0 = Instance.new("Attachment")
-        local attach1 = Instance.new("Attachment")
-        Debris:AddItem(attach1, GHOST_DURATION + 10)
-
-        attach0.Parent = head2
-        attach1.Parent = head1
-
-        newBeam.Attachment0 = attach0
-        newBeam.Attachment1 = attach1
-
-    end
-
-end
-
-function module.Client_GhostEffect_End(params)
-
-    --print("GHOST EFFECTS END", params)
-
-end
 
 
 

@@ -14,7 +14,7 @@ local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local utils = require(Knit.Shared.Utils)
 
-local KnockBack = {}
+local KnockBack = {} --
 
 function KnockBack.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitParams)
 

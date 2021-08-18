@@ -13,6 +13,7 @@ local AnchoredSound = require(Knit.PowerUtils.AnchoredSound)
 local ManageStand = require(Knit.Abilities.ManageStand)
 local TargetByZone = require(Knit.PowerUtils.TargetByZone)
 local CamShakeTools = require(Knit.PowerUtils.CamShakeTools)
+local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 local initPlayerTracker = {}
 
@@ -25,7 +26,7 @@ local HITBOX_OFFSET = CFrame.new(0, 0, 6)
 
 local module = {}
 
-module.InputBlockTime = mudaDuration
+module.InputBlockTime = 1.5
 
 -- MobilityLock params
 module.MobilityLockParams = {}
@@ -425,6 +426,8 @@ end
 function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitBox)
 
     if not initPlayer.Character then return end
+
+    BlockInput.AddBlock(params.InitUserId, "SevenPageMuda", mudaDuration)
 
     abilityDefs.HitEffects = {Teleport = {TargetPosition = params.PinCFrame.Position, LookAt = initPlayer.Character.HumanoidRootPart.Position}}
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)

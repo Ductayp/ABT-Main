@@ -29,10 +29,10 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
 
     abilityDefs.HitEffects = {
         GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
-        Damage = {Damage = 20},
-        --Invulnerable = {Duration = GHOST_DURATION},
-        PinCharacter = {Duration = GHOST_DURATION},
-        BlockAttacks = {Duration = GHOST_DURATION},
+        Damage = {Damage = 10},
+        ExtraDamage = {Duration = GHOST_DURATION, Value = 5},
+        --PinCharacter = {Duration = GHOST_DURATION},
+        --BlockAttacks = {Duration = GHOST_DURATION},
         RemoveStand = {},
         RunFunctions = {
             {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {HitBoxCFrame = hitBox.CFrame}}
@@ -92,10 +92,15 @@ function module.Client_GhostEffect(params)
     local characterCopy = params.HitCharacter:Clone()
 
     for _, object in pairs(characterCopy:GetDescendants()) do
+
         if object:IsA("BasePart") or object:IsA("Decal") then
             if object.Name ~= "HumanoidRootPart" then
                 object.Transparency = .7
             end
+        end
+
+        if object.Name == "DamageNumber" then
+            object:Destroy()
         end
     end
 

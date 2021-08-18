@@ -510,7 +510,7 @@ function PowersService:KnitInit()
     --ignoreFolder.Parent = Workspace
 
 
-    --[[
+
     -- stand givers
     for i, v in pairs(Workspace.StandGivers:GetChildren()) do
 
@@ -546,7 +546,7 @@ function PowersService:KnitInit()
             
         end)
     end
-    ]]--
+
 
 
     

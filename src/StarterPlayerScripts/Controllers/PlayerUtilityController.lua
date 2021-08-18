@@ -51,6 +51,11 @@ end
 
 function PlayerUtilityController:CharacterAdded(character)
 
+    --print("PlayerUtilityController:CharacterAdded(character)", character)
+
+    local camera = Workspace.CurrentCamera or Workspace:WaitForChild("Camera")
+    camera.CameraType = Enum.CameraType.Custom
+
     self:LoadAnimations(character)
 end
 

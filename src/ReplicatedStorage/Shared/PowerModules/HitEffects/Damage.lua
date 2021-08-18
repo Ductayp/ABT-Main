@@ -25,6 +25,18 @@ function Damage.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hitPa
     -- multiply damage based on passed params
     local actualDamage = effectParams.Damage * hitParams.DamageMultiplier
 
+    local additiveFolder = hitCharacter:FindFirstChild("ExtraDamage", true)
+    if additiveFolder then
+
+        local damageAdd = 0
+
+        for _, valueObject in pairs(additiveFolder:GetChildren()) do
+            damageAdd += valueObject.Value
+        end
+
+        actualDamage += damageAdd
+    end
+
     -- do the damage
     hitCharacter.Humanoid:TakeDamage(actualDamage)
 
@@ -88,6 +100,9 @@ end
 
 function Damage.Client_RenderEffect(params)
 
+    if not params.HitCharacter then return end
+    
+
     local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
     if hitPlayer == Players.LocalPlayer then
         if not params.DisableShake then
@@ -110,6 +125,7 @@ function Damage.Client_RenderEffect(params)
     -- damage number
     if not params.HideNumbers then
         local billboardGui = ReplicatedStorage.EffectParts.Effects.Damage.DamageNumber:Clone()
+        billboardGui.Name = "DamageNumber"
         billboardGui.Parent = params.HitCharacter
         billboardGui.TextLabel.Text = params.Damage
 
@@ -128,20 +144,25 @@ function Damage.Client_RenderEffect(params)
 
     -- particles
     if not params.HideEffects then
-        local dots = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Dots_1")
-        if not dots then
-            dots = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Dots_1:Clone()
-            dots.Parent = params.HitCharacter.HumanoidRootPart
+
+        local HRP = params.HitCharacter:FindFirstChild("HumanoidRootPart")
+        if HRP then
+            local dots = HRP:FindFirstChild("Particle_Dots_1")
+            if not dots then
+                dots = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Dots_1:Clone()
+                dots.Parent = HRP
+            end
+        
+            local lines = HRP:FindFirstChild("Particle_Lines_1")
+            if not lines then
+                lines = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Lines_1:Clone()
+                lines.Parent = HRP
+            end
+        
+            dots:Emit(1)
+            lines:Emit(1)
         end
-    
-        local lines = params.HitCharacter.HumanoidRootPart:FindFirstChild("Particle_Lines_1")
-        if not lines then
-            lines = ReplicatedStorage.EffectParts.Effects.Damage.Particle_Lines_1:Clone()
-            lines.Parent = params.HitCharacter.HumanoidRootPart
-        end
-    
-        dots:Emit(1)
-        lines:Emit(1)
+        
     end
 
     if not params.DisableSound then

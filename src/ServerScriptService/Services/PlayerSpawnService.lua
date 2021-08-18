@@ -80,12 +80,11 @@ end
 --// CustomSpawn
 function PlayerSpawnService:CustomSpawn(player)
 
+    --print("PlayerSpawnService:CustomSpawn(player)", player)
+
     wait(respawnDelay)
 
     if not player then return end
-
-    local camera = Workspace.CurrentCamera
-    camera.CameraType = Enum.CameraType.Custom
 
     local spawnGroupName = PlayerSpawnService.PlayerSpawnSettigns[player.UserId].CurrentSpawn
     if not spawnGroupName then 

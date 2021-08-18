@@ -17,7 +17,7 @@ local BlockInput = require(Knit.PowerUtils.BlockInput)
 
 local initPlayerTracker = {}
 
-local mudaDuration = 10
+local effectDuration = 5
 
 local HITBOX_DELAY = .2
 local HITBOX_DURATION = .5
@@ -71,12 +71,6 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
     ManageStand.Aura_On(params)
     ManageStand.MoveStand(params, "Front")
     ManageStand.PlayAnimation(params, "Point")
-
-    --wait(module.MobilityLockParams.Duration + .1)
-
-    --ManageStand.StopAnimation(params, "Point")
-    --ManageStand.MoveStand(params, "Idle")
-    --ManageStand.Aura_Off(params)
 
 end
 
@@ -154,39 +148,39 @@ function module.Client_MudaEffect(params)
     ManageStand.PlayAnimation(standParams, "Barrage")
     ManageStand.MoveStand(standParams, "Front")
     spawn(function()
-        wait(mudaDuration)
+        wait(effectDuration)
         ManageStand.StopAnimation(standParams, "Barrage")
         ManageStand.MoveStand(standParams, "Idle")
         ManageStand.Aura_Off(standParams)
     end)
 
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.PowerUpDistorted)
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.PowerUpDistorted, {SoundProperties = {PlaybackSpeed = 2}})
     WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.GoldExperience.Barrage)
-    spawn(function()
-        wait(5)
-        WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.PulseRay6)
-        WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.StandSpecific.GoldExperience.Barrage)
-    end)
 
-    -- placeholder for custom animaitons, might not use this at all
-    local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
-    if hitPlayer then
-        --params.HitCharacter.Humanoid.Animator.SevenPageMuda:Play()
-    elseif params.HitParams.IsMob then
-        --print("IS MOB!")
-    end
-
-    
     -- do the camera effects for the players involved
+    local hitPlayer = utils.GetPlayerFromCharacter(params.HitCharacter)
     if hitPlayer == Players.LocalPlayer or params.InitPlayer == Players.LocalPlayer then
 
         Knit.Controllers.GuiController.Modules.ShiftLock.SetOff()
 
-        local defaultCamera = Workspace.CurrentCamera
-        defaultCamera.CameraType = Enum.CameraType.Scriptable
+        local localCamera = Workspace.CurrentCamera
+        localCamera.CameraType = Enum.CameraType.Scriptable
+
+        if hitPlayer == Players.LocalPlayer then
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.Died:Connect(function()
+                        localCamera.CameraType = Enum.CameraType.Custom
+                    end)
+                end
+            end
+        end
+
         spawn(function()
-            wait(mudaDuration)
-            defaultCamera.CameraType = Enum.CameraType.Custom
+            wait(effectDuration)
+            localCamera.CameraType = Enum.CameraType.Custom
         end)
 
         game:GetService("StarterGui"):SetCore("ResetButtonCallback", false)
@@ -200,20 +194,20 @@ function module.Client_MudaEffect(params)
         local eyeB2 = params.PinCFrame:ToWorldSpace(CFrame.new(3, 5, -8)).Position
         
 
-        local cameraTween1 = TweenService:Create(defaultCamera, TweenInfo.new(5), {CFrame = utils.LookAt(eyeA2, target)})
-        local cameraTween2 = TweenService:Create(defaultCamera, TweenInfo.new(5), {CFrame = utils.LookAt(eyeB2, target)})
+        local cameraTween1 = TweenService:Create(localCamera, TweenInfo.new(effectDuration/2), {CFrame = utils.LookAt(eyeA2, target)})
+        local cameraTween2 = TweenService:Create(localCamera, TweenInfo.new(effectDuration/2), {CFrame = utils.LookAt(eyeB2, target)})
 
         cameraTween1.Completed:Connect(function()
-            defaultCamera.CFrame = utils.LookAt(eyeB1, target)
+            localCamera.CFrame = utils.LookAt(eyeB1, target)
             cameraTween2:Play()
         end)
 
         cameraTween2.Completed:Connect(function()
-            --defaultCamera.CameraType = Enum.CameraType.Custom
+            --localCamera.CameraType = Enum.CameraType.Custom
             game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
         end)
 
-        defaultCamera.CFrame = utils.LookAt(eyeA1, target)
+        localCamera.CFrame = utils.LookAt(eyeA1, target)
 
         cameraTween1:Play()
 
@@ -222,10 +216,10 @@ function module.Client_MudaEffect(params)
         local mudaGui = ReplicatedStorage.EffectParts.Abilities.BasicAbility.SevenPageMuda.MudaGui:Clone()
         mudaGui.Parent = playerGui
 
-        local scaleTween = TweenService:Create(mudaGui.SpeedLines.BaseLines, TweenInfo.new(mudaDuration), {Size = mudaGui.SpeedLines.BaseLines.Size + UDim2.new(1,1,1,1)})
+        local scaleTween = TweenService:Create(mudaGui.SpeedLines.BaseLines, TweenInfo.new(effectDuration), {Size = mudaGui.SpeedLines.BaseLines.Size + UDim2.new(1,1,1,1)})
         scaleTween:Play()
 
-        local endTime = os.clock() + mudaDuration
+        local endTime = os.clock() + effectDuration
 
         -- destroy gui timer
         spawn(function()
@@ -260,15 +254,13 @@ function module.Client_MudaEffect(params)
                 end
 
             end
-
-            --mudaGui:Destroy()
         
         end)
 
         -- Muda Text
         spawn(function()
 
-            local stepsPerSecond = 20
+            local stepsPerSecond = 30
 
             local mudaText = mudaGui.MudaText:FindFirstChild("TextLabel", true)
             mudaText.Visible = false
@@ -334,6 +326,16 @@ function module.Client_MudaEffect(params)
 
 end
 
+function module.CameraMove_1()
+
+end
+
+function module.CameraMove_1()
+
+end
+
+
+
 ------------------------------------------------------------------------------------------------------------------
 --// SERVER FUNTIONS ---------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -345,7 +347,7 @@ function module.Server_Setup(params, abilityDefs, initPlayer)
     hitBool.Name = "SevenPageMudaHit" .. initPlayer.UserId
     hitBool.Value = false
     hitBool.Parent = Workspace.RenderedEffects
-    Debris:AddItem(hitBool, mudaDuration + 1)
+    Debris:AddItem(hitBool, effectDuration + 1)
 
     params.HitBool = hitBool
 
@@ -364,7 +366,7 @@ function module.Server_Run(params, abilityDefs, initPlayer)
     newBool.Parent = thisHRP
 
     spawn(function()
-        wait(mudaDuration)
+        wait(effectDuration)
         newBool:Destroy()
     end)
 
@@ -427,15 +429,15 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
 
     if not initPlayer.Character then return end
 
-    BlockInput.AddBlock(params.InitUserId, "SevenPageMuda", mudaDuration)
+    BlockInput.AddBlock(params.InitUserId, "SevenPageMuda", effectDuration)
 
     abilityDefs.HitEffects = {Teleport = {TargetPosition = params.PinCFrame.Position, LookAt = initPlayer.Character.HumanoidRootPart.Position}}
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
     abilityDefs.HitEffects = {
-        DamageOverTime = {Damage = 2, TickCount = 35, TickLength = .25},
-        PinCharacter = {Duration = mudaDuration},
-        Invulnerable = {Duration = mudaDuration},
+        DamageOverTime = {Damage = 6, TickCount = effectDuration * 2, TickLength = .5},
+        PinCharacter = {Duration = effectDuration},
+        Invulnerable = {Duration = effectDuration},
         RunFunctions = {
             {RunOn = "Server", Script = script, FunctionName = "Server_MudaEffect", Arguments = {}},
             {RunOn = "Client", Script = script, FunctionName = "Client_MudaEffect", Arguments = {PinCFrame = params.PinCFrame}}
@@ -444,15 +446,16 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
 
     local canHit = Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
-    -- handle initPlayer, this will fire ONCE for the intiPlayer and ONLY if they hit another character
+    -- check if we hit another player, if so we then proceed
     if not canHit then return end
+
     if initPlayerTracker[initPlayer.UserId] then return end
 
     params.HitBool.Value = true
 
     initPlayerTracker[initPlayer.UserId] = true
     spawn(function()
-        wait(mudaDuration)
+        wait(effectDuration)
         initPlayerTracker[initPlayer.UserId] = nil
     end)
 
@@ -462,11 +465,11 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
     utils.EasyWeld(initPlayer.Character.HumanoidRootPart, anchorPart, anchorPart)
     anchorPart.Parent = Workspace.RenderedEffects
     spawn(function()
-        wait(mudaDuration)
+        wait(effectDuration)
         anchorPart:Destroy()
     end)
 
-    require(Knit.PowerUtils.BlockInput).AddBlock(initPlayer.UserId, "SevenPageMuda", mudaDuration)
+    require(Knit.PowerUtils.BlockInput).AddBlock(initPlayer.UserId, "SevenPageMuda", effectDuration)
 
 end
 

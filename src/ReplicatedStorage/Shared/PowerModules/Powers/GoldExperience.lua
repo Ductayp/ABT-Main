@@ -68,7 +68,7 @@ function GoldExperience.SetupPower(initPlayer, params)
     for _, key in pairs(cooldownKeys) do
         require(Knit.PowerUtils.Cooldown).Server_SetCooldown(initPlayer.UserId, key, 15)
     end
-    
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped
@@ -125,7 +125,7 @@ GoldExperience.Defs.Abilities.E = {
     Cooldown = 7,
     RequireToggle_On = {"Q"},
     DamageRamp = .25,
-    HitEffects = {Damage = {Damage = 3, KnockBack = 15}},
+    HitEffects = {Damage = {Damage = 2, KnockBack = 15}},
     Sounds = {
         Barrage = ReplicatedStorage.Audio.StandSpecific.GoldExperience.Barrage,
     }

@@ -9,7 +9,7 @@ local Vampire = {}
 
 Vampire.Defs = {
     PowerName = "Vampire",
-    MaxXp = 30000,
+    MaxXp = 15000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,

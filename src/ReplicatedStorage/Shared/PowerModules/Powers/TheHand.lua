@@ -9,7 +9,7 @@ local TheHand = {}
 
 TheHand.Defs = {
     PowerName = "TheHand",
-    MaxXp = 30000,
+    MaxXp = 15000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,

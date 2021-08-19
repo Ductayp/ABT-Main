@@ -49,13 +49,13 @@ Morioh.Items = {
     -- WEIGHT 20
 
     {
-        Weight = 20,
+        Weight = 30,
         Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
             MinValue = 1,
-            MaxValue = 1,
+            MaxValue = 5,
         },
     },
 

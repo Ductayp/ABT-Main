@@ -1,0 +1,34 @@
+Gold Expereince Fixes + Rank reversion
+
+Fix Gold Experience
+
+    - Reworked Soul Punch
+        - last 5 seconds
+        - does not stun (you can still move now)
+            - I know this isn't canon but it was breakign the game and FUN > CANON
+        - removes stand
+        - hit character receives 5 extra damage every time they get hit for the duration
+
+    - Fix 7 Page Muda
+        - damge nerf
+        - last 5 seocnds now instead of 10
+        - camera bug fixes
+
+Stand Rank System Reversion
+
+    - Rolled back the changes to the way it was before
+        - need max Xp and 1 Gold Star to rank up
+
+    - Max Xp for each rank is always the same for a stand/spec
+        - it used to be different amount on each rank
+        - right now its 15k per rank for all stands
+        - we want to balance this so give feedback
+
+    - NEW Gold Star crafting recipe: 100 Soul Orbs = 1 Gold Star
+
+    - You can no longer craft Gold Stars from Antidotes
+
+    - You can no longer buy Gold Stars from the shop
+
+    - All mobs including bosses will only drop 1 Soul Orb, but its is garunteed each kill
+

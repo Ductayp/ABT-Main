@@ -9,7 +9,7 @@ local CrazyDiamond = {}
 
 CrazyDiamond.Defs = {
     PowerName = "Crazy Diamond",
-    MaxXp = 30000,
+    MaxXp = 15000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,

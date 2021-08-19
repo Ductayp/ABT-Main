@@ -123,6 +123,7 @@ function PowersService:SetCurrentPower(player, params)
     end
 
     if Knit.Powers:FindFirstChild(params.Power) then
+
         local setupPowerModule = require(Knit.Powers[params.Power])
         local setupPowerParams = {} 
         setupPowerParams.Rank = params.Rank
@@ -130,8 +131,18 @@ function PowersService:SetCurrentPower(player, params)
             setupPowerModule.SetupPower(player, setupPowerParams)
         end
 
-
         playerData.CurrentStand = params
+
+        print("EQUIP STAND PARAMS", params)
+
+        --local maxXp = setupPowerModule.Defs.MaxXp
+
+        --if playerData.CurrentStand.Xp > maxXp then
+            --playerData.CurrentStand.Xp = maxXp
+        --end
+
+    else
+        warn("PowersService:SetCurrentPower(player, params) - No power module found by that name", player, params)
     end
 
     -- create value objects in replciated to show what power a player has

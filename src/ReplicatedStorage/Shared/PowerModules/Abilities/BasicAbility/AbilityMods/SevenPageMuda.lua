@@ -359,17 +359,6 @@ function module.Server_Run(params, abilityDefs, initPlayer)
     local thisHRP = initPlayer.Character.HumanoidRootPart
     if not thisHRP then return end
 
-    -- make initPlayer invulnerable
-    local newBool = Instance.new("BoolValue")
-    newBool.Value = true
-    newBool.Name = "Invulnerable_HitEffect"
-    newBool.Parent = thisHRP
-
-    spawn(function()
-        wait(effectDuration)
-        newBool:Destroy()
-    end)
-
     -- hitbox
 	local hitBox = Instance.new("Part")
     hitBox.CanCollide = false
@@ -435,7 +424,7 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
     Knit.Services.PowersService:RegisterHit(initPlayer, hitCharacter, abilityDefs)
 
     abilityDefs.HitEffects = {
-        DamageOverTime = {Damage = 6, TickCount = effectDuration * 2, TickLength = .5},
+        DamageOverTime = {Damage = 7, TickCount = effectDuration * 2, TickLength = .5},
         PinCharacter = {Duration = effectDuration},
         Invulnerable = {Duration = effectDuration},
         RunFunctions = {
@@ -450,13 +439,23 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
     if not canHit then return end
 
     if initPlayerTracker[initPlayer.UserId] then return end
-
-    params.HitBool.Value = true
-
     initPlayerTracker[initPlayer.UserId] = true
     spawn(function()
         wait(effectDuration)
         initPlayerTracker[initPlayer.UserId] = nil
+    end)
+
+    params.HitBool.Value = true
+
+    -- make initPlayer invulnerable
+    local newBool = Instance.new("BoolValue")
+    newBool.Value = true
+    newBool.Name = "Invulnerable_HitEffect"
+    newBool.Parent = thisHRP
+
+    spawn(function()
+        wait(effectDuration)
+        newBool:Destroy()
     end)
 
     local anchorPart = Instance.new("Part")

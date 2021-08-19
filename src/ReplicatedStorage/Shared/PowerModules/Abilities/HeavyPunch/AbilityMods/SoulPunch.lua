@@ -31,8 +31,8 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
         GiveImmunity = {AbilityName = "SoulPunch", Duration = GHOST_DURATION + 1},
         Damage = {Damage = 10},
         ExtraDamage = {Duration = GHOST_DURATION, Value = 5},
-        --PinCharacter = {Duration = GHOST_DURATION},
-        --BlockAttacks = {Duration = GHOST_DURATION},
+        PinCharacter = {Duration = GHOST_DURATION},
+        BlockAttacks = {Duration = GHOST_DURATION},
         RemoveStand = {},
         RunFunctions = {
             {RunOn = "Server", Script = script, FunctionName = "Server_GhostEffect", Arguments = {HitBoxCFrame = hitBox.CFrame}}

@@ -9,7 +9,7 @@ local GoldExperience = {}
 
 GoldExperience.Defs = {
     PowerName = "Gold Experience",
-    MaxXp = 30000,
+    MaxXp = 15000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,

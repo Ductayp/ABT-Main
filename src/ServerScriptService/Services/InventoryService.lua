@@ -238,6 +238,11 @@ function InventoryService:UseItem(player, key)
 
             local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
 
+            local currentExperience = playerData.CurrentStand.Xp
+            local powerModule = require(Knit.Powers[playerData.CurrentStand.Power])
+            local maxExperience = powerModule.Defs.MaxXp
+            --local maxExperience = powerModule.Defs.MaxXp[playerData.CurrentStand.Rank]
+
             local newRank
             if playerData.CurrentStand.Rank == 1 then
                 newRank = 2
@@ -247,13 +252,18 @@ function InventoryService:UseItem(player, key)
                 returnMessage = "Already Max Rank"
                 return returnMessage
             end
+            
+            if currentExperience < maxExperience then
+                local returnMessage = "Not Enough Experience"
+                return returnMessage
+            end
 
             playerData.ItemInventory.GoldStar += -1
 
             local standData = {}
             standData.Power = playerData.CurrentStand.Power
             standData.Rank = newRank
-            standData.Xp = playerData.CurrentStand.Xp
+            standData.Xp = 0
             standData.GUID = playerData.CurrentStand.GUID
             Knit.Services.PowersService:SetCurrentPower(player, standData)
             

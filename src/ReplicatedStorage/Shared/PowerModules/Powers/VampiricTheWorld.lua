@@ -9,7 +9,7 @@ local VampiricTheWorld = {}
 
 VampiricTheWorld.Defs = {
     PowerName = "Vampiric The World",
-    MaxXp = 50000,
+    MaxXp = 15000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,

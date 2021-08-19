@@ -4,12 +4,10 @@ local Workspace = game:GetService("Workspace")
 
 local module = {}
 
-module.ProximityPrompt = Workspace:FindFirstChild("Prompt_Morioh_Abbacchio", true)
-module.IconName = "Icon_Abbacchio"
-module.Title = "Gang Member"
+module.ProximityPrompt = Workspace:FindFirstChild("Prompt_Morioh_Joseph", true)
+module.IconName = "Icon_Joseph"
+module.Title = "Plucky Runner"
 module.Body = "You need stuff? We got stuff. It's that simple. Prices might not be great but what are your options really?"
-module.ShopType = "BUY"
-module.ShopType_TextColor = Color3.fromRGB(0, 170, 0)
 
 module.ShopItems = {
 

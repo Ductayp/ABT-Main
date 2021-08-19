@@ -226,7 +226,7 @@ function module.Drop(player, mobData)
 
     rewards.Items["BrokenArrow"] = math.random(1, 10)
     rewards.XP = module.Defs.XpValue
-    rewards.SoulOrbs = 10
+    rewards.SoulOrbs = 1
 
     return rewards
 end

@@ -10,7 +10,7 @@ local TheWorld = {}
 
 TheWorld.Defs = {
     PowerName = "The World",
-    MaxXp = 30000,
+    MaxXp = 15000,
     DamageMultiplier = {
         [1] = 1,
         [2] = 1.5,

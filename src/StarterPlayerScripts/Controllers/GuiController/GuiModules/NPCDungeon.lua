@@ -10,7 +10,7 @@ local Players = game:GetService("Players")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local GuiService = Knit.GetService("GuiService")
-local InventoryService = Knit.GetService("InventoryService")
+--local InventoryService = Knit.GetService("InventoryService")
 local utils = require(Knit.Shared.Utils)
 
 -- Main Gui
@@ -21,6 +21,7 @@ local NPC_Icons = mainGui:FindFirstChild("NPC_Icons", true)
 local NPCDungeon = {}
 
 NPCDungeon.Frame = mainGui.Windows:FindFirstChild("NPCDungeon", true)
+--[[
 NPCDungeon.Button_Close = NPCDungeon.Frame:FindFirstChild("Button_Close", true)
 NPCDungeon.Frame_Icon = NPCDungeon.Frame:FindFirstChild("Frame_Icon", true)
 NPCDungeon.Text_Title = NPCDungeon.Frame:FindFirstChild("Text_Title", true)
@@ -38,17 +39,18 @@ NPCDungeon.Confirm_Text_BuySell = NPCDungeon.Frame:FindFirstChild("Confirm_Text_
 NPCDungeon.Button_Confirm_Yes = NPCDungeon.Frame:FindFirstChild("Button_Confirm_Yes", true)
 NPCDungeon.Button_Confirm_No = NPCDungeon.Frame:FindFirstChild("Button_Confirm_No", true)
 NPCDungeon.Text_Result = NPCDungeon.Frame:FindFirstChild("Text_Result", true)
+]]--
 
 NPCDungeon.AllProximityPrompts = {} -- a table to held them all
 
-local currentShopModule
-local currentTransactionId
-local currentShopType
+--local currentShopModule
+--local currentTransactionId
+--local currentShopType
 
-local currencyData -- updated by GuiService when the player currency updates
+--local currencyData -- updated by GuiService when the player currency updates
 
-local itemButtons_Enabled = true
-local confirmButtons_Enabled = false
+--local itemButtons_Enabled = true
+--local confirmButtons_Enabled = false
 
 --// Setup
 function NPCDungeon.Setup()

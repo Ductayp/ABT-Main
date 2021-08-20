@@ -81,7 +81,7 @@ end
 --// CLIENT METHODS
 ---------------------------------------------------------------------------------------------
 
---// Client:StoreStand
+--// Client:BuyAccess
 function DungeonService.Client:BuyAccess(player, params)
     local results = self.Server:BuyAccess(player, params)
     return results

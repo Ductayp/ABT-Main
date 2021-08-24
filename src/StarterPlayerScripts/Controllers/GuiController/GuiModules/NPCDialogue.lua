@@ -287,7 +287,7 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
     end
 
     if stageDef[choiceName].Action.Type == "DungeonTravel" then
-        
+      --[[  
         local originalText = button.Text
         local originalTextColor = button.TextColor3
         local originalBackgroundColor = button.BackgroundColor3
@@ -324,11 +324,11 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
         end
 
         NPCDialogue.Close()
-
+]]--
     end
 
     if stageDef[choiceName].Action.Type == "LeaveDungeon" then
-
+--[[
         local originalText = button.Text
         local originalTextColor = button.TextColor3
         local originalBackgroundColor = button.BackgroundColor3
@@ -347,6 +347,8 @@ function NPCDialogue.ProcessDialogueChoice(choiceName, button)
 
         DungeonService:LeaveDungeon(Players.LocalPlayer)
         NPCDialogue.Close()
+
+        ]]--
     end
 
 end

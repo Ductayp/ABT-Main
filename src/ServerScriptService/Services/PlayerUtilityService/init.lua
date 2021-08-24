@@ -32,17 +32,16 @@ function PlayerUtilityService:UpdatePlayerLoop()
 
 end
 
-function PlayerUtilityService:SetPlayerMapZone(player, params)
+function PlayerUtilityService:SetPlayerMapZone(player, zoneName)
 
-    if not player or not params then return end
-    PlayerUtilityService.PlayerMapZone[player.UserId] = params.MapZone
+    if not player or not zoneName then return end
+    PlayerUtilityService.PlayerMapZone[player.UserId] = zoneName
 
 end
 
 function PlayerUtilityService:GetPlayerMapZone(player)
 
-    local playerMapZone = PlayerUtilityService.PlayerMapZone[player.UserId]
-    return playerMapZone
+    return PlayerUtilityService.PlayerMapZone[player.UserId]
 
 end
 
@@ -92,7 +91,7 @@ end
 --// PlayerAdded
 function PlayerUtilityService:PlayerAdded(player)
 
-    self:SetPlayerMapZone(player, {MapZone = "Morioh"})
+    self:SetPlayerMapZone(player, "Morioh")
 
     -- wait for the character
     repeat wait() until player.Character

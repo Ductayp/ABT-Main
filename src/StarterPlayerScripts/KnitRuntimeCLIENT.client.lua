@@ -22,6 +22,7 @@ Knit.GuiModules = StarterPlayer.StarterPlayerScripts.GameFiles.Controllers.GuiCo
 
 Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
 Knit.ShopModules = ReplicatedStorage.GameFiles.Shared.ShopModules
+Knit.DungeonModules = ReplicatedStorage.GameFiles.Shared.DungeonModules
 
 Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules

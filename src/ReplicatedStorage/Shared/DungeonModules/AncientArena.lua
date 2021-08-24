@@ -1,73 +1,26 @@
--- Morioh_Speedwagon
+-- AncientArena
 
 local Workspace = game:GetService("Workspace")
 
 local module = {}
 
-module.ProximityPrompt = Workspace:FindFirstChild("Prompt_Morioh_Joseph", true)
+module.EnterPrompt = Workspace:FindFirstChild("DungeonPrompt_Joseph_Enter", true)
+module.LeavePrompt = Workspace:FindFirstChild("DungeonPrompt_Joseph_Leave", true)
 module.IconName = "Icon_Joseph"
-module.Title = "Plucky Runner"
-module.Body = "You need stuff? We got stuff. It's that simple. Prices might not be great but what are your options really?"
+module.Title = "Young Joseph"
+module.NPCText = "Wait! Your next line is, 'Where do I get Dunegon Keys?'<br/>" .. 
+                    "You find them on the map or buy them in the shop!"
+module.DungeonName = "Ancient Arena"
+module.DungeonId = "AncientArena" -- must match module name
 
-module.ShopItems = {
+module.Section_A_Header = "<b>BOSS:</b> Kars (Coming Soon)"
+module.Section_A_Body = "    Drops: Aja Stone, Gold Star"
 
-    [1] = {
+module.Section_B_Header = "<b>MOBS:</b> Wham!"
+module.Section_B_Body = "    Drops: Antidote, Mask Fragments"
 
-        OutputName = "Arrows x10",
-        OutputKey = "Arrow",
-        OutputValue = 10,
-
-        InputName = "Cash",
-        InputKey = "Cash",
-        InputValue = 1000,
-
-        Description = "Use an Arrow while standless to gain a new stand.",
-
-    },
-
-    [2] = {
-
-        OutputName = "Arrows x100",
-        OutputKey = "Arrow",
-        OutputValue = 100,
-
-        InputName = "Cash",
-        InputKey = "Cash",
-        InputValue = 9000,
-
-        Description = "Use an Arrow while standless to gain a new stand.",
-
-    },
-
-    [3] = {
-
-        OutputName = "Dungeon Key",
-        OutputKey = "DungeonKey",
-        OutputValue = 1,
-
-        InputName = "Cash",
-        InputKey = "Cash",
-        InputValue = 1000,
-
-        Description = "Opens up dungeons. What else do you need to know?",
-
-    },
-
-    [4] = {
-
-        OutputName = "Dungeon Key x10",
-        OutputKey = "DungeonKey",
-        OutputValue = 10,
-
-        InputName = "Cash",
-        InputKey = "Cash",
-        InputValue = 9000,
-
-        Description = "Opens up dungeons. What else do you need to know?",
-
-    },
-
-}
+module.Section_C_Header = "<b>ITEM SPAWNS</b>"
+module.Section_C_Body = "    Mask Fragments, Gold Star, Soul Orbs, Cash"
 
 
 return module

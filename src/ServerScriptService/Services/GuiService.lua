@@ -18,7 +18,6 @@ local utils = require(Knit.Shared.Utils)
 -- events
 GuiService.Client.Event_Update_Notifications = RemoteEvent.new()
 GuiService.Client.Event_Update_Currency = RemoteEvent.new()
---GuiService.Client.Event_Update_BottomGUI = RemoteEvent.new()
 GuiService.Client.Event_Update_AbilityBar = RemoteEvent.new()
 GuiService.Client.Event_Update_StandData = RemoteEvent.new()
 GuiService.Client.Event_Update_StandReveal = RemoteEvent.new()
@@ -31,6 +30,11 @@ GuiService.Client.Event_Update_ItemFinderWindow = RemoteEvent.new()
 GuiService.Client.Event_Update_BoostPanel = RemoteEvent.new()
 GuiService.Client.Event_Update_PvPToggle = RemoteEvent.new()
 GuiService.Client.Event_ToggleGUI = RemoteEvent.new()
+GuiService.Client.Event_Update_DungeonTimes = RemoteEvent.new()
+GuiService.Client.Event_PlayerTransported = RemoteEvent.new()
+GuiService.Client.Event_ToggleDungeonTimer = RemoteEvent.new()
+
+
 
 -- public variables
 GuiService.DialogueLocked = {}
@@ -150,6 +154,10 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
         self.Client.Event_Update_ItemPanel:Fire(player, playerData.ItemInventory)
     end
 
+    if requestName == "DungeonTimes" then 
+        self.Client.Event_Update_DungeonTimes:Fire(player, playerData.DungeonTimes)
+    end
+
     if requestName == "CraftingWindow" then 
         self.Client.Event_Update_CraftingWindow:Fire(player, playerData.ItemInventory, playerData.Currency)
     end
@@ -161,10 +169,18 @@ function GuiService:Update_Gui(player, requestName, optionalParams)
     end
 
     if requestName == "PvPToggle" then
-        print("TEST YES")
-        print("SELF", self.Client)
         self.Client.Event_Update_PvPToggle:Fire(player, GuiService.PvPToggles[player.UserId], optionalParams)
     end
+end
+
+--// PlayerSpawn
+function GuiService:PlayerTransported(player)
+    self.Client.Event_PlayerTransported:Fire(player)
+end
+
+--// ToggleDungeonTimer
+function GuiService:ToggleDungeonTimer(player, boolean, dungeonId)
+    self.Client.Event_ToggleDungeonTimer:Fire(player, boolean, dungeonId)
 end
 
 --// DisableGUI

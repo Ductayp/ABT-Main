@@ -75,6 +75,8 @@ function PlayerSpawnService:TransportHome(player)
 
     player.Character.HumanoidRootPart.CFrame = targetSpawner.CFrame
 
+    Knit.Services.GuiService:PlayerTransported(player)
+
 end
 
 --// CustomSpawn

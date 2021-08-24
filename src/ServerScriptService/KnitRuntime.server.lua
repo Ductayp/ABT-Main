@@ -23,6 +23,7 @@ Knit.MobUtils = ServerScriptService.GameFiles.Services.MobService.MobUtils
 
 Knit.DialogueModules = ReplicatedStorage.GameFiles.Shared.DialogueModules
 Knit.ShopModules = ReplicatedStorage.GameFiles.Shared.ShopModules
+Knit.DungeonModules = ReplicatedStorage.GameFiles.Shared.DungeonModules
 
 Knit.StateModules = ReplicatedStorage.GameFiles.Shared.StateModules
 Knit.Defs = ReplicatedStorage.GameFiles.Shared.Defs

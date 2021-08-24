@@ -115,6 +115,8 @@ end
 
 function ItemFinder.UpdateItemList(mapZone)
 
+    print("ItemFinder.UpdateItemList(mapZone)", mapZone)
+
     for _, item in pairs(ItemFinder.Scrolling_Frame:GetChildren()) do
         if item.Name == "ListItem" then
             item:Destroy()

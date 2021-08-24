@@ -48,6 +48,12 @@ function GuiController:CloseAllWindows()
     GuiController.CurrentWindow = nil
 end
 
+--// PlayerSpawn -- fired when a player teleports/respawns using the cusotm spawn service -----------------------------------------------------
+function GuiController:PlayerTransported()
+    self:CloseAllWindows()
+    self:ToggleDialogue(false)
+end
+
 
 --// KnitStart ------------------------------------------------------------
 function GuiController:KnitStart()
@@ -76,12 +82,6 @@ function GuiController:KnitStart()
         GuiController.Modules.NPCShop.Update(data)
     end)
 
-    --[[
-    GuiService.Event_Update_BottomGUI:Connect(function(data, params)
-        GuiController.Modules.BottomGui.Update(data, params)
-    end)
-    ]]--
-
     GuiService.Event_Update_StandData:Connect(function(data, params)
         GuiController.Modules.StandData.Update(data, params)
     end)
@@ -108,17 +108,17 @@ function GuiController:KnitStart()
 
     GuiService.Event_Update_ItemPanel:Connect(function(data)
         GuiController.Modules.Items.Update(data)
+        GuiController.Modules.NPCDungeon.UpdateKeys(data)
+    end)
+
+    GuiService.Event_Update_DungeonTimes:Connect(function(data)
+        GuiController.Modules.NPCDungeon.UpdateDungeonTimes(data)
+        GuiController.Modules.DungeonTimer.UpdateDungeonTimes(data)
     end)
 
     GuiService.Event_Update_CraftingWindow:Connect(function(inventoryData, currencyData)
         GuiController.Modules.Crafting.Update(inventoryData, currencyData)
     end)
-
-    --[[
-    GuiService.Event_Update_BoostPanel:Connect(function(data)
-        GuiController.BoostPanel.Update(data)
-    end)
-    ]]--
 
     GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, mapZone)
         GuiController.Modules.ItemFinder.Update(hasGamePass, hasBoost, mapZone)
@@ -128,10 +128,17 @@ function GuiController:KnitStart()
         GuiController.Modules.MainMenu.Update_PvPButton(pvpToggle, params)
     end)
 
-    
     GuiService.Event_ToggleGUI:Connect(function(boolean)
         GuiController.Modules.ToggleGUI.Toggle(boolean)
     end)
+
+    GuiService.Event_PlayerTransported:Connect(function()
+       self:PlayerTransported()
+    end)
+
+    GuiService.Event_ToggleDungeonTimer:Connect(function(boolean, dungeonId)
+        GuiController.Modules.DungeonTimer.ToggleTimer(boolean, dungeonId)
+     end)
     
 
 end

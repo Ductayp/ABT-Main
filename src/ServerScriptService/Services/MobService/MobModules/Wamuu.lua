@@ -31,7 +31,7 @@ module.Animations = {
 
 module.Defs = {}
 module.Defs.Name = "Wham"
-module.Defs.MapZone = "SkeletonHeelStone"
+module.Defs.MapZone = "AncientArena"
 module.Defs.XpValue = 225
 module.Defs.Health = 300
 module.Defs.WalkSpeed = 18

@@ -59,7 +59,7 @@ return {
         },
     },
 
-    SkeletonHeelStone = {
+    AncientArena = {
 
         {
             Key = "GoldStar",

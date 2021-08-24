@@ -4,86 +4,175 @@
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 -- setup Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local DungeonService = Knit.CreateService { Name = "DungeonService", Client = {}}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
-
--- modules
 local utils = require(Knit.Shared.Utils)
 
+local timePerKey = 120 -- 900 seconds equals 15 minutes
+
 --// BuyAccess
-function DungeonService:BuyAccess(player, params)
+function DungeonService:BuyTime(player, dungeonId)
+
+    local success = false
       
-    local dialogueModule = require(Knit.DialogueModules[params.ModuleName])
-    if not dialogueModule then return end
-    local transactionDef = dialogueModule.DungeonTravel[params.TransactionKey]
-    if not transactionDef then return end
-
-    local inputKey = transactionDef.Input.Key
-    local inputValue = transactionDef.Input.Value
-    local spawnName = transactionDef.SpawnName
-    local mapZoneId = transactionDef.MapZone
-
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
-    if not playerData then return end
+    if not playerData then warn("DungeonService:BuyTime - Player data not found") return end
 
-    if not playerData.ItemInventory[inputKey] then
-        playerData.ItemInventory[inputKey] = 0
+    if not playerData.ItemInventory.DungeonKey then
+        playerData.ItemInventory.DungeonKey = 0
     end
+
+    if not playerData.DungeonTimes then
+        playerData.DungeonTimes = {}
+    end
+
+    local findModule = Knit.DungeonModules[dungeonId]
+    if not findModule then warn("DungeonService:BuyTime - No dungeon module with that name") return end
+    local dungeonModule = require(findModule)
 
     -- check if player has enough of the input
-    local success = false
-    if inputKey == "Cash" or inputKey == "SoulOrbs"then
-        if playerData.Currency[inputKey] >= inputValue then
-            playerData.Currency[inputKey] = playerData.Currency[inputKey] - inputValue
-            success = true
+    if playerData.ItemInventory.DungeonKey > 0 then
+
+        if not playerData.DungeonTimes[dungeonId] then playerData.DungeonTimes[dungeonId] = os.time() end
+
+        if playerData.DungeonTimes[dungeonId] < os.time() then 
+            playerData.DungeonTimes[dungeonId] = os.time() + timePerKey
+        else 
+            playerData.DungeonTimes[dungeonId] += timePerKey
         end
-    else
-        if playerData.ItemInventory[inputKey] >= inputValue then
-            playerData.ItemInventory[inputKey] = playerData.ItemInventory[inputKey] - inputValue
-            success = true
-        end
-    end
 
-    if success then
-        Knit.Services.GuiService:Update_Gui(player, "Currency")
-        Knit.Services.GuiService:Update_Gui(player, "ItemPanel")
+        
 
-        Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, spawnName, false)
-        Knit.Services.PlayerSpawnService:TransportToSpawn(player, spawnName)
+        playerData.ItemInventory.DungeonKey = playerData.ItemInventory.DungeonKey - 1
 
-        local mapZoneParams = {}
-        mapZoneParams.MapZone = mapZoneId
-        Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, mapZoneParams)
+        Knit.Services.GuiService:Update_Gui(player, "ItemsWindow")
+        Knit.Services.GuiService:Update_Gui(player, "DungeonTimes")
+
+        success = true
+
     end
 
     return success
 
 end
 
-function DungeonService:LeaveDungeon(player, params)
+--// RequestEnter
+function DungeonService:RequestEnter(player, dungeonId)
 
-    Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, "Morioh", false)
-    Knit.Services.PlayerSpawnService:TransportToSpawn(player, "Morioh")
+    local success = false
+
+    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+    if not playerData then warn("DungeonService:RequestEnter - Player data not found") return end
+
+    if not playerData.DungeonTimes then
+        playerData.DungeonTimes = {}
+    end
+
+    if not playerData.DungeonTimes[dungeonId] then
+        playerData.DungeonTimes[dungeonId] = os.time() - 1
+    end
+
+    if playerData.DungeonTimes[dungeonId] > os.time() then
+        success = true
+        self:EnterDungeon(player, dungeonId)
+    end
+
+    return success
+
+end
+
+--// EnterDungeon
+function DungeonService:EnterDungeon(player, dungeonId)
+
+    print("DungeonService:EnterDungeon(player, dungeonId)", player, dungeonId)
+
+    local findModule = Knit.DungeonModules[dungeonId]
+    if not findModule then warn("DungeonService:EnterDungeon - No dungeon module with that name") return end
+    local dungeonModule = require(findModule)
+
+    local spawnName = dungeonModule.SpawnName
+
+    Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, dungeonId, false)
 
     local mapZoneParams = {}
-    mapZoneParams.MapZone = "Morioh"
-    Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, mapZoneParams)
+    mapZoneParams.MapZone = mapZoneId
+
+    Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, dungeonId)
+
+    spawn(function()
+        Knit.Services.PlayerSpawnService:TransportToSpawn(player, dungeonId)
+    end)
+
+    Knit.Services.GuiService:ToggleDungeonTimer(player, true, dungeonId)
+
+end
+
+function DungeonService:LeaveDungeon(player)
+
+    Knit.Services.PlayerSpawnService:SetPlayerSpawn(player, "Morioh", false)
+    Knit.Services.PlayerUtilityService:SetPlayerMapZone(player, "Morioh")
+
+    spawn(function()
+        Knit.Services.PlayerSpawnService:TransportHome(player)
+    end)
+
+    Knit.Services.GuiService:ToggleDungeonTimer(player, false)
 
     local success = true
     return success
 end
 
+--// TimerLoop
+function DungeonService:TimerLoop()
+
+    local lastUpdate = os.time()
+
+    RunService.Heartbeat:Connect(function(step)
+        if lastUpdate < os.time() then
+            lastUpdate = os.time()
+
+            for _, player in pairs(Players:GetChildren()) do
+
+                local mapZone =  Knit.Services.PlayerUtilityService:GetPlayerMapZone(player)
+                if mapZone ~= "Morioh" then
+
+                    local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
+                    if playerData then
+
+                        if playerData.DungeonTimes[mapZone] then
+                            local dungeonTime = playerData.DungeonTimes[mapZone]
+                            if dungeonTime < os.time() then
+                                self:LeaveDungeon(player)
+                            end
+                        end
+
+                    end
+
+                end
+            end
+
+        end
+    end)
+
+end
 
 ---------------------------------------------------------------------------------------------
 --// CLIENT METHODS
 ---------------------------------------------------------------------------------------------
 
 --// Client:BuyAccess
-function DungeonService.Client:BuyAccess(player, params)
-    local results = self.Server:BuyAccess(player, params)
+function DungeonService.Client:BuyTime(player, params)
+    local results = self.Server:BuyTime(player, params)
+    return results
+end
+
+--// Client:LeaveDungeon
+function DungeonService.Client:RequestEnter(player, dungeonId)
+    local results = self.Server:RequestEnter(player, dungeonId)
     return results
 end
 
@@ -98,14 +187,18 @@ end
 
 --// CharacterAdded
 function DungeonService:CharacterAdded(player)
+    --[[
     repeat wait() until player.Character
     player.Character:WaitForChild("Humanoid").Died:Connect(function()
         -- nothign yet
     end)
+    ]]--
 end
 
 --// PlayerAdded
 function DungeonService:PlayerAdded(player)
+
+    --DungeonService.PlayerTimes[player.UserId] = {}
 
     repeat wait() until player.Character
     self:CharacterAdded(player)
@@ -113,7 +206,7 @@ end
  
 --// PlayerRemoved
 function DungeonService:PlayerRemoved(player)
-    --nothign yet
+    --DungeonService.PlayerTimes[player.UserId] = nil
 end
 
 ----------------------------------------------------------------------------------------------------------
@@ -145,6 +238,8 @@ function DungeonService:KnitStart()
         Players.PlayerRemoving:Connect(function(player)
             self:PlayerRemoved(player)
         end)
+
+        self:TimerLoop()
 
 end
 

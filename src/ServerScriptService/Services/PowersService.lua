@@ -133,7 +133,7 @@ function PowersService:SetCurrentPower(player, params)
 
         playerData.CurrentStand = params
 
-        print("EQUIP STAND PARAMS", params)
+        --print("EQUIP STAND PARAMS", params)
 
         --local maxXp = setupPowerModule.Defs.MaxXp
 

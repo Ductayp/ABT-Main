@@ -394,9 +394,13 @@ function Storage.UpdateStandCard()
     Storage.ShowStandIcon(iconName, targetIconFrame)
 
     -- set the Xp bar
+    local currentExperience = selectedStandData.Xp
+    if currentExperience > powerModule.Defs.MaxXp then
+        currentExperience = powerModule.Defs.MaxXp
+    end
     local maxExperience = powerModule.Defs.MaxXp
-    Storage.Xp_Text.Text = selectedStandData.Xp .. " / " .. maxExperience
-    local percent = selectedStandData.Xp / maxExperience
+    Storage.Xp_Text.Text = currentExperience .. " / " .. maxExperience
+    local percent = currentExperience / maxExperience
     Storage.Xp_Bar.Size = UDim2.new(percent, Storage.Xp_Bar.Size.X.Offset, Storage.Xp_Bar.Size.Y.Scale, Storage.Xp_Bar.Size.Y.Offset)
 
 end

@@ -91,6 +91,7 @@ function MobBrain.Run()
 
                             local playersInZone = Knit.Services.PlayerUtilityService:GetPlayersInMapZone(mobData.Defs.MapZone)
                             if playersInZone ~= nil then
+
                                 for _, player in pairs(playersInZone) do
     
                                     -- get a table of player within range

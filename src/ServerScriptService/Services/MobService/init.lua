@@ -132,6 +132,7 @@ function MobService:KillMob(mobData)
                     -- get modified values for notifications
                     local xp_Multiplier = require(Knit.StateModules.Multiplier_Experience).GetTotalMultiplier(player)
                     local orbs_Multiplier = require(Knit.StateModules.Multiplier_Orbs).GetTotalMultiplier(player)
+
                     local xp_Modified = dropRewards.XP * xp_Multiplier
                     local orbs_Modified = dropRewards.SoulOrbs * orbs_Multiplier
 
@@ -144,7 +145,16 @@ function MobService:KillMob(mobData)
                     -- give unmodified rewardsfor Xp and Soul Orbs
                     Knit.Services.InventoryService:Give_Xp(player, dropRewards.XP)
                     Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", dropRewards.SoulOrbs, "MobDrop")
-                    Knit.Services.InventoryService:Give_Currency(player, "Cash", dropRewards.Cash, "MobDrop")
+
+                    if dropRewards.Cash then
+                        local cash_Multiplier = require(Knit.StateModules.Multiplier_Cash).GetTotalMultiplier(player)
+                        local cash_Modified = dropRewards.Cash * cash_Multiplier
+                        local notificationParams_2 = {}
+                        notificationParams_2.Icon = "Item"
+                        notificationParams_2.Text = "Found Currency:<br/>Cash" .. " x" .. tostring(cash_Modified)
+                        Knit.Services.GuiService:Update_Notifications(player, notificationParams_2)
+                        Knit.Services.InventoryService:Give_Currency(player, "Cash", dropRewards.Cash, "MobDrop")
+                    end
 
                     -- handle item rewards
                     local itemDefs = require(Knit.Defs.ItemDefs)
@@ -152,10 +162,10 @@ function MobService:KillMob(mobData)
 
                         local thisItemDef = itemDefs[itemKey]
                         if thisItemDef then
-                            local notificationParams_2 = {}
-                            notificationParams_2.Icon = "Item"
-                            notificationParams_2.Text = mobData.Defs.Name .. " Dropped Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemValue)
-                            Knit.Services.GuiService:Update_Notifications(player, notificationParams_2)
+                            local notificationParams_3 = {}
+                            notificationParams_3.Icon = "Item"
+                            notificationParams_3.Text = mobData.Defs.Name .. " Dropped Item:<br/>" .. thisItemDef.Name .. " x" .. tostring(itemValue)
+                            Knit.Services.GuiService:Update_Notifications(player, notificationParams_3)
                             Knit.Services.InventoryService:Give_Item(player, itemKey, itemValue)
                         end
                     end

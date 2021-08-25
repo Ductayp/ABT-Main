@@ -42,6 +42,7 @@ NPCDungeon.Section_C_Body = NPCDungeon.Frame:FindFirstChild("Section_C_Body", tr
 
 NPCDungeon.Button_UseKey = NPCDungeon.Frame:FindFirstChild("Button_UseKey", true)
 NPCDungeon.Button_Enter = NPCDungeon.Frame:FindFirstChild("Button_Enter", true)
+NPCDungeon.Text_Results = NPCDungeon.Frame:FindFirstChild("Text_Results", true)
 
 local allProximityPrompts = {}
 local currentDungeonDefs
@@ -55,6 +56,8 @@ local travelContext -- holds either "Enter" or "Leave" for the button on the gui
 function NPCDungeon.Setup()
 
     NPCDungeon.Frame.Visible = false
+
+    NPCDungeon.EnableButtons()
 
     GuiService:Request_GuiUpdate("ItemsWindow")
     GuiService:Request_GuiUpdate("DungeonTimes")
@@ -99,14 +102,14 @@ function NPCDungeon.Setup()
 
     NPCDungeon.Button_UseKey.MouseButton1Down:Connect(function()
         if buttonsEnabled then
-            buttonsEnabled = false
+            NPCDungeon.DisableButtons()
             NPCDungeon.UseKey()
         end
     end)
 
     NPCDungeon.Button_Enter.MouseButton1Down:Connect(function()
         if buttonsEnabled then
-            buttonsEnabled = false
+            NPCDungeon.DisableButtons()
             if travelContext == "ENTER" then
                 NPCDungeon.RequestEnter()
             else
@@ -126,8 +129,6 @@ function NPCDungeon.Setup()
             end
         end
     end)
-
-
 
 end
 
@@ -245,31 +246,33 @@ function NPCDungeon.RequestEnter()
 
     if enterSuccess then
 
-        button.Text = "SUCCESS"
-        button.TextColor3 = Color3.fromRGB(0, 255, 0)
-        button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+        NPCDungeon.Text_Results.Text = "ENTERING"
+        NPCDungeon.Text_Results.TextColor3 = Color3.fromRGB(0, 255, 0)
+        NPCDungeon.Text_Results.Visible = true
 
         wait(1)
 
+        NPCDungeon.Text_Results.Visible = false
         Knit.Controllers.GuiController:ToggleDialogue(false)
         NPCDungeon.Close()
         button.Text = travelContext
         button.TextColor3 = originalTextColor
         button.BackgroundColor3 = originalBackgroundColor
-        buttonsEnabled = true
+        NPCDungeon.EnableButtons()
 
     else
 
-        button.Text = "NO TIME"
-        button.TextColor3 = Color3.fromRGB(255, 0, 0)
-        button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+        NPCDungeon.Text_Results.Text = "NO TIME"
+        NPCDungeon.Text_Results.TextColor3 = Color3.fromRGB(255, 0, 0)
+        NPCDungeon.Text_Results.Visible = true
 
         wait(2)
 
+        NPCDungeon.Text_Results.Visible = false
         button.Text = travelContext
         button.TextColor3 = originalTextColor
         button.BackgroundColor3 = originalBackgroundColor
-        buttonsEnabled = true
+        NPCDungeon.EnableButtons()
 
     end
 
@@ -279,6 +282,11 @@ end
 function NPCDungeon.RequestLeave()
 
     local leaveSuccess = DungeonService:LeaveDungeon()
+
+    NPCDungeon.Text_Results.Text = "LEAVING"
+    NPCDungeon.Text_Results.TextColor3 = Color3.fromRGB(0, 255, 0)
+    NPCDungeon.Text_Results.Visible = true
+
     wait(1)
     NPCDungeon.Close()
 
@@ -295,24 +303,53 @@ function NPCDungeon.UseKey()
     local buySuccess = DungeonService:BuyTime(currentDungeonDefs.DungeonId)
 
     if buySuccess then
-        button.Text = "SUCCESS"
-        button.TextColor3 = Color3.fromRGB(0, 255, 0)
-        button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+
+        NPCDungeon.Text_Results.Text = "USED A KEY"
+        NPCDungeon.Text_Results.TextColor3 = Color3.fromRGB(0, 255, 0)
+        NPCDungeon.Text_Results.Visible = true
+        
         wait(1)
+
         button.Text = originalText
         button.TextColor3 = originalTextColor
         button.BackgroundColor3 = originalBackgroundColor
-        buttonsEnabled = true
+        NPCDungeon.EnableButtons()
+
     else
-        button.Text = "NO KEYS"
-        button.TextColor3 = Color3.fromRGB(255, 0, 0)
-        button.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+
+        NPCDungeon.Text_Results.Text = "NO KEYS"
+        NPCDungeon.Text_Results.TextColor3 = Color3.fromRGB(255, 0, 0)
+        NPCDungeon.Text_Results.Visible = true
+
+
         wait(2)
+
         button.Text = originalText
         button.TextColor3 = originalTextColor
         button.BackgroundColor3 = originalBackgroundColor
-        buttonsEnabled = true
+        NPCDungeon.DisableButtons()
+
     end
+
+end
+
+function NPCDungeon.EnableButtons()
+
+    buttonsEnabled = true
+
+    NPCDungeon.Text_Results.Visible = false
+
+    NPCDungeon.Button_UseKey.Visible = true
+    NPCDungeon.Button_Enter.Visible = true
+
+end
+
+function NPCDungeon.DisableButtons()
+
+    buttonsEnabled = false
+
+    NPCDungeon.Button_UseKey.Visible = false
+    NPCDungeon.Button_Enter.Visible = false
 
 end
 
@@ -325,7 +362,7 @@ function NPCDungeon.Open()
 
     windowOpen = true
 
-    buttonsEnabled = true
+    NPCDungeon.EnableButtons()
 
     -- disable all proximity prompts
     for _, proximityPrompt in pairs(allProximityPrompts) do
@@ -343,7 +380,7 @@ function NPCDungeon.Close()
 
     windowOpen = false
 
-    buttonsEnabled = false
+    NPCDungeon.DisableButtons()
 
     -- enable all the proximity prompts
     for _, proximityPrompt in pairs(allProximityPrompts) do

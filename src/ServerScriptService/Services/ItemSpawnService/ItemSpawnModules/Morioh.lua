@@ -15,16 +15,7 @@ Morioh.Items = {
 
     -- WEIGHT 1
 
-    {
-        Weight = 1,
-        Model = ReplicatedStorage.SpawnItems.DungeonKey,
-        Params = {
-            DataKey = "DungeonKey",
-            DataCategory = "Item",
-            MinValue = 1,
-            MaxValue = 1,
-        },
-    },
+
 
     {
         Weight = 1,
@@ -46,7 +37,16 @@ Morioh.Items = {
         }
     },
 
-    -- WEIGHT 30
+    {
+        Weight = 10,
+        Model = ReplicatedStorage.SpawnItems.DungeonKey,
+        Params = {
+            DataKey = "DungeonKey",
+            DataCategory = "Item",
+            MinValue = 1,
+            MaxValue = 1,
+        },
+    },
 
     {
         Weight = 30,

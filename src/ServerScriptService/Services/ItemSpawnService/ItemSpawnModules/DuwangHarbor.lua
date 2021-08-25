@@ -26,7 +26,7 @@ DuwangHarbor.Items = {
     },
 
     {
-        Weight = 1,
+        Weight = 25,
         Model = ReplicatedStorage.SpawnItems.SoulOrbs,
         Params = {
             DataKey = "SoulOrbs",
@@ -37,12 +37,23 @@ DuwangHarbor.Items = {
     },
 
     {
-        Weight = 1,
+        Weight = 25,
         Model = ReplicatedStorage.SpawnItems.Arrow,
         Params = {
             DataKey = "Arrow",
             Quantity = 1,
             DataCategory = "Item",
+        }
+    },
+
+    {
+        Weight = 50,
+        Model = ReplicatedStorage.SpawnItems.Cash,
+        Params = {
+            DataKey = "Cash",
+            DataCategory = "Currency",
+            MinValue = 75,
+            MaxValue = 150,
         }
     },
 

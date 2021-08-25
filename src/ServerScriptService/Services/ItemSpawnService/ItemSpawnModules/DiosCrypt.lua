@@ -51,7 +51,7 @@ DiosCryptSpawners.Items = {
             DataKey = "Cash",
             DataCategory = "Currency",
             MinValue = 75,
-            MaxValue = 250,
+            MaxValue = 150,
         }
     },
     

@@ -186,6 +186,8 @@ function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
     if not targetPlayer then return end
     if not targetPlayer.Character then return end
 
+    if targetPlayer.Character:FindFirstChild("Invulnerable_HitEffect", true) then return end
+
     
     --check if initPlayer is in a safe zone
     if Knit.Services.ZoneService:IsPlayerInZone(targetPlayer, "SafeZone") then return end

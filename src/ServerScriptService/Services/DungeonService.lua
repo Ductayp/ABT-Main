@@ -12,7 +12,7 @@ local DungeonService = Knit.CreateService { Name = "DungeonService", Client = {}
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local utils = require(Knit.Shared.Utils)
 
-local timePerKey = 120 -- 900 seconds equals 15 minutes
+local timePerKey = 900 -- 900 seconds equals 15 minutes
 
 --// BuyAccess
 function DungeonService:BuyTime(player, dungeonId)

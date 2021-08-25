@@ -30,7 +30,7 @@ SkeletonHeelStone.Items = {
             DataKey = "SoulOrbs",
             DataCategory = "Currency",
             MinValue = 1,
-            MaxValue = 5,
+            MaxValue = 3,
         }
     },
 
@@ -51,7 +51,7 @@ SkeletonHeelStone.Items = {
             DataKey = "Cash",
             DataCategory = "Currency",
             MinValue = 75,
-            MaxValue = 250,
+            MaxValue = 150,
         }
     },
 

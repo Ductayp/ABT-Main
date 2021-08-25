@@ -1,0 +1,54 @@
+
+NEW Dungeon Entrance Gui (DONE)
+    - 1 key = 15 minutes inside a Dungeon
+    - when your time is up, you get kicked out
+    - you can add time through the GUI either inside or outside the Dungeon
+    - your time is saved if you log off, but it keeps running while you are not in game (helps with disconnections)
+    - dunegon key spawns are made a lot more common on main map
+
+Duwang Harbor (DONE)
+    - spawns and drops altered slightly (check the gui for details)
+    - Hot Tamale HP is buffed but also stays for 120 seconds before moving
+    - Akira drops cash now
+
+Ancient Arena (DONE)
+    - Wham drops cash now
+    - Kars wil be comign soon along with Pillar Man Spec
+
+Dios Crypt (DONE except Dio)
+    - Zombies outside crypt now non-aggressive
+    - New Zombies inside
+    - Dio Boss (coming soon)
+
+New Items (NOT DONE)
+    - Green Goo
+    - Dios Bone
+
+New Crafting recipe (NOT DONE)
+    - Green Baby (100 Green Goo + 1 Dios Bone)
+
+New Stand (NOT DONE)
+    - C-Moon (evolved from White Snake using Green Baby)
+
+-------------------------------------------------------------------------------
+TESTERS:
+So far, everythign above besides Dio and C-Moon (and the items for it) are in the game.
+
+We need ot test the new Dunegon System fully as its own thing.
+
+Heres what we should look for:
+    - does everything in the GUI work
+    - does it all make sense
+    - is the rate of gaining new dunegon keys vs using them in dunegons balanced?
+        - do we run out too quick?
+        - are they to hard to get?
+        - do you have too many stakced up and always have extra?
+    - REMNDER: mobs now sometimes drop dunegon keys and you can get cash inside the dungeons now from spawns and drops.
+
+In short, we want the game to feel MORE fun that before because the dunegons now feel more special.
+The time given is relatively short so we want getting new dunegon keys to not be too hard.
+We want a good flow of grinding in dunegons and then grinding back on the map, back and forth.
+Help us find the balance!
+
+You can test in the TEST SERVER.
+(also looks for general bugs)

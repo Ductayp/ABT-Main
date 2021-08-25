@@ -1,49 +1,49 @@
--- module
 
 -- Roblox Services
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Knit
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
-local utils = require(Knit.Shared.Utils)
+
 
 local module = {}
 
 --/ Spawners
-module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Akira", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_DioBrando", true)
 
 --/ Model
-module.Model = ReplicatedStorage.Mobs.Akira
+module.Model = ReplicatedStorage.Mobs.DioBrando
 
 --/ Spawn
 module.RespawnClock = os.clock()
 module.RespawnTime = 10
 module.RandomPlacement = true
-module.Spawn_Z_Offset = 5
-module.Max_Spawned = 5
+module.Spawn_Y_Offset = 5
+module.Max_Spawned = 1
 
 --/ Animations
 module.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
-    GuitarAttack = "rbxassetid://6905847408"
 }
 
 module.Defs = {}
-module.Defs.Name = "Akira"
-module.Defs.MapZone = "DuwangHarbor"
-module.Defs.XpValue = 200
-module.Defs.Health = 225
-module.Defs.WalkSpeed = 20
+module.Defs.Name = "Dio Brando"
+module.Defs.MapZone = "DiosCrypt"
+module.Defs.XpValue = 80
+module.Defs.Health = 100
+module.Defs.WalkSpeed = 16
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = true
-module.Defs.AttackSpeed = 4
-module.Defs.AttackRange = 15
-module.Defs.Special_LastAttack = os.clock()
-module.Defs.SeekRange = 50 -- In Studs
-module.Defs.ChaseRange = 60 -- In Studs
+module.Defs.AttackSpeed = 2
+module.Defs.AttackRange = 4
+module.Defs.HitEffects = {Damage = {Damage = 15}}
+module.Defs.SeekRange = 60 -- In Studs
+module.Defs.ChaseRange = 80 -- In Studs
 module.Defs.IsMobile = true
-module.Defs.LifeSpan = 600 -- number of seconds it will live, get killed when the time is up
+module.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
 
 function module.GetModel()
     return module.Model
@@ -83,8 +83,6 @@ function module.Post_Spawn(mobData)
             if instance:IsA("BasePart") then
                 if instance.Name == "HumanoidRootPart" then
                     instance.Transparency = 1
-                elseif instance:FindFirstChild("Transparent", true) then
-                    instance.Transparency = 1
                 else
                     instance.Transparency = 0
                 end
@@ -114,12 +112,6 @@ function module.Setup_Animations(mobData)
     mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
     walkAnimation:Destroy()
 
-    -- Spn Arms animation
-    local guitarAnimation = Instance.new("Animation")
-    guitarAnimation.AnimationId = module.Animations.GuitarAttack
-    mobData.Animations.GuitarAttack = animator:LoadAnimation(guitarAnimation)
-    guitarAnimation:Destroy()
-
     -- attack animations
     for index, animationId in pairs(module.Animations.Attack) do
         local newAnimation = Instance.new("Animation")
@@ -141,49 +133,18 @@ function  module.Attack(mobData)
 
     spawn(function()
 
-        if not mobData.AttackTarget then return end
-        if not mobData.AttackTarget.Character then return end
-
-        --local targetHRP = mobData.AttackTarget.Character:FindFirstChild("HumanoidRootPart")
-        --if not targetHRP then return end
-
-        local mobHRP = mobData.Model:FindFirstChild("HumanoidRootPart")
-        if not mobHRP then return end
-
-        mobData.Model.Humanoid.WalkSpeed = 0
-        mobData.Animations.GuitarAttack:Play()
-
-        local hitCharacters = {}
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player.Character and player.Character.HumanoidRootPart then
-                local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
-                if distance <= module.Defs.AttackRange then
-
-                    table.insert(hitCharacters, player.Character)
-
-                    local hitEffects = {Damage = {Damage = 10}, Slow = {WalkSpeedModifier = -11, Duration = 2}}
-                    Knit.Services.MobService:HitPlayer(player, hitEffects, mobData)
-                end
-            end
+        if not mobData.DisableAnimations then
+            local rand = math.random(1, #mobData.Animations.Attack)
+            mobData.Animations.Attack[rand]:Play()
         end
-        
-        -- attack animation
-        local abilityScript = Knit.Shared.MobEffects.AkiraEffects
-        local effectParams = {}
-        effectParams.HitCharacters = hitCharacters
-        effectParams.Position = mobHRP.Position
-        effectParams.MobModel = mobData.Model
-        effectParams.AttackTarget = mobData.AttackTarget              
-        effectParams.RenderRange = 250
-        Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "SoundWaves", effectParams)
 
-        wait(2)
-
+        mobData.Model.Humanoid.WalkSpeed = 2
+        local rand = math.random(1, #mobData.Animations.Attack)
+        wait(.25)
         mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
-        mobData.Animations.GuitarAttack:Stop()
 
-
-    end) 
+        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects, mobData)
+    end)  
                                
 end
 
@@ -195,13 +156,16 @@ end
 --// Death
 function module.Death(mobData)
 
-    --[[
     spawn(function()
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 1000
         wait(.1)
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 0
     end)
-    ]]--
+end
+
+--// DeSpawn
+function module.DeSpawn(mobData)
+
 end
 
 --// Setup_Drop
@@ -212,24 +176,18 @@ end
 --// Drop
 function module.Drop(player, mobData)
 
-
     local rewards = {}
     rewards.Items = {}
+    rewards.Items["MaskFragment"] = 1
 
-    local itemDropPercent_1 = 50
+    --[[
+    local itemDropPercent = 65
     local rand = math.random(1, 100)
-    if rand <= itemDropPercent_1 then
-        rewards.Items["Arrow"] = math.random(1, 3)
+    if rand <= itemDropPercent then
+        
     end
+    ]]--
 
-    local itemDropPercent_2 = 5
-    local rand = math.random(1, 100)
-    if rand <= itemDropPercent_2 then
-        rewards.Items["DungeonKey"] = 1
-    end
-
-    rewards.Cash = math.random(20, 60)
-    
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 

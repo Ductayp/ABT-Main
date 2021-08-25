@@ -23,7 +23,7 @@ local utils = require(Knit.Shared.Utils)
 --// Give_Currency ---------------------------------------------------------------------------------------------------------------------------
 function InventoryService:Give_Currency(player, key, value, source)
 
-    --print("InventoryService:Give_Currency(player, key, value, source)", player, key, value, source)
+    print("InventoryService:Give_Currency(player, key, value, source)", player, key, value, source)
 
     local playerData = Knit.Services.PlayerDataService:GetPlayerData(player)
     if not playerData then return end

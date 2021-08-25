@@ -25,7 +25,7 @@ module.RespawnClock = os.clock()
 module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
-module.Max_Spawned = 2
+module.Max_Spawned = 5
 
 --/ Animations
 module.Animations = {

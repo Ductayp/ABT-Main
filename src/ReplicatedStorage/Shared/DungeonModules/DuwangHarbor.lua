@@ -17,10 +17,10 @@ module.Section_A_Header = "<b>BOSS:</b> Hot Tamale"
 module.Section_A_Body = "    Drops: Broken Arrows, Gold Star"
 
 module.Section_B_Header = "<b>MOBS:</b> Akira"
-module.Section_B_Body = "    Drops: Arrows, Cash"
+module.Section_B_Body = "    Drops: Arrows, Dunegon Key, Cash"
 
 module.Section_C_Header = "<b>ITEM SPAWNS</b>"
-module.Section_C_Body = "    Arrows, Broken Arrows, Gold Star, Soul Orbs, Cash"
+module.Section_C_Body = "    Arrows, Broken Arrows, Soul Orbs, Cash"
 
 
 return module

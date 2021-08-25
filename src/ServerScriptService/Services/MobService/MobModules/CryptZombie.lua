@@ -10,7 +10,7 @@ local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 local module = {}
 
 --/ Spawners
-module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_GraveyardZombies", true)
+module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_CryptZombie", true)
 
 --/ Model -- see GetModel()
 module.MobModels = {
@@ -35,16 +35,16 @@ module.Animations = {
 }
 
 module.Defs = {}
-module.Defs.Name = "Basic Zombie"
-module.Defs.MapZone = "Morioh"
-module.Defs.XpValue = 50
-module.Defs.Health = 40
-module.Defs.WalkSpeed = 16
+module.Defs.Name = "Crypt Zombie"
+module.Defs.MapZone = "DiosCrypt"
+module.Defs.XpValue = 150
+module.Defs.Health = 200
+module.Defs.WalkSpeed = 12
 module.Defs.JumpPower = 50
-module.Defs.Aggressive = false
+module.Defs.Aggressive = true
 module.Defs.AttackSpeed = 2
 module.Defs.AttackRange = 4.5
-module.Defs.HitEffects = {Damage = {Damage = 10}}
+module.Defs.HitEffects = {Damage = {Damage = 30}}
 module.Defs.SeekRange = 30 -- In Studs
 module.Defs.ChaseRange = 40 -- In Studs
 module.Defs.IsMobile = true
@@ -193,6 +193,9 @@ function module.Drop(player, mobData)
         rewards.Items["DungeonKey"] = 1
     end
 
+    rewards.Cash = math.random(20, 60)
+
+    rewards.Items["GreenGoo"] = math.random(1, 3)
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 

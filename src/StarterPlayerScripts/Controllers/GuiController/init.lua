@@ -120,8 +120,8 @@ function GuiController:KnitStart()
         GuiController.Modules.Crafting.Update(inventoryData, currencyData)
     end)
 
-    GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, hasBoost, mapZone)
-        GuiController.Modules.ItemFinder.Update(hasGamePass, hasBoost, mapZone)
+    GuiService.Event_Update_ItemFinderWindow:Connect(function(hasGamePass, mapZone)
+        GuiController.Modules.ItemFinder.Update(hasGamePass, mapZone)
     end)
 
     GuiService.Event_Update_PvPToggle:Connect(function(pvpToggle, params)

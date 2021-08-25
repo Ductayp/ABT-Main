@@ -33,7 +33,7 @@ module.Defs = {}
 module.Defs.Name = "Akira"
 module.Defs.MapZone = "DuwangHarbor"
 module.Defs.XpValue = 200
-module.Defs.Health = 175
+module.Defs.Health = 225
 module.Defs.WalkSpeed = 20
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = true
@@ -219,11 +219,11 @@ function module.Drop(player, mobData)
     local itemDropPercent = 50
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        local newRand = math.random(1, 5)
-        rewards.Items["BrokenArrow"] = newRand
+        rewards.Items["Arrow"] = math.random(1, 3)
     end
-    
 
+    rewards.Cash = math.random(20, 60)
+    
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1
 

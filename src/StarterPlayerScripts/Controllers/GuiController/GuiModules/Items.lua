@@ -171,6 +171,10 @@ function Items.Update_InfoCard(itemKey, itemDefTable, itemQuantity)
 
     --print("Update_InfoCard(itemKey, itemDefTable, itemQuantity)", itemKey, itemDefTable, itemQuantity)
 
+    if not itemQuantity then 
+        itemQuantity = 0
+    end
+
     -- setup the card and show it
     Items.Item_Card_Name.Text = itemDefTable.Name
     Items.Item_Card_Quantity.Text = "x" .. itemQuantity

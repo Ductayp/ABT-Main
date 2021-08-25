@@ -73,6 +73,45 @@ return {
             LayoutOrder = 2
         },
 
+        {
+            Key = "MaskFragment",
+            Name = "Mask Fragment",
+            LayoutOrder = 3
+        },
+
+        {
+            Key = "Cash",
+            Name = "Cash",
+            LayoutOrder = 4
+        },
+
+    },
+
+    DiosCrypt = {
+        
+        {
+            Key = "GoldStar",
+            Name = "Gold Star",
+            LayoutOrder = 1
+        },
+    
+        {
+            Key = "SoulOrbs",
+            Name = "Soul Orbs",
+            LayoutOrder = 2
+        },
+
+        {
+            Key = "GreenGoo",
+            Name = "Green Goo",
+            LayoutOrder = 3
+        },
+
+        {
+            Key = "Cash",
+            Name = "Cash",
+            LayoutOrder = 4
+        },
     }
 
 

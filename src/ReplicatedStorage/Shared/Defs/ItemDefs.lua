@@ -102,5 +102,20 @@ return {
         LayoutOrder = 9
     },
 
+    GreenGoo = {
+        Name = "Green Goo",
+        Type = "Collectable",
+        Description = "Its Gooey and its Green ...<br/><br/>Can be used in crafting things that are squishy!",
+        LayoutOrder = 10
+    },
+
+    DiosBone = {
+        Name = "Dios Bone",
+        Type = "Collectable",
+        Description = "Straight up a BONE ... from Dio<br/><br/>Can be used in crafting STUFF.",
+        LayoutOrder = 11
+    },
+
+
 }
 

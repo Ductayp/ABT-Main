@@ -46,7 +46,7 @@ Morioh.Items = {
         }
     },
 
-    -- WEIGHT 20
+    -- WEIGHT 30
 
     {
         Weight = 30,

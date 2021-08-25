@@ -35,8 +35,8 @@ module.Animations = {
 module.Defs = {}
 module.Defs.Name = "Hot Tamale"
 module.Defs.MapZone = "DuwangHarbor"
-module.Defs.XpValue = 250
-module.Defs.Health = 300
+module.Defs.XpValue = 275
+module.Defs.Health = 375
 module.Defs.WalkSpeed = 0
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = true
@@ -46,7 +46,7 @@ module.Defs.HitEffects = {Damage = {Damage = 20}}
 module.Defs.SeekRange = 60 -- In Studs
 module.Defs.ChaseRange = 5 -- In Studs
 module.Defs.IsMobile = false
-module.Defs.LifeSpan = 60 -- how long the mob lives before resapwn, in seconds
+module.Defs.LifeSpan = 120 -- how long the mob lives before resapwn, in seconds
 
 function module.GetModel()
     return module.Model
@@ -216,13 +216,11 @@ function module.Drop(player, mobData)
     local rewards = {}
     rewards.Items = {}
 
-    --[[
-    local itemDropPercent = 25
+    local itemDropPercent = 5
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
-        rewards.Items["BrokenArrow"] = 10
+        rewards.Items["GoldStar"] = 1
     end
-    ]]--
 
     rewards.Items["BrokenArrow"] = math.random(1, 10)
     rewards.XP = module.Defs.XpValue

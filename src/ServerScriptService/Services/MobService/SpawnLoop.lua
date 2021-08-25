@@ -17,6 +17,7 @@ local activeMob_Modules = {
     script.Parent.MobModules.Akira,
     script.Parent.MobModules.JotaroFan,
     script.Parent.MobModules.GraveyardZombie,
+    script.Parent.MobModules.CryptZombie,
 }
 
 local SpawnLoop = {}

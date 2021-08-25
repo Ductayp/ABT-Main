@@ -144,6 +144,7 @@ function MobService:KillMob(mobData)
                     -- give unmodified rewardsfor Xp and Soul Orbs
                     Knit.Services.InventoryService:Give_Xp(player, dropRewards.XP)
                     Knit.Services.InventoryService:Give_Currency(player, "SoulOrbs", dropRewards.SoulOrbs, "MobDrop")
+                    Knit.Services.InventoryService:Give_Currency(player, "Cash", dropRewards.Cash, "MobDrop")
 
                     -- handle item rewards
                     local itemDefs = require(Knit.Defs.ItemDefs)

@@ -185,7 +185,8 @@ function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
     -- be sure we have a character to act on
     if not targetPlayer then return end
     if not targetPlayer.Character then return end
-
+    if not targetPlayer.Character:FindFirstChild("Humanoid") then return end
+    if targetPlayer.Character.Humanoid.Health <= 0 then return end
     if targetPlayer.Character:FindFirstChild("Invulnerable_HitEffect", true) then return end
 
     

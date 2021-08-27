@@ -27,19 +27,19 @@ module.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
+    FreezeAttack = "rbxassetid://6659001527"
 }
 
 module.Defs = {}
 module.Defs.Name = "Dio Brando"
 module.Defs.MapZone = "DiosCrypt"
-module.Defs.XpValue = 80
-module.Defs.Health = 100
-module.Defs.WalkSpeed = 16
+module.Defs.XpValue = 350
+module.Defs.Health = 350
+module.Defs.WalkSpeed = 18
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = true
-module.Defs.AttackSpeed = 2
-module.Defs.AttackRange = 4
-module.Defs.HitEffects = {Damage = {Damage = 15}}
+module.Defs.AttackSpeed = 1
+module.Defs.AttackRange = 50
 module.Defs.SeekRange = 60 -- In Studs
 module.Defs.ChaseRange = 80 -- In Studs
 module.Defs.IsMobile = true
@@ -67,6 +67,9 @@ end
 function module.Post_Spawn(mobData)
     
     spawn(function()
+
+        mobData.CanFreeze = true
+        mobData.CanPunch = true
 
         -- a little particle effects
         mobData.Model.HumanoidRootPart.ParticleEmitter.Rate = 200
@@ -121,6 +124,12 @@ function module.Setup_Animations(mobData)
         newAnimation:Destroy()
     end
 
+    -- Freeze Attack
+    local freezeAnimation = Instance.new("Animation")
+    freezeAnimation.AnimationId = module.Animations.FreezeAttack
+    mobData.Animations.FreezeAttack = animator:LoadAnimation(freezeAnimation)
+    freezeAnimation:Destroy()
+
 end
 
 --// Setup_Attack
@@ -131,20 +140,75 @@ end
 --// Attack
 function  module.Attack(mobData)
 
+    print("DIP ATTACK")
+    
+    --[[
     spawn(function()
 
-        if not mobData.DisableAnimations then
-            local rand = math.random(1, #mobData.Animations.Attack)
-            mobData.Animations.Attack[rand]:Play()
+        if not mobData.AttackTarget then return end
+        if not mobData.AttackTarget.Character then return end
+
+        local targetHRP = mobData.AttackTarget.Character:FindFirstChild("HumanoidRootPart")
+        if not targetHRP then return end
+
+        local mobHRP = mobData.Model:FindFirstChild("HumanoidRootPart")
+        if not mobHRP then return end
+
+        local distance = (targetHRP.Position - mobHRP.Position).magnitude
+
+        if distance > 5.5 then
+        
+            if not mobData.CanFreeze then return end
+
+            spawn(function()
+
+                spawn(function()
+                    mobData.CanFreeze = false
+                    wait(5)
+                    mobData.CanFreeze = true
+                end)
+    
+                spawn(function()
+                    if not mobData.DisableAnimations then
+                        mobData.Animations.FreezeAttack:Play()
+                        mobData.Model.Humanoid.WalkSpeed = 5
+                        wait(1)
+                        mobData.Animations.FreezeAttack:Stop()
+                        mobData.Model.Humanoid.WalkSpeed = module.Defs.WalkSpeed
+                    end
+                end)
+
+                local abilityScript = Knit.Shared.MobEffects.DioEffects
+                local effectParams = {}
+                effectParams.Position = mobHRP.Position
+                effectParams.MobModel = mobData.Model                
+                effectParams.RenderRange = 250
+                Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Freeze", effectParams)
+
+            end)
+
+        else
+
+            if not mobData.CanPunch then return end
+
+            spawn(function()
+                mobData.CanPunch = false
+                wait(2)
+                mobData.CanPunch = true
+            end)
+
+            if not mobData.DisableAnimations then
+                local rand = math.random(1, #mobData.Animations.Attack)
+                mobData.Animations.Attack[rand]:Play()
+            end
+
+            local HitEffects_Attack = {Damage = {Damage = 30}}
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack, mobData)
+
         end
 
-        mobData.Model.Humanoid.WalkSpeed = 2
-        local rand = math.random(1, #mobData.Animations.Attack)
-        wait(.25)
-        mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
-
-        Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects, mobData)
-    end)  
+    end) 
+    ]]--
                                
 end
 

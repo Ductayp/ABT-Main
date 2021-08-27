@@ -22,5 +22,4 @@ module.Section_B_Body = "    Drops: Antidote, Mask Fragments"
 module.Section_C_Header = "<b>ITEM SPAWNS</b>"
 module.Section_C_Body = "    Mask Fragments, Gold Star, Soul Orbs, Cash"
 
-
 return module

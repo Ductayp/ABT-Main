@@ -451,7 +451,7 @@ function module.HitCharacter(params, abilityDefs, initPlayer, hitCharacter, hitB
     local newBool = Instance.new("BoolValue")
     newBool.Value = true
     newBool.Name = "Invulnerable_HitEffect"
-    newBool.Parent = thisHRP
+    newBool.Parent = initPlayer.Character
 
     spawn(function()
         wait(effectDuration)

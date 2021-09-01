@@ -50,7 +50,7 @@ function PinCharacter.Server_ApplyEffect(initPlayer, hitCharacter, effectParams,
             hitCharacter.Humanoid.WalkSpeed = 0
             wait(effectParams.Duration)
             newAnchor:Destroy()
-            hitCharacter.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(initPlayer)
+            hitCharacter.Humanoid.WalkSpeed = require(Knit.StateModules.WalkSpeed).GetModifiedValue(hitPlayer)
         end)
     end
 

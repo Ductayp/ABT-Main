@@ -8,7 +8,7 @@ module.EnterPrompt = Workspace:FindFirstChild("DungeonPrompt_Zeppeli_Enter", tru
 module.LeavePrompt = Workspace:FindFirstChild("DungeonPrompt_Zeppeli_Leave", true)
 module.IconName = "Icon_Zeppeli"
 module.Title = "Hamon and Cheese"
-module.NPCText = "What is Courage? Courage is knowing fear and making that fear your own!<br/><br/>Dio awaits within, as do his minions."
+module.NPCText = "What is Courage? Courage is knowing fear and making that fear your own! Dio awaits within, as do his minions."
 
 module.DungeonName = "Dios Crypt"
 module.DungeonId = script.Name 

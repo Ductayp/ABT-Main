@@ -182,6 +182,8 @@ end
 --// NPC_RegisterHit
 function PowersService:NPC_RegisterHit(targetPlayer, hitEffects)
 
+    --print("NPC REGISTER HIT: ", targetPlayer, hitEffects)
+
     -- be sure we have a character to act on
     if not targetPlayer then return end
     if not targetPlayer.Character then return end

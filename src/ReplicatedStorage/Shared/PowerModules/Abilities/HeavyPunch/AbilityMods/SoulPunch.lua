@@ -94,9 +94,12 @@ function module.Client_GhostEffect(params)
     for _, object in pairs(characterCopy:GetDescendants()) do
 
         if object:IsA("BasePart") or object:IsA("Decal") then
-            if object.Name ~= "HumanoidRootPart" then
-                object.Transparency = .7
+            if not object:FindFirstChild("Transparent", true) then
+                if object.Name ~= "HumanoidRootPart" then
+                    object.Transparency = .7
+                end
             end
+
         end
 
         if object.Name == "DamageNumber" then

@@ -58,7 +58,7 @@ GoldExperience.Defs = {
 
 --// SETUP - run this once when the stand is equipped
 function GoldExperience.SetupPower(initPlayer, params)
-    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "GoldExperience_Setup", 6, nil)
+    Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "GoldExperience_Setup", 2, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "GoldExperience_Setup", GoldExperience.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "GoldExperience_Setup", GoldExperience.Defs.DamageMultiplier[params.Rank], nil)
 

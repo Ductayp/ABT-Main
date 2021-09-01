@@ -326,14 +326,19 @@ function MobBrain.State_Chase(mobData)
 
     if mobData.BrainState == "Chase" then
 
+        if not mobData.AttackTarget.Character then return end
+        if not mobData.AttackTarget.Character:FindFirstChild("HumanoidRootPart") then return end
+
         if mobData.AttackTarget:DistanceFromCharacter(mobData.Model.HumanoidRootPart.Position) > mobData.Defs.AttackRange then
 
             mobData.MoveTarget = mobData.AttackTarget.Character.HumanoidRootPart.Position
         
         else
-            --mobData.MoveTarget = nil
+
+            mobData.MoveTarget = mobData.AttackTarget.Character.HumanoidRootPart.Position
             mobData.BrainState = "Attack"
             mobData.StateTime = os.clock()
+            
         end
 
         -- if we get too far away, return to the spawner

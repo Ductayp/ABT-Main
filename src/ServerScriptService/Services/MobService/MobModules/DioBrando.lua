@@ -17,7 +17,7 @@ module.Model = ReplicatedStorage.Mobs.DioBrando
 
 --/ Spawn
 module.RespawnClock = os.clock()
-module.RespawnTime = 10
+module.RespawnTime = 60
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
 module.Max_Spawned = 1
@@ -27,21 +27,22 @@ module.Animations = {
     Idle = "rbxassetid://507766666",
     Walk = "rbxassetid://507777826",
     Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
-    FreezeAttack = "rbxassetid://6659001527"
+    FreezeAttack = "rbxassetid://6659001527",
+    Rage = "rbxassetid://6782535195"
 }
 
 module.Defs = {}
 module.Defs.Name = "Dio Brando"
 module.Defs.MapZone = "DiosCrypt"
 module.Defs.XpValue = 350
-module.Defs.Health = 350
-module.Defs.WalkSpeed = 18
+module.Defs.Health = 425
+module.Defs.WalkSpeed = 22
 module.Defs.JumpPower = 50
 module.Defs.Aggressive = true
-module.Defs.AttackSpeed = 1
+module.Defs.AttackSpeed = 2
 module.Defs.AttackRange = 50
-module.Defs.SeekRange = 60 -- In Studs
-module.Defs.ChaseRange = 80 -- In Studs
+module.Defs.SeekRange = 70 -- In Studs
+module.Defs.ChaseRange = 70 -- In Studs
 module.Defs.IsMobile = true
 module.Defs.LifeSpan = 300 -- number of seconds it will live, get killed when the time is up
 
@@ -61,7 +62,7 @@ function module.Pre_Spawn(mobData)
             instance.Transparency = 1
         end
     end
-end
+end 
 
 --/ Spawn Function
 function module.Post_Spawn(mobData)
@@ -69,6 +70,7 @@ function module.Post_Spawn(mobData)
     spawn(function()
 
         mobData.CanFreeze = true
+        mobData.CanLaser = true
         mobData.CanPunch = true
 
         -- a little particle effects
@@ -130,6 +132,12 @@ function module.Setup_Animations(mobData)
     mobData.Animations.FreezeAttack = animator:LoadAnimation(freezeAnimation)
     freezeAnimation:Destroy()
 
+    -- Freeze Attack
+    local rageAnimation = Instance.new("Animation")
+    rageAnimation.AnimationId = module.Animations.Rage
+    mobData.Animations.Rage = animator:LoadAnimation(rageAnimation)
+    rageAnimation:Destroy()
+
 end
 
 --// Setup_Attack
@@ -140,9 +148,6 @@ end
 --// Attack
 function  module.Attack(mobData)
 
-    print("DIP ATTACK")
-    
-    --[[
     spawn(function()
 
         if not mobData.AttackTarget then return end
@@ -156,40 +161,89 @@ function  module.Attack(mobData)
 
         local distance = (targetHRP.Position - mobHRP.Position).magnitude
 
-        if distance > 5.5 then
-        
-            if not mobData.CanFreeze then return end
+        if mobData.CanFreeze and distance > 5 and distance <= 30 then
 
+            local projectileCooldown = mobData.Model:FindFirstChild("ProjectileCooldown")
+            if projectileCooldown then return end
+
+            local newCooldown = Instance.new("BoolValue")
+            newCooldown.Name = "ProjectileCooldown"
+            newCooldown.Parent = mobData.Model
             spawn(function()
-
-                spawn(function()
-                    mobData.CanFreeze = false
-                    wait(5)
-                    mobData.CanFreeze = true
-                end)
-    
-                spawn(function()
-                    if not mobData.DisableAnimations then
-                        mobData.Animations.FreezeAttack:Play()
-                        mobData.Model.Humanoid.WalkSpeed = 5
-                        wait(1)
-                        mobData.Animations.FreezeAttack:Stop()
-                        mobData.Model.Humanoid.WalkSpeed = module.Defs.WalkSpeed
-                    end
-                end)
-
-                local abilityScript = Knit.Shared.MobEffects.DioEffects
-                local effectParams = {}
-                effectParams.Position = mobHRP.Position
-                effectParams.MobModel = mobData.Model                
-                effectParams.RenderRange = 250
-                Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Freeze", effectParams)
-
+                wait(3)
+                newCooldown:Destroy()
             end)
 
-        else
+            spawn(function()
+                mobData.CanFreeze = false
+                wait(15)
+                mobData.CanFreeze = true
+            end)
 
-            if not mobData.CanPunch then return end
+            spawn(function()
+                if not mobData.DisableAnimations then
+                    mobData.Animations.FreezeAttack:Play()
+                    mobData.Model.Humanoid.WalkSpeed = 0
+                    wait(1.5)
+                    mobData.Animations.FreezeAttack:Stop()
+                    mobData.Model.Humanoid.WalkSpeed = module.Defs.WalkSpeed
+                end
+            end)
+
+            local abilityScript = Knit.Shared.MobEffects.DioEffects
+            local effectParams = {}
+            effectParams.MobData = mobData 
+            effectParams.HitCharacter = mobData.AttackTarget.Character        
+            effectParams.RenderRange = 250
+            Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Freeze", effectParams)
+
+            local hitEffects = {Damage = {Damage = 15}, PinCharacter = {Duration = 2}, IceBlock = {Duration = 2}}
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, hitEffects, mobData)
+
+            return
+
+        elseif mobData.CanLaser and distance > 20 then
+
+            local projectileCooldown = mobData.Model:FindFirstChild("ProjectileCooldown")
+            if projectileCooldown then return end
+
+            local newCooldown = Instance.new("BoolValue")
+            newCooldown.Name = "ProjectileCooldown"
+            newCooldown.Parent = mobData.Model
+            spawn(function()
+                wait(3)
+                newCooldown:Destroy()
+            end)
+
+            spawn(function()
+                mobData.CanLaser = false
+                wait(15)
+                mobData.CanLaser = true
+            end)
+
+            spawn(function()
+                if not mobData.DisableAnimations then
+                    mobData.Animations.Rage:Play()
+                    mobData.Model.Humanoid.WalkSpeed = 0
+                    wait(1)
+                    mobData.Animations.Rage:Stop()
+                    mobData.Model.Humanoid.WalkSpeed = module.Defs.WalkSpeed
+                end
+            end)
+
+            local abilityScript = Knit.Shared.MobEffects.DioEffects
+            local effectParams = {}
+            effectParams.MobData = mobData 
+            effectParams.HitCharacter = mobData.AttackTarget.Character                  
+            effectParams.RenderRange = 250
+            Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Laser", effectParams)
+
+            local hitEffects = {Damage = {Damage = 20}}
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, hitEffects, mobData)
+
+            return
+
+        elseif mobData.CanPunch and distance < 3 then
 
             spawn(function()
                 mobData.CanPunch = false
@@ -202,13 +256,14 @@ function  module.Attack(mobData)
                 mobData.Animations.Attack[rand]:Play()
             end
 
-            local HitEffects_Attack = {Damage = {Damage = 30}}
-            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack, mobData)
+            local hitEffects = {Damage = {Damage = 35}}
+            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, hitEffects, mobData)
+
+            return
 
         end
 
     end) 
-    ]]--
                                
 end
 
@@ -244,13 +299,18 @@ function module.Drop(player, mobData)
     rewards.Items = {}
     rewards.Items["MaskFragment"] = 1
 
-    --[[
-    local itemDropPercent = 65
+    local itemDropPercent = 10
     local rand = math.random(1, 100)
     if rand <= itemDropPercent then
+
+        if rand <= 2 then
+            rewards.Items["DiosBone"] = 1
+        else
+            rewards.Items["GoldStar"] = 1
+        end
         
     end
-    ]]--
+
 
     rewards.XP = module.Defs.XpValue
     rewards.SoulOrbs = 1

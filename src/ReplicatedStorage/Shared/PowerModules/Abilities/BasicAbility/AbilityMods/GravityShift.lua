@@ -219,40 +219,77 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
     local HRP = character:FindFirstChild("HumanoidRootPart")
     if not HRP then return end
 
-    spawn(function()
+    for count = 1, TICK_COUNT do
 
-        local shockWave = ReplicatedStorage.EffectParts.Abilities.BasicAbility.GravityShift.Shockwave:Clone()
-        shockWave.Parent = Workspace.RenderedEffects
-        shockWave.CFrame = HRP.CFrame
+        local shockAssembly = ReplicatedStorage.EffectParts.Abilities.BasicAbility.GravityShift.ShockAssembly:Clone()
+        shockAssembly.Parent = Workspace.RenderedEffects
+        shockAssembly.CFrame = HRP.CFrame
 
-        for count = 1, TICK_COUNT do
+        local newWeld = Instance.new("WeldConstraint")
+        newWeld.Parent = shockAssembly
+        newWeld.Part0 = HRP
+        newWeld.Part1 = shockAssembly
 
-            local shockWave = ReplicatedStorage.EffectParts.Abilities.BasicAbility.GravityShift.Shockwave:Clone()
-            shockWave.Parent = Workspace.RenderedEffects
-            shockWave.CFrame = HRP.CFrame
+        local shockRing = ReplicatedStorage.EffectParts.Abilities.BasicAbility.GravityShift.ShockAssembly.ShockRing:Clone()
+        shockRing.CFrame = shockAssembly.CFrame
+        shockRing.Parent = shockAssembly
 
-            local newWeld = Instance.new("Weld")
-            newWeld.C1 = CFrame.new(0, 3, 0)
-            newWeld.Part0 = HRP
-            newWeld.Part1 = shockWave
-            newWeld.Parent = shockWave
+        local motor = Instance.new("Motor6D")
+        motor.Part0 =  shockAssembly
+        motor.Part1 = shockRing
+        motor.C0 = CFrame.new(0, 0, 0)
+        motor.Parent = shockRing
 
-            local moveTween = TweenService:Create(newWeld, TweenInfo.new(TICK_DURATION), {C1 = CFrame.new(0, 0, 0)})
-            moveTween.Completed:Connect(function()
-                shockWave:Destroy()
-            end)
-            moveTween:Play()
-            
-            --[[
-            local transTween = TweenService:Create(shockWave, TweenInfo.new(TICK_DURATION), {Transparency = 1})
-            transTween:Play()
-            ]]--
+        --[[
+        local shockRing = ReplicatedStorage.EffectParts.Abilities.BasicAbility.GravityShift.ShockRing:Clone()
+        shockRing.CFrame = HRP.CFrame
+        shockRing.Parent = HRP
+
+        local motor = Instance.new("Motor6D")
+        motor.Part0 =  HRP
+        motor.Part1 = shockRing
+        motor.C0 = CFrame.new(0, 0, 0)
+        motor.Parent = shockRing
+
+        local moveTween = TweenService:Create(motor, TweenInfo.new(TICK_DURATION), {C0 = CFrame.new(0, 3, 0)})
+        moveTween.Completed:Connect(function()
+            --shockAssembly:Destroy()
+        end)
+        moveTween:Play()
+        ]]--
+        
+        --[[
+        local shockAssembly = ReplicatedStorage.EffectParts.Abilities.BasicAbility.GravityShift.ShockAssembly:Clone()
+        shockAssembly.Motor6D.C0 = CFrame.new(0, -3, 0)
+        shockAssembly.Parent = Workspace.RenderedEffects
+        shockAssembly.CFrame = HRP.CFrame
+
+        local newWeld = Instance.new("WeldConstraint")
+        newWeld.Parent = shockAssembly
+        newWeld.Part0 = HRP
+        newWeld.Part1 = shockAssembly
+
+        print("beep")
+        
+        local moveTween = TweenService:Create(shockAssembly.Motor6D, TweenInfo.new(TICK_DURATION), {C0 = CFrame.new(0, 0, 0)})
+        moveTween.Completed:Connect(function()
+            --shockAssembly:Destroy()
+        end)
+        moveTween:Play()
+        ]]--
+
+        
+        --[[
+        local transTween = TweenService:Create(shockWave, TweenInfo.new(TICK_DURATION), {Transparency = 1})
+        transTween:Play()
+        ]]--
 
 
-            wait(TICK_DURATION)
-        end
+        wait(TICK_DURATION)
 
-    end)
+    end
+
+
 
 
 end

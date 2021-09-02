@@ -35,11 +35,10 @@ function BasicAttack.Initialize(params, abilityDefs)
 
     MobilityLock.Client_AddLock(abilityMod.MobilityLockParams)
 
-    --local playerPing = Knit.Controllers.PlayerUtilityController:GetPing()
-    local playerPing = 0
-    abilityMod.Client_Initialize(params, abilityDefs, playerPing)
+
+    abilityMod.Client_Initialize(params, abilityDefs, Players.LocalPlayer)
     spawn(function()
-        abilityMod.Client_Stage_1(params, abilityDefs, playerPing)
+        abilityMod.Client_Stage_1(params, abilityDefs, Players.LocalPlayer)
     end)
     
 end
@@ -85,7 +84,7 @@ function BasicAttack.Execute(params, abilityDefs)
 
     if initPlayer ~= Players.LocalPlayer then
         spawn(function()
-            abilityMod.Client_Stage_1(params, abilityDefs)
+            abilityMod.Client_Stage_1(params, abilityDefs, initPlayer)
         end)
     end
     

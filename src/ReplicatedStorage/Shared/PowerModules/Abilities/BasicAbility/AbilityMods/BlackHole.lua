@@ -62,7 +62,7 @@ function module.Server_Run(params, abilityDefs, initPlayer)
     
 end
 
-function module.Client_Initialize(params, abilityDefs, delayOffset)
+function module.Client_Initialize(params, abilityDefs)
 
     local character = Players.LocalPlayer.Character
     if not character and character.HumanoidRootPart then return end
@@ -80,7 +80,7 @@ end
 
 
 --// Client_Stage_1
-function module.Client_Stage_1(params, abilityDefs, delayOffset)
+function module.Client_Stage_1(params, abilityDefs)
 
     local targetStand = Workspace.PlayerStands[params.InitUserId]:FindFirstChildWhichIsA("Model")
     if not targetStand then
@@ -139,8 +139,6 @@ function module.Client_Stage_1(params, abilityDefs, delayOffset)
         blackHoleParts.newParticle.ParticleEmitter.Enabled = false
         Debris:AddItem(blackHoleParts.newParticle, 3)
     end)
-
-    if delayOffset then wait(delayOffset) end
 
     ManageStand.MoveStand(params, "Idle")
     ManageStand.Aura_Off(params)

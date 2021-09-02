@@ -185,7 +185,7 @@ CMoon.Defs.Abilities.X = {
     Id = "GravityShift",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("GravityShift", true),
 }
 
 function CMoon.X(params)

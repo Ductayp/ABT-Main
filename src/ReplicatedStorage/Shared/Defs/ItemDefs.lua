@@ -110,10 +110,22 @@ return {
     },
 
     DiosBone = {
-        Name = "Dios Bone",
+        Name = "Dio's Bone",
         Type = "Collectable",
         Description = "Straight up a BONE ... from Dio<br/><br/>Can be used in crafting STUFF.",
         LayoutOrder = 11
+    },
+
+   GreenBaby = {
+        Name = "Green Baby",
+        Type = "Evolution",
+        EvolutionPaths = {
+            WhiteSnake = {
+                GivePower = "CMoon",
+            },
+        },
+        Description = "A little green alien baby. Eat him to evolve White Snale into C-Moon",
+        LayoutOrder = 12
     },
 
 

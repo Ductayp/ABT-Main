@@ -53,5 +53,18 @@ return {
         },
     },
 
+    GreenBaby = {
+        Name = "Green Baby",
+        LayoutOrder = 5,
+        Description = "Eat ths little guy to evolve White Snake into C-Moon",
+        InputItems = {
+            [1] = {Key = "DiosBone", Value = 1, Name = "Dio's Bone"},
+            [2] = {Key = "GreenGoo", Value = 100, Name = "Green Goo"},
+        },
+        OutputItems = {
+            [1] = {Key = "GreenBaby", Value = 1, Name = "Green Baby"}
+        },
+    },
+
 }
 

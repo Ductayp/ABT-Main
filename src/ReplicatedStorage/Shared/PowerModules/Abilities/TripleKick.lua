@@ -33,7 +33,7 @@ function TripleKick.Initialize(params, abilityDefs)
     if not Cooldown.Client_IsCooled(params) then params.CanRun = false return end
     if not Cooldown.Server_IsCooled(params) then params.CanRun = false return end
     if abilityDefs.RequireToggle_On then
-        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false return end
+        if not AbilityToggle.RequireOn(params.InitUserId, abilityDefs.RequireToggle_On) then params.CanRun = false print("YESSSSS") return end
     end
 
     Cooldown.Client_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)

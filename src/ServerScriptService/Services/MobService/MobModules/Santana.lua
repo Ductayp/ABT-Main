@@ -12,6 +12,8 @@ local module = {}
 --/ Spawners
 module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Santana", true)
 
+local animationFolder = ReplicatedStorage:FindFirstChild("MobAnimations", true)
+
 --/ Model
 module.Model = ReplicatedStorage.Mobs.Santana
 
@@ -21,13 +23,6 @@ module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
 module.Max_Spawned = 6
-
---/ Animations
-module.Animations = {
-    Idle = "rbxassetid://507766666",
-    Walk = "rbxassetid://507777826",
-    Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
-}
 
 module.Defs = {}
 module.Defs.Name = "Pillar Man"
@@ -94,33 +89,14 @@ end
 --// Setup_Animations
 function module.Setup_Animations(mobData)
 
-    -- add an animator
-    mobData.Animations = {} -- setup a table
-    mobData.Animations.Attack = {} -- we need another table for attack aniamtions
     local animator = Instance.new("Animator")
     animator.Parent = mobData.Model.Humanoid
 
-    -- idle animation
-    local idleAnimation = Instance.new("Animation")
-    idleAnimation.AnimationId = module.Animations.Idle
-    mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
-    idleAnimation:Destroy()
+    mobData.Animations = {}
 
-    -- walk animation
-    local walkAnimation = Instance.new("Animation")
-    walkAnimation.AnimationId = module.Animations.Walk
-    mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
-    walkAnimation:Destroy()
-
-    -- attack animations
-    for index, animationId in pairs(module.Animations.Attack) do
-        local newAnimation = Instance.new("Animation")
-        newAnimation.AnimationId = animationId
-        local newTrack = animator:LoadAnimation(newAnimation)
-        table.insert(mobData.Animations.Attack, newTrack)
-        newAnimation:Destroy()
+    for _, animObject in pairs(animationFolder:GetChildren()) do
+        mobData.Animations[animObject.Name] = animator:LoadAnimation(animObject)
     end
-
 end
 
 --// Setup_Attack
@@ -134,16 +110,19 @@ function  module.Attack(mobData)
     spawn(function()
 
         if not mobData.DisableAnimations then
-            local rand = math.random(1, #mobData.Animations.Attack)
-            mobData.Animations.Attack[rand]:Play()
+            local rand = math.random(1, 2)
+            local animName = "Attack_" .. tostring(rand)
+            mobData.Animations[animName]:Play()
         end
 
         mobData.Model.Humanoid.WalkSpeed = 2
-        local rand = math.random(1, #mobData.Animations.Attack)
+
         wait(.25)
+
         mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
 
         Knit.Services.MobService:HitPlayer(mobData.AttackTarget, mobData.Defs.HitEffects, mobData)
+
     end)  
                                
 end

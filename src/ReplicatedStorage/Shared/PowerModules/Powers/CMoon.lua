@@ -148,7 +148,7 @@ end
 
 -- defs
 CMoon.Defs.Abilities.T = {
-    Id = "TimeAcceleration",
+    Id = "GravitySlam",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
@@ -165,10 +165,10 @@ end
 
 -- defs
 CMoon.Defs.Abilities.F = {
-    Id = "GravityCollapse",
+    Id = "OrganInversion",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.ProjectileBarrage:FindFirstChild("FlowerPotBarrage", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("OrganInversion", true),
 }
 
 function CMoon.F(params)

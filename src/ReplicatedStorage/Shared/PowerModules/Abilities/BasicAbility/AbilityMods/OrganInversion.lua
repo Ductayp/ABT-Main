@@ -29,7 +29,7 @@ module.MobilityLockParams.AnchorCharacter = true
 
 local HIT_DURATION = 6
 local EFFECT_DURATION = 5
-local RANGE = 10
+local RANGE = 3
 local HIT_DELAY = 0
 
 --// Server_Setup
@@ -51,40 +51,26 @@ function module.Server_Run(params, abilityDefs, initPlayer)
 
     local endTime = os.clock() + HIT_DURATION
 
-    spawn(function()
-        Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "GravityShift", 6, nil)
-        wait(HIT_DURATION)
-        Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "GravityShift")
-    end)
-
     while os.clock() < endTime do
 
         hitCharacters = TargetByZone.GetAllInRange(initPlayer, HRP.Position, RANGE, true)
 
         for _, character in pairs(hitCharacters) do
 
-            if not character:FindFirstChild("Flag_GravityShift", true) then
+            if not character:FindFirstChild("Flag_OrganInversion", true) then
 
                 spawn(function()
                     local newFlag = Instance.new("BoolValue")
-                    newFlag.Name = "Flag_GravityShift"
+                    newFlag.Name = "Flag_OrganInversion"
                     newFlag.Parent = character
-                    wait(HIT_DURATION + 3)
+                    wait(HIT_DURATION + 1)
                     newFlag:Destroy()
                 end)
 
                 abilityDefs.HitEffects = {
-                    Damage = {Damage = 1},
-                    PinCharacter = {Duration = EFFECT_DURATION},
-                }
-
-                Knit.Services.PowersService:RegisterHit(initPlayer, character, abilityDefs)
-
-
-                abilityDefs.HitEffects = {
                     RunFunctions = {
-                        {RunOn = "Server", Script = script, FunctionName = "Server_GravityEffect", Arguments = {HitCharacter = character}},
-                        {RunOn = "Client", Script = script, FunctionName = "Client_GravityEffect", Arguments = {HitCharacter = character}},
+                        Damage = {Damage = 30},
+                        {RunOn = "Client", Script = script, FunctionName = "Client_InversionEffect", Arguments = {HitCharacter = character}},
                     },
                 }
 
@@ -99,60 +85,11 @@ function module.Server_Run(params, abilityDefs, initPlayer)
 
 end
 
-function module.Server_GravityEffect(params)
+function module.Client_InversionEffect(params)
 
     if not params.HitCharacter then return end
     local HRP = params.HitCharacter:FindFirstChild("HumanoidRootPart")
     if not HRP then return end
-
-    
-    spawn(function()
-
-        HRP.Anchored = true
-
-        local floatTween_A = TweenService:Create(HRP, TweenInfo.new(.5), {CFrame = HRP.CFrame:ToWorldSpace(CFrame.new(0,2,0))})
-        floatTween_A:Play()
-
-        wait( (EFFECT_DURATION) - .5)
-
-        local floatTween_B = TweenService:Create(HRP, TweenInfo.new(.5), {CFrame = HRP.CFrame:ToWorldSpace(CFrame.new(0,-2,0))})
-        floatTween_B.Completed:Connect(function()
-            HRP.Anchored = false
-        end)
-        floatTween_B:Play()
-
-    end)
-
-    spawn(function()
-
-        if params.HitParams.IsMob then
-
-            local duration = (EFFECT_DURATION - 1)
-            require(Knit.MobUtils.MobAnimations).PlayAnimation(params.HitParams.MobId, "Float", duration)
-
-        end
-
-    end)
-
-end
-
-function module.Client_GravityEffect(params)
-
-    if not params.HitCharacter then return end
-    local HRP = params.HitCharacter:FindFirstChild("HumanoidRootPart")
-    if not HRP then return end
-
-    if Players.LocalPlayer.Character then 
-        if params.HitCharacter == Players.LocalPlayer.Character then
-
-            spawn(function()
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Float:Play()
-                wait(EFFECT_DURATION - 1)
-                Knit.Controllers.PlayerUtilityController.PlayerAnimations.Float:Stop()
-            end)
-    
-        end
-    end
 
     spawn(function()
 
@@ -178,11 +115,13 @@ end
 
 function module.Client_Initialize(params, abilityDefs, delayOffset)
 
+    --[[
     spawn(function()
         Knit.Controllers.PlayerUtilityController.PlayerAnimations.Rage:Play()
         wait(2)
         Knit.Controllers.PlayerUtilityController.PlayerAnimations.Rage:Stop()
     end)
+    ]]--
 
     
 end
@@ -207,11 +146,11 @@ function module.Client_Stage_1(params, abilityDefs, initPlayer)
     spawn(function()
 
         ManageStand.Aura_On(params)
-        --ManageStand.MoveStand(params, "IdleHigh")
+        ManageStand.MoveStand(params, "IdleHigh")
         ManageStand.PlayAnimation(params, "CastOnUser")
         wait(2)
         ManageStand.StopAnimation(params, "CastOnUser")
-        --ManageStand.MoveStand(params, "Idle")
+        ManageStand.MoveStand(params, "Idle")
         ManageStand.Aura_Off(params)
 
     end)

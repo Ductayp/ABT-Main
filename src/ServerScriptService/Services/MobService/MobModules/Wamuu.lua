@@ -11,6 +11,8 @@ local module = {}
 --/ Spawners
 module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Wamuu", true)
 
+local animationFolder = ReplicatedStorage:FindFirstChild("MobAnimations", true)
+
 --/ Model
 module.Model = ReplicatedStorage.Mobs.Wamuu
 
@@ -20,14 +22,6 @@ module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Z_Offset = 5
 module.Max_Spawned = 5
-
---/ Animations
-module.Animations = {
-    Idle = "rbxassetid://507766666",
-    Walk = "rbxassetid://507777826",
-    Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
-    SpinArmsAttack = "rbxassetid://6807049836"
-}
 
 module.Defs = {}
 module.Defs.Name = "Wham"
@@ -93,37 +87,14 @@ end
 --// Setup_Animations
 function module.Setup_Animations(mobData)
 
-    -- add an animator
-    mobData.Animations = {} -- setup a table
-    mobData.Animations.Attack = {} -- we need another table for attack aniamtions
+
     local animator = Instance.new("Animator")
     animator.Parent = mobData.Model.Humanoid
 
-    -- idle animation
-    local idleAnimation = Instance.new("Animation")
-    idleAnimation.AnimationId = module.Animations.Idle
-    mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
-    idleAnimation:Destroy()
+    mobData.Animations = {}
 
-    -- walk animation
-    local walkAnimation = Instance.new("Animation")
-    walkAnimation.AnimationId = module.Animations.Walk
-    mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
-    walkAnimation:Destroy()
-
-    -- Spn Arms animation
-    local spinArmAnimation = Instance.new("Animation")
-    spinArmAnimation.AnimationId = module.Animations.SpinArmsAttack
-    mobData.Animations.SpinArmsAttack = animator:LoadAnimation(spinArmAnimation)
-    spinArmAnimation:Destroy()
-
-    -- attack animations
-    for index, animationId in pairs(module.Animations.Attack) do
-        local newAnimation = Instance.new("Animation")
-        newAnimation.AnimationId = animationId
-        local newTrack = animator:LoadAnimation(newAnimation)
-        table.insert(mobData.Animations.Attack, newTrack)
-        newAnimation:Destroy()
+    for _, animObject in pairs(animationFolder:GetChildren()) do
+        mobData.Animations[animObject.Name] = animator:LoadAnimation(animObject)
     end
 
 end
@@ -152,52 +123,64 @@ function  module.Attack(mobData)
 
         if randAttack == 8 then
 
-            --print("SPECIAL ATTACK!")
+            spawn(function()
 
-            local abilityScript = Knit.Shared.MobEffects.WamuuEffects
+                local abilityScript = Knit.Shared.MobEffects.WamuuEffects
 
 
-            if not mobData.DisableAnimations then
-                mobData.Animations.SpinArmsAttack:Play()
-                mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed + 10
-            end
+                if not mobData.DisableAnimations then
+                    mobData.Animations.SpinArmsAttack:Play()
+                    mobData.Model.Humanoid.WalkSpeed = mobData.Defs.WalkSpeed + 10
+                end
 
+                
+                for count = 1, 4 do
+
+                    local effectParams = {}
+                    effectParams.Position = mobHRP.Position
+                    effectParams.MobModel = mobData.Model                
+                    effectParams.RenderRange = 250
+                    Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Tornado", effectParams)
+
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        if player.Character and player.Character.HumanoidRootPart then
+                            local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
+                            if distance <= 8 then
+                                local newLookVector = (player.Character.HumanoidRootPart.Position - mobHRP.Position).unit
+                                local hitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
             
-            for count = 1, 4 do
-
-                local effectParams = {}
-                effectParams.Position = mobHRP.Position
-                effectParams.MobModel = mobData.Model                
-                effectParams.RenderRange = 250
-                Knit.Services.PowersService:RenderAbilityEffect_AllPlayers(abilityScript, "Tornado", effectParams)
-
-                for _, player in pairs(game.Players:GetPlayers()) do
-                    if player.Character and player.Character.HumanoidRootPart then
-                        local distance = (player.Character.HumanoidRootPart.Position - mobHRP.Position).magnitude
-                        if distance <= 8 then
-                            local newLookVector = (player.Character.HumanoidRootPart.Position - mobHRP.Position).unit
-                            local hitEffects = {Damage = {Damage = 10}, KnockBack = {Force = 70, ForceY = 50, LookVector = newLookVector}}
-        
-                            Knit.Services.MobService:HitPlayer(player, hitEffects, mobData)
+                                Knit.Services.MobService:HitPlayer(player, hitEffects, mobData)
+                            end
                         end
                     end
+                    wait(.5)
                 end
-                wait(.5)
-            end
-            
-            mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
-            mobData.Animations.SpinArmsAttack:Stop()
+                
+                mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
+                mobData.Animations.SpinArmsAttack:Stop()
+
+            end)
 
         else
+            
+            spawn(function()
 
-            if not mobData.DisableAnimations then
-                local rand = math.random(1, #mobData.Animations.Attack)
-                mobData.Animations.Attack[rand]:Play()
-            end
-
-
-            local HitEffects_Attack = {Damage = {Damage = 20}}
-            Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack, mobData)
+                if not mobData.DisableAnimations then
+                    local rand = math.random(1, 2)
+                    local animName = "Attack_" .. tostring(rand)
+                    mobData.Animations[animName]:Play()
+                end
+        
+                mobData.Model.Humanoid.WalkSpeed = 2
+        
+                wait(.25)
+        
+                mobData.Model.Humanoid.WalkSpeed = require(Knit.MobUtils.MobWalkSpeed).GetWalkSpeed(mobData)
+        
+                local HitEffects_Attack = {Damage = {Damage = 20}}
+                Knit.Services.MobService:HitPlayer(mobData.AttackTarget, HitEffects_Attack, mobData)
+        
+            end)  
         end
 
     end) 

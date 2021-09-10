@@ -11,6 +11,8 @@ local module = {}
 --/ Spawners
 module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_Akira", true)
 
+local animationFolder = ReplicatedStorage:FindFirstChild("MobAnimations", true)
+
 --/ Model
 module.Model = ReplicatedStorage.Mobs.Akira
 
@@ -20,14 +22,6 @@ module.RespawnTime = 10
 module.RandomPlacement = true
 module.Spawn_Z_Offset = 5
 module.Max_Spawned = 5
-
---/ Animations
-module.Animations = {
-    Idle = "rbxassetid://507766666",
-    Walk = "rbxassetid://507777826",
-    Attack = {"rbxassetid://6235460206", "rbxassetid://6235479125"},
-    GuitarAttack = "rbxassetid://6905847408"
-}
 
 module.Defs = {}
 module.Defs.Name = "Akira"
@@ -96,37 +90,13 @@ end
 --// Setup_Animations
 function module.Setup_Animations(mobData)
 
-    -- add an animator
-    mobData.Animations = {} -- setup a table
-    mobData.Animations.Attack = {} -- we need another table for attack aniamtions
     local animator = Instance.new("Animator")
     animator.Parent = mobData.Model.Humanoid
 
-    -- idle animation
-    local idleAnimation = Instance.new("Animation")
-    idleAnimation.AnimationId = module.Animations.Idle
-    mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
-    idleAnimation:Destroy()
+    mobData.Animations = {}
 
-    -- walk animation
-    local walkAnimation = Instance.new("Animation")
-    walkAnimation.AnimationId = module.Animations.Walk
-    mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
-    walkAnimation:Destroy()
-
-    -- Spn Arms animation
-    local guitarAnimation = Instance.new("Animation")
-    guitarAnimation.AnimationId = module.Animations.GuitarAttack
-    mobData.Animations.GuitarAttack = animator:LoadAnimation(guitarAnimation)
-    guitarAnimation:Destroy()
-
-    -- attack animations
-    for index, animationId in pairs(module.Animations.Attack) do
-        local newAnimation = Instance.new("Animation")
-        newAnimation.AnimationId = animationId
-        local newTrack = animator:LoadAnimation(newAnimation)
-        table.insert(mobData.Animations.Attack, newTrack)
-        newAnimation:Destroy()
+    for _, animObject in pairs(animationFolder:GetChildren()) do
+        mobData.Animations[animObject.Name] = animator:LoadAnimation(animObject)
     end
 
 end
@@ -143,9 +113,6 @@ function  module.Attack(mobData)
 
         if not mobData.AttackTarget then return end
         if not mobData.AttackTarget.Character then return end
-
-        --local targetHRP = mobData.AttackTarget.Character:FindFirstChild("HumanoidRootPart")
-        --if not targetHRP then return end
 
         local mobHRP = mobData.Model:FindFirstChild("HumanoidRootPart")
         if not mobHRP then return end

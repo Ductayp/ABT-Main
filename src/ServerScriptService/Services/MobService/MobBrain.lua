@@ -51,6 +51,7 @@ function MobBrain.Run()
 
                         -- BRAIN ACTION: Do Move
                         if mobData.Defs.IsMobile then
+
                             if mobData.MoveTarget then
 
                                 if not mobData.IsPinned then

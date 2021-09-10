@@ -26,6 +26,30 @@ function module.PauseAll(mobId, duration)
 
     end)
 
+end
+
+function module.PlayAnimation(mobId, animName, duration)
+
+    local thisMob = Knit.Services.MobService.SpawnedMobs[mobId]
+    if not thisMob then return end
+    if not thisMob.Model then return end
+
+    if thisMob.Animations and thisMob.Animations[animName] then
+
+        spawn(function()
+
+            thisMob.Animations[animName]:Play()
+
+            if duration then
+                wait(duration)
+                thisMob.Animations[animName]:Stop()
+            end
+
+        end)
+
+    end
+
+
 
 end
 

@@ -14,6 +14,8 @@ local module = {}
 --/ Spawners
 module.SpawnersFolder = Workspace:FindFirstChild("MobSpawners_RedHot", true)
 
+local animationFolder = ReplicatedStorage:FindFirstChild("MobAnimations", true)
+
 --/ Model
 module.Model = ReplicatedStorage.Mobs.RedHot
 
@@ -24,12 +26,6 @@ module.RandomPlacement = false
 module.Spawn_Z_Offset = 0
 module.Max_Spawned = 1
 
---/ Animations
-module.Animations = {
-    Idle = "rbxassetid://507766666",
-    Walk = "rbxassetid://507777826",
-    Attack = {"rbxassetid://6245847704"},
-}
 
 --/ Defs
 module.Defs = {}
@@ -100,33 +96,15 @@ end
 --// Setup_Animations
 function module.Setup_Animations(mobData)
 
-        -- add an animator
-        mobData.Animations = {} -- setup a table
-        mobData.Animations.Attack = {} -- we need another table for attack aniamtions
-        local animator = Instance.new("Animator")
-        animator.Parent = mobData.Model.Humanoid
-    
-        -- idle animation
-        local idleAnimation = Instance.new("Animation")
-        idleAnimation.AnimationId = module.Animations.Idle
-        mobData.Animations.Idle = animator:LoadAnimation(idleAnimation)
-        idleAnimation:Destroy()
-    
-        -- walk animation
-        local walkAnimation = Instance.new("Animation")
-        walkAnimation.AnimationId = module.Animations.Walk
-        mobData.Animations.Walk = animator:LoadAnimation(walkAnimation)
-        walkAnimation:Destroy()
-    
-        -- attack animations
-        for index, animationId in pairs(module.Animations.Attack) do
-            local newAnimation = Instance.new("Animation")
-            newAnimation.AnimationId = animationId
-            local newTrack = animator:LoadAnimation(newAnimation)
-            table.insert(mobData.Animations.Attack, newTrack)
-            newAnimation:Destroy()
-        end
+    local animator = Instance.new("Animator")
+    animator.Parent = mobData.Model.Humanoid
 
+    mobData.Animations = {}
+
+    for _, animObject in pairs(animationFolder:GetChildren()) do
+        mobData.Animations[animObject.Name] = animator:LoadAnimation(animObject)
+    end
+    
 end
 
 --// Setup_Attack

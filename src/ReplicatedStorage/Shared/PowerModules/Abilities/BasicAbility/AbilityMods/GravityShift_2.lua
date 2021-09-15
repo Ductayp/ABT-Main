@@ -92,8 +92,8 @@ function module.Server_Run(params, abilityDefs, initPlayer)
 
             end
         end
-
-        wait(.01)
+        
+        wait(.1)
 
     end
 

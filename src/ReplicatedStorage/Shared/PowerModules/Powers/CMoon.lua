@@ -5,6 +5,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Knit and modules
 local Knit = require(ReplicatedStorage:FindFirstChild("Knit",true))
 
+local utils = require(Knit.Shared.Utils)
+
 local CMoon = {}
 
 CMoon.Defs = {
@@ -61,6 +63,7 @@ function CMoon.SetupPower(initPlayer, params)
     Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "CMoon_Setup", 6, nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Health", "CMoon_Setup", CMoon.Defs.HealthModifier[params.Rank], nil)
     Knit.Services.StateService:AddEntryToState(initPlayer, "Multiplier_Damage", "CMoon_Setup", CMoon.Defs.DamageMultiplier[params.Rank], nil)
+
 end
 
 --// REMOVE - run this once when the stand is un-equipped
@@ -68,6 +71,7 @@ function CMoon.RemovePower(initPlayer, params)
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "CMoon_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Health", "CMoon_Setup")
     Knit.Services.StateService:RemoveEntryFromState(initPlayer, "Multiplier_Damage", "CMoon_Setup")
+
 end
 
 --// MANAGER - this is the single point of entry from PowersService and PowersController.
@@ -151,7 +155,7 @@ CMoon.Defs.Abilities.T = {
     Id = "GravitySlam",
     Cooldown = 1,
     RequireToggle_On = {"Q"},
-    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("BlackHole", true),
+    AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("GravitySlam", true),
 }
 
 function CMoon.T(params)
@@ -172,7 +176,7 @@ CMoon.Defs.Abilities.F = {
 }
 
 function CMoon.F(params)
-    params = require(Knit.Abilities.BasicProjectile)[params.SystemStage](params, CMoon.Defs.Abilities.F)
+    params = require(Knit.Abilities.BasicAbility)[params.SystemStage](params, CMoon.Defs.Abilities.F)
 end
 
 
@@ -238,7 +242,23 @@ CMoon.Defs.Abilities.Punch = {
 }
 
 function CMoon.Punch(params)
-    params = require(Knit.Abilities.Punch)[params.SystemStage](params, CMoon.Defs.Abilities.Punch)
+
+    local initPlayer = utils.GetPlayerByUserId(params.InitUserId)
+
+    local organPunch = false
+    local organToggle = initPlayer.Character:FindFirstChild("OrganInversion_Active", true)
+    if organToggle then
+        if organToggle.Value == true then
+            organPunch = true
+        end
+    end
+
+    if organPunch then
+        params = require(Knit.Abilities.Punch_OrganInversion)[params.SystemStage](params, CMoon.Defs.Abilities.Punch)
+    else
+        params = require(Knit.Abilities.Punch)[params.SystemStage](params, CMoon.Defs.Abilities.Punch)
+    end
+
 end
 
 return CMoon

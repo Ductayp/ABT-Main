@@ -23,9 +23,13 @@ function KnockBack.Server_ApplyEffect(initPlayer, hitCharacter, effectParams, hi
 
     if hitParams.IsMob then
         local thisMob = Knit.Services.MobService:GetMobById(hitParams.MobId)
+
         if thisMob.Defs.IsMobile == false then
             return
         end
+
+        require(Knit.MobUtils.MobWalkSpeed).SetWalkSpeed(thisMob, 0, 1)
+
     end
 
     -- body mover settings

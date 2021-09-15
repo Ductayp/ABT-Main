@@ -74,5 +74,33 @@ function module.GetWalkSpeed(thisMob)
 
 end
 
+function module.SetWalkSpeed(thisMob, newSpeed, duration)
+
+    
+    local humanoid = thisMob.Model:FindFirstChild("Humanoid")
+    if not humanoid then return end
+
+    humanoid.WalkSpeed = newSpeed
+
+    if duration then
+        spawn(function()
+
+            wait(duration)
+
+            local walkSpeed = thisMob.Defs.WalkSpeed
+            local walkSpeedFolder = humanoid:FindFirstChild("WalkSpeed_Modifiers")
+            if walkSpeedFolder then
+                for _, valueObject in pairs(walkSpeedFolder:GetChildren()) do
+                    walkSpeed += valueObject.Value
+                end
+            end
+
+            humanoid.WalkSpeed = walkSpeed
+
+        end)
+    end
+
+end
+
 
 return module

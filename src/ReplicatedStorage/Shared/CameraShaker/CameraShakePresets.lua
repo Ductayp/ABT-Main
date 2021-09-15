@@ -58,6 +58,15 @@ local CameraShakePresets = {
 		c.RotationInfluence = Vector3.new(4, 1, 1)
 		return c
 	end;
+
+	-- A smaller version of Explosion
+	-- Should happen once.
+	SmallExplosion = function()
+		local c = CameraShakeInstance.new(1.5, 8, 0, 1)
+		c.PositionInfluence = Vector3.new(0.25, 0.25, 0.25)
+		c.RotationInfluence = Vector3.new(2, 1, 1)
+		return c
+	end;
 	
 	
 	-- A continuous, rough shake

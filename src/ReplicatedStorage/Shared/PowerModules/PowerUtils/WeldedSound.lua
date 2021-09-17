@@ -19,10 +19,6 @@ local WeldedSound = {}
 
 function WeldedSound.NewSound(parent, sound, params)
 
-    -- options params
-    --params.fadeTime
-    --params.DebrisTime
-
     -- clone new part
 	local thisSpeaker = SoundService.WeldedSoundPart:Clone()
     thisSpeaker.Name = sound.Name
@@ -30,8 +26,8 @@ function WeldedSound.NewSound(parent, sound, params)
     thisSpeaker.Parent = parent
     utils.EasyWeld(thisSpeaker, parent, thisSpeaker)
 
-    -- clone the sound
-    local thisSound = sound:Clone()
+	-- clone the sound
+	local thisSound = sound:Clone()
 	thisSound.Parent = thisSpeaker
 	thisSound.SoundGroup = SoundService.SFX
 

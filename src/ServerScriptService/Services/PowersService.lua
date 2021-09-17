@@ -525,8 +525,6 @@ function PowersService:KnitInit()
     --ignoreFolder.Name = "IgnoreProjectiles"
     --ignoreFolder.Parent = Workspace
 
-
-
     -- stand givers
     for i, v in pairs(Workspace.StandGivers:GetChildren()) do
 

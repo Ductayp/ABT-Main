@@ -71,7 +71,7 @@ function Punch.Activate(params, abilityDefs)
     end
 
 	-- set cooldown
-    Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
+    --Cooldown.Server_SetCooldown(params.InitUserId, params.InputId, abilityDefs.Cooldown)
 
     -- block input
     require(Knit.PowerUtils.BlockInput).AddBlock(params.InitUserId, "Punch", 0.5)
@@ -186,7 +186,7 @@ function Punch.HitCharacter(params, abilityDefs, initPlayer, hitCharacter)
         end)
 
         abilityDefs.HitEffects = {
-            Damage = {Damage = 35, KnockBack = 20},
+            Damage = {Damage = 35, KnockBack = 25},
             --DamageOverTime = {Damage = 4, TickCount = 5, TickLength = 1},
             RunFunctions = {
                 {RunOn = "Client", Script = script, FunctionName = "Client_OrganEffect", Arguments = {}},

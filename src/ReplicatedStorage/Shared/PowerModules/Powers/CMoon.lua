@@ -122,7 +122,7 @@ CMoon.Defs.Abilities.E = {
     RequireToggle_On = {"Q"},
     HitEffects = {Damage = {Damage = 7, KnockBack = 15}},
     Sounds = {
-        Barrage = ReplicatedStorage.Audio.StandSpecific.TheWorld.Barrage,
+        Barrage = ReplicatedStorage.Audio.Abilities.GenericBarrage,
     }
 }
 
@@ -137,7 +137,7 @@ end
 --defs
 CMoon.Defs.Abilities.R = {
     Id = "GravityPunch",
-    Cooldown = 1,
+    Cooldown = 8,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.HeavyPunch:FindFirstChild("GravityPunch", true),
 }
@@ -153,7 +153,7 @@ end
 -- defs
 CMoon.Defs.Abilities.T = {
     Id = "GravitySlam",
-    Cooldown = 1,
+    Cooldown = 30,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("GravitySlam", true),
 }
@@ -170,7 +170,7 @@ end
 -- defs
 CMoon.Defs.Abilities.F = {
     Id = "OrganInversion",
-    Cooldown = 1,
+    Cooldown = 20,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("OrganInversion", true),
 }
@@ -187,7 +187,7 @@ end
 -- defs
 CMoon.Defs.Abilities.X = {
     Id = "GravityShift",
-    Cooldown = 1,
+    Cooldown = 25,
     RequireToggle_On = {"Q"},
     AbilityMod = Knit.Abilities.BasicAbility:FindFirstChild("GravityShift", true),
 }
@@ -238,7 +238,6 @@ end
 CMoon.Defs.Abilities.Punch = {
     Name = "Punch",
     Id = "Punch",
-    HitEffects = {Damage = {Damage = 15, KnockBack = 10,}}
 }
 
 function CMoon.Punch(params)
@@ -256,6 +255,7 @@ function CMoon.Punch(params)
     if organPunch then
         params = require(Knit.Abilities.Punch_OrganInversion)[params.SystemStage](params, CMoon.Defs.Abilities.Punch)
     else
+        CMoon.Defs.Abilities.Punch.HitEffects = {Damage = {Damage = 15, KnockBack = 10,}}
         params = require(Knit.Abilities.Punch)[params.SystemStage](params, CMoon.Defs.Abilities.Punch)
     end
 

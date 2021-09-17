@@ -49,14 +49,15 @@ function module.Server_Run(params, abilityDefs, initPlayer)
     local HRP = character:FindFirstChild("HumanoidRootPart")
     if not HRP then return end
 
-    local endTime = os.clock() + HIT_DURATION
-
     spawn(function()
         Knit.Services.StateService:AddEntryToState(initPlayer, "WalkSpeed", "GravityShift", 6, nil)
         wait(HIT_DURATION)
         Knit.Services.StateService:RemoveEntryFromState(initPlayer, "WalkSpeed", "GravityShift")
     end)
 
+
+
+    local endTime = os.clock() + HIT_DURATION
     while os.clock() < endTime do
 
         hitCharacters = TargetByZone.GetAllInRange(initPlayer, HRP.Position, RANGE, true)
@@ -69,7 +70,7 @@ function module.Server_Run(params, abilityDefs, initPlayer)
                     local newFlag = Instance.new("BoolValue")
                     newFlag.Name = "Flag_GravityShift"
                     newFlag.Parent = character
-                    wait(HIT_DURATION + 3)
+                    wait(HIT_DURATION)
                     newFlag:Destroy()
                 end)
 
@@ -93,7 +94,7 @@ function module.Server_Run(params, abilityDefs, initPlayer)
             end
         end
 
-        wait(.01)
+        wait()
 
     end
 
@@ -113,9 +114,9 @@ function module.Server_GravityEffect(params)
         local floatTween_A = TweenService:Create(HRP, TweenInfo.new(.5), {CFrame = HRP.CFrame:ToWorldSpace(CFrame.new(0,2,0))})
         floatTween_A:Play()
 
-        wait( (EFFECT_DURATION) - .5)
+        wait( (EFFECT_DURATION) - .1)
 
-        local floatTween_B = TweenService:Create(HRP, TweenInfo.new(.5), {CFrame = HRP.CFrame:ToWorldSpace(CFrame.new(0,-2,0))})
+        local floatTween_B = TweenService:Create(HRP, TweenInfo.new(.1), {CFrame = HRP.CFrame:ToWorldSpace(CFrame.new(0,-2,0))})
         floatTween_B.Completed:Connect(function()
             HRP.Anchored = false
         end)
@@ -127,7 +128,7 @@ function module.Server_GravityEffect(params)
 
         if params.HitParams.IsMob then
 
-            local duration = (EFFECT_DURATION - 1)
+            local duration = (EFFECT_DURATION)
             require(Knit.MobUtils.MobAnimations).PlayAnimation(params.HitParams.MobId, "Float", duration)
 
         end
@@ -147,7 +148,7 @@ function module.Client_GravityEffect(params)
 
             spawn(function()
                 Knit.Controllers.PlayerUtilityController.PlayerAnimations.Float:Play()
-                wait(EFFECT_DURATION - 1)
+                wait(EFFECT_DURATION)
                 Knit.Controllers.PlayerUtilityController.PlayerAnimations.Float:Stop()
             end)
     
@@ -202,7 +203,8 @@ function module.Client_Stage_1(params, abilityDefs, initPlayer)
         targetStand = ManageStand.QuickRender(params)
     end
 
-    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.PulseRay6)
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.GunShot, {SoundProperties = {PlaybackSpeed = 0.25}})
+    WeldedSound.NewSound(targetStand.HumanoidRootPart, ReplicatedStorage.Audio.General.PowerUpStinger3, {SoundProperties = {PlaybackSpeed = 0.5}})
 
     spawn(function()
 
@@ -273,6 +275,8 @@ function module.Client_Stage_2(params, abilityDefs, initPlayer)
         wait(.25)
 
     end
+
+    WeldedSound.NewSound(HRP, ReplicatedStorage.Audio.General.GlassBoom, {SoundProperties = {PlaybackSpeed = 2}})
 
 end
 

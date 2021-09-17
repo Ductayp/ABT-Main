@@ -256,7 +256,6 @@ function module.Client_Stage_1(params, abilityDefs)
 
         wait(EFFECT_DURATION)
         droneSound:Destroy()
-        AnchoredSound.NewSound(params.GravitySlamCFrame.Position, ReplicatedStorage.Audio.General.PowerUpStinger3)
         newBurst:Destroy()
         newParticles.ParticleEmitter_A.Enabled = false
         newParticles.ParticleEmitter_B.Enabled = false
@@ -299,6 +298,8 @@ function module.Client_Stage_2(params, abilityDefs)
         wait(.25)
 
     end
+
+    print("TEST", params)
 
 
 end

@@ -37,8 +37,57 @@ function MobBrain.Run()
                     end
                     ]]--
 
+                    --[[
+                    -- BRAIN EVENT: LifeSpan  - check the mobs LifeSpan and kill it if its old
+                    local canRun = true
+                    if mobData.SpawnTime < os.clock() - mobData.Defs.LifeSpan then
+                        mobData.BrainState = "Dead"
+                        mobData.StateTime = os.clock()
+                        mobData.IsDead = true
+                        mobData.DeadTime = os.clock()
+                        mobData.PlayerDamage = {} -- delete all player damage
+                        Knit.Services.MobService:DeSpawnMob(mobData)
+                        canRun = false
+                    end
+                    ]]--
+
+
+                    -- BRAIN EVENT: Is HumanoidRootPart Missing?
+                    if not mobData.Model and mobData.Model:FindFirstChild("HumanoidRootPart") then
+                        mobData.IsDead = true
+                    end
+
+                    -- BRAIN EVENT: Is Humanoid Missing?
+                    if not mobData.Model.Humanoid then
+                        mobData.IsDead = true
+                    end
+
+                    -- BRAIN EVENT: Is Mob health gone?
+                    if mobData.Model.Humanoid.Health <= 0 then
+                        mobData.IsDead = true
+                    end
+
+                    -- BRAIN EVENT: Is it to old?
+                    if mobData.SpawnTime < os.clock() - mobData.Defs.LifeSpan then
+                        mobData.IsDead = true
+                        mobData.PlayerDamage = {} -- delete all player damage
+                    end
+
+
                     -- NOT DEAD: if this mob is NOT dead, do the brain!
-                    if mobData.IsDead == false then
+                    if mobData.IsDead then
+
+                        if not mobData.HasDied then
+                            mobData.HasDied = true
+                            mobData.BrainState = "Dead"
+                            mobData.StateTime = os.clock()
+                            mobData.IsDead = true
+                            mobData.DeadTime = os.clock()
+                            Knit.Services.MobService:KillMob(mobData)
+                            canRun = false
+                        end
+
+                    else
 
                         --// STATES ---------------------------------------------
 
@@ -132,48 +181,6 @@ function MobBrain.Run()
                                 end
                             end
                         end
-
-
-                        -- BRAIN EVENT: Is Mob Dead? -- check if mob is dead, handle death
-                        if mobData.Model.Humanoid.Health <= 0 then
-                            mobData.BrainState = "Dead"
-                            mobData.StateTime = os.clock()
-                            mobData.IsDead = true
-                            mobData.DeadTime = os.clock()
-                            Knit.Services.MobService:KillMob(mobData)
-                        end
-
-                        -- BRAIN EVENT: Is Humanoid Missing?
-                        if not mobData.Model.Humanoid then
-                            mobData.BrainState = "Dead"
-                            mobData.StateTime = os.clock()
-                            mobData.IsDead = true
-                            mobData.DeadTime = os.clock()
-                            Knit.Services.MobService:KillMob(mobData)
-                        end
-
-                        -- BRAIN EVENT: LifeSpan  - check the mobs LifeSpan and kill it if its old
-                        if mobData.SpawnTime < os.clock() - mobData.Defs.LifeSpan then
-                            mobData.BrainState = "Dead"
-                            mobData.StateTime = os.clock()
-                            mobData.IsDead = true
-                            mobData.DeadTime = os.clock()
-                            mobData.PlayerDamage = {} -- delete all player damage
-                            Knit.Services.MobService:DeSpawnMob(mobData)
-                        end
-
-                        --[[
-                        -- BRAIN EVENT: If the mob is stuck in RETURN state, despawn it
-                        if mobData.BrainState == "Return" and os.clock() > mobData.StateTime + maxReturnTime then
-                            print("BIG RETURN TEST!")
-                            mobData.BrainState = "Dead"
-                            mobData.StateTime = os.clock()
-                            mobData.IsDead = true
-                            mobData.DeadTime = os.clock()
-                            mobData.PlayerDamage = {} -- delete all player damage
-                            Knit.Services.MobService:DeSpawnMob(mobData)
-                        end
-                        ]]--
 
                     end
                 end

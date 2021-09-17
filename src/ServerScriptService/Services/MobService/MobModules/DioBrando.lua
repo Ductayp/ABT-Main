@@ -19,7 +19,7 @@ module.Model = ReplicatedStorage.Mobs.DioBrando
 
 --/ Spawn
 module.RespawnClock = os.clock()
-module.RespawnTime = 60
+module.RespawnTime = 30
 module.RandomPlacement = true
 module.Spawn_Y_Offset = 5
 module.Max_Spawned = 1
@@ -271,10 +271,11 @@ function module.Drop(player, mobData)
     rewards.Items["MaskFragment"] = 1
 
     local itemDropPercent = 10
-    local rand = math.random(1, 100)
-    if rand <= itemDropPercent then
+    local dropRand = math.random(1, 100)
+    if dropRand <= itemDropPercent then
 
-        if rand <= 2 then
+        local pickRand = math.random(1,5)
+        if pickRand == 1 then
             rewards.Items["DiosBone"] = 1
         else
             rewards.Items["GoldStar"] = 1
